@@ -1,0 +1,18 @@
+DEFINITION MODULE Bouw;
+
+
+(* voor testen *)
+FROM Dbs IMPORT ReportArray;
+
+
+PROCEDURE Pass_0();
+PROCEDURE Pass_n();
+PROCEDURE BouwDataBase(StartPass: CARDINAL);
+
+
+(* voor testen *)
+PROCEDURE ShowThisPass(RA: ReportArray);
+PROCEDURE ReportNewPass(PassText: ARRAY OF CHAR);
+PROCEDURE TelAlles();
+
+END Bouw.

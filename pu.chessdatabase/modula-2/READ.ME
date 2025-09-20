@@ -1,0 +1,128 @@
+21-08-90
+
+Hoi Ad,
+
+
+Dit is een alfa versie van het database-programma, dwz alle basiselementen van
+het definitieve programma zijn aanwezig maar nog niet in hun definitieve vorm
+of uiterlijk. Evenmin is alles uitputtend getest maar het programma is op dit
+moment redelijk stabiel.
+
+Op de diskettes staan:
+
+PCB
+---
+Speel.exe    - een programma om met een database te spelen, dus stellingen op te
+               zetten, zetten te doen, zetten laten genereren etc.
+Checksum.exe - kontroleert of de database hetzelfde is als bij mij thuis.
+PcBackup.exe - programma om de database in te lezen
+pcb*         - dingetjes voor PcBackup
+Compress.exe - programma om je vaste schijf te ontfragmenteren
+
+KDKT n
+------
+Dit zijn diskettes met de gekomprimeerde database erop. Deze zijn onleesbaar
+door DOS.
+
+
+Installatie
+-----------
+
+1. Zorg dat je minimaal 6 Mb ruimte hebt op je vaste schijf.
+2. Maak een directory CHESSDBS.
+3. Copieer de diskette die PCB gemerkt is naar die directory.
+4. Draai het programma PCBACKUP. Kies Restore(Alt-R) en loop naar start
+   restore. Het programma vraagt af en toe om een diskette en daarmee bedoelt
+   het een van de diskettes gemerkt KDKT n. Als ik het goed heb uitgerekend
+   moet het vanzelf gaan, maar als het programma begint te mopperen kontroleer
+   dan de instellingen van PCBACKUP:
+
+   Configure (Alt-C)
+        - Define drive types: het moet een 1.44 meg drive zijn (of heb jij
+          een 720K drive?)
+   Options (Alt-O)
+        - In het middelste rechthoekje van het menu moeten alle opties
+          (Compress, Verify, Overwrite, Time) voorzien zijn van een wortelteken
+          (û).
+   Backup
+        - deze doen er niet toe
+   Restore (Alt-R)
+        - Restore to  : moet zijn C:\CHESSDBS (of zo)
+        - Restore from: Drive A, 720K disk
+          N.B. ga na wijzigingen naar de OK box met de Tab toets en druk op
+          Enter. Anders doet-ie het niet.
+        - Restore type: High speed DMA
+        - Include/exclude: voor deze optie moet GEEN wortelteken staan.
+
+
+5. De installatie is voltooid. Voor de performance zou ik aanbevelen om nu eerst
+   je vaste schijf te ontfragmenteren. Als je daar zelf geen programma voor hebt
+   doe dan het volgende:
+   5.1 Maak een backup van je vaste schijf volgens je favoriete methode.
+   5.2 Draai COMPRESS. Dit is meegekomen met het copieeren. Wacht even tot de
+       copyright boodschap verdwijnt en druk op Enter (Start compress).
+
+6. Kontroles.
+   6.1 De database KDKT.dbs moet 5242880 bytes bevatten
+   6.2 Draai Checksum.exe
+
+
+
+Korte handleiding
+-----------------
+
+Als je Speel binnenkomt, wordt er eerst om een stelling gevraagd. Vul de velden
+in en gebruik de pijltjestoetsen om van het ene veld in het andere te komen.
+Een geslagen stuk wordt 'onder de koning' gestopt, dwz krijgt hetzelfde veld
+als de koning van zijn of haar kleur.
+Druk pas op enter als alles ingevuld is.
+Je ziet nu een scherm met
+- een menubalk
+- een bord
+- een schermpje met de beste 8 zetten
+- een scherm met het partijverloop
+
+Het programma wordt bestuurd met de menu-opties; de beginletter of
+Alt-beginletter aktiveert een optie. Zoals daar zijn:
+
+Speel
+    Werkt zoals je normaliter tegen een computer schaakt, dwz jij doet een zet,
+    de computer antwoordt, etc.
+Zet
+    Hiermee kun je een zet doen in de onderhavige stelling. In tegenstelling
+    tot Speel volgt er geen antwoord.
+Bedenk
+    De computer doet de beste zet (of een van de beste zetten)
+Terug
+    Gaat een zet terug.
+Vooruit
+    Gaat een zet vooruit. Kan alleen als er teruggezet is.
+Newgame
+    Hiermee begin je een nieuwe stelling
+Genereer
+    Laat alle gegenereerde zetten in de onderhavige stelling zien met hun
+    waardering.
+
+
+Enkele opmerkingen
+------------------
+
+Ik heb totnogtoe geen schaaktechnische fout kunnen ontdekken. Daarom waag ik
+te stellen:
+1. Het eindspel KDK is een mat in 10. Er zijn 2 stellingen die mat in 10 zijn:
+        W Ka1, Db2; Z Ke6
+        W Ka1, Db2; Z Kf5
+   Ze zijn spiegelsymmetrisch, maar dat zijn ze op eigen houtje. Voor mijn
+   programma zijn het volkomen verschillende stellingen.
+   Ik daag je uit om hier een mat in 9 van te maken.
+2. Het eindspel KKT is een mat in 15.
+3. Het eindspel KDKT is een mat in 35.
+
+Als ik even mag aannemen dat mijn database korrekt is, overtreft het eindspel
+KDKT mijn verwachtingen. Neem bijvoorbeeld de wonderschone zet 24. Dh3-f5 uit
+het eindspel W Ka1, Db2; Z Ke6, Te5. Het blijkt dat in dit eindspel
+tempozetten cruciaal zijn.
+
+
+Peter
+

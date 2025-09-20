@@ -1,0 +1,62 @@
+DEFINITION MODULE Gen;
+
+FROM AlgDef IMPORT Wit, Zwart, StukNummer;
+FROM Dbs    IMPORT Stelling, Veld;
+
+
+(*------- Definitie van de huidige database -------------*)
+TYPE
+	StukType       = (Koning, Dame, Toren, Loper, Paard); (* geen pion! *)
+	StukDefinitie  = ARRAY StukNummer OF StukType;
+	KleurDefinitie = ARRAY StukNummer OF BOOLEAN;
+	
+CONST (* later VAR! *)
+	Stukken    = StukDefinitie ( Koning, Koning, Loper, Paard);
+	Kleuren    = KleurDefinitie( Wit   , Zwart , Wit  , Wit  );
+
+
+
+(*------- Definities voor zetgeneratie ------------------*)
+TYPE
+	AantalGzetten = SHORTCARD; (* max 256 zetten *)
+	StellingPtr   = POINTER TO Stelling;
+	GenZrec = RECORD
+		Aantal: AantalGzetten;
+		Sptr  : StellingPtr; (* m.z. array of stelling *)
+	END;
+
+
+
+(*------- Kontrole procedures voor opbouw database ------*)
+PROCEDURE IsGeomIllegaal(S: Stelling): BOOLEAN;
+PROCEDURE IsKKschaak	(S: Stelling): BOOLEAN;
+PROCEDURE IsSchaak		(S: Stelling): BOOLEAN;
+
+
+(*------- Zetten genereren ------------------------------*)
+PROCEDURE GenZ    (S: Stelling): GenZrec;
+PROCEDURE GenZsort(S: Stelling): GenZrec;
+
+
+(* Het volgende is tijdelijk hier ondergebracht ---------*)
+
+(*------- Info over stukken/velden ----------------------*)
+TYPE
+	BordCoord   = SHORTCARD [1..8];
+	StukInfoRec = RECORD
+		Veld   : Veld;
+		X, Y   : BordCoord;
+		Kleur  : BOOLEAN;
+		StukAfk: CHAR;
+	END;
+	AsciiVeld = ARRAY[0..1] OF CHAR;
+	
+
+(*------- Info over stukken/velden -----------------------*)
+PROCEDURE VeldToAscii(V: Veld): AsciiVeld;
+PROCEDURE AsciiToVeld(A: AsciiVeld): Veld;
+PROCEDURE GetStukInfo(S: Stelling; Nr: StukNummer): StukInfoRec;
+
+
+
+END Gen.

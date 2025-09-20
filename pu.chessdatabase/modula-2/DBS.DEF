@@ -1,0 +1,55 @@
+DEFINITION MODULE Dbs;
+
+FROM AlgDef IMPORT StukNummer;
+
+
+CONST
+	DftDbsNaam = 'KDKT.Dbs';
+	DftRptFreq = 4096;	
+
+
+TYPE
+	Veld         = SHORTCARD [0..077H];
+	ResType      = (Illegaal, Gewonnen, Remise, Verloren);
+	VeldArr      = ARRAY StukNummer OF Veld;
+	AantalZetten = SHORTCARD;
+	ReportArray	 = ARRAY ResType OF LONGINT;
+	ReportProc   = PROCEDURE(ReportArray);
+
+    Stelling= RECORD
+    	CASE : BOOLEAN OF
+        |	TRUE : WK, ZK, s3, s4: Veld;
+        |	FALSE: Velden        : VeldArr;
+        END;
+        AanZet        : BOOLEAN;
+        Resultaat     : ResType;
+        Aantal        : AantalZetten;
+        Schaak        : BOOLEAN;
+    END;
+    PassProc = PROCEDURE(Stelling);
+    PassType = (MarkeerWit, MarkeerZwart, WitEnZwart);
+
+
+(*------- Rapportage ---------------*)
+PROCEDURE ClearTellers();
+PROCEDURE GetTellers(): ReportArray;
+PROCEDURE SetReport(Freq: CARDINAL; R: ReportProc);
+
+
+(*------- Lezen en schrijven -------*)
+PROCEDURE Put(S: Stelling);
+PROCEDURE Get(VAR S: Stelling);
+PROCEDURE FreeRecord(S: Stelling);
+
+
+(*------- Bewerkingen op de hele database ------*)
+PROCEDURE Name  (Naam: ARRAY OF CHAR);
+PROCEDURE Create();
+PROCEDURE Open  ();
+PROCEDURE Close ();
+
+(*------- Passes over de database ---------------*)
+PROCEDURE Pass(T: PassType; P: PassProc);
+
+
+END Dbs.

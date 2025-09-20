@@ -1,0 +1,23 @@
+DEFINITION MODULE NewZgen;
+
+IMPORT Dbs;
+
+TYPE
+	AantalGzetten = SHORTCARD; (* max 256 zetten *)
+	StellingPtr   = POINTER TO Dbs.Stelling;
+	GenZrec = RECORD
+		Aantal: AantalGzetten;
+		Sptr  : StellingPtr;
+	END;
+
+
+(*------- Kontrole procedures voor opbouw database ------*)
+PROCEDURE IsKKschaak	(S: Dbs.Stelling): BOOLEAN;
+PROCEDURE IsSchaak		(S: Dbs.Stelling): BOOLEAN;
+
+
+(*------- Zetten genereren ------------------------------*)
+PROCEDURE GenZ          (S: Dbs.Stelling): GenZrec;
+
+
+END NewZgen.
