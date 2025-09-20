@@ -1,0 +1,20 @@
+DEFINITION MODULE Display;
+
+FROM Window IMPORT Color;
+
+CONST
+	WitVeldKleur   = Cyan;
+	ZwartVeldKleur = Blue;
+	WitStukKleur   = White;
+	ZwartStukKleur = Black;
+
+
+(*------- Display procedures --*)
+PROCEDURE WrGenZet();
+PROCEDURE WrDeskTop();
+
+(*------- Desktop ------------------*)
+PROCEDURE SetDeskTop(Nr: SHORTCARD; On: BOOLEAN);
+
+END Display.
+

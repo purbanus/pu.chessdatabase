@@ -12,8 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import pu.chessdatabase.bo.Book;
-import pu.chessdatabase.bo.RandomAlphabetic;
-import pu.chessdatabase.bo.RandomNumeric;
+import pu.chessdatabase.util.RandomAlphabetic;
+import pu.chessdatabase.util.RandomNumeric;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;

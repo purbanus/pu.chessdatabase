@@ -1,0 +1,73 @@
+DEFINITION MODULE Partij;
+
+IMPORT Dbs, Gen;
+FROM AlgDef IMPORT StukNummer;
+
+
+TYPE
+	PlyNummer     = SHORTCARD; (* kan naar .MOD *)
+	HeleZetNummer = SHORTCARD[1..130];
+	
+	VanNaarType = RECORD
+		Van, Naar: Dbs.Veld;
+	END;
+	
+	EindeType   = (NogNiet, Mat, Pat);
+	                                       (* 01234567890123456789012345 *)
+	PlyStr      = ARRAY [0.. 7] OF CHAR;   (* Ke1-e2+                    *)
+	ZetNrStr    = ARRAY [0.. 3] OF CHAR;   (*  12                        *)
+	HeleZetStr  = ARRAY [0..20] OF CHAR;   (*  12. Ke1-e2+ Ke7-e6+       *)
+	ResultaatStr= ARRAY [0..11] OF CHAR;   (* Mat in xxx                 *)
+	ResultaatRec= RECORD
+		Res1, Res2: ResultaatStr;
+	END;
+	
+	PartijZetStr    = ARRAY HeleZetNummer OF HeleZetStr;
+	PartijZetStrPtr = POINTER TO PartijZetStr;
+	VooruitRec  = RECORD
+		ErIsVooruit: BOOLEAN;
+		Start      : HeleZetNummer;
+		Halverwege : BOOLEAN;
+	END;
+	PartijReport = RECORD
+		ErZijnZetten : BOOLEAN;
+		AantalZetten : HeleZetNummer;
+		Vooruit      : VooruitRec;
+		PartijZetten : PartijZetStrPtr;
+	END;
+	
+	GenReport = RECORD
+		AantalZetten: HeleZetNummer;
+		GenZetten   : PartijZetStrPtr;
+	END;
+	
+	BordCoord   = Gen.BordCoord;
+	StukInfoRec = Gen.StukInfoRec;
+
+
+(*------- Info over de partij en over zetten --------------------*)
+PROCEDURE IsBegonnen(): BOOLEAN;
+PROCEDURE IsLegaal(VN: VanNaarType): BOOLEAN;
+PROCEDURE IsEindePartij(): EindeType;
+PROCEDURE IsLegaleStelling(S: Dbs.Stelling): BOOLEAN;
+
+(*------- Nieuw spel beginnen -----------------------------------*)
+PROCEDURE NewGame(StartS: Dbs.Stelling);
+
+(*------- Zetten ------------------------------------------------*)
+PROCEDURE ZetVooruit(): BOOLEAN;
+PROCEDURE ZetTerug(): BOOLEAN;
+PROCEDURE Zet(VN: VanNaarType): BOOLEAN;
+PROCEDURE ZetStelling(S: Dbs.Stelling): BOOLEAN;
+PROCEDURE Bedenk(): BOOLEAN;
+
+(*------- Rapportage ---------------------------------------------*)
+PROCEDURE CurPlyToStr(): PlyStr;
+PROCEDURE ResToStr(): ResultaatRec;
+PROCEDURE CurZetNrToStr(): ZetNrStr;
+PROCEDURE PartijToStr(): PartijReport;
+PROCEDURE GenToStr(Max: HeleZetNummer): GenReport;
+PROCEDURE GetStand(): Dbs.Stelling;
+PROCEDURE GetStukInfo(S: Dbs.Stelling; StukNr: StukNummer): StukInfoRec;
+
+END Partij.

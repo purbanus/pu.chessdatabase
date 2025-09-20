@@ -1,0 +1,66 @@
+DEFINITION MODULE Win;
+
+FROM Window IMPORT WinType, Color;
+
+CONST
+    NormalFG		= Yellow;
+    NormalBG		= Black;
+
+    CacheFG		    = NormalFG;
+    CacheBG		    = NormalBG;
+
+    BouwFG		    = NormalFG;
+    BouwBG		    = NormalBG;
+
+	MsgFG		    = White;
+	MsgBG		    = Red;
+
+	BordFG          = Black;
+	BordBG          = Cyan;
+	
+	AanZetFG        = Black;
+	AanZetBG        = Cyan;
+	
+	ResultaatFG     = White;
+	ResultaatBG     = Blue;
+	
+	PartijVerloopFG = Yellow;
+	PartijVerloopBG = Black;
+	
+	GenZetFG        = Yellow;
+	GenZetBG        = Black;
+	
+	BesteZettenFG   = Green;
+	BesteZettenBG   = Black;
+
+	StatusFG        = Black;
+	StatusBG        = Cyan;
+
+
+TYPE
+	ColorPair = RECORD
+		F, B: Color;
+	END;
+
+
+VAR
+	CacheWin	       : WinType;
+	BouwWin		       : WinType;
+	Bord               : WinType;
+	BordAchtergrond    : WinType;
+	AanZet             : WinType;
+	Resultaat          : WinType;
+	PartijVerloop      : WinType;
+	GenZet             : WinType;
+	BesteZetten        : WinType;
+	Status             : WinType;
+	
+
+
+(* Zie Mylib\StdWin !! *)
+PROCEDURE ErrMsg(Msg: ARRAY OF CHAR);
+PROCEDURE Message(m1, m2: ARRAY OF CHAR);
+PROCEDURE CloseMessage();
+PROCEDURE GetJN(Prompt: ARRAY OF CHAR): CHAR;
+
+END Win.

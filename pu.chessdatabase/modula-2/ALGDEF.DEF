@@ -1,0 +1,18 @@
+DEFINITION MODULE AlgDef;
+
+(*
+===================================================================================
+		Algemene definities voor alle modules
+===================================================================================
+*)
+
+CONST
+	MaxStukken = 4;
+	Wit   = MIN(BOOLEAN);
+	Zwart = MAX(BOOLEAN);
+
+TYPE
+	StukNummer = SHORTCARD[1..MaxStukken];
+
+		
+END AlgDef.

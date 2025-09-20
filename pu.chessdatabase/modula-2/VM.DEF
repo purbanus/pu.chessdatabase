@@ -1,0 +1,42 @@
+(*$M Dbs*) (* Code segment *)
+DEFINITION MODULE VM;
+
+(*
+******************************************************************************
+Systeem: Chess Data base
+Module : VM - Virtual memory manager
+Doel   : Implementeren van een virtual memory systeem voor de chess
+         data base. Alle lees- en schrijfbewerkingen op de data base
+         gaan door VM, die kijkt of het record nog in zijn cache zit.
+         Een record is een byte, en de database bestaat uit 5,12 Mrecords.
+******************************************************************************
+*)
+
+TYPE
+    WKveld      = SHORTCARD [0..9];
+    Veld        = SHORTCARD [0..63];
+    Stelling    = RECORD
+        WK      : WKveld;
+        ZK      : Veld;
+        s3, s4  : Veld;
+        AanZet  : BOOLEAN;
+    END;
+    DbsRec = SHORTCARD;
+    FileNaam = ARRAY[0..64] OF CHAR;
+
+
+(*-------- Lezen en schrijven -----------*)
+PROCEDURE (*$N*) Get (S: Stelling): DbsRec;
+PROCEDURE (*$N*) Put (S: Stelling; Rec: DbsRec);
+PROCEDURE (*$N*) FreeRecord(S: Stelling);
+PROCEDURE (*$N*) Flush();
+PROCEDURE (*$N*) IOresult():CARDINAL;
+
+
+(*--------- Initialisatie van de database ----*)
+PROCEDURE (*$N*) Create(Naam: ARRAY OF CHAR); (* Opnieuw beginnen *)
+PROCEDURE (*$N*) Open  (Naam: ARRAY OF CHAR); (* Openen voor gebruik *)
+PROCEDURE (*$N*) Close ();                    (* Sluiten *)
+
+
+END VM.
