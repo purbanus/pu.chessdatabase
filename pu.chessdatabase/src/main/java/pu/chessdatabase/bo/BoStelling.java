@@ -7,14 +7,24 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
+/**
+ * public static final String [] Notatie = new String [] {
+	"a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1", "??", "??", "??", "??", "??", "??", "??", "??",
+	"a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2", "??", "??", "??", "??", "??", "??", "??", "??",
+	"a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3", "??", "??", "??", "??", "??", "??", "??", "??",
+	"a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4", "??", "??", "??", "??", "??", "??", "??", "??",
+	"a5", "b5", "c5", "d5", "e5", "f5", "g5", "h5", "??", "??", "??", "??", "??", "??", "??", "??",
+	"a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6", "??", "??", "??", "??", "??", "??", "??", "??",
+	"a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7", "??", "??", "??", "??", "??", "??", "??", "??",
+	"a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"
+};
 
+ */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-@ToString
 public class BoStelling
 {
 /**
@@ -23,13 +33,44 @@ public class BoStelling
         |	FALSE: Velden        : VeldArr;
  */
 private final boolean StellingType = true;
-private int WK;
-private int ZK;
-private int S3;
-private int S4;
-private boolean AanZet;
-private ResultaatType Resultaat;
-private int AantalZetten; // Was SHORTCARD, een 8 bits unsigned int
-private boolean Schaak;
-
+private int wk;
+private int zk;
+private int s3;
+private int s4;
+private boolean aanZet;
+private ResultaatType resultaat;
+private int aantalZetten; // Was SHORTCARD, een 8 bits unsigned int
+private boolean schaak;
+@Override
+public String toString()
+{
+	StringBuilder sb = new StringBuilder();
+	sb.append( "WK=" ).append( Integer.toHexString( wk ) )
+	.append( " ZK=" ).append( Integer.toHexString( zk ) )
+	.append( " S3=" ).append( Integer.toHexString( s3 ) )
+	.append( " S4=" ).append( Integer.toHexString( s4 ) )
+	.append( " AanZet=" ).append( aanZet == false ? "W" : "Z" )
+	.append( " Resultaat=" ).append( resultaat )
+	.append( " AantalZetten=" ).append( aantalZetten )
+	.append( " Schaak=" ).append( schaak ).append( "\n" );
+	for ( int rij = 7; rij >= 0; rij-- )
+	{
+		if ( rij < 8 )
+		{
+			for ( int kol = 0; kol < 8; kol++ )
+			{
+				int veld = 16 * rij + kol;
+				String veldString;
+				if ( veld == wk ) veldString = "WK";
+				else if ( veld == zk ) veldString = "ZK";
+				else if ( veld == s3 ) veldString = "WD";
+				else if ( veld == s4 ) veldString = "ZT";
+				else veldString = "..";
+				sb.append( veldString ).append( " " );
+			}
+		}
+		sb.append( "\n" );
+	}
+	return sb.toString();
+}
 }

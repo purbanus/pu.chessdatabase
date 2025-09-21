@@ -301,17 +301,17 @@ END Cardinaliseer;
  */
 public VMStelling Cardinaliseer( BoStelling aStelling )
 {
-	int Okt = OktTabel[aStelling.getWK()];
+	int Okt = OktTabel[aStelling.getWk()];
 	if ( Okt == 0 )
 	{
-		throw new RuntimeException( "Foutief oktant in Dbs.Cardinaliseer voor WK op " + Integer.toHexString( aStelling.getWK() ) );
+		throw new RuntimeException( "Foutief oktant in Dbs.Cardinaliseer voor WK op " + Integer.toHexString( aStelling.getWk() ) );
 	}
 	VMStelling vmStelling = VMStelling.builder()
-		.WK( TrfWK[TrfTabel[Okt][aStelling.getWK()]] )
-		.ZK( TrfTabel[Okt][aStelling.getZK()] )
+		.wk( TrfWK[TrfTabel[Okt][aStelling.getWk()]] )
+		.zk( TrfTabel[Okt][aStelling.getZk()] )
 		.s3( TrfTabel[Okt][aStelling.getS3()] )
 		.s4( TrfTabel[Okt][aStelling.getS4()] )
-		.AanZet( aStelling.isAanZet() )
+		.aanZet( aStelling.isAanZet() )
 		.build();
 	return vmStelling;
 }
@@ -617,12 +617,12 @@ void markeerWitPass( PassProc aPassProc )
 	boStelling.setAanZet( AlgDef.Wit );
 	for ( int ZK = 0; ZK < 64; ZK++ )
 	{
-		vmStelling.setZK( ZK );
-		boStelling.setZK( CvtStuk[ZK] );
+		vmStelling.setZk( ZK );
+		boStelling.setZk( CvtStuk[ZK] );
 		for ( int WK = 0; WK < 10; WK++ )
 		{
-			vmStelling.setWK( WK );
-			boStelling.setWK( CvtWK[WK] );
+			vmStelling.setWk( WK );
+			boStelling.setWk( CvtWK[WK] );
 			Pass34( boStelling, vmStelling, aPassProc );
 		}
 	}
@@ -658,12 +658,12 @@ void markeerZwartPass( PassProc aPassProc )
 	boStelling.setAanZet( AlgDef.Zwart );
 	for ( int WK = 0; WK < 10; WK++ )
 	{
-		vmStelling.setWK( WK );
-		boStelling.setWK( CvtWK[WK] );
+		vmStelling.setWk( WK );
+		boStelling.setWk( CvtWK[WK] );
 		for ( int ZK = 0; ZK < 64; WK++ )
 		{
-			vmStelling.setZK( ZK );
-			boStelling.setZK( CvtStuk[ZK] );
+			vmStelling.setZk( ZK );
+			boStelling.setZk( CvtStuk[ZK] );
 			Pass34( boStelling, vmStelling, aPassProc );
 		}
 	}
@@ -712,14 +712,14 @@ void markeerWitEnZwartPass( PassProc aPassProc )
 {
 	VMStelling vmStelling = new VMStelling();
 	BoStelling boStelling = new BoStelling();
-	vmStelling.setWK( 0 );
-	while ( vmStelling.getWK() < 10 )
+	vmStelling.setWk( 0 );
+	while ( vmStelling.getWk() < 10 )
 	{
-		boStelling.setWK( CvtWK[vmStelling.getWK()] );
-		vmStelling.setZK( 0 );
-		while ( vmStelling.getZK() < 64 )
+		boStelling.setWk( CvtWK[vmStelling.getWk()] );
+		vmStelling.setZk( 0 );
+		while ( vmStelling.getZk() < 64 )
 		{
-			boStelling.setZK( CvtStuk[vmStelling.getZK()] );
+			boStelling.setZk( CvtStuk[vmStelling.getZk()] );
 			vmStelling.setS3( 0 );
 			while ( vmStelling.getS3() < 64 )
 			{
@@ -745,9 +745,9 @@ void markeerWitEnZwartPass( PassProc aPassProc )
 				}
 				vmStelling.setS3( vmStelling.getS3() + 1 );
 			}
-			vmStelling.setZK( vmStelling.getZK() + 1 );
+			vmStelling.setZk( vmStelling.getZk() + 1 );
 		}
-		vmStelling.setWK( vmStelling.getWK() + 1 );
+		vmStelling.setWk( vmStelling.getWk() + 1 );
 	}
 }
 /**

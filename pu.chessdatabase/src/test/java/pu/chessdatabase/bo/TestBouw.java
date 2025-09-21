@@ -90,10 +90,10 @@ public void testIsIllegaal()
 	//IsGeomIllegaal wordt al getest in TestGen. Wenemen nu een willekeurige illegale stelling
 	BoStelling boStelling;
 	boStelling = BoStelling.builder()
-		.WK( 0x05 )
-		.ZK( 0x05 )
-		.S3( 0x15 )
-		.S4( 0x16 )
+		.wk( 0x05 )
+		.zk( 0x05 )
+		.s3( 0x15 )
+		.s4( 0x16 )
 		.build();
 	bouw.isIllegaal( boStelling );
 	

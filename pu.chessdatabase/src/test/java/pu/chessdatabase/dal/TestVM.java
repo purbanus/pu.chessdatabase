@@ -71,6 +71,7 @@ private Page createPageWithAll( byte aValue )
 	}
 	return new Page( entries);
 }
+@SuppressWarnings( "unused" )
 private void writePage0WithAllOnes()
 {
 	writePageWithAll(0L, 1, (byte)1 );
@@ -169,9 +170,9 @@ private void checkIfAllDatabaseEntriesAreZero() throws IOException
     {
         for ( int ZK = vm.Veld.getMinimum(); ZK < vm.Veld.getMaximum() + 1; ZK++ )
         {
-            for ( int AanZet = 0; AanZet < 2; AanZet++ )
+            for ( int aanZet = 0; aanZet < 2; aanZet++ )
             {
-                PageDescriptor pageDescriptor = vm.PDT[WK][ZK][AanZet];
+                PageDescriptor pageDescriptor = vm.PDT[WK][ZK][aanZet];
 //                pageDescriptor.setCacheNummer( 1 );
 //                vm.Cache[1].setVuil( true );
         		vm.Database.seek( pageDescriptor.getSchijfAdres() );
@@ -198,9 +199,9 @@ public void testInzPDT()
 	{
 		for ( int ZK = 0; ZK < 64; ZK++ )
 		{
-			for ( int AanZet = 0; AanZet < 2; AanZet++ )
+			for ( int aanZet = 0; aanZet < 2; aanZet++ )
 			{
-				PageDescriptor pageDescriptor = vm.PDT[WK][ZK][AanZet];
+				PageDescriptor pageDescriptor = vm.PDT[WK][ZK][aanZet];
 				assertThat( pageDescriptor.getWaar(), is( Lokatie.OpSchijf ) );
 				assertThat( pageDescriptor.getSchijfAdres(), is( Adres ) );
 				assertThat( pageDescriptor.getCacheNummer(), is( Integer.MAX_VALUE ) );
@@ -355,13 +356,13 @@ public void testGetPage()
 		.schijfAdres( pageNumber * vm.PageSize )
 		.build();
 	VMStelling vmStelling = VMStelling.builder()
-		.WK( 0x04 )
-		.ZK( 0x31 )
+		.wk( 0x04 )
+		.zk( 0x31 )
 		.s3( 0x00 )
 		.s4( 0x07 )
-		.AanZet( false )
+		.aanZet( false )
 		.build();
-	vm.PDT[vmStelling.getWK()][vmStelling.getZK()][vmStelling.isAanZet()? 1 : 0] = pageDescriptor;
+	vm.PDT[vmStelling.getWk()][vmStelling.getZk()][vmStelling.isAanZet()? 1 : 0] = pageDescriptor;
 
 	Page page = vm.GetPage( vmStelling, true );
 	assertThat( isAll( page.getPage(), value ), is( true ) );
@@ -384,13 +385,13 @@ public void testGetPageNotDirtyAndInRam()
 		.schijfAdres( pageNumber * vm.PageSize )
 		.build();
 	VMStelling vmStelling = VMStelling.builder()
-		.WK( 0x04 )
-		.ZK( 0x31 )
+		.wk( 0x04 )
+		.zk( 0x31 )
 		.s3( 0x00 )
 		.s4( 0x07 )
-		.AanZet( false )
+		.aanZet( false )
 		.build();
-	vm.PDT[vmStelling.getWK()][vmStelling.getZK()][vmStelling.isAanZet()? 1 : 0] = pageDescriptor;
+	vm.PDT[vmStelling.getWk()][vmStelling.getZk()][vmStelling.isAanZet()? 1 : 0] = pageDescriptor;
 
 	Page page = vm.GetPage( vmStelling, false );
 	assertThat( isAll( page.getPage(), value ), is( true ) );
@@ -413,13 +414,13 @@ public void testGet()
 		.schijfAdres( pageNumber * vm.PageSize )
 		.build();
 	VMStelling vmStelling = VMStelling.builder()
-		.WK( 0x04 )
-		.ZK( 0x31 )
+		.wk( 0x04 )
+		.zk( 0x31 )
 		.s3( 0x00 )
 		.s4( 0x07 )
-		.AanZet( false )
+		.aanZet( false )
 		.build();
-	vm.PDT[vmStelling.getWK()][vmStelling.getZK()][vmStelling.isAanZet()? 1 : 0] = pageDescriptor;
+	vm.PDT[vmStelling.getWk()][vmStelling.getZk()][vmStelling.isAanZet()? 1 : 0] = pageDescriptor;
 
 	byte dbsRec = vm.Get( vmStelling );
 	assertThat( dbsRec, is( value ) );
@@ -439,13 +440,13 @@ public void testPut()
 		.schijfAdres( pageNumber * vm.PageSize )
 		.build();
 	VMStelling vmStelling = VMStelling.builder()
-		.WK( 0x04 )
-		.ZK( 0x31 )
+		.wk( 0x04 )
+		.zk( 0x31 )
 		.s3( 0x00 )
 		.s4( 0x07 )
-		.AanZet( false )
+		.aanZet( false )
 		.build();
-	vm.PDT[vmStelling.getWK()][vmStelling.getZK()][vmStelling.isAanZet()? 1 : 0] = pageDescriptor;
+	vm.PDT[vmStelling.getWk()][vmStelling.getZk()][vmStelling.isAanZet()? 1 : 0] = pageDescriptor;
 
 	byte dbsRec = 0x55;
 	vm.Put( vmStelling, dbsRec );
@@ -467,11 +468,11 @@ public void testFreeRecord()
 		.schijfAdres( pageNumber * vm.PageSize )
 		.build();
 	VMStelling vmStelling = VMStelling.builder()
-		.WK( 0x03 )
-		.ZK( 0x29 )
+		.wk( 0x03 )
+		.zk( 0x29 )
 		.s3( 0x01 )
 		.s4( 0x17 )
-		.AanZet( false )
+		.aanZet( false )
 		.build();
 	CacheEntry cacheEntry = CacheEntry.builder()
 		.Generatie( 15554 )
@@ -480,7 +481,7 @@ public void testFreeRecord()
 		.Vuil( true )
 		.build();
 	vm.Cache[pageDescriptor.getCacheNummer()] = cacheEntry;
-	vm.PDT[vmStelling.getWK()][vmStelling.getZK()][vmStelling.isAanZet()? 1 : 0] = pageDescriptor;
+	vm.PDT[vmStelling.getWk()][vmStelling.getZk()][vmStelling.isAanZet()? 1 : 0] = pageDescriptor;
 
 	vm.FreeRecord( vmStelling );
 	assertThat( cacheEntry.getGeneratie(), is( 0L ) );
@@ -557,18 +558,18 @@ public void testFlushWithSomePagesPresentAndVuil()
 
 	// @@NOG Lees de eerste twee paginas en check of die allemaal 1 zijn
 	VMStelling vmStelling = VMStelling.builder()
-		.WK( 0x00 )
-		.ZK( 0x00 )
+		.wk( 0x00 )
+		.zk( 0x00 )
 		.s3( 0x01 )
 		.s4( 0x17 )
-		.AanZet( false )
+		.aanZet( false )
 		.build();
 	Page newPage = vm.GetPage( vmStelling, false );
-	assertThat( isAllOne( page.getPage() ), is( true ) );
+	assertThat( isAllOne( newPage.getPage() ), is( true ) );
 	
-	vmStelling.setZK( 1 );
+	vmStelling.setAanZet( true );
 	newPage = vm.GetPage( vmStelling, false );
-	assertThat( isAllOne( page.getPage() ), is( true ) );
+	assertThat( isAllOne( newPage.getPage() ), is( true ) );
 }
 @Test
 public void testCloseWithNoDatabesePresent()

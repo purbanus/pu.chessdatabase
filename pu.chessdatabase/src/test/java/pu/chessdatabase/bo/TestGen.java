@@ -8,10 +8,11 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class TestGen
 {
-Gen gen = new Gen();
+@Autowired private Gen gen = new Gen();
 
 @Test
 public void testMaakBordLeeg()
@@ -67,10 +68,10 @@ public void testVulStukTabel()
 public void testZetBordOp()
 {
 	BoStelling stelling = BoStelling.builder()
-		.WK( 5 )
-		.ZK( 6 )
-		.S3( 7 )
-		.S4( 8 )
+		.wk( 5 )
+		.zk( 6 )
+		.s3( 7 )
+		.s4( 8 )
 		.build();
 	gen.ZetBordOp( stelling );
 	assertThat( gen.Bord[5], is( 1 ) );
@@ -90,10 +91,10 @@ public void testZetBordOp()
 public void testClrBord()
 {
 	BoStelling stelling = BoStelling.builder()
-		.WK( 5 )
-		.ZK( 6 )
-		.S3( 7 )
-		.S4( 8 )
+		.wk( 5 )
+		.zk( 6 )
+		.s3( 7 )
+		.s4( 8 )
 		.build();
 	gen.ZetBordOp( stelling );
 	gen.ClrBord( stelling );
@@ -106,38 +107,38 @@ public void testClrBord()
 public void testIsGeomIllegaal()
 {
 	BoStelling stelling = BoStelling.builder()
-		.WK( 5 )
-		.ZK( 6 )
-		.S3( 7 )
-		.S4( 8 )
+		.wk( 5 )
+		.zk( 6 )
+		.s3( 7 )
+		.s4( 8 )
 		.build();
 	assertThat( gen.IsGeomIllegaal( stelling ), is( false ) );
 	stelling = BoStelling.builder()
-		.WK( 5 )
-		.ZK( 5 )
-		.S3( 7 )
-		.S4( 8 )
+		.wk( 5 )
+		.zk( 5 )
+		.s3( 7 )
+		.s4( 8 )
 		.build();
 	assertThat( gen.IsGeomIllegaal( stelling ), is( true ) );
 	stelling = BoStelling.builder()
-		.WK( 5 )
-		.ZK( 6 )
-		.S3( 7 )
-		.S4( 7 )
+		.wk( 5 )
+		.zk( 6 )
+		.s3( 7 )
+		.s4( 7 )
 		.build();
 	assertThat( gen.IsGeomIllegaal( stelling ), is( true ) );
 	stelling = BoStelling.builder()
-		.WK( 5 )
-		.ZK( 6 )
-		.S3( 5 )
-		.S4( 7 )
+		.wk( 5 )
+		.zk( 6 )
+		.s3( 5 )
+		.s4( 7 )
 		.build();
 	assertThat( gen.IsGeomIllegaal( stelling ), is( false ) );
 	stelling = BoStelling.builder()
-		.WK( 5 )
-		.ZK( 6 )
-		.S3( 7 )
-		.S4( 5 )
+		.wk( 5 )
+		.zk( 6 )
+		.s3( 7 )
+		.s4( 5 )
 		.build();
 	assertThat( gen.IsGeomIllegaal( stelling ), is( true ) );
 }
@@ -146,23 +147,23 @@ public void testIsKKSchaak()
 {
 	//Zie Gen.java voor een (paar) coordinaten, na Notatie
 	BoStelling stelling = BoStelling.builder()
-		.WK( 0x11 )
-		.ZK( 0x27 )
+		.wk( 0x11 )
+		.zk( 0x27 )
 		.build();
 	assertThat( gen.isKKSchaak( stelling ), is( false ) );
 	stelling = BoStelling.builder()
-		.WK( 0x11 )
-		.ZK( 0x00 )
+		.wk( 0x11 )
+		.zk( 0x00 )
 		.build();
 	assertThat( gen.isKKSchaak( stelling ), is( true ) );
 	stelling = BoStelling.builder()
-		.WK( 0x11 )
-		.ZK( 0x10 )
+		.wk( 0x11 )
+		.zk( 0x10 )
 		.build();
 	assertThat( gen.isKKSchaak( stelling ), is( true ) );
 	stelling = BoStelling.builder()
-		.WK( 0x11 )
-		.ZK( 0x21 )
+		.wk( 0x11 )
+		.zk( 0x21 )
 		.build();
 	assertThat( gen.isKKSchaak( stelling ), is( true ) );
 }
@@ -171,11 +172,11 @@ public void testIsKKSchaak()
 public void testIsSchaakDoorStuk()
 {
 	BoStelling stelling = BoStelling.builder()
-		.WK( 0x11 )
-		.ZK( 0x27 )
-		.S3( 0x76 )
-		.S4( 0x33 )
-		.AanZet( AlgDef.Zwart )
+		.wk( 0x11 )
+		.zk( 0x27 )
+		.s3( 0x76 )
+		.s4( 0x33 )
+		.aanZet( AlgDef.Zwart )
 		.build();
 	gen.ZetBordOp( stelling );
 	assertThat( gen.isSchaakDoorStuk( gen.StukTabel[4], 0x11, 0x33 ), is( false ) );
@@ -183,11 +184,11 @@ public void testIsSchaakDoorStuk()
 
 	// T links
 	stelling = BoStelling.builder()
-		.WK( 0x11 )
-		.ZK( 0x27 )
-		.S3( 0x76 )
-		.S4( 0x10 )
-		.AanZet( AlgDef.Zwart )
+		.wk( 0x11 )
+		.zk( 0x27 )
+		.s3( 0x76 )
+		.s4( 0x10 )
+		.aanZet( AlgDef.Zwart )
 		.build();
 	gen.ZetBordOp( stelling );
 	assertThat( gen.isSchaakDoorStuk( gen.StukTabel[4], 0x11, 0x10 ), is( true ) );
@@ -195,11 +196,11 @@ public void testIsSchaakDoorStuk()
 
 	// T uiterst rechts
 	stelling = BoStelling.builder()
-		.WK( 0x11 )
-		.ZK( 0x27 )
-		.S3( 0x76 )
-		.S4( 0x17 )
-		.AanZet( AlgDef.Zwart )
+		.wk( 0x11 )
+		.zk( 0x27 )
+		.s3( 0x76 )
+		.s4( 0x17 )
+		.aanZet( AlgDef.Zwart )
 		.build();
 	gen.ZetBordOp( stelling );
 	assertThat( gen.isSchaakDoorStuk( gen.StukTabel[4], 0x11, 0x17 ), is( true ) );
@@ -207,11 +208,11 @@ public void testIsSchaakDoorStuk()
 
 	// T nog steeds uiterst rechts, maar D ertussen
 	stelling = BoStelling.builder()
-		.WK( 0x11 )
-		.ZK( 0x27 )
-		.S3( 0x15 )
-		.S4( 0x17 )
-		.AanZet( AlgDef.Zwart )
+		.wk( 0x11 )
+		.zk( 0x27 )
+		.s3( 0x15 )
+		.s4( 0x17 )
+		.aanZet( AlgDef.Zwart )
 		.build();
 	gen.ZetBordOp( stelling );
 	assertThat( gen.isSchaakDoorStuk( gen.StukTabel[4], 0x11, 0x17 ), is( false ) );
@@ -219,11 +220,11 @@ public void testIsSchaakDoorStuk()
 
 	// Check of Z schaak staat
 	stelling = BoStelling.builder()
-		.WK( 0x11 )
-		.ZK( 0x27 )
-		.S3( 0x20 )
-		.S4( 0x77 )
-		.AanZet( AlgDef.Wit )
+		.wk( 0x11 )
+		.zk( 0x27 )
+		.s3( 0x20 )
+		.s4( 0x77 )
+		.aanZet( AlgDef.Wit )
 		.build();
 	gen.ZetBordOp( stelling );
 	assertThat( gen.isSchaakDoorStuk( gen.StukTabel[3], 0x27, 0x20 ), is( true ) );
@@ -278,11 +279,11 @@ public void testAsciiToVeld()
 public void testGetStukInfo()
 {
 	BoStelling stelling = BoStelling.builder()
-		.WK( 0x11 )
-		.ZK( 0x27 )
-		.S3( 0x76 )
-		.S4( 0x33 )
-		.AanZet( AlgDef.Zwart )
+		.wk( 0x11 )
+		.zk( 0x27 )
+		.s3( 0x76 )
+		.s4( 0x33 )
+		.aanZet( AlgDef.Zwart )
 		.build();
 	assertThat( gen.GetStukInfo( stelling, 1 ).getVeld(), is( 0x11 ) );
 	assertThat( gen.GetStukInfo( stelling, 1 ).getX(), is( 2 ) );
