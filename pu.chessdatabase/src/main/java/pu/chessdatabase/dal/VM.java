@@ -478,7 +478,7 @@ END GetPage;
 Page GetPage( VMStelling aStelling, boolean aMaakVuil )
 {
 	aStelling.checkStelling();
-	PageDescriptor pageDescriptor = PDT[aStelling.getWK()][aStelling.getZK()][aStelling.isAanZet()? 1 : 0];
+	PageDescriptor pageDescriptor = PDT[aStelling.getWk()][aStelling.getZk()][aStelling.isAanZet()? 1 : 0];
 	if ( pageDescriptor.getWaar() != Lokatie.InRAM )
 	{
 		Report( pageDescriptor, aStelling );
@@ -565,7 +565,7 @@ public void FreeRecord( VMStelling aStelling )
 	// En na de clear, page en pageDescriptor leegmaken?
 	// - PD niet, die is permanent
 	aStelling.checkStelling();
-	PageDescriptor PD = PDT[aStelling.getWK()][aStelling.getZK()][aStelling.isAanZet() ? 1 : 0];
+	PageDescriptor PD = PDT[aStelling.getWk()][aStelling.getZk()][aStelling.isAanZet() ? 1 : 0];
 	if ( PD.getWaar() == Lokatie.InRAM )
 	{
 		PageOut( PD ); // Checkt of de page vuil is
@@ -728,20 +728,20 @@ public void Create( String aNaam )
     //Window.Clear();
     CreateFile( aNaam );
     Open( aNaam );
-    for ( int WK = WKveld.getMinimum(); WK < WKveld.getMaximum() + 1; WK++ )
+    for ( int wk = WKveld.getMinimum(); wk < WKveld.getMaximum() + 1; wk++ )
     {
-        for ( int ZK = Veld.getMinimum(); ZK < Veld.getMaximum() + 1; ZK++ )
+        for ( int zk = Veld.getMinimum(); zk < Veld.getMaximum() + 1; zk++ )
         {
             for ( int AanZet = 0; AanZet < 2; AanZet++ )
             {
             	VMStelling stelling = VMStelling.builder()
-            		.WK( WK )
-            		.ZK( ZK )
+            		.wk( wk )
+            		.zk( zk )
             		.s3( 0 )
             		.s4( 0 )
-            		.AanZet( AanZet == 0 ? false : true )
+            		.aanZet( AanZet == 0 ? false : true )
             		.build();
-                PD = PDT[WK][ZK][AanZet];
+                PD = PDT[wk][zk][AanZet];
                 PD.setCacheNummer( 1 );
                 Cache[1].setVuil( true );
                 Report( PD, stelling );

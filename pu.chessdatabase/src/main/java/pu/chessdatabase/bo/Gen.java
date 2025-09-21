@@ -145,13 +145,13 @@ public void ZetBordOp( BoStelling aStelling )
 	// eerst de stukken, dan kunnen ze eventueel uitgeveegd worden door de koningen 
 	Bord[aStelling.getS3()] = 3;
 	Bord[aStelling.getS4()] = 4;
-	Bord[aStelling.getWK()] = 1;
-	Bord[aStelling.getZK()] = 2;
+	Bord[aStelling.getWk()] = 1;
+	Bord[aStelling.getZk()] = 2;
 }
 /**
 PROCEDURE ClrBord(S: Dbs.Stelling);
 BEGIN
-	Bord[S.WK]:=Leeg;
+	Bord[S.Wk]:=Leeg;
 	Bord[S.ZK]:=Leeg;
 	Bord[S.s3]:=Leeg;
 	Bord[S.s4]:=Leeg;
@@ -165,8 +165,8 @@ public void ClrBord( BoStelling aStelling )
 {
 	Bord[aStelling.getS3()] = Leeg;
 	Bord[aStelling.getS4()] = Leeg;
-	Bord[aStelling.getWK()] = Leeg;
-	Bord[aStelling.getZK()] = Leeg;
+	Bord[aStelling.getWk()] = Leeg;
+	Bord[aStelling.getZk()] = Leeg;
 }
 /**
 PROCEDURE IsGeomIllegaal(S: Dbs.Stelling): BOOLEAN;
@@ -186,11 +186,11 @@ END IsGeomIllegaal;
  */
 public boolean IsGeomIllegaal( BoStelling S )
 {
-	if ( ( S.getWK() == S.getZK() ) || ( S.getS3() == S.getS4()     ) ) return true;
-	if ( ( S.getWK() == S.getS3() ) && ( Kleuren[3] != AlgDef.Wit   ) ) return true;
-	if ( ( S.getWK() == S.getS4() ) && ( Kleuren[4] != AlgDef.Wit   ) ) return true;
-	if ( ( S.getZK() == S.getS3() ) && ( Kleuren[3] != AlgDef.Zwart ) ) return true;
-	if ( ( S.getZK() == S.getS4() ) && ( Kleuren[4] != AlgDef.Zwart ) ) return true;
+	if ( ( S.getWk() == S.getZk() ) || ( S.getS3() == S.getS4()     ) ) return true;
+	if ( ( S.getWk() == S.getS3() ) && ( Kleuren[3] != AlgDef.Wit   ) ) return true;
+	if ( ( S.getWk() == S.getS4() ) && ( Kleuren[4] != AlgDef.Wit   ) ) return true;
+	if ( ( S.getZk() == S.getS3() ) && ( Kleuren[3] != AlgDef.Zwart ) ) return true;
+	if ( ( S.getZk() == S.getS4() ) && ( Kleuren[4] != AlgDef.Zwart ) ) return true;
 	return false;
 }
 /**
@@ -214,7 +214,7 @@ public boolean isKKSchaak( BoStelling S )
 {
 	for ( int x = 0; x < 8; x++ )
 	{
-		if ( S.getZK() == S.getWK() + Krichting[x] )
+		if ( S.getZk() == S.getWk() + Krichting[x] )
 		{
 			return true;
 		}
@@ -307,7 +307,7 @@ END IsSchaak;
  */
 public boolean CheckSchaakDoorStuk( BoStelling aStelling, Stuk aStuk, int aKVeld, int aSVeld )
 {
-	if ( ( aSVeld != aStelling.getWK() ) && ( aSVeld != aStelling.getZK() ) && ( aStuk.isKleur() != aStelling.isAanZet() ) )
+	if ( ( aSVeld != aStelling.getWk() ) && ( aSVeld != aStelling.getZk() ) && ( aStuk.isKleur() != aStelling.isAanZet() ) )
 	{
 		///int SVeld = aStelling.getS3();
 		if ( isSchaakDoorStuk( aStuk, aKVeld, aSVeld ) )
@@ -324,7 +324,7 @@ public boolean CheckSchaakDoorStuk( BoStelling aStelling, Stuk aStuk, int aKVeld
 public boolean isSchaak( BoStelling aStelling )
 {
 	ZetBordOp( aStelling );
-	int KVeld = aStelling.isAanZet() == AlgDef.Wit ? aStelling.getWK() : aStelling.getZK();
+	int KVeld = aStelling.isAanZet() == AlgDef.Wit ? aStelling.getWk() : aStelling.getZk();
 	if ( CheckSchaakDoorStuk( aStelling, StukTabel[3], KVeld, aStelling.getS3() ) )
 	{
 		return true;
@@ -374,11 +374,11 @@ void AddZet( BoStelling aStelling, int aStukNr, int Naar, ZetSoort aZsoort, int 
 		// Je gaat er hier van uit dat s3 wit is en s4 zwart
 		if ( aStelling.getS3() == Naar )
 		{
-			aStelling.setS3( aStelling.getWK() );
+			aStelling.setS3( aStelling.getWk() );
 		}
 		else if ( aStelling.getS4() == Naar )
 		{
-			aStelling.setS3( aStelling.getWK() );
+			aStelling.setS3( aStelling.getWk() );
 		}
 	}
 	//------- Sjouw geslagen stukken mee bij koningszetten -----------
@@ -396,8 +396,8 @@ void AddZet( BoStelling aStelling, int aStukNr, int Naar, ZetSoort aZsoort, int 
 	//------ Verzet het stuk ---------
 	switch ( aStukNr )
 	{
-		case 1: aStelling.setWK( Naar ); break;
-		case 2: aStelling.setZK( Naar ); break;
+		case 1: aStelling.setWk( Naar ); break;
+		case 2: aStelling.setZk( Naar ); break;
 		case 3: aStelling.setS3( Naar ); break;
 		case 4: aStelling.setS4( Naar ); break;
 	}
@@ -515,14 +515,14 @@ public GenZRec GenZ( BoStelling aStelling )
 	//-------- Koningszetten --------
 	if ( aStelling.isAanZet() == AlgDef.Wit )
 	{
-		Sveld = aStelling.getWK();
-		Kveld = aStelling.getWK();
+		Sveld = aStelling.getWk();
+		Kveld = aStelling.getWk();
 		GenZPerStuk( aStelling, Kveld, Kveld, Sveld, GZ );
 	}
 	else
 	{
-		Sveld = aStelling.getZK();
-		Kveld = aStelling.getZK();
+		Sveld = aStelling.getZk();
+		Kveld = aStelling.getZk();
 		GenZPerStuk( aStelling, 2, Kveld, Sveld, GZ );
 	}
 	//--------- Stukzetten ----------
@@ -642,8 +642,8 @@ public StukInfo GetStukInfo( BoStelling aStelling, int aStukNummer )
 	int veld = -1;
 	switch ( aStukNummer )
 	{
-		case 1: veld = aStelling.getWK(); break;
-		case 2: veld = aStelling.getZK(); break;
+		case 1: veld = aStelling.getWk(); break;
+		case 2: veld = aStelling.getZk(); break;
 		case 3: veld = aStelling.getS3(); break;
 		case 4: veld = aStelling.getS4(); break;
 	}

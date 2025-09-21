@@ -8,12 +8,13 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import pu.chessdatabase.util.Vector;
 
 public class TestDbs
 {
-Dbs dbs = new Dbs(); // @@NOG Auto
+@Autowired private Dbs dbs = new Dbs();
 
 @Test
 public void testResultaatRange()
@@ -31,6 +32,11 @@ public void testClearTellers()
 		assertThat( dbs.Rpt[x], is( 0L ) );
 	}
 	assertThat( dbs.RptTeller, is( 0 ) );
+}
+@Test
+public void testUpdateTellers()
+{
+	// @@NOG
 }
 @Test
 public void testCreateTrfTabel()
@@ -55,7 +61,6 @@ public void testCreateTrfTabel()
 			dbs.TrfTabel[oktant][oudVeld] = newVeld;
 		}
 	}
-
 }
 //@Test
 public void printTrfTabel()
@@ -75,6 +80,87 @@ public void printTrfTabel()
 		System.out.println();
 	}
 }
+@Test
+public void testCardinaliseer()
+{
+	// @@NOG
+}
+@Test
+public void testPut()
+{
+	// @@NOG
+}
+@Test
+public void testGet()
+{
+	// @@NOG
+}
+@Test
+public void testGetDirect()
+{
+	// @@NOG
+}
+@Test
+public void testFreeRecord()
+{
+	// @@NOG
+}
+@Test
+public void testName()
+{
+	// @@NOG
+}
+@Test
+public void testCreate()
+{
+	// @@NOG
+}
+@Test
+public void testOpen()
+{
+	// @@NOG
+}
+@Test
+public void testClose()
+{
+	// @@NOG
+}
+@Test
+public void testDelete()
+{
+	// @@NOG
+}
+@Test
+public void testPass34()
+{
+	// @@NOG
+}
+@Test
+public void testMarkeerWitPass()
+{
+	// @@NOG
+}
+@Test
+public void testMarkeerZwartPass()
+{
+	// @@NOG
+}
+@Test
+public void testMarkeerWitEnZwartPass()
+{
+	// @@NOG
+}
+@Test
+public void testPass()
+{
+	// @@NOG
+}
+
+
+
+
+
+
 /*
 public static final int [] OktTabel = {
    1,1,1,1,2,2,2,2,0,0,0,0,0,0,0,0,
