@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class BoStelling
+public class BoStelling implements Cloneable
 {
 public static BoStelling fromVmStelling( VMStelling aVmStelling )
 {
@@ -38,10 +38,6 @@ public static BoStelling fromVmStelling( VMStelling aVmStelling )
 		.s4( Dbs.CvtStuk[aVmStelling.getS4()] )
 		.aanZet( aVmStelling.isAanZet() )
 		.build();
-}
-public BoStelling clone()
-{
-	return new BoStelling( wk, zk, s3, s4, aanZet, resultaat, aantalZetten, schaak );
 }
 /**
  * CASE : BOOLEAN OF
@@ -57,6 +53,19 @@ private boolean aanZet;
 private ResultaatType resultaat;
 private int aantalZetten; // Was SHORTCARD, een 8 bits unsigned int
 private boolean schaak;
+
+@Override
+public BoStelling clone()
+{
+	try
+	{
+		return (BoStelling) super.clone();
+	}
+	catch ( CloneNotSupportedException e )
+	{
+		throw new RuntimeException( e );
+	}
+}
 @Override
 public String toString()
 {
