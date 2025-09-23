@@ -369,25 +369,105 @@ public void testPass34()
 	page = vm.GetPage( vmStelling, false );
 	assertThat( TestHelper.isAll( page.getPage(), (byte)0xff ), is( true ) );
 }
+void set0x0b( BoStelling aBoStelling )
+{
+	aBoStelling.setResultaat( ResultaatType.Gewonnen );
+	aBoStelling.setAantalZetten( 0x0b );
+	dbs.Put( aBoStelling );
+}
 @Test
 public void testMarkeerWitPass()
 {
-	// @@NOG
+	dbs.markeerWitPass( this::set0x0b );
+	dbs.flush();
+	
+	// De even pagina's moeten nu allmaal 0x0b zijn, oftewel alle pagina's met wit aan zet
+	VMStelling vmStelling = new VMStelling();
+	Page page;
+	for ( int wk = 0; wk < 10; wk++)
+	{
+		vmStelling.setWk( wk );
+		for ( int zk = 0; zk < 64; zk++ )
+		{
+			vmStelling.setZk( zk );
+			vmStelling.setAanZet( false );
+			page = vm.GetPage( vmStelling, false );
+			assertThat( TestHelper.isAll( page.getPage(), (byte)0x0b ), is( true ) );
+			vmStelling.setAanZet( true );
+			page = vm.GetPage( vmStelling, false );
+			assertThat( TestHelper.isAll( page.getPage(), (byte)0x00 ), is( true ) );
+		}
+	}
+}
+
+void set0x11( BoStelling aBoStelling )
+{
+	aBoStelling.setResultaat( ResultaatType.Gewonnen );
+	aBoStelling.setAantalZetten( 0x11 );
+	dbs.Put( aBoStelling );
 }
 @Test
 public void testMarkeerZwartPass()
 {
-	// @@NOG
+	dbs.markeerZwartPass( this::set0x11 );
+	dbs.flush();
+	
+	// De even pagina's moeten nu allmaal 0x11 zijn, oftewel alle pagina's met zwart aan zet
+	VMStelling vmStelling = new VMStelling();
+	Page page;
+	for ( int wk = 0; wk < 10; wk++ )
+	{
+		vmStelling.setWk( wk );
+		for ( int zk = 0; zk < 64; zk++ )
+		{
+			vmStelling.setZk( zk );
+			vmStelling.setAanZet( false );
+			page = vm.GetPage( vmStelling, false );
+			assertThat( TestHelper.isAll( page.getPage(), (byte)0x00 ), is( true ) );
+			vmStelling.setAanZet( true );
+			page = vm.GetPage( vmStelling, false );
+			assertThat( TestHelper.isAll( page.getPage(), (byte)0x11 ), is( true ) );
+		}
+	}
+}
+void set0x34( BoStelling aBoStelling )
+{
+	aBoStelling.setResultaat( ResultaatType.Gewonnen );
+	aBoStelling.setAantalZetten( 0x34 );
+	dbs.Put( aBoStelling );
 }
 @Test
 public void testMarkeerWitEnZwartPass()
 {
-	// @@NOG
+	dbs.markeerWitEnZwartPass( this::set0x34 );
+	dbs.flush();
+	
+	// Alle pagina's moeten nu 0x34 zijn
+	VMStelling vmStelling = new VMStelling();
+	Page page;
+	vmStelling.setAanZet( true );
+	for ( int wk = 0; wk < 10; wk++ )
+	{
+		vmStelling.setWk( wk );
+		for ( int zk = 0; zk < 64; zk++ )
+		{
+			vmStelling.setZk( zk );
+			vmStelling.setAanZet( false );
+			page = vm.GetPage( vmStelling, false );
+			assertThat( TestHelper.isAll( page.getPage(), (byte)0x34 ), is( true ) );
+			vmStelling.setAanZet( true );
+			page = vm.GetPage( vmStelling, false );
+			assertThat( TestHelper.isAll( page.getPage(), (byte)0x34 ), is( true ) );
+		}
+	}
 }
 @Test
 public void testPass()
 {
-	// @@NOG
+	dbs.Pass( PassType.MarkeerWit, this::set0x0b );
+	dbs.Pass( PassType.MarkeerZwart, this::set0x0b );
+	dbs.Pass( PassType.WitEnZwart, this::set0x0b );
+	// Die markeer-methodes zijn hierboven al getest, we checken hier alleen of de aanroepjes goed gaan
 }
 
 

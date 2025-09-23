@@ -672,7 +672,7 @@ void markeerZwartPass( PassProc aPassProc )
 	{
 		vmStelling.setWk( WK );
 		boStelling.setWk( CvtWK[WK] );
-		for ( int ZK = 0; ZK < 64; WK++ )
+		for ( int ZK = 0; ZK < 64; ZK++ )
 		{
 			vmStelling.setZk( ZK );
 			boStelling.setZk( CvtStuk[ZK] );
@@ -787,6 +787,6 @@ public void Pass( PassType aPassType, PassProc aPassProc )
 		case MarkeerZwart: markeerZwartPass( aPassProc ); break;
 		case WitEnZwart: markeerWitEnZwartPass( aPassProc ); break;
 	}
-	Close(); // @@NOG Is dit geen onnodig tijdverlies?
+	Close();
 }
 }
