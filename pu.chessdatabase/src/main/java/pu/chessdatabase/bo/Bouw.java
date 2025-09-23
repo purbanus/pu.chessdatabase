@@ -192,7 +192,7 @@ END IsIllegaal;
  * ------------ Kijk of een stelling illegaal is ---------------
  */
 }
-void isIllegaal( BoStelling aStelling )
+public void isIllegaal( BoStelling aStelling )
 {
 	if ( gen.IsGeomIllegaal( aStelling ) || gen.isKKSchaak( aStelling ) )
 	{

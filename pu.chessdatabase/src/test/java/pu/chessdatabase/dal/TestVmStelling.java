@@ -7,8 +7,6 @@ import java.math.BigInteger;
 
 import org.junit.jupiter.api.Test;
 
-import pu.chessdatabase.bo.BoStelling;
-
 public class TestVmStelling
 {
 @SuppressWarnings( "null" )

@@ -3,11 +3,14 @@ package pu.chessdatabase.bo;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 @Data
@@ -18,8 +21,10 @@ import lombok.ToString;
 @ToString
 public class GenZRec
 {
-private int Aantal;
 @Builder.Default
 private List<BoStelling> Sptr = new ArrayList<>(); // Dit was een StellingPtr, met als commentaar m.z. array of stelling *)
-
+public int getAantal()
+{
+	return Sptr.size();
+}
 }
