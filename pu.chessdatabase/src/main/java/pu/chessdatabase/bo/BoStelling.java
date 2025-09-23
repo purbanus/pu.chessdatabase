@@ -1,6 +1,8 @@
 package pu.chessdatabase.bo;
 
+import pu.chessdatabase.dal.Dbs;
 import pu.chessdatabase.dal.ResultaatType;
+import pu.chessdatabase.dal.VMStelling;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,6 +29,20 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 public class BoStelling
 {
+public static BoStelling fromVmStelling( VMStelling aVmStelling )
+{
+	return builder()
+		.wk( Dbs.CvtWK[aVmStelling.getWk()] )
+		.zk( Dbs.CvtStuk[aVmStelling.getZk()] )
+		.s3( Dbs.CvtStuk[aVmStelling.getS3()] )
+		.s4( Dbs.CvtStuk[aVmStelling.getS4()] )
+		.aanZet( aVmStelling.isAanZet() )
+		.build();
+}
+public BoStelling clone()
+{
+	return new BoStelling( wk, zk, s3, s4, aanZet, resultaat, aantalZetten, schaak );
+}
 /**
  * CASE : BOOLEAN OF
         |	TRUE : WK, ZK, s3, s4: Veld;

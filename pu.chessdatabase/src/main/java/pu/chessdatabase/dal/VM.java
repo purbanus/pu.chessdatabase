@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import org.springframework.stereotype.Service;
+
 import pu.chessdatabase.util.Range;
 
 //import org.apache.commons.lang3.Range;
@@ -19,6 +21,7 @@ Doel   : Implementeren van een virtual memory systeem voor de chess
          Een record is een byte, en de database bestaat uit 5,12 Mrecords.
 ******************************************************************************
  */
+@Service
 public class VM
 {
 // Werd niet gebruikt private static final int recordSize    = 1; // Een byte per record;
@@ -479,7 +482,7 @@ Page GetPage( VMStelling aStelling, boolean aMaakVuil )
 {
 	aStelling.checkStelling();
 	PageDescriptor pageDescriptor = PDT[aStelling.getWk()][aStelling.getZk()][aStelling.isAanZet()? 1 : 0];
-	if ( pageDescriptor.getWaar() != Lokatie.InRAM )
+	if ( pageDescriptor.getWaar() == Lokatie.OpSchijf )
 	{
 		Report( pageDescriptor, aStelling );
 		PageIn( pageDescriptor );
@@ -513,7 +516,7 @@ public byte Get( VMStelling aStelling )
 {
 	aStelling.checkStelling();
     Page page = GetPage( aStelling, false );
-    return page.getPage()[aStelling.getDbsAddress()];
+    return page.getPage()[aStelling.getPositionWithinPage()];
 }
 /**
 PROCEDURE (*$N*) Put(S: Stelling; Rec: DbsRec);
@@ -536,9 +539,10 @@ END Put;
  */
 public void Put( VMStelling aStelling, byte aDbsRec )
 {
-	aStelling.checkStelling();
+	// Dit gebeurt al in GetPage
+	// aStelling.checkStelling();
     Page page = GetPage( aStelling, true );
-    page.getPage()[aStelling.getDbsAddress()] = aDbsRec;
+    page.getPage()[aStelling.getPositionWithinPage()] = aDbsRec;
 }
 /**
 **PROCEDURE (*$N*) FreeRecord(S: Stelling);

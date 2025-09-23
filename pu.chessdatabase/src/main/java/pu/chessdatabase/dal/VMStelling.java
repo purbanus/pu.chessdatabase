@@ -30,7 +30,7 @@ public void checkStelling()
 		throw new RuntimeException( "Dit is geen geldige stelling: " + this );
 	}
 }
-public int getDbsAddress()
+public int getPositionWithinPage()
 {
 	return (getS3() << 6) + getS4();
 }

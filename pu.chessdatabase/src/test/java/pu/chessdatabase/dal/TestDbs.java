@@ -7,15 +7,34 @@ package pu.chessdatabase.dal;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
+import pu.chessdatabase.bo.BoStelling;
+import pu.chessdatabase.bo.Bouw;
 import pu.chessdatabase.util.Vector;
 
+@SpringBootTest
 public class TestDbs
 {
-@Autowired private Dbs dbs = new Dbs();
+@Autowired private Dbs dbs;
+@Autowired private Bouw bouw;
+@Autowired private VM vm;
 
+@BeforeEach
+public void setup()
+{
+	dbs.Name( "Pipo" );
+	dbs.Create(); // Doet ook Open, dus initialiseert de tabellen
+}
+@AfterEach
+public void destroy()
+{
+	dbs.delete();
+}
 @Test
 public void testResultaatRange()
 {
@@ -33,35 +52,102 @@ public void testClearTellers()
 	}
 	assertThat( dbs.RptTeller, is( 0 ) );
 }
+private void doReport( long [] aReportArray )
+{
+	System.out.println( "Dit is een ReportProc" );
+}
+public void doReport2( long [] aReportArray )
+{
+	System.out.println( aReportArray );
+}
+@Test
+public void testSetReport()
+{
+	dbs.SetReport( 5000, this::doReport );
+	assertThat( dbs.RptFreq, is( 5000 ) );
+	// Je kunt lambdas niet vergelijken, beha	lve misschien met Serializable; viond ik overdone
+	//assertThat( dbs.RptProc, is( this::doReport ) );
+}
+
 @Test
 public void testUpdateTellers()
 {
-	// @@NOG
+	dbs.SetReport( 5000, this::doReport );
+	dbs.Rpt = new long [] { 1L, 2L, 3L, 4L };
+	dbs.UpdateTellers( ResultaatType.Gewonnen );
+	assertThat( dbs.Rpt[ResultaatType.Gewonnen.ordinal()], is( 3L ) );
+	assertThat( dbs.RptTeller, is( 1 ) );
 }
+/**
+ * public static final int [] OktTabel = {
+   1,1,1,1,2,2,2,2,0,0,0,0,0,0,0,0,
+   8,1,1,1,2,2,2,3,0,0,0,0,0,0,0,0,
+   8,8,1,1,2,2,3,3,0,0,0,0,0,0,0,0,
+   8,8,8,1,2,3,3,3,0,0,0,0,0,0,0,0,
+   7,7,7,6,5,4,4,4,0,0,0,0,0,0,0,0,
+   7,7,6,6,5,5,4,4,0,0,0,0,0,0,0,0,
+   7,6,6,6,5,5,5,4,0,0,0,0,0,0,0,0,
+   6,6,6,6,5,5,5,5
+};
+ */
 @Test
 public void testCreateTrfTabel()
 {
-	// Laten we beginnen in oktant 1
+	// Laten we beginnen in oktant 1. Alles is identiek behalve dat VMStelling maar 8 kolommen per rij heeft. 
 	int oktant = 1;
-	
-	for ( int rij = 0; rij < 8; rij++ ) // @@NOG rijen?
+	for ( int rij = 0; rij < 8; rij++ )
 	{
-		for ( int kol = 0; kol < 8; kol++ ) // @@NOG kolommen?
+		for ( int kol = 0; kol < 8; kol++ )
 		{
-			Vector Vres = new Vector( kol, rij );
-			Vres = dbs.MatrixTabel[oktant].multiply( Vres );
-			// MatrixTabel[1] = new Matrix( new Vector[] { new Vector( 1, 0), new Vector( 0, 1) }),
-			// Oftewel Matrix (1 0)
-			//                (0 1)
-			// Oftewel de identity matrix
-			Vres = Vres.add( dbs.TranslatieTabel[oktant] );
-			// TranslatieTabel[1] = 	new Vector( 0, 0),
-			int oudVeld = kol + 16 * rij;
-			int newVeld = Vres.get( 0 ) + 8 * Vres.get( 1 );
-			dbs.TrfTabel[oktant][oudVeld] = newVeld;
+			assertThat( dbs.TrfTabel[oktant][kol + 16 * rij], is( kol + 8 * rij ) );
 		}
 	}
+	// Oktant 2 is een spiegeling over de y-as
+	oktant = 2;
+	for ( int rij = 0; rij < 8; rij++ )
+	{
+		for ( int kol = 0; kol < 8; kol++ )
+		{
+			Vector vector = new Vector( kol, rij );
+			Vector resVector = dbs.MatrixTabel[oktant].multiply( vector );
+			resVector = resVector.add( dbs.TranslatieTabel[oktant] );
+			int oudVeld = kol + 16 * rij;
+			int newVeld = resVector.get( 0 ) + 8 * resVector.get( 1 );
+			//System.out.print( Integer.toHexString( oudVeld ) + "->" + Integer.toHexString( newVeld ) + " " );
+			assertThat( dbs.TrfTabel[oktant][oudVeld], is( newVeld ) );
+		}
+		System.out.println();
+	}
 }
+/*
+0 -1 -2 -3 -4 -5 -6 -7 
+8 7 6 5 4 3 2 1 
+16 15 14 13 12 11 10 9 
+24 23 22 21 20 19 18 17 
+32 31 30 29 28 27 26 25 
+40 39 38 37 36 35 34 33 
+48 47 46 45 44 43 42 41 
+56 55 54 53 52 51 50 49 
+
+0->0 1->ffffffff 2->fffffffe 3->fffffffd 4->fffffffc 5->fffffffb 6->fffffffa 7->fffffff9 
+10->8 11->7 12->6 13->5 14->4 15->3 16->2 17->1 
+20->10 21->f 22->e 23->d 24->c 25->b 26->a 27->9 
+30->18 31->17 32->16 33->15 34->14 35->13 36->12 37->11 
+40->20 41->1f 42->1e 43->1d 44->1c 45->1b 46->1a 47->19 
+50->28 51->27 52->26 53->25 54->24 55->23 56->22 57->21 
+60->30 61->2f 62->2e 63->2d 64->2c 65->2b 66->2a 67->29 
+70->38 71->37 72->36 73->35 74->34 75->33 76->32 77->31 
+
+0->7 1->6 2->5 3->4 4->3 5->2 6->1 7->0 
+10->f 11->e 12->d 13->c 14->b 15->a 16->9 17->8 
+20->17 21->16 22->15 23->14 24->13 25->12 26->11 27->10 
+30->1f 31->1e 32->1d 33->1c 34->1b 35->1a 36->19 37->18 
+40->27 41->26 42->25 43->24 44->23 45->22 46->21 47->20 
+50->2f 51->2e 52->2d 53->2c 54->2b 55->2a 56->29 57->28 
+60->37 61->36 62->35 63->34 64->33 65->32 66->31 67->30 
+70->3f 71->3e 72->3d 73->3c 74->3b 75->3a 76->39 77->38 
+
+ */
 //@Test
 public void printTrfTabel()
 {
@@ -69,12 +155,6 @@ public void printTrfTabel()
 	{
 		for ( int x = dbs.Veld.getMinimum(); x < dbs.Veld.getMaximum(); x++ )
 		{
-//			Vres = new Vector( x, y );
-//			Vres = MatrixTabel[oktant].multiply( Vres );
-//			Vres = Vres.add( TranslatieTabel[oktant] );
-//			int oudVeld = x + 16 * y;
-//			int newVeld = Vres.get( 0 ) + 8 * Vres.get( 1 );
-//			TrfTabel[oktant][oudVeld] = newVeld;
 			System.out.print( Integer.toHexString( dbs.TrfTabel[oktant][x] ) + " " );
 		}
 		System.out.println();
@@ -83,57 +163,211 @@ public void printTrfTabel()
 @Test
 public void testCardinaliseer()
 {
-	// @@NOG
+	BoStelling boStelling = BoStelling.builder()
+		.wk( 0x10 )
+		.zk( 0x12 )
+		.s3( 0x00 )
+		.s4( 0x13 )
+		.aanZet( false )
+		.build();
+	VMStelling vmStelling = dbs.Cardinaliseer( boStelling );
+	//System.out.println( boStelling );
+	//System.out.println( vmStelling );
+	VMStelling newVmStelling = VMStelling.builder()
+		.wk( 0x01 )
+		.zk( 0x11 )
+		.s3( 0x00 )
+		.s4( 0x19 )
+		.aanZet( false )
+		.build();
+	assertThat( vmStelling, is( newVmStelling ) );
+	
+	boStelling = BoStelling.builder()
+		.wk( 0x06 )
+		.zk( 0x26 )
+		.s3( 0x07 )
+		.s4( 0x27 )
+		.aanZet( false )
+		.build();
+	vmStelling = dbs.Cardinaliseer( boStelling );
+	//System.out.println( boStelling );
+	//System.out.println( vmStelling );
+	newVmStelling = VMStelling.builder()
+		.wk( 0x01 )
+		.zk( 0x11 )
+		.s3( 0x00 )
+		.s4( 0x10 )
+		.aanZet( false )
+		.build();
+	assertThat( vmStelling, is( newVmStelling ) );
 }
 @Test
 public void testPut()
 {
-	// @@NOG
+//	VMillegaal      = 0x0FF;
+//	VMremise        = 0x000;
+//	VMschaak        = 0x080;
+//	VerliesOffset   = 0x080;
+	BoStelling boStelling = BoStelling.builder()
+		.wk( 0x10 )
+		.zk( 0x12 )
+		.s3( 0x00 )
+		.s4( 0x13 )
+		.aanZet( false )
+		.resultaat( ResultaatType.Illegaal )
+		.aantalZetten( 0 )
+		.schaak( false )
+		.build();
+	dbs.Put( boStelling );
+	
+	BoStelling newBoStelling = dbs.Get( boStelling );
+	assertThat( newBoStelling.getResultaat(), is( ResultaatType.Illegaal ) );
+	assertThat( newBoStelling.getAantalZetten(), is( 0 ) );
+	assertThat( newBoStelling.isSchaak(), is( false ) );
+	assertThat( newBoStelling, is( boStelling ) );
+	
+	boStelling = BoStelling.builder()
+		.wk( 0x10 )
+		.zk( 0x12 )
+		.s3( 0x00 )
+		.s4( 0x13 )
+		.aanZet( false )
+		.resultaat( ResultaatType.Remise )
+		.aantalZetten( 0 )
+		.schaak( false )
+		.build();
+	dbs.Put( boStelling );
+	
+	newBoStelling = dbs.Get( boStelling );
+	assertThat( newBoStelling, is( boStelling ) );
+	
+	boStelling = BoStelling.builder()
+		.wk( 0x10 )
+		.zk( 0x12 )
+		.s3( 0x00 )
+		.s4( 0x13 )
+		.aanZet( false )
+		.resultaat( ResultaatType.Gewonnen )
+		.aantalZetten( 13 )
+		.schaak( false )
+		.build();
+	dbs.Put( boStelling );
+	
+	newBoStelling = dbs.Get( boStelling );
+	assertThat( newBoStelling, is( boStelling ) );
+	
+	boStelling = BoStelling.builder()
+		.wk( 0x10 )
+		.zk( 0x12 )
+		.s3( 0x00 )
+		.s4( 0x13 )
+		.aanZet( false )
+		.resultaat( ResultaatType.Verloren )
+		.aantalZetten( 27 )
+		.schaak( false )
+		.build();
+	dbs.Put( boStelling );
+	
+	newBoStelling = dbs.Get( boStelling );
+	assertThat( newBoStelling, is( boStelling ) );
+	newBoStelling = dbs.Get( boStelling );
+	assertThat( newBoStelling, is( boStelling ) );
+	
+	boStelling = BoStelling.builder()
+		.wk( 0x10 )
+		.zk( 0x12 )
+		.s3( 0x00 )
+		.s4( 0x13 )
+		.aanZet( false )
+		.resultaat( ResultaatType.Remise )
+		.aantalZetten( 27 )
+		.schaak( true )
+		.build();
+	dbs.Put( boStelling );
+	
+	newBoStelling = dbs.Get( boStelling );
+	//assertThat( newBoStelling, is( boStelling ) );
+	assertThat( newBoStelling.getResultaat(), is( ResultaatType.Remise ) );
+	assertThat( newBoStelling.getAantalZetten(), is( 0 ) );
+	assertThat( newBoStelling.isSchaak(), is( true ) );
+
 }
 @Test
 public void testGet()
 {
-	// @@NOG
+	// Is hierboven al flink getest
 }
 @Test
 public void testGetDirect()
 {
-	// @@NOG
+	// Is hierboven al flink getest
 }
 @Test
 public void testFreeRecord()
 {
-	// @@NOG
+	BoStelling boStelling = BoStelling.builder()
+		.wk( 0x10 )
+		.zk( 0x12 )
+		.s3( 0x00 )
+		.s4( 0x13 )
+		.aanZet( false )
+		.resultaat( ResultaatType.Verloren )
+		.aantalZetten( 27 )
+		.schaak( false )
+		.build();
+	dbs.Put( boStelling );
+	dbs.FreeRecord( boStelling );
+	// Dit is verder in TestVM al getest
 }
 @Test
 public void testName()
 {
-	// @@NOG
+	dbs.Name( "Mamaloe" );
+	assertThat( dbs.DbsNaam, is( "Mamaloe" ) );
 }
 @Test
 public void testCreate()
 {
-	// @@NOG
+	// Dit is verder in TestVM al getest
 }
 @Test
 public void testOpen()
 {
-	// @@NOG
+	// Dit is verder in TestVM al getest
 }
 @Test
 public void testClose()
 {
-	// @@NOG
+	// Dit is verder in TestVM al getest
 }
 @Test
 public void testDelete()
 {
-	// @@NOG
+	// Dit is verder in TestVM al getest
 }
 @Test
 public void testPass34()
 {
-	// @@NOG
+	BoStelling boStelling = BoStelling.builder()
+		.wk( 0x00 )
+		.zk( 0x00 )
+		.s3( 0x11 )
+		.s4( 0x13 )
+		.aanZet( false )
+		.resultaat( ResultaatType.Gewonnen )
+		.aantalZetten( 13 )
+		.schaak( false )
+		.build();
+	VMStelling vmStelling = dbs.Cardinaliseer( boStelling );
+	dbs.Pass34( boStelling, vmStelling, bouw::isIllegaal );
+	dbs.flush();
+	vmStelling.setAanZet( false );
+	Page page = vm.GetPage( vmStelling, false );
+	assertThat( TestHelper.isAll( page.getPage(), (byte)0xff ), is( true ) );
+	
+	vmStelling.setAanZet( true );
+	page = vm.GetPage( vmStelling, false );
+	assertThat( TestHelper.isAll( page.getPage(), (byte)0xff ), is( true ) );
 }
 @Test
 public void testMarkeerWitPass()

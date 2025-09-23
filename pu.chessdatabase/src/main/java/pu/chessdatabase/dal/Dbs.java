@@ -5,6 +5,7 @@ import pu.chessdatabase.util.Matrix;
 import pu.chessdatabase.util.Range;
 import pu.chessdatabase.util.Vector;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pu.chessdatabase.bo.AlgDef;
@@ -13,11 +14,13 @@ import pu.chessdatabase.bo.BoStelling;
 @Service
 public class Dbs
 {
+@Autowired private VM vm;
+
 public static final int MAX_RESULTAAT_TYPE = 4;
-public static final int VMillegaal      = 0x0FF;
-public static final int VMremise        = 0x000;
-public static final int VMschaak        = 0x080;
-public static final int VerliesOffset   = 0x080;
+public static final byte VMillegaal      = (byte)0xFF;
+public static final byte VMremise        = (byte)0x00;
+public static final byte VMschaak        = (byte)0x80;
+public static final byte VerliesOffset   = (byte)0x80;
 public static final int OKTANTEN = 8;
 
 public static final String DFT_DBS_NAAM = "KDKT.DBS";
@@ -107,9 +110,8 @@ Range OKtant = new Range( 1, OKTANTEN );
 Range OKtant_0 = new Range( 0, OKTANTEN );
 Range ResultaatRange = new Range( 0, 3 );
 
-private VM vm = new VM(); //@@NOG Auto inject want je mag er maar 1 hebben
 int[][] TrfTabel = new int [OKTANTEN + 1][Veld.getMaximum() + 1];
-private String DbsNaam;
+String DbsNaam;
 public long [] Rpt = new long [4];
 long [] ReportArray = new long [4];
 int RptTeller;
@@ -340,17 +342,18 @@ END Put;
  */
 public void Put( BoStelling aStelling )
 {
-	int VMRec = 0; // Is eigenlijk een byte
+	byte VMRec = (byte)0;
 	VMStelling vmStelling = Cardinaliseer( aStelling );
 	switch ( aStelling.getResultaat() )
 	{
-		case Illegaal : VMRec = VMillegaal; break;
-		case Remise   : VMRec = aStelling.isSchaak() ? VMschaak : VMremise; break;
-		case Gewonnen : VMRec = aStelling.getAantalZetten(); break;
-		case Verloren: VMRec = aStelling.getAantalZetten() + VerliesOffset; break;
+		case Illegaal: VMRec = VMillegaal; break;
+		// @@NOG Ook hier: waarom geldt een schaakje als remise???
+		case Remise  : VMRec = aStelling.isSchaak() ? VMschaak : VMremise; break;
+		case Gewonnen: VMRec = (byte)aStelling.getAantalZetten(); break;
+		case Verloren: VMRec = (byte)( aStelling.getAantalZetten() + VerliesOffset ); break;
 	}
 	UpdateTellers( aStelling.getResultaat() );
-	vm.Put( vmStelling, (byte) VMRec );
+	vm.Put( vmStelling, VMRec );
 }
 /**
 PROCEDURE Get(VAR S: Stelling);
@@ -404,9 +407,11 @@ END GetDirect;
 /**
  * ----------- Lezen zonder cardinaliseren -------
  */
+// @@NOG Die parm aBoStelling elimineren en gewoon een verse BoStelling retourneren
+//       Bijv vmStelling.getBoStelling();
 BoStelling GetDirect( VMStelling aVMStelling, BoStelling aBoStelling )
 {
-	int VMrec = vm.Get( aVMStelling );
+	byte VMrec = vm.Get( aVMStelling );
 	aBoStelling.setSchaak( false );
 	if ( VMrec == VMillegaal )
 	{
@@ -420,6 +425,7 @@ BoStelling GetDirect( VMStelling aVMStelling, BoStelling aBoStelling )
 	}
 	else if ( VMrec == VMschaak )
 	{
+		// @@NOG Waarom worden schaakjes als remise gezien?
 		aBoStelling.setResultaat( ResultaatType.Remise );
 		aBoStelling.setAantalZetten( 0 );
 		aBoStelling.setSchaak( true );
@@ -515,6 +521,10 @@ public void Open()
 	}
 	vm.Open( DbsNaam );
 }
+public void flush()
+{
+	vm.Flush();
+}
 /**
 PROCEDURE Close();
 BEGIN
@@ -568,14 +578,16 @@ public void Pass34( BoStelling aBoStelling, VMStelling aVmStelling, PassProc aPa
 	while ( aVmStelling.getS3() <= 63 )
 	{
 		aBoStelling.setS3( CvtStuk[aVmStelling.getS3()] );
+		aVmStelling.setS4( 0 );
 		while ( aVmStelling.getS4() <= 63 )
 		{
-			// @@NOG CHECK is aBoStelling veranderd of moet je boStelling gebruiken? 
+			aBoStelling.setS4( CvtStuk[aVmStelling.getS4()] ); // Nu wel
+
 			@SuppressWarnings( "unused" )
+			// @@NOG CHECK is aBoStelling veranderd of moet je boStelling gebruiken? 
 			BoStelling boStelling = GetDirect( aVmStelling, aBoStelling ); // aBoStelling.s4 maakt nog niet uit
 			if ( aBoStelling.getResultaat() == ResultaatType.Remise )
 			{
-				aBoStelling.setS4( CvtStuk[aVmStelling.getS4()] ); // Nu wel
 				aPassProc.doPass( aBoStelling );
 			}
 			aVmStelling.setS4( aVmStelling.getS4() + 1 );
