@@ -308,6 +308,8 @@ public VMStelling Cardinaliseer( BoStelling aStelling )
 	{
 		throw new RuntimeException( "Foutief oktant in Dbs.Cardinaliseer voor WK op " + Integer.toHexString( aStelling.getWk() ) );
 	}
+//	int trfWk = TrfTabel[Okt][aStelling.getWk()];
+//	int trftrfWk = TrfWK[9];
 	VMStelling vmStelling = VMStelling.builder()
 		.wk( TrfWK[TrfTabel[Okt][aStelling.getWk()]] )
 		.zk( TrfTabel[Okt][aStelling.getZk()] )
