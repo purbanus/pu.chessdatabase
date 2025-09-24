@@ -11,11 +11,11 @@ import lombok.ToString;
 @ToString
 public class Stuk
 {
-private int [] Richting;
-private int AtlRicht;
-private boolean Meer;
 private StukType Soort;
 private boolean Kleur;
 private int Knummer;
 private char StukAfk;
+private int AtlRicht;
+private boolean Meer;
+private int [] Richting;
 }
