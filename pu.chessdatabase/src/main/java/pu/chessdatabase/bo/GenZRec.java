@@ -24,4 +24,12 @@ public int getAantal()
 {
 	return Sptr.size();
 }
+public void add( BoStelling aBoStelling )
+{
+	Sptr.add( aBoStelling );
+}
+public void addAll( GenZRec aGenZRec )
+{
+	Sptr.addAll( aGenZRec.getSptr() );
+}
 }
