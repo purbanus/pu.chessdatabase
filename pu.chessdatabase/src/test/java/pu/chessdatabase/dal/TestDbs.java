@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import pu.chessdatabase.bo.AlgDef;
 import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Bouw;
 import pu.chessdatabase.util.Vector;
@@ -168,7 +169,7 @@ public void testCardinaliseer()
 		.zk( 0x12 )
 		.s3( 0x00 )
 		.s4( 0x13 )
-		.aanZet( false )
+		.aanZet( AlgDef.Wit )
 		.build();
 	VMStelling vmStelling = dbs.Cardinaliseer( boStelling );
 	//System.out.println( boStelling );
@@ -178,7 +179,7 @@ public void testCardinaliseer()
 		.zk( 0x11 )
 		.s3( 0x00 )
 		.s4( 0x19 )
-		.aanZet( false )
+		.aanZet( AlgDef.Wit )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
 	
@@ -187,7 +188,7 @@ public void testCardinaliseer()
 		.zk( 0x26 )
 		.s3( 0x07 )
 		.s4( 0x27 )
-		.aanZet( false )
+		.aanZet( AlgDef.Wit )
 		.build();
 	vmStelling = dbs.Cardinaliseer( boStelling );
 	//System.out.println( boStelling );
@@ -197,9 +198,27 @@ public void testCardinaliseer()
 		.zk( 0x11 )
 		.s3( 0x00 )
 		.s4( 0x10 )
-		.aanZet( false )
+		.aanZet( AlgDef.Wit )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
+	
+	boStelling = BoStelling.builder()
+		.wk( 0x11 )
+		.zk( 0x27 )
+		.s3( 0x76 )
+		.s4( 0x10 )
+		.aanZet( AlgDef.Wit )
+		.build();
+	vmStelling = dbs.Cardinaliseer( boStelling );
+	newVmStelling = VMStelling.builder()
+		.wk( 0x04 )
+		.zk( 0x17 )
+		.s3( 0x3e )
+		.s4( 0x08 )
+		.aanZet( AlgDef.Wit )
+		.build();
+	assertThat( vmStelling, is( newVmStelling ) );
+
 }
 @Test
 public void testPut()
