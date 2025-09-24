@@ -336,7 +336,6 @@ public boolean CheckSchaakDoorStuk( BoStelling aStelling, Stuk aStuk, int aKonin
 	{
 		if ( isSchaakDoorStuk( aStuk, aKoningsVeld, aStukVeld ) )
 		{
-			ClrBord( aStelling );
 			return true;
 		}
 	}
@@ -355,12 +354,15 @@ public boolean isSchaak( BoStelling aStelling )
 	int KVeld = aStelling.isAanZet() == AlgDef.Wit ? aStelling.getWk() : aStelling.getZk();
 	if ( CheckSchaakDoorStuk( aStelling, StukTabel[3], KVeld, aStelling.getS3() ) )
 	{
+		ClrBord( aStelling );
 		return true;
 	}
 	if ( CheckSchaakDoorStuk( aStelling, StukTabel[4], KVeld, aStelling.getS4() ) )
 	{
+		ClrBord( aStelling );
 		return true;
 	}
+	ClrBord( aStelling );
 	return false;
 }
 /**
@@ -394,6 +396,7 @@ BEGIN
 	END;
 END AddZet;
  */
+// @@NOG geen GenZRec als parm maar gewoon de nieuwe stelling retourneren
 void AddZet( final BoStelling aBoStelling, int aStukNr, int aNaar, ZetSoort aZetsoort, int aKoningsVeld, int aStukVeld, GenZRec aGenZRec )
 {
 	BoStelling boStelling = aBoStelling.clone();
@@ -434,7 +437,7 @@ void AddZet( final BoStelling aBoStelling, int aStukNr, int aNaar, ZetSoort aZet
 	dbs.Get( boStelling );
 	if ( boStelling.getResultaat() != ResultaatType.Illegaal )
 	{
-		aGenZRec.getSptr().add( boStelling );
+		aGenZRec.add( boStelling );
 	}
 }
 /**
@@ -466,8 +469,9 @@ BEGIN
 END GenZperStuk;
 (*$O=*) (* Overflow check *)
  */
-void GenZPerStuk( BoStelling aBoStelling, int aStukNummer, int aKoningsVeld, int aStukVeld, GenZRec aGenZRec )
+GenZRec GenZPerStuk( BoStelling aBoStelling, int aStukNummer, int aKoningsVeld, int aStukVeld )
 {
+	GenZRec genZRec = new GenZRec();
 	Stuk stuk = StukTabel[aStukNummer];
 	for ( int x = 0; x < stuk.getAtlRicht(); x++ )
 	{
@@ -477,7 +481,7 @@ void GenZPerStuk( BoStelling aBoStelling, int aStukNummer, int aKoningsVeld, int
 			while ( veldToBitSetAndBuitenBord( Veld ).equals( Nul ) && Bord[Veld] == Leeg )
 			{
 //				void AddZet( Stelling aStelling, int aStukNr, int Naar, ZetSoort aZsoort, int aKVeld, int aSVeld, GenZRec GZ )
-				AddZet( aBoStelling, aStukNummer, Veld, ZetSoort.Gewoon, aKoningsVeld, aStukVeld, aGenZRec );
+				AddZet( aBoStelling, aStukNummer, Veld, ZetSoort.Gewoon, aKoningsVeld, aStukVeld, genZRec );
 				Veld += stuk.getRichting()[x];
 			}
 		}
@@ -485,17 +489,18 @@ void GenZPerStuk( BoStelling aBoStelling, int aStukNummer, int aKoningsVeld, int
 		{
 			if ( Bord[Veld] == Leeg )
 			{
-				AddZet( aBoStelling, aStukNummer, Veld, ZetSoort.Gewoon, aKoningsVeld, aStukVeld, aGenZRec );
+				AddZet( aBoStelling, aStukNummer, Veld, ZetSoort.Gewoon, aKoningsVeld, aStukVeld, genZRec );
 			}
 			else
 			{
 				if ( StukTabel[Bord[Veld]].isKleur() != aBoStelling.isAanZet() )
 				{
-					AddZet( aBoStelling, aStukNummer, Veld, ZetSoort.SlagZet, aKoningsVeld, aStukVeld, aGenZRec );
+					AddZet( aBoStelling, aStukNummer, Veld, ZetSoort.SlagZet, aKoningsVeld, aStukVeld, genZRec );
 				}
 			}
 		}
 	}
+	return genZRec;
 }
 /**
 PROCEDURE GenZ(S: Dbs.Stelling): GenZrec;
@@ -543,24 +548,30 @@ public GenZRec GenZ( BoStelling aStelling )
 	{
 		stukVeld = aStelling.getWk();
 		koningsVeld = aStelling.getWk();
-		GenZPerStuk( aStelling, koningsVeld, koningsVeld, stukVeld, genZRec );
+		GenZRec genZRecPerStuk = GenZPerStuk( aStelling, 1, koningsVeld, stukVeld );
+		genZRec.addAll( genZRecPerStuk );
 	}
 	else
 	{
 		stukVeld = aStelling.getZk();
 		koningsVeld = aStelling.getZk();
-		GenZPerStuk( aStelling, 2, koningsVeld, stukVeld, genZRec );
+		GenZRec genZRecPerStuk = GenZPerStuk( aStelling, 2, koningsVeld, stukVeld );
+		genZRec.addAll( genZRecPerStuk );
 	}
 	//--------- Stukzetten ----------
 	if ( ( StukTabel[3].isKleur() == aStelling.isAanZet() ) && ( aStelling.getS3() != koningsVeld ) )
 	{
 		stukVeld = aStelling.getS3();
-		GenZPerStuk( aStelling, 3, koningsVeld, stukVeld, genZRec );
+		koningsVeld = aStelling.getWk();
+		GenZRec genZRecPerStuk = GenZPerStuk( aStelling, 3, koningsVeld, stukVeld );
+		genZRec.addAll( genZRecPerStuk );
 	}
 	if ( ( StukTabel[4].isKleur() == aStelling.isAanZet() ) && ( aStelling.getS4() != koningsVeld ) )
 	{
 		stukVeld = aStelling.getS4();
-		GenZPerStuk( aStelling, 4, koningsVeld, stukVeld, genZRec );
+		koningsVeld = aStelling.getZk();
+		GenZRec genZRecPerStuk = GenZPerStuk( aStelling, 4, koningsVeld, stukVeld );
+		genZRec.addAll( genZRecPerStuk );
 	}
 	ClrBord( aStelling );
 	return genZRec;

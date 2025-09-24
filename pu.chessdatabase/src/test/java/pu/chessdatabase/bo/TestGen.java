@@ -90,6 +90,7 @@ public void testVulStukTabel()
 @Test
 public void testZetBordOp()
 {
+	gen.MaakBordLeeg();
 	BoStelling stelling = BoStelling.builder()
 		.wk( 5 )
 		.zk( 6 )
@@ -101,7 +102,7 @@ public void testZetBordOp()
 	assertThat( gen.Bord[6], is( 2 ) );
 	assertThat( gen.Bord[7], is( 3 ) );
 	assertThat( gen.Bord[8], is( 4 ) );
-	for ( int x = 0; x < 4; x++ )
+	for ( int x = 0; x < 5; x++ )
 	{
 		assertThat( gen.Bord[x], is( gen.Leeg ) );
 	}
@@ -109,10 +110,12 @@ public void testZetBordOp()
 	{
 		assertThat( gen.Bord[x], is( gen.Leeg ) );
 	}
+	gen.ClrBord( stelling );
 }
 @Test
 public void testClrBord()
 {
+	gen.MaakBordLeeg();
 	BoStelling stelling = BoStelling.builder()
 		.wk( 5 )
 		.zk( 6 )
@@ -264,19 +267,19 @@ public void testIsSchaakDoorStuk()
 @Test
 public void testCheckSchaakDoorStuk()
 {
-	// Check aStukVeld == aStelling.getWK(), d.w.z. het stuk is geslagen door wit
+	// Check aStukVeld == aStelling.getWK(), d.w.z. het witte stuk is geslagen
 	BoStelling stelling = BoStelling.builder()
 		.wk( 0x11 )
 		.zk( 0x27 )
-		.s3( 0x76 )
-		.s4( 0x11 )
+		.s3( 0x11 )
+		.s4( 0x33 )
 		.aanZet( AlgDef.Zwart )
 		.build();
 	gen.ZetBordOp( stelling );
-	assertThat( gen.CheckSchaakDoorStuk( stelling, gen.StukTabel[4], 0x11, 0x11 ), is( false ) );
+	assertThat( gen.CheckSchaakDoorStuk( stelling, gen.StukTabel[3], 0x11, 0x11 ), is( false ) );
 	gen.ClrBord( stelling );
 
-	// Check aStukVeld == aStelling.getZK(), d.w.z. het stuk is geslagen door zwart
+	// Check aStukVeld == aStelling.getZK(), d.w.z. het zwarte stuk is geslagen
 	stelling = BoStelling.builder()
 		.wk( 0x11 )
 		.zk( 0x27 )
@@ -432,19 +435,17 @@ public void testGenZetPerStuk()
 	dbs.Name( "Pipo" );
 	dbs.Create(); // Doet ook Open, dus initialiseert de tabellen
 
-	BoStelling stelling;
-	GenZRec genZRec;
+	BoStelling boStelling;
 	
-	stelling = BoStelling.builder()
+	boStelling = BoStelling.builder()
 		.wk( 0x11 )
 		.zk( 0x27 )
 		.s3( 0x76 )
 		.s4( 0x33 )
 		.aanZet( AlgDef.Zwart )
 		.build();
-	genZRec = new GenZRec();
-	gen.ZetBordOp( stelling );
-	gen.GenZPerStuk( stelling, 4, 0x27, 0x33, genZRec );
+	gen.ZetBordOp( boStelling );
+	GenZRec genZRec = gen.GenZPerStuk( boStelling, 4, 0x27, 0x33 );
 	assertThat( genZRec.getAantal(), is( 14 ) );
 	assertThat( genZRec.getSptr().get(  0 ).getS4(), is( 0x34 ) );
 	assertThat( genZRec.getSptr().get(  0 ).isAanZet(), is( false ) );
@@ -474,21 +475,20 @@ public void testGenZetPerStuk()
 	assertThat( genZRec.getSptr().get( 12 ).isAanZet(), is( false ) );
 	assertThat( genZRec.getSptr().get( 13 ).getS4(), is( 0x03 ) );
 	assertThat( genZRec.getSptr().get( 13 ).isAanZet(), is( false ) );
-	gen.ClrBord( stelling );
+	gen.ClrBord( boStelling );
 	
-	stelling = BoStelling.builder()
+	boStelling = BoStelling.builder()
 		.wk( 0x11 )
 		.zk( 0x27 )
 		.s3( 0x76 )
 		.s4( 0x77 )
 		.aanZet( AlgDef.Zwart )
 		.build();
-	genZRec = new GenZRec();
-	System.out.println( "In testGenZetPerStuk" );
-	gen.printBord();
-	gen.ZetBordOp( stelling );
-	gen.printBord();
-	gen.GenZPerStuk( stelling, 4, 0x27, 0x77, genZRec );
+	//System.out.println( "In testGenZetPerStuk" );
+	//gen.printBord();
+	gen.ZetBordOp( boStelling );
+	//gen.printBord();
+	genZRec = gen.GenZPerStuk( boStelling, 4, 0x27, 0x77 );
 	assertThat( genZRec.getAantal(), is( 5 ) );
 	assertThat( genZRec.getSptr().get(  0 ).getS4(), is( 0x76 ) );
 	assertThat( genZRec.getSptr().get(  0 ).getS3(), is( 0x11 ) );
@@ -496,7 +496,23 @@ public void testGenZetPerStuk()
 	assertThat( genZRec.getSptr().get(  2 ).getS4(), is( 0x57 ) );
 	assertThat( genZRec.getSptr().get(  3 ).getS4(), is( 0x47 ) );
 	assertThat( genZRec.getSptr().get(  4 ).getS4(), is( 0x37 ) );
-	gen.ClrBord( stelling );
+	gen.ClrBord( boStelling );
+	
+	boStelling = BoStelling.builder()
+		.wk( 0x02 )
+		.zk( 0x00 )
+		.s3( 0x06 )
+		.s4( 0x04 )
+		.aanZet( AlgDef.Wit)
+		.schaak( true )
+		.resultaat( ResultaatType.Remise )
+		.aantalZetten( 0 )
+		.build();
+	gen.ZetBordOp( boStelling );
+	//gen.printBord();
+	genZRec = gen.GenZPerStuk( boStelling, 1, 0x02, 0x02 );
+	assertThat( genZRec.getAantal(), is( 5 ) );
+
 }
 @Test
 public void testGenZet()

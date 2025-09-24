@@ -42,7 +42,7 @@ public String toString()
 	.append( " ZK=" ).append( Integer.toHexString( zk ) )
 	.append( " S3=" ).append( Integer.toHexString( s3 ) )
 	.append( " S4=" ).append( Integer.toHexString( s4 ) )
-	.append( " AanZet=" ).append( aanZet == false ? "W" : "Z" );
+	.append( " AanZet=" ).append( aanZet == false ? "W" : "Z" ).append( "\n" );
 	for ( int rij = 7; rij >= 0; rij-- )
 	{
 		for ( int kol = 0; kol < 8; kol++ )
