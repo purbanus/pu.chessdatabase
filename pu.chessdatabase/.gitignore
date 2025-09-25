@@ -33,5 +33,6 @@ build/
 .vscode/
 
 ### Van mij
-matStellingen.txt
-allematStellingen.txt
+/matstellingen.txt
+/allematstellingen.txt
+../saved/

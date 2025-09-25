@@ -9,7 +9,6 @@ import static org.hamcrest.Matchers.*;
 
 import java.util.ArrayList;
 
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -214,7 +213,7 @@ public void testIsMat()
 .. .. .. .. .. .. .. .. 
 ZK ZT WK .. .. .. .. .. 
 	 */
-		boStelling = BoStelling.builder()
+	boStelling = BoStelling.builder()
 		.wk( 0x02 )
 		.zk( 0x00 )
 		.s3( 0x52 )
@@ -227,6 +226,22 @@ ZK ZT WK .. .. .. .. ..
 	bouw.isMat( boStelling );
 	dbs.Get( boStelling );
 	assertThat( boStelling.isSchaak(), is( true ) );
+	assertThat( boStelling.getResultaat(), is( ResultaatType.Remise ) );
+	assertThat( boStelling.getAantalZetten(), is( 0 ) );
+
+	boStelling = BoStelling.builder()
+		.wk( 0x02 )
+		.zk( 0x00 )
+		.s3( 0x50 )
+		.s4( 0x01 )
+		.aanZet( AlgDef.Zwart )
+		.schaak( true )
+		.resultaat( ResultaatType.Remise )
+		.aantalZetten( 0 )
+		.build();
+	bouw.isMat( boStelling );
+	dbs.Get( boStelling );
+	assertThat( boStelling.isSchaak(), is( false ) );
 	assertThat( boStelling.getResultaat(), is( ResultaatType.Verloren ) );
 	assertThat( boStelling.getAantalZetten(), is( 1 ) );
 }
@@ -270,6 +285,46 @@ public void testTelAlles()
 	}
 	
 }
-
+@Test
+public void testMarkeer()
+{
+	bouw.pass_0();
+	dbs.Open();
+	BoStelling boStelling;
+	
+	// Matstelling: WK=0 ZK=2 S3=0 S4=20 AanZet=W, de ZT geeft schaak & mat
+	boStelling = BoStelling.builder()
+		.wk( 0x00 )
+		.zk( 0x12 )
+		.s3( 0x00 )
+		.s4( 0x21 )
+		.aanZet( AlgDef.Zwart )
+		.schaak( false )
+		.resultaat( ResultaatType.Remise )
+		.aantalZetten( 0 )
+		.build();
+	bouw.markeer( boStelling );
+	boStelling = dbs.Get( boStelling );
+	assertThat( boStelling.isSchaak(), is( false ) );
+	assertThat( boStelling.getResultaat(), is( ResultaatType.Gewonnen ) );
+	assertThat( boStelling.getAantalZetten(), is( 2 ) );
+	
+	boStelling = BoStelling.builder()
+		.wk( 0x10 )
+		.zk( 0x12 )
+		.s3( 0x10 )
+		.s4( 0x21 )
+		.aanZet( AlgDef.Wit )
+		.schaak( false )
+		.resultaat( ResultaatType.Remise )
+		.aantalZetten( 0 )
+		.build();
+	bouw.markeer( boStelling );
+	boStelling = dbs.Get( boStelling );
+	assertThat( boStelling.isSchaak(), is( false ) );
+	assertThat( boStelling.getResultaat(), is( ResultaatType.Verloren ) );
+	assertThat( boStelling.getAantalZetten(), is( 2 ) );
 }
 
+
+}

@@ -334,15 +334,7 @@ public void isMat( BoStelling aBoStelling )
 //		int stukVeld = koningsVeld;
 //		GenZRec genZRec = gen.GenZPerStuk( boStelling, stukNr, koningsVeld, stukVeld );
 		GenZRec genZRec = new GenZRec();
-		try
-		{
-			genZRec = gen.GenZ( boStelling );
-		}
-		catch ( Throwable e )
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		genZRec = gen.GenZ( boStelling );
 		if ( genZRec.getAantal() == 0 )
 		{
 			boStelling.setResultaat( ResultaatType.Verloren );
@@ -557,7 +549,8 @@ void markeer( BoStelling aBoStelling )
 			}
 			case ResultaatType.Gewonnen:
 			{
-				//boStelling.setResultaat( ResultaatType.Verloren );
+				// @@NOG Waarom niet???
+				// boStelling.setResultaat( ResultaatType.Verloren );
 				if ( aantal > maxVerloren )
 				{
 					maxVerloren = aantal;
@@ -575,7 +568,7 @@ void markeer( BoStelling aBoStelling )
 			//$CASES-OMITTED$
 			default:
 			{
-				throw new RuntimeException( "Ongeldige swicht case " + genZRec.getSptr().get( x ).getResultaat() );
+				throw new RuntimeException( "Ongeldige switch case " + genZRec.getSptr().get( x ).getResultaat() );
 			}
 		}
 	}
@@ -583,7 +576,7 @@ void markeer( BoStelling aBoStelling )
 	{
 		if ( boStelling.getResultaat() == ResultaatType.Gewonnen )
 		{
-			boStelling.setAantalZetten( minGewonnen  + 1 );
+			boStelling.setAantalZetten( minGewonnen + 1 );
 		}
 		else
 		{
@@ -640,6 +633,7 @@ public void bouwDatabase( int aStartPass )
 		passNchanges = false;
 		pass_n();
 		passNr++;
+		System.out.println( "Pass: " + passNr );
 	}
 }
 
