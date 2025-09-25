@@ -17,10 +17,10 @@ public class Dbs
 @Autowired private VM vm;
 
 public static final int MAX_RESULTAAT_TYPE = 4;
-public static final byte VMillegaal      = (byte)0xFF;
-public static final byte VMremise        = (byte)0x00;
-public static final byte VMschaak        = (byte)0x80;
-public static final byte VerliesOffset   = (byte)0x80;
+public static final int VMillegaal      = 0xFF;
+public static final int VMremise        = 0x00;
+public static final int VMschaak        = 0x80;
+public static final int VerliesOffset   = 0x80;
 public static final int OKTANTEN = 8;
 
 public static final String DFT_DBS_NAAM = "KDKT.DBS";
@@ -344,15 +344,15 @@ END Put;
  */
 public void Put( BoStelling aStelling )
 {
-	byte VMRec = (byte)0;
+	int VMRec = 0;
 	VMStelling vmStelling = Cardinaliseer( aStelling );
 	switch ( aStelling.getResultaat() )
 	{
 		case Illegaal: VMRec = VMillegaal; break;
 		// @@NOG Ook hier: waarom geldt een schaakje als remise???
 		case Remise  : VMRec = aStelling.isSchaak() ? VMschaak : VMremise; break;
-		case Gewonnen: VMRec = (byte)aStelling.getAantalZetten(); break;
-		case Verloren: VMRec = (byte)( aStelling.getAantalZetten() + VerliesOffset ); break;
+		case Gewonnen: VMRec = aStelling.getAantalZetten(); break;
+		case Verloren: VMRec = aStelling.getAantalZetten() + VerliesOffset; break;
 	}
 	UpdateTellers( aStelling.getResultaat() );
 	vm.Put( vmStelling, VMRec );
@@ -413,7 +413,7 @@ END GetDirect;
 //       Bijv vmStelling.getBoStelling();
 BoStelling GetDirect( VMStelling aVMStelling, BoStelling aBoStelling )
 {
-	byte VMrec = vm.Get( aVMStelling );
+	int VMrec = vm.Get( aVMStelling );
 	aBoStelling.setSchaak( false );
 	if ( VMrec == VMillegaal )
 	{

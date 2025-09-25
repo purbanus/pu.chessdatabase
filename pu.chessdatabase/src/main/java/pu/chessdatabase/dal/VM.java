@@ -24,7 +24,6 @@ Doel   : Implementeren van een virtual memory systeem voor de chess
 @Service
 public class VM
 {
-// Werd niet gebruikt private static final int recordSize    = 1; // Een byte per record;
 static final int CacheSize     = 30;                 // Aantal pagina"s
 @SuppressWarnings( "unused" )
 private static final int CacheSizeDiv2 = CacheSize / 2;      // Voor rapportagescherm
@@ -512,11 +511,12 @@ END Get;
 /**
  *  ------------ Ophalen database record --------------
  */
-public byte Get( VMStelling aStelling )
+public int Get( VMStelling aStelling )
 {
 	aStelling.checkStelling();
     Page page = GetPage( aStelling, false );
-    return page.getPage()[aStelling.getPositionWithinPage()];
+    byte vmRec = page.getPage()[aStelling.getPositionWithinPage()];
+    return Byte.toUnsignedInt( vmRec );
 }
 /**
 PROCEDURE (*$N*) Put(S: Stelling; Rec: DbsRec);
@@ -537,12 +537,13 @@ END Put;
 /**
  * --------- Wegschrijven database record -----------
  */
-public void Put( VMStelling aStelling, byte aDbsRec )
+public void Put( VMStelling aStelling, int aDbsRec )
 {
 	// Dit gebeurt al in GetPage
 	// aStelling.checkStelling();
     Page page = GetPage( aStelling, true );
-    page.getPage()[aStelling.getPositionWithinPage()] = aDbsRec;
+    byte vmRec = (byte)( aDbsRec & 0xff );
+    page.getPage()[aStelling.getPositionWithinPage()] = vmRec;
 }
 /**
 **PROCEDURE (*$N*) FreeRecord(S: Stelling);
