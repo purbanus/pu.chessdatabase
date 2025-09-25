@@ -35,6 +35,28 @@ public void destroy()
 	vm.delete();
 }
 
+@Test
+public void testIntToByte()
+{
+	int x = 0x80;
+//	System.out.println( x );
+//	System.out.println( (byte)x );
+	assertThat( (byte)x, is( (byte)-128 ) ); // Dat is dus niet wat we willen
+	assertThat( (byte)( x & 0xff ), is( (byte)128 ) ); // Dit is beter!
+	x = 250;
+	assertThat( (byte)( x & 0xff ), is( (byte)250 ) ); // Doet het ook
+	assertThat( new Integer( 250 ).byteValue(), is( (byte)250 ) ); // Doet het ook maar is breedsprakig. Bovendien is new integer(n) deprecated
+	assertThat( Integer.valueOf( 250 ).byteValue(), is( (byte)250 ) ); // Is zeer breedsprakig
+}
+@Test
+public void testByteToInt()
+{
+	byte x = (byte) 0x80;
+//	System.out.println( x );
+//	System.out.println( (int)x );
+	assertThat( (int)x, is( -128 ) ); // Dat is dus niet wat we willen
+	assertThat( Byte.toUnsignedInt( x ), is( 128 ) );
+}
 @SuppressWarnings( "unused" )
 private void writePage0WithAllOnes()
 {
@@ -386,8 +408,8 @@ public void testGet()
 		.build();
 	vm.PDT[vmStelling.getWk()][vmStelling.getZk()][vmStelling.isAanZet()? 1 : 0] = pageDescriptor;
 
-	byte dbsRec = vm.Get( vmStelling );
-	assertThat( dbsRec, is( value ) );
+	int dbsRec = vm.Get( vmStelling );
+	assertThat( value, is( (byte)( dbsRec & 0xff ) ) );
 }
 @Test
 public void testPut()
@@ -412,10 +434,10 @@ public void testPut()
 		.build();
 	vm.PDT[vmStelling.getWk()][vmStelling.getZk()][vmStelling.isAanZet()? 1 : 0] = pageDescriptor;
 
-	byte dbsRec = 0x55;
+	int dbsRec = 0x55;
 	vm.Put( vmStelling, dbsRec );
 	Page page = vm.Cache[pageDescriptor.getCacheNummer()].getPagePointer();
-	assertThat( page.getPage()[vmStelling.getPositionWithinPage()], is( dbsRec ) );
+	assertThat( page.getPage()[vmStelling.getPositionWithinPage()], is( (byte)( dbsRec & 0xff ) ) );
 }
 @Test
 public void testFreeRecord()
