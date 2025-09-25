@@ -240,10 +240,11 @@ public void testPut()
 	dbs.Put( boStelling );
 	
 	BoStelling newBoStelling = dbs.Get( boStelling );
+	// Dit moet je niet doen want het is altijd true!!
+	// assertThat( newBoStelling, is( boStelling ) );
 	assertThat( newBoStelling.getResultaat(), is( ResultaatType.Illegaal ) );
 	assertThat( newBoStelling.getAantalZetten(), is( 0 ) );
 	assertThat( newBoStelling.isSchaak(), is( false ) );
-	assertThat( newBoStelling, is( boStelling ) );
 	
 	boStelling = BoStelling.builder()
 		.wk( 0x10 )
@@ -258,7 +259,9 @@ public void testPut()
 	dbs.Put( boStelling );
 	
 	newBoStelling = dbs.Get( boStelling );
-	assertThat( newBoStelling, is( boStelling ) );
+	assertThat( newBoStelling.getResultaat(), is( ResultaatType.Remise ) );
+	assertThat( newBoStelling.getAantalZetten(), is( 0 ) );
+	assertThat( newBoStelling.isSchaak(), is( false ) );
 	
 	boStelling = BoStelling.builder()
 		.wk( 0x10 )
@@ -273,7 +276,9 @@ public void testPut()
 	dbs.Put( boStelling );
 	
 	newBoStelling = dbs.Get( boStelling );
-	assertThat( newBoStelling, is( boStelling ) );
+	assertThat( newBoStelling.getResultaat(), is( ResultaatType.Gewonnen ) );
+	assertThat( newBoStelling.getAantalZetten(), is( 13 ) );
+	assertThat( newBoStelling.isSchaak(), is( false ) );
 	
 	boStelling = BoStelling.builder()
 		.wk( 0x10 )
@@ -288,9 +293,9 @@ public void testPut()
 	dbs.Put( boStelling );
 	
 	newBoStelling = dbs.Get( boStelling );
-	assertThat( newBoStelling, is( boStelling ) );
-	newBoStelling = dbs.Get( boStelling );
-	assertThat( newBoStelling, is( boStelling ) );
+	assertThat( newBoStelling.getResultaat(), is( ResultaatType.Verloren ) );
+	assertThat( newBoStelling.getAantalZetten(), is( 27 ) );
+	assertThat( newBoStelling.isSchaak(), is( false ) );
 	
 	boStelling = BoStelling.builder()
 		.wk( 0x10 )
@@ -305,7 +310,6 @@ public void testPut()
 	dbs.Put( boStelling );
 	
 	newBoStelling = dbs.Get( boStelling );
-	//assertThat( newBoStelling, is( boStelling ) );
 	assertThat( newBoStelling.getResultaat(), is( ResultaatType.Remise ) );
 	assertThat( newBoStelling.getAantalZetten(), is( 0 ) );
 	assertThat( newBoStelling.isSchaak(), is( true ) );
@@ -394,8 +398,14 @@ void set0x0b( BoStelling aBoStelling )
 	aBoStelling.setAantalZetten( 0x0b );
 	dbs.Put( aBoStelling );
 }
+void set0x8b( BoStelling aBoStelling )
+{
+	aBoStelling.setResultaat( ResultaatType.Gewonnen );
+	aBoStelling.setAantalZetten( 0x8b );
+	dbs.Put( aBoStelling );
+}
 @Test
-public void testMarkeerWitPass()
+public void testMarkeerWitPassMet0x0b()
 {
 	dbs.markeerWitPass( this::set0x0b );
 	dbs.flush();
@@ -413,6 +423,30 @@ public void testMarkeerWitPass()
 			page = vm.GetPage( vmStelling, false );
 			assertThat( TestHelper.isAll( page.getPage(), (byte)0x0b ), is( true ) );
 			vmStelling.setAanZet( true );
+			page = vm.GetPage( vmStelling, false );
+			assertThat( TestHelper.isAll( page.getPage(), (byte)0x00 ), is( true ) );
+		}
+	}
+}
+@Test
+public void testMarkeerWitPassMet0x8b()
+{
+	dbs.markeerWitPass( this::set0x8b );
+	dbs.flush();
+	
+	// De even pagina's moeten nu allmaal 0x0b zijn, oftewel alle pagina's met wit aan zet
+	VMStelling vmStelling = new VMStelling();
+	Page page;
+	for ( int wk = 0; wk < 10; wk++)
+	{
+		vmStelling.setWk( wk );
+		for ( int zk = 0; zk < 64; zk++ )
+		{
+			vmStelling.setZk( zk );
+			vmStelling.setAanZet( AlgDef.Wit );
+			page = vm.GetPage( vmStelling, false );
+			assertThat( TestHelper.isAll( page.getPage(), (byte)0x8b ), is( true ) );
+			vmStelling.setAanZet( AlgDef.Zwart );
 			page = vm.GetPage( vmStelling, false );
 			assertThat( TestHelper.isAll( page.getPage(), (byte)0x00 ), is( true ) );
 		}
