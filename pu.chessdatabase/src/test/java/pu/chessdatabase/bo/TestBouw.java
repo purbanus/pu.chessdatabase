@@ -261,29 +261,7 @@ public void testTelAlles()
        Remise    3201556
        Verloren     2194
 	 */
-	bouw.telAllesMetKleur();
-	for ( int x = 0; x < 2; x++ )
-	{
-		for ( int y = 0; y < 4; y++ )
-		{
-			System.out.println( bouw.tellersMetKleur[x][y] );
-		}
-	}
-	//System.out.println( bouw.tellersMetKleur );
-	/* Illegaal met wit aan zet  : 1163970
-	 * Gewonnen met wit aan zet  :       0
-     * Remise met wit aan zet    : 1457029
-     * Verloren met wit aan zet  :    441
-     * Illegaal met zwart aan zet:  875160
-	 * Gewonnen met zwart aan zet:       0
-     * Remise met zwart aan zet  : 1744527
-     * Verloren met zwart aan zet:    1753
-     */
-	for ( int x = 0; x < bouw.matStellingen.size(); x++ )
-	{
-		System.out.println( bouw.matStellingen.get( x ) );
-	}
-	
+	bouw.printAllesMetKleur();
 }
 @Test
 public void testMarkeer()
@@ -324,6 +302,11 @@ public void testMarkeer()
 	assertThat( boStelling.isSchaak(), is( false ) );
 	assertThat( boStelling.getResultaat(), is( ResultaatType.Verloren ) );
 	assertThat( boStelling.getAantalZetten(), is( 2 ) );
+}
+//@Test
+public void buildDeDatabase()
+{
+	bouw.bouwDatabase();
 }
 
 
