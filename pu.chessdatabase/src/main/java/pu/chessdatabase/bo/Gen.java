@@ -5,12 +5,12 @@ import java.util.Comparator;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import pu.chessdatabase.dal.Dbs;
 import pu.chessdatabase.dal.ResultaatType;
 
-@Service
+@Component
 public class Gen
 {
 // Bij Stukken en Kleuren wordt element 0 niet gebruikt
