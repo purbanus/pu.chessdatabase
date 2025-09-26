@@ -4,17 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import pu.chessdatabase.dal.Dbs;
 import pu.chessdatabase.dal.PassType;
 import pu.chessdatabase.dal.ResultaatType;
+import pu.chessdatabase.util.StopWatch;
 
-@Service
+@Component
 public class Bouw
 {
 public static final long MEG = 1048576;
-public static final boolean HOU_STELLINGEN_BIJ = true;
+public static final boolean HOU_STELLINGEN_BIJ = false;
 
 @Autowired private Dbs dbs;
 @Autowired private Gen gen;
@@ -472,7 +473,18 @@ void telAllesMetKleur()
 	resTeller = 0;
 	dbs.Pass( PassType.WitEnZwart, this::telMetKleur );
 }
-
+void printAllesMetKleur()
+{
+	telAllesMetKleur();
+	System.out.println( "Illegaal met wit aan zet  : " + tellersMetKleur[0][0] );
+	System.out.println( "Gewonnen met wit aan zet  : " + tellersMetKleur[0][1] );
+    System.out.println( "Remise met wit aan zet    : " + tellersMetKleur[0][2] );
+    System.out.println( "Verloren met wit aan zet  : " + tellersMetKleur[0][3] );
+    System.out.println( "Illegaal met zwart aan zet: " + tellersMetKleur[1][0] );
+	System.out.println( "Gewonnen met zwart aan zet: " + tellersMetKleur[1][1] );
+    System.out.println( "Remise met zwart aan zet  : " + tellersMetKleur[1][2] );
+    System.out.println( "Verloren met zwart aan zet: " + tellersMetKleur[1][3] );
+}
 /**
  * ================================================================================
 		Deel 4: Markeer stellingen gewonnen of verloren
@@ -522,6 +534,7 @@ END Markeer;
 /**
  * ------- Markeer een stelling gewonnen/verloren -----------
  */
+List<BoStelling> changes = new ArrayList<>();
 void markeer( BoStelling aBoStelling )
 {
 	BoStelling boStelling = aBoStelling.clone();
@@ -582,6 +595,10 @@ void markeer( BoStelling aBoStelling )
 		{
 			boStelling.setAantalZetten( maxVerloren );
 		}
+		if ( HOU_STELLINGEN_BIJ )
+		{
+			changes.add( boStelling );
+		}
 		dbs.Put( boStelling );
 		passNchanges = true;
 	}
@@ -624,17 +641,23 @@ END BouwDataBase;
 /**
  * ---------- Markeer tot er niets meer verandert ------------------
  */
-public void bouwDatabase( int aStartPass )
+public void bouwDatabase()
 {
-	passNr = aStartPass;
+	StopWatch overallTimer = new StopWatch();
+	passNr = 0;
+	pass_0();
 	telAlles();
+	printAllesMetKleur();
 	while ( passNchanges )
 	{
+		StopWatch timer = new StopWatch();
 		passNchanges = false;
 		pass_n();
 		passNr++;
-		System.out.println( "Pass: " + passNr );
+		System.out.println( "Pass: " + passNr + " duurde " + timer.getElapsedMs() );
+		printAllesMetKleur();
 	}
+	System.out.println( "Totaaltijd: " + overallTimer.getElapsedMs() );
 }
 
 void delete()
