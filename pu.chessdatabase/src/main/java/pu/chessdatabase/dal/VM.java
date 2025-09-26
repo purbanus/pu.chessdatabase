@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import pu.chessdatabase.util.Range;
@@ -21,7 +22,7 @@ Doel   : Implementeren van een virtual memory systeem voor de chess
          Een record is een byte, en de database bestaat uit 5,12 Mrecords.
 ******************************************************************************
  */
-@Service
+@Component
 public class VM
 {
 static final int CacheSize     = 30;                 // Aantal pagina"s
