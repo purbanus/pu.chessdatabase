@@ -174,6 +174,10 @@ END IsEindStelling;
  */
 public EindeType isEindStelling( BoStelling aBoStelling )
 {
+	if ( dbs.Get( aBoStelling ).getResultaat() == ResultaatType.Illegaal )
+	{
+		return EindeType.Illegaal;
+	}
 	GenZRec genZRec = gen.GenZ( aBoStelling );
 	if ( genZRec.getAantal() > 0 )
 	{
@@ -209,6 +213,7 @@ public void newGame( BoStelling aStartStelling )
 			.boStelling( boStelling )
 			.Einde( isEindStelling( boStelling ) )
 			.ZetNr( 1 )
+			.vanNaar( VanNaar.ILLEGAL_VAN_NAAR )
 			.build();
 		curPartij.setBegonnen( true );
 	}
@@ -281,11 +286,11 @@ VanNaar stellingToVanNaar( BoStelling aBoStellingVan, BoStelling aBoStellingNaar
 	{
 		return new VanNaar( aBoStellingVan.getZk(), aBoStellingNaar.getZk() );
 	}
-	if ( aBoStellingVan.getS3() != aBoStellingNaar.getS3() )
+	if ( aBoStellingNaar.getS3() != aBoStellingNaar.getWk() && aBoStellingVan.getS3() != aBoStellingNaar.getS3() )
 	{
 		return new VanNaar( aBoStellingVan.getS3(), aBoStellingNaar.getS3() );
 	}
-	if ( aBoStellingVan.getS4() != aBoStellingNaar.getS4() )
+	if ( aBoStellingNaar.getS4() != aBoStellingNaar.getZk() && aBoStellingVan.getS4() != aBoStellingNaar.getS4())
 	{
 		return new VanNaar( aBoStellingVan.getS4(), aBoStellingNaar.getS4() );
 	}
@@ -475,10 +480,17 @@ END Zet;
 /**
  * ------------ Voer een zet uit -----------------------
  */
+void clearPliesVoorZet()
+{
+	for ( int x = curPartij.getCurPly(); x < curPartij.getLastPly(); x++ )
+	{
+		plies[x] = PlyRecord.NULL_PLY_RECORD;
+	}
+}
 public boolean zet( VanNaar aVanNaar )
 {
 	BoStelling boStellingNaar = vanNaarToStelling( aVanNaar );
-	if ( ! isBegonnen() || ( isEindePartij() != NogNiet ) || ( boStellingNaar == null ) )
+	if ( ! isBegonnen() || isEindePartij() != NogNiet || boStellingNaar == null )
 	{
 		return false;
 	}
@@ -488,16 +500,12 @@ public boolean zet( VanNaar aVanNaar )
 	}
 	boStellingNaar.setSchaak( gen.isSchaak( boStellingNaar ) );
 	PlyRecord curPlyRecord = plies[curPartij.getCurPly()];
-	if ( !curPlyRecord.getVanNaar().equals( aVanNaar ) )
+	if ( ! curPlyRecord.getVanNaar().equals( aVanNaar ) )
 	{
-		for ( int x = curPartij.getCurPly(); x < curPartij.getLastPly(); x++ )
-		{
-			plies[x] = PlyRecord.NULL_PLY_RECORD;
-		}
+		clearPliesVoorZet();
 		curPartij.setLastPly( curPartij.getCurPly() + 1 );
 	}
 	curPlyRecord.setVanNaar( aVanNaar );
-	curPlyRecord.setSchaak( boStellingNaar.isSchaak() );
 	curPartij.setCurPly( curPartij.getCurPly() + 1 );
 	if ( curPartij.getCurPly() > curPartij.getLastPly() )
 	{
@@ -518,6 +526,7 @@ public boolean zet( VanNaar aVanNaar )
 	}
 	return true;
 }
+
 /**
 PROCEDURE ZetStelling(S: Dbs.Stelling): BOOLEAN;
 VAR VN: VanNaarType;
@@ -593,17 +602,17 @@ END WatStaatErOp;
 /**
  * --------- Wat staat er op een veld -------------------
  */
-char watStaatErOp( BoStelling aBoStelling, int aVeld )
+String watStaatErOp( BoStelling aBoStelling, int aVeld )
 {
 	for ( int x = gen.MIN_STUKNUMMER; x <= gen.MAX_STUKNUMMER; x++ )
 	{
 		StukInfo stukInfo = gen.GetStukInfo( aBoStelling, x );
 		if ( stukInfo.getVeld() == aVeld )
 		{
-			return stukInfo.getStukAfk();
+			return stukInfo.getAfko();
 		}
 	}
-	return '?';
+	return "?";
 }
 /**
 PROCEDURE PlyToStr(P: PlyRec): PlyStr;
@@ -704,7 +713,7 @@ ResultaatRec resultaatToString() // @@NOG getResultaatRec?
 	else
 	{
 		ResultaatType resultaat = plyRecord.getBoStelling().getResultaat();
-		if ( resultaat != Illegaal )
+		if ( resultaat != ResultaatType.Illegaal )
 		{
 			resultaatRec.setRes1( resultaat.toString() );
 		}
@@ -975,9 +984,8 @@ String genZetToString( int aZetNummer, BoStelling aBoStellingVan, BoStelling aBo
 	PlyRecord plyRecord = PlyRecord.builder()
 		.ZetNr( aZetNummer )
 		.boStelling( aBoStellingVan )
-		.Einde( NogNiet )
+		.Einde( NogNiet ) // @@NOG klopt dit??
 		.vanNaar( stellingToVanNaar( aBoStellingVan, aBoStellingNaar ) )
-		.Schaak( gen.isSchaak( aBoStellingNaar ) )
 		.build();
 	String resString;
 	if ( aBoStellingNaar.getResultaat() == Remise )
@@ -994,6 +1002,7 @@ String genZetToString( int aZetNummer, BoStelling aBoStellingVan, BoStelling aBo
 	sb.append( plyToStr( plyRecord ) ).append(  "  " ).append( resString );
 	return sb.toString();
 }
+
 /**
 PROCEDURE GenToStr(Max: HeleZetNummer): GenReport;
 VAR GR         : GenReport;
