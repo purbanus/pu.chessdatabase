@@ -29,6 +29,17 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 public class BoStelling implements Cloneable
 {
+public static final BoStelling NULL_STELLING = BoStelling.builder()
+	.wk( 0 )
+	.zk( 0 )
+	.s3( 0 )
+	.s4( 0 )
+	.aanZet( AlgDef.Wit )
+	.resultaat( ResultaatType.Illegaal )
+	.aantalZetten( 0 )
+	.schaak( false )
+	.build();
+
 public static BoStelling fromVmStelling( VMStelling aVmStelling )
 {
 	return builder()

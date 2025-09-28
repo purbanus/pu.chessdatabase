@@ -5,15 +5,19 @@ import java.util.Comparator;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import pu.chessdatabase.dal.Dbs;
 import pu.chessdatabase.dal.ResultaatType;
 
-@Service
+@Component
 public class Gen
 {
 // Bij Stukken en Kleuren wordt element 0 niet gebruikt
+public static final int MIN_STUKNUMMER = 1;
+public static final int MAX_STUKNUMMER = 4;
+public static final int MIN_KLEURNUMMER = 1;
+public static final int MAX_KLEURNUMMER = 4;
 public static final StukType [] Stukken = { null, StukType.Koning, StukType.Koning, StukType.Dame, StukType.Toren };
 public static final boolean [] Kleuren = { false, AlgDef.Wit, AlgDef.Zwart, AlgDef.Wit, AlgDef.Zwart };
 public static final BitSet BuitenBord = bitSetOfInt( 0x88 );

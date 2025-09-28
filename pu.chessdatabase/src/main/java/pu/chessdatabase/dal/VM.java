@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import pu.chessdatabase.util.Range;
 
@@ -21,7 +21,7 @@ Doel   : Implementeren van een virtual memory systeem voor de chess
          Een record is een byte, en de database bestaat uit 5,12 Mrecords.
 ******************************************************************************
  */
-@Service
+@Component
 public class VM
 {
 static final int CacheSize     = 30;                 // Aantal pagina"s
@@ -34,8 +34,8 @@ Range Veld = new Range( 0, 63 );
 
 PageDescriptor[][][] PDT = new PageDescriptor[10][64][2];
 CacheEntry [] Cache = new CacheEntry[CacheSize];
-File databaseFile;
-RandomAccessFile Database = null;
+private File databaseFile;
+private RandomAccessFile Database = null;
 long GeneratieTeller;
 
 public VM()
@@ -43,8 +43,24 @@ public VM()
     //FIO.IOcheck:=FALSE;
     GeneratieTeller = 1L;
     CreateCache();
-    Database = null;
-    databaseFile = null;
+    setDatabase( null );
+    setDatabaseFile( null );
+}
+public File getDatabaseFile()
+{
+	return databaseFile;
+}
+public void setDatabaseFile( File aDatabaseFile )
+{
+	databaseFile = aDatabaseFile;
+}
+public RandomAccessFile getDatabase()
+{
+	return Database;
+}
+public void setDatabase( RandomAccessFile aDatabase )
+{
+	Database = aDatabase;
 }
 /**
  * ********************************************************************************
@@ -159,22 +175,6 @@ BEGIN
     RETURN(IOres);
 END ChkFile;
  */
-public void ChkFile( String aFileNaam )
-{
-	File file = new File( aFileNaam );
-	if ( ! file.exists() )
-	{
-		throw new RuntimeException( "File bestaat niet: " + aFileNaam );
-	}
-	if ( ! file.canRead() )
-	{
-		throw new RuntimeException( "Kan file niet lezen: " + aFileNaam );
-	}
-	if ( ! file.canWrite() )
-	{
-		throw new RuntimeException( "Kan niet naar file schrijven: " + aFileNaam );
-	}
-}
 /*------ Witte koning ------------*/
 @SuppressWarnings( "unused" )
 private static final String [] RepWK = {"a1", "b1", "c1", "d1", "b2", "c2", "d2", "c3", "d3", "d4" };
@@ -315,8 +315,8 @@ void getRawPageData( PageDescriptor aPageDescriptor )
 {
     try
 	{
-		Database.seek( aPageDescriptor.getSchijfAdres() );
-		int Aantal = Database.read( Cache[aPageDescriptor.getCacheNummer()].getPagePointer().getPage(), 0, PageSize );
+		getDatabase().seek( aPageDescriptor.getSchijfAdres() );
+		int Aantal = getDatabase().read( Cache[aPageDescriptor.getCacheNummer()].getPagePointer().getPage(), 0, PageSize );
 		if ( Aantal != PageSize )
 		{
 			throw new RuntimeException( "Ernstig: VM.GetPage heeft " + Aantal + " records gelezen. Dat zouden er " + PageSize + " moeten zijn" );
@@ -332,8 +332,8 @@ void putRawPageData( PageDescriptor aPageDescriptor )
 {
 	try
 	{
-		Database.seek( aPageDescriptor.getSchijfAdres() );
-	    Database.write( Cache[aPageDescriptor.getCacheNummer()].getPagePointer().getPage(), 0, PageSize );
+		getDatabase().seek( aPageDescriptor.getSchijfAdres() );
+	    getDatabase().write( Cache[aPageDescriptor.getCacheNummer()].getPagePointer().getPage(), 0, PageSize );
 	}
 	catch ( IOException e )
 	{
@@ -619,19 +619,35 @@ END Close;
  */
 public void Close()
 {
-	if ( Database != null )
+	if ( getDatabase() != null )
 	{
 		Flush();
 		try
 		{
-			Database.close();
+			getDatabase().close();
 		}
 		catch ( IOException e )
 		{
 			throw new RuntimeException( e );
 		}
-		Database = null;
+		setDatabase( null );
 		//databaseFile = null;
+	}
+}
+public void ChkDatabaseFile( String aFileNaam )
+{
+	setDatabaseFile( new File( aFileNaam ) );
+	if ( ! getDatabaseFile().exists() )
+	{
+		throw new RuntimeException( "File bestaat niet: " + aFileNaam );
+	}
+	if ( ! getDatabaseFile().canRead() )
+	{
+		throw new RuntimeException( "Kan file niet lezen: " + aFileNaam );
+	}
+	if ( ! getDatabaseFile().canWrite() )
+	{
+		throw new RuntimeException( "Kan niet naar file schrijven: " + aFileNaam );
 	}
 }
 /**
@@ -659,13 +675,13 @@ END Open;
 public void Open( String aNaam )
 {
 	Close();
-	ChkFile( aNaam ); // Throws RuntimeException-als er iets niet goed is
+	ChkDatabaseFile( aNaam ); // Throws RuntimeException-als er iets niet goed is
 	try
 	{
 		/**Zie doc for mode = "rwd" or "rws". "rw" betekent volgens mij dat een update direct naar
 		 * schijf wordt geschreven. "rwd" en "rws" cachen dat enigszins.
 		 */
-		Database = new RandomAccessFile( databaseFile, "rw" ); 
+		setDatabase( new RandomAccessFile( getDatabaseFile(), "rw" ) ); 
 	}
 	catch ( FileNotFoundException e )
 	{
@@ -712,12 +728,12 @@ END Create;
  */
 void CreateFile( String aNaam )
 {
-	databaseFile = new File( aNaam );
-	if ( ! databaseFile.exists() )
+	setDatabaseFile( new File( aNaam ) );
+	if ( ! getDatabaseFile().exists() )
 	{
 		try
 		{
-			databaseFile.createNewFile();
+			getDatabaseFile().createNewFile();
 		}
 		catch ( IOException e )
 		{
@@ -757,14 +773,13 @@ public void Create( String aNaam )
 }
 void delete()
 {
-	File file = databaseFile;
 	Close();
-	if ( file != null )
+	if ( getDatabaseFile() != null )
 	{
-		file.delete();
+		getDatabaseFile().delete();
 	}
-	databaseFile = null;
-	Database = null;
+	setDatabaseFile( null );
+	setDatabase( null );
 }
 /**
 PROCEDURE (*$N*) CreateCache();

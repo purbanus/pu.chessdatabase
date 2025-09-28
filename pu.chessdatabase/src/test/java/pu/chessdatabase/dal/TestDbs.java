@@ -53,26 +53,33 @@ public void testClearTellers()
 	}
 	assertThat( dbs.RptTeller, is( 0 ) );
 }
+static boolean messageGegeven = false;
 private void doReport( long [] aReportArray )
 {
-	System.out.println( "Dit is een ReportProc" );
+	if ( !messageGegeven )
+	{
+		System.out.println( "Dit is een ReportProc" );
+	}
+	messageGegeven = true;
 }
-public void doReport2( long [] aReportArray )
-{
-	System.out.println( aReportArray );
-}
+//public void doReport2( long [] aReportArray )
+//{
+//	System.out.println( aReportArray );
+//}
 @Test
 public void testSetReport()
 {
+	messageGegeven = false;
 	dbs.SetReport( 5000, this::doReport );
 	assertThat( dbs.RptFreq, is( 5000 ) );
-	// Je kunt lambdas niet vergelijken, beha	lve misschien met Serializable; viond ik overdone
+	// Je kunt lambdas niet vergelijken, behalve misschien met Serializable; viond ik overdone
 	//assertThat( dbs.RptProc, is( this::doReport ) );
 }
 
 @Test
 public void testUpdateTellers()
 {
+	messageGegeven = false;
 	dbs.SetReport( 5000, this::doReport );
 	dbs.Rpt = new long [] { 1L, 2L, 3L, 4L };
 	dbs.UpdateTellers( ResultaatType.Gewonnen );

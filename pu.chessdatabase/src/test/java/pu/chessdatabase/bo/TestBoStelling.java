@@ -14,16 +14,19 @@ import pu.chessdatabase.dal.ResultaatType;
 @SuppressWarnings( "unused" )
 public class TestBoStelling
 {
+// Let op: alle trailing spaces worden door de compiler weggehaald.
+// Gelukkig bestaat er een \s waarmee je een niet-verwijderbare space
+// definieert. FYI: alle spaces voor die \s worden evenmin verwijderd
 public static final String BO_TO_STRING = """
 WK=0 ZK=2 S3=11 S4=23 AanZet=W Resultaat=null AantalZetten=0 Schaak=false
-.. .. .. .. .. .. .. .. 
-.. .. .. .. .. .. .. .. 
-.. .. .. .. .. .. .. .. 
-.. .. .. .. .. .. .. .. 
-.. .. .. .. .. .. .. .. 
-.. .. .. ZT .. .. .. .. 
-.. WD .. .. .. .. .. .. 
-WK .. ZK .. .. .. .. .. 
+.. .. .. .. .. .. .. ..\s
+.. .. .. .. .. .. .. ..\s
+.. .. .. .. .. .. .. ..\s
+.. .. .. .. .. .. .. ..\s
+.. .. .. .. .. .. .. ..\s
+.. .. .. ZT .. .. .. ..\s
+.. WD .. .. .. .. .. ..\s
+WK .. ZK .. .. .. .. ..\s
 """;
 @Test
 public void testToString()
@@ -35,30 +38,7 @@ public void testToString()
 		.s4( 0x23 )
 		.aanZet( false )
 		.build();
-	//System.out.println( boStelling );
-	// @@NO Later nog es checken: ik krijg
-	/*
-	 * 
-java.lang.AssertionError: 
-Expected: is "WK=0 ZK=2 S3=11 S4=23 AanZet=W Resultaat=null AantalZetten=0 Schaak=false\n
-.. .. .. .. .. .. .. ..\n
-.. .. .. .. .. .. .. ..\n
-.. .. .. .. .. .. .. ..\n
-.. .. .. .. .. .. .. ..\n
-.. .. .. .. .. .. .. ..\n
-.. .. .. ZT .. .. .. ..\n
-.. WD .. .. .. .. .. ..\n
-WK .. ZK .. .. .. .. ..\n"
-     but: was "WK=0 ZK=2 S3=11 S4=23 AanZet=W Resultaat=null AantalZetten=0 Schaak=false\n
-.. .. .. .. .. .. .. .. \n
-.. .. .. .. .. .. .. .. \n
-.. .. .. .. .. .. .. .. \n
-.. .. .. .. .. .. .. .. \n
-.. .. .. .. .. .. .. .. \n
-.. .. .. ZT .. .. .. .. \n
-.. WD .. .. .. .. .. .. \n
-WK .. ZK .. .. .. .. .. \n"
- */
+	assertThat( boStelling.toString().length(), is( BO_TO_STRING.length() ) );
 	assertThat( boStelling.toString(), is( BO_TO_STRING) );
 }
 @Test

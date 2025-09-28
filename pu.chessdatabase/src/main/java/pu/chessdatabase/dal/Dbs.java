@@ -1,17 +1,16 @@
 package pu.chessdatabase.dal;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import pu.chessdatabase.bo.AlgDef;
+import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.ReportProc;
 import pu.chessdatabase.util.Matrix;
 import pu.chessdatabase.util.Range;
 import pu.chessdatabase.util.Vector;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import pu.chessdatabase.bo.AlgDef;
-import pu.chessdatabase.bo.BoStelling;
-
-@Service
+@Component
 public class Dbs
 {
 @Autowired private VM vm;

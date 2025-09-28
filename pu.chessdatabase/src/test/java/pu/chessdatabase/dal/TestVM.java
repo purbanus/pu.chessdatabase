@@ -45,7 +45,6 @@ public void testIntToByte()
 	assertThat( (byte)( x & 0xff ), is( (byte)128 ) ); // Dit is beter!
 	x = 250;
 	assertThat( (byte)( x & 0xff ), is( (byte)250 ) ); // Doet het ook
-	assertThat( new Integer( 250 ).byteValue(), is( (byte)250 ) ); // Doet het ook maar is breedsprakig. Bovendien is new integer(n) deprecated
 	assertThat( Integer.valueOf( 250 ).byteValue(), is( (byte)250 ) ); // Is zeer breedsprakig
 }
 @Test
@@ -161,9 +160,9 @@ private void checkIfAllDatabaseEntriesAreZero() throws IOException
                 PageDescriptor pageDescriptor = vm.PDT[WK][ZK][aanZet];
 //                pageDescriptor.setCacheNummer( 1 );
 //                vm.Cache[1].setVuil( true );
-        		vm.Database.seek( pageDescriptor.getSchijfAdres() );
+        		vm.getDatabase().seek( pageDescriptor.getSchijfAdres() );
         		Page page = new Page();
-        	    int aantal = vm.Database.read( page.getPage(), 0, vm.PageSize );
+        	    int aantal = vm.getDatabase().read( page.getPage(), 0, vm.PageSize );
         	    assertThat( aantal, is( vm.PageSize) );
         	    assertThat( TestHelper.isAllZero( page.getPage() ), is( true ) );
             }
@@ -572,7 +571,7 @@ public void testCloseWithDatabaseOpen()
 public void testOpen()
 {
 	vm.Open( DATABASE_NAME );
-	assertThat( vm.Database, is( notNullValue() ) );
+	assertThat( vm.getDatabase(), is( notNullValue() ) );
 }
 @Test
 public void testCreateFile()
