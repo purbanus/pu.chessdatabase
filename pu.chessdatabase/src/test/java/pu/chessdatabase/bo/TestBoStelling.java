@@ -6,11 +6,12 @@ package pu.chessdatabase.bo;
 //===================================================================================================================== 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+import static pu.chessdatabase.bo.Kleur.*;
 
 import org.junit.jupiter.api.Test;
 
 import pu.chessdatabase.dal.ResultaatType;
-
+import static org.hamcrest.MatcherAssert.*;
 @SuppressWarnings( "unused" )
 public class TestBoStelling
 {
@@ -36,7 +37,7 @@ public void testToString()
 		.zk( 0x02 )
 		.s3( 0x11 )
 		.s4( 0x23 )
-		.aanZet( false )
+		.aanZet( Wit )
 		.build();
 	assertThat( boStelling.toString().length(), is( BO_TO_STRING.length() ) );
 	assertThat( boStelling.toString(), is( BO_TO_STRING) );
@@ -49,10 +50,10 @@ public void testClone()
 		.zk( 2 )
 		.s3( 3 )
 		.s4( 4 )
-		.aanZet( true )
+		.aanZet( Zwart )
 		.resultaat( ResultaatType.Gewonnen )
 		.aantalZetten( 18 )
-		.schaak(  true )
+		.schaak( true )
 		.build();
 	BoStelling boStelling2 = boStelling.clone();
 	assertThat( boStelling2, is( boStelling ) );

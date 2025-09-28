@@ -6,6 +6,7 @@ package pu.chessdatabase.bo;
 //===================================================================================================================== 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+import static pu.chessdatabase.bo.Kleur.*;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,7 @@ public void testVulStukTabel()
 	gen.VulStukTabel();
 	Stuk stuk = gen.StukTabel[1];
 	assertThat( stuk.getSoort(), is( StukType.Koning ) );
-	assertThat( stuk.isKleur(), is( AlgDef.Wit ) );
+	assertThat( stuk.getKleur(), is( Wit ) );
 	assertThat( stuk.getKnummer(), is( 1 ) );
 	assertThat( stuk.getRichting(), is( gen.Krichting ) );
 	assertThat( stuk.getAtlRicht(), is( 8 ) );
@@ -61,7 +62,7 @@ public void testVulStukTabel()
 	
 	stuk = gen.StukTabel[2];
 	assertThat( stuk.getSoort(), is( StukType.Koning ) );
-	assertThat( stuk.isKleur(), is( AlgDef.Zwart ) );
+	assertThat( stuk.getKleur(), is( Zwart ) );
 	assertThat( stuk.getKnummer(), is( 2 ) );
 	assertThat( stuk.getRichting(), is( gen.Krichting ) );
 	assertThat( stuk.getAtlRicht(), is( 8 ) );
@@ -70,7 +71,7 @@ public void testVulStukTabel()
 
 	stuk = gen.StukTabel[3];
 	assertThat( stuk.getSoort(), is( StukType.Dame ) );
-	assertThat( stuk.isKleur(), is( AlgDef.Wit ) );
+	assertThat( stuk.getKleur(), is( Wit ) );
 	assertThat( stuk.getKnummer(), is( 1 ) );
 	assertThat( stuk.getRichting(), is( gen.Krichting ) );
 	assertThat( stuk.getAtlRicht(), is( 8 ) );
@@ -79,7 +80,7 @@ public void testVulStukTabel()
 	
 	stuk = gen.StukTabel[4];
 	assertThat( stuk.getSoort(), is( StukType.Toren ) );
-	assertThat( stuk.isKleur(), is( AlgDef.Zwart ) );
+	assertThat( stuk.getKleur(), is( Zwart ) );
 	assertThat( stuk.getKnummer(), is( 2 ) );
 	assertThat( stuk.getRichting(), is( gen.Trichting ) );
 	assertThat( stuk.getAtlRicht(), is( 4 ) );
@@ -210,7 +211,7 @@ public void testIsSchaakDoorStuk()
 		.zk( 0x27 )
 		.s3( 0x76 )
 		.s4( 0x33 )
-		.aanZet( AlgDef.Zwart )
+		.aanZet( Zwart )
 		.build();
 	gen.ZetBordOp( stelling );
 	assertThat( gen.isSchaakDoorStuk( gen.StukTabel[4], 0x11, 0x33 ), is( false ) );
@@ -222,7 +223,7 @@ public void testIsSchaakDoorStuk()
 		.zk( 0x27 )
 		.s3( 0x76 )
 		.s4( 0x10 )
-		.aanZet( AlgDef.Zwart )
+		.aanZet( Zwart )
 		.build();
 	gen.ZetBordOp( stelling );
 	assertThat( gen.isSchaakDoorStuk( gen.StukTabel[4], 0x11, 0x10 ), is( true ) );
@@ -234,7 +235,7 @@ public void testIsSchaakDoorStuk()
 		.zk( 0x27 )
 		.s3( 0x76 )
 		.s4( 0x17 )
-		.aanZet( AlgDef.Zwart )
+		.aanZet( Zwart )
 		.build();
 	gen.ZetBordOp( stelling );
 	assertThat( gen.isSchaakDoorStuk( gen.StukTabel[4], 0x11, 0x17 ), is( true ) );
@@ -246,7 +247,7 @@ public void testIsSchaakDoorStuk()
 		.zk( 0x27 )
 		.s3( 0x15 )
 		.s4( 0x17 )
-		.aanZet( AlgDef.Zwart )
+		.aanZet( Zwart )
 		.build();
 	gen.ZetBordOp( stelling );
 	assertThat( gen.isSchaakDoorStuk( gen.StukTabel[4], 0x11, 0x17 ), is( false ) );
@@ -258,7 +259,7 @@ public void testIsSchaakDoorStuk()
 		.zk( 0x27 )
 		.s3( 0x20 )
 		.s4( 0x77 )
-		.aanZet( AlgDef.Wit )
+		.aanZet( Wit )
 		.build();
 	gen.ZetBordOp( stelling );
 	assertThat( gen.isSchaakDoorStuk( gen.StukTabel[3], 0x27, 0x20 ), is( true ) );
@@ -273,7 +274,7 @@ public void testCheckSchaakDoorStuk()
 		.zk( 0x27 )
 		.s3( 0x11 )
 		.s4( 0x33 )
-		.aanZet( AlgDef.Zwart )
+		.aanZet( Zwart )
 		.build();
 	gen.ZetBordOp( stelling );
 	assertThat( gen.CheckSchaakDoorStuk( stelling, gen.StukTabel[3], 0x11, 0x11 ), is( false ) );
@@ -285,7 +286,7 @@ public void testCheckSchaakDoorStuk()
 		.zk( 0x27 )
 		.s3( 0x76 )
 		.s4( 0x27 )
-		.aanZet( AlgDef.Zwart )
+		.aanZet( Zwart )
 		.build();
 	gen.ZetBordOp( stelling );
 	assertThat( gen.CheckSchaakDoorStuk( stelling, gen.StukTabel[4], 0x27, 0x27 ), is( false ) );
@@ -297,7 +298,7 @@ public void testCheckSchaakDoorStuk()
 		.zk( 0x27 )
 		.s3( 0x76 )
 		.s4( 0x33 )
-		.aanZet( AlgDef.Zwart )
+		.aanZet( Zwart )
 		.build();
 	gen.ZetBordOp( stelling );
 	assertThat( gen.CheckSchaakDoorStuk( stelling, gen.StukTabel[4], 0x11, 0x33 ), is( false ) );
@@ -309,7 +310,7 @@ public void testCheckSchaakDoorStuk()
 		.zk( 0x27 )
 		.s3( 0x76 )
 		.s4( 0x10 )
-		.aanZet( AlgDef.Wit )
+		.aanZet( Wit )
 		.build();
 	gen.ZetBordOp( stelling );
 	assertThat( gen.CheckSchaakDoorStuk( stelling, gen.StukTabel[4], 0x11, 0x10 ), is( true ) );
@@ -324,7 +325,7 @@ public void testIsSchaak()
 		.zk( 0x27 )
 		.s3( 0x76 )
 		.s4( 0x11 )
-		.aanZet( AlgDef.Zwart )
+		.aanZet( Zwart )
 		.build();
 	assertThat( gen.isSchaak( stelling ), is( false ) );
 	gen.ClrBord( stelling );
@@ -335,7 +336,7 @@ public void testIsSchaak()
 		.zk( 0x27 )
 		.s3( 0x76 )
 		.s4( 0x27 )
-		.aanZet( AlgDef.Zwart )
+		.aanZet( Zwart )
 		.build();
 	assertThat( gen.isSchaak( stelling ), is( false ) );
 	gen.ClrBord( stelling );
@@ -346,7 +347,7 @@ public void testIsSchaak()
 		.zk( 0x27 )
 		.s3( 0x76 )
 		.s4( 0x33 )
-		.aanZet( AlgDef.Zwart )
+		.aanZet( Zwart )
 		.build();
 	assertThat( gen.isSchaak( stelling ), is( false ) );
 	gen.ClrBord( stelling );
@@ -357,7 +358,7 @@ public void testIsSchaak()
 		.zk( 0x27 )
 		.s3( 0x76 )
 		.s4( 0x10 )
-		.aanZet( AlgDef.Wit )
+		.aanZet( Wit )
 		.build();
 	assertThat( gen.isSchaak( stelling ), is( true ) );
 	gen.ClrBord( stelling );
@@ -378,7 +379,7 @@ public void testAddZet()
 		.zk( 0x27 )
 		.s3( 0x76 )
 		.s4( 0x33 )
-		.aanZet( AlgDef.Zwart )
+		.aanZet( Zwart )
 		.build();
 	genZRec = new GenZRec();
 	gen.AddZet( stelling, 3, 0x77, ZetSoort.Gewoon, 0x11, 0x76, genZRec );
@@ -388,7 +389,7 @@ public void testAddZet()
 	assertThat( resultaatStelling.getZk(), is( 0x27 ) );
 	assertThat( resultaatStelling.getS3(), is( 0x77 ) );
 	assertThat( resultaatStelling.getS4(), is( 0x33 ) );
-	assertThat( resultaatStelling.isAanZet(), is( false ) );
+	assertThat( resultaatStelling.getAanZet(), is( Wit ) );
 
 	// Slagzet
 	stelling = BoStelling.builder()
@@ -396,7 +397,7 @@ public void testAddZet()
 		.zk( 0x27 )
 		.s3( 0x76 )
 		.s4( 0x33 )
-		.aanZet( AlgDef.Wit )
+		.aanZet( Wit )
 		.build();
 	genZRec = new GenZRec();
 	gen.AddZet( stelling, 4, 0x76, ZetSoort.SlagZet, 0x11, 0x76, genZRec );
@@ -406,7 +407,7 @@ public void testAddZet()
 	assertThat( resultaatStelling.getZk(), is( 0x27 ) );
 	assertThat( resultaatStelling.getS3(), is( 0x11 ) );
 	assertThat( resultaatStelling.getS4(), is( 0x76 ) );
-	assertThat( resultaatStelling.isAanZet(), is( true ) );
+	assertThat( resultaatStelling.getAanZet(), is( Zwart ) );
 
 	// Geslagen stukken meeverplaatsen
 	stelling = BoStelling.builder()
@@ -414,7 +415,7 @@ public void testAddZet()
 		.zk( 0x27 )
 		.s3( 0x11 )
 		.s4( 0x33 )
-		.aanZet( AlgDef.Wit )
+		.aanZet( Wit )
 		.build();
 	genZRec = new GenZRec();
 	gen.AddZet( stelling, 1, 0x12, ZetSoort.Gewoon, 0x11, 0x11, genZRec );
@@ -424,7 +425,7 @@ public void testAddZet()
 	assertThat( resultaatStelling.getZk(), is( 0x27 ) );
 	assertThat( resultaatStelling.getS3(), is( 0x12 ) );
 	assertThat( resultaatStelling.getS4(), is( 0x33 ) );
-	assertThat( resultaatStelling.isAanZet(), is( true ) );
+	assertThat( resultaatStelling.getAanZet(), is( Zwart ) );
 
 	dbs.delete();
 }
@@ -442,39 +443,39 @@ public void testGenZetPerStuk()
 		.zk( 0x27 )
 		.s3( 0x76 )
 		.s4( 0x33 )
-		.aanZet( AlgDef.Zwart )
+		.aanZet( Zwart )
 		.build();
 	gen.ZetBordOp( boStelling );
 	GenZRec genZRec = gen.GenZPerStuk( boStelling, 4, 0x27, 0x33 );
 	assertThat( genZRec.getAantal(), is( 14 ) );
 	assertThat( genZRec.getSptr().get(  0 ).getS4(), is( 0x34 ) );
-	assertThat( genZRec.getSptr().get(  0 ).isAanZet(), is( false ) );
+	assertThat( genZRec.getSptr().get(  0 ).getAanZet(), is( Wit ) );
 	assertThat( genZRec.getSptr().get(  1 ).getS4(), is( 0x35 ) );
-	assertThat( genZRec.getSptr().get(  1 ).isAanZet(), is( false ) );
+	assertThat( genZRec.getSptr().get(  1 ).getAanZet(), is( Wit ) );
 	assertThat( genZRec.getSptr().get(  2 ).getS4(), is( 0x36 ) );
-	assertThat( genZRec.getSptr().get(  2 ).isAanZet(), is( false ) );
+	assertThat( genZRec.getSptr().get(  2 ).getAanZet(), is( Wit ) );
 	assertThat( genZRec.getSptr().get(  3 ).getS4(), is( 0x37 ) );
-	assertThat( genZRec.getSptr().get(  3 ).isAanZet(), is( false ) );
+	assertThat( genZRec.getSptr().get(  3 ).getAanZet(), is( Wit ) );
 	assertThat( genZRec.getSptr().get(  4 ).getS4(), is( 0x43 ) );
-	assertThat( genZRec.getSptr().get(  4 ).isAanZet(), is( false ) );
+	assertThat( genZRec.getSptr().get(  4 ).getAanZet(), is( Wit ) );
 	assertThat( genZRec.getSptr().get(  5 ).getS4(), is( 0x53 ) );
-	assertThat( genZRec.getSptr().get(  5 ).isAanZet(), is( false ) );
+	assertThat( genZRec.getSptr().get(  5 ).getAanZet(), is( Wit ) );
 	assertThat( genZRec.getSptr().get(  6 ).getS4(), is( 0x63 ) );
-	assertThat( genZRec.getSptr().get(  6 ).isAanZet(), is( false ) );
+	assertThat( genZRec.getSptr().get(  6 ).getAanZet(), is( Wit ) );
 	assertThat( genZRec.getSptr().get(  7 ).getS4(), is( 0x73 ) );
-	assertThat( genZRec.getSptr().get(  7 ).isAanZet(), is( false ) );
+	assertThat( genZRec.getSptr().get(  7 ).getAanZet(), is( Wit ) );
 	assertThat( genZRec.getSptr().get(  8 ).getS4(), is( 0x32 ) );
-	assertThat( genZRec.getSptr().get(  8 ).isAanZet(), is( false ) );
+	assertThat( genZRec.getSptr().get(  8 ).getAanZet(), is( Wit ) );
 	assertThat( genZRec.getSptr().get(  9 ).getS4(), is( 0x31 ) );
-	assertThat( genZRec.getSptr().get(  9 ).isAanZet(), is( false ) );
+	assertThat( genZRec.getSptr().get(  9 ).getAanZet(), is( Wit ) );
 	assertThat( genZRec.getSptr().get( 10 ).getS4(), is( 0x30 ) );
-	assertThat( genZRec.getSptr().get( 10 ).isAanZet(), is( false ) );
+	assertThat( genZRec.getSptr().get( 10 ).getAanZet(), is( Wit ) );
 	assertThat( genZRec.getSptr().get( 11 ).getS4(), is( 0x23 ) );
-	assertThat( genZRec.getSptr().get( 11 ).isAanZet(), is( false ) );
+	assertThat( genZRec.getSptr().get( 11 ).getAanZet(), is( Wit ) );
 	assertThat( genZRec.getSptr().get( 12 ).getS4(), is( 0x13 ) );
-	assertThat( genZRec.getSptr().get( 12 ).isAanZet(), is( false ) );
+	assertThat( genZRec.getSptr().get( 12 ).getAanZet(), is( Wit ) );
 	assertThat( genZRec.getSptr().get( 13 ).getS4(), is( 0x03 ) );
-	assertThat( genZRec.getSptr().get( 13 ).isAanZet(), is( false ) );
+	assertThat( genZRec.getSptr().get( 13 ).getAanZet(), is( Wit ) );
 	gen.ClrBord( boStelling );
 	
 	boStelling = BoStelling.builder()
@@ -482,7 +483,7 @@ public void testGenZetPerStuk()
 		.zk( 0x27 )
 		.s3( 0x76 )
 		.s4( 0x77 )
-		.aanZet( AlgDef.Zwart )
+		.aanZet( Zwart )
 		.build();
 	//System.out.println( "In testGenZetPerStuk" );
 	//gen.printBord();
@@ -503,7 +504,7 @@ public void testGenZetPerStuk()
 		.zk( 0x00 )
 		.s3( 0x06 )
 		.s4( 0x04 )
-		.aanZet( AlgDef.Wit)
+		.aanZet( Wit)
 		.schaak( true )
 		.resultaat( ResultaatType.Remise )
 		.aantalZetten( 0 )
@@ -528,7 +529,7 @@ public void testGenZet()
 		.zk( 0x27 )
 		.s3( 0x76 )
 		.s4( 0x33 )
-		.aanZet( AlgDef.Zwart )
+		.aanZet( Zwart )
 		.build();
 	genZRec = gen.GenZ( stelling );
 	assertThat( genZRec.getAantal(), is( 19 ) );
@@ -568,7 +569,7 @@ public void testGenZetSort()
 		.zk( 0x27 )
 		.s3( 0x76 )
 		.s4( 0x33 )
-		.aanZet( AlgDef.Zwart )
+		.aanZet( Zwart )
 		.build();
 	genZRec = gen.GenZ( stelling );
 	assertThat( genZRec.getAantal(), is( 19 ) );
@@ -641,30 +642,30 @@ public void testGetStukInfo()
 		.zk( 0x27 )
 		.s3( 0x76 )
 		.s4( 0x33 )
-		.aanZet( AlgDef.Zwart )
+		.aanZet( Zwart )
 		.build();
 	assertThat( gen.GetStukInfo( stelling, 1 ).getVeld(), is( 0x11 ) );
 	assertThat( gen.GetStukInfo( stelling, 1 ).getX(), is( 2 ) );
 	assertThat( gen.GetStukInfo( stelling, 1 ).getY(), is( 2 ) );
-	assertThat( gen.GetStukInfo( stelling, 1 ).isKleur(), is( AlgDef.Wit ) );
+	assertThat( gen.GetStukInfo( stelling, 1 ).getKleur(), is( Wit ) );
 	assertThat( gen.GetStukInfo( stelling, 1 ).getStukAfk(), is( 'K' ) );
 
 	assertThat( gen.GetStukInfo( stelling, 2 ).getVeld(), is( 0x27 ) );
 	assertThat( gen.GetStukInfo( stelling, 2 ).getX(), is( 8 ) );
 	assertThat( gen.GetStukInfo( stelling, 2 ).getY(), is( 3 ) );
-	assertThat( gen.GetStukInfo( stelling, 2 ).isKleur(), is( AlgDef.Zwart ) );
+	assertThat( gen.GetStukInfo( stelling, 2 ).getKleur(), is( Zwart ) );
 	assertThat( gen.GetStukInfo( stelling, 2 ).getStukAfk(), is( 'K' ) );
 
 	assertThat( gen.GetStukInfo( stelling, 3 ).getVeld(), is( 0x76 ) );
 	assertThat( gen.GetStukInfo( stelling, 3 ).getX(), is( 7 ) );
 	assertThat( gen.GetStukInfo( stelling, 3 ).getY(), is( 8 ) );
-	assertThat( gen.GetStukInfo( stelling, 3 ).isKleur(), is( AlgDef.Wit ) );
+	assertThat( gen.GetStukInfo( stelling, 3 ).getKleur(), is( Wit ) );
 	assertThat( gen.GetStukInfo( stelling, 3 ).getStukAfk(), is( 'D' ) );
 
 	assertThat( gen.GetStukInfo( stelling, 4 ).getVeld(), is( 0x33 ) );
 	assertThat( gen.GetStukInfo( stelling, 4 ).getX(), is( 4 ) );
 	assertThat( gen.GetStukInfo( stelling, 4 ).getY(), is( 4 ) );
-	assertThat( gen.GetStukInfo( stelling, 4 ).isKleur(), is( AlgDef.Zwart ) );
+	assertThat( gen.GetStukInfo( stelling, 4 ).getKleur(), is( Zwart ) );
 	assertThat( gen.GetStukInfo( stelling, 4 ).getStukAfk(), is( 'T' ) );
 }
 

@@ -1,9 +1,10 @@
 package pu.chessdatabase.dal;
 
+import static pu.chessdatabase.bo.Kleur.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import pu.chessdatabase.bo.AlgDef;
 import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.ReportProc;
 import pu.chessdatabase.util.Matrix;
@@ -314,7 +315,7 @@ public VMStelling Cardinaliseer( BoStelling aStelling )
 		.zk( TrfTabel[Okt][aStelling.getZk()] )
 		.s3( TrfTabel[Okt][aStelling.getS3()] )
 		.s4( TrfTabel[Okt][aStelling.getS4()] )
-		.aanZet( aStelling.isAanZet() )
+		.aanZet( aStelling.getAanZet() )
 		.build();
 	return vmStelling;
 }
@@ -625,9 +626,9 @@ END Wpass;
 void markeerWitPass( PassProc aPassProc )
 {
 	VMStelling vmStelling = new VMStelling();
-	vmStelling.setAanZet( AlgDef.Wit );
+	vmStelling.setAanZet( Wit );
 	BoStelling boStelling = new BoStelling();
-	boStelling.setAanZet( AlgDef.Wit );
+	boStelling.setAanZet( Wit );
 	for ( int ZK = 0; ZK < 64; ZK++ )
 	{
 		vmStelling.setZk( ZK );
@@ -666,9 +667,9 @@ END Zpass;
 void markeerZwartPass( PassProc aPassProc )
 {
 	VMStelling vmStelling = new VMStelling();
-	vmStelling.setAanZet( AlgDef.Zwart );
+	vmStelling.setAanZet( Zwart );
 	BoStelling boStelling = new BoStelling();
-	boStelling.setAanZet( AlgDef.Zwart );
+	boStelling.setAanZet( Zwart );
 	for ( int WK = 0; WK < 10; WK++ )
 	{
 		vmStelling.setWk( WK );
@@ -743,15 +744,15 @@ void markeerWitEnZwartPass( PassProc aPassProc )
 					boStelling.setS4( CvtStuk[vmStelling.getS4()] );
 
 					// Wit
-					vmStelling.setAanZet( AlgDef.Wit );
+					vmStelling.setAanZet( Wit );
 					BoStelling gotBoStelling = GetDirect( vmStelling, boStelling ); // @@NOG Is die gotStelling nodig??
-					gotBoStelling.setAanZet( AlgDef.Wit ); // @@NOG Waarom?
+					gotBoStelling.setAanZet( Wit ); // @@NOG Waarom?
 					aPassProc.doPass( gotBoStelling );
 					
 					// Zwart
-					vmStelling.setAanZet( AlgDef.Zwart );
+					vmStelling.setAanZet( Zwart );
 					gotBoStelling = GetDirect( vmStelling, boStelling ); // @@NOG Is die gotStelling nodig??
-					gotBoStelling.setAanZet( AlgDef.Zwart ); // @@NOG Waarom?
+					gotBoStelling.setAanZet( Zwart ); // @@NOG Waarom?
 					aPassProc.doPass( gotBoStelling );
 		
 					vmStelling.setS4( vmStelling.getS4() + 1 );

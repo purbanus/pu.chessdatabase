@@ -2,6 +2,7 @@ package pu.chessdatabase.dal;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+import static pu.chessdatabase.bo.Kleur.*;
 
 import java.math.BigInteger;
 
@@ -26,7 +27,7 @@ public void testToString()
 		.zk( 0x02 )
 		.s3( 0x11 )
 		.s4( 0x23 )
-		.aanZet( false )
+		.aanZet( Wit )
 		.build();
 	System.out.println( vmStelling );
 }

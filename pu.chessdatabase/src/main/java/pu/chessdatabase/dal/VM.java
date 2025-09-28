@@ -1,5 +1,7 @@
 package pu.chessdatabase.dal;
 
+import static pu.chessdatabase.bo.Kleur.*;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -480,7 +482,7 @@ END GetPage;
 Page GetPage( VMStelling aStelling, boolean aMaakVuil )
 {
 	aStelling.checkStelling();
-	PageDescriptor pageDescriptor = PDT[aStelling.getWk()][aStelling.getZk()][aStelling.isAanZet()? 1 : 0];
+	PageDescriptor pageDescriptor = PDT[aStelling.getWk()][aStelling.getZk()][aStelling.getAanZet().ordinal()];
 	if ( pageDescriptor.getWaar() == Lokatie.OpSchijf )
 	{
 		Report( pageDescriptor, aStelling );
@@ -570,7 +572,7 @@ public void FreeRecord( VMStelling aStelling )
 	// En na de clear, page en pageDescriptor leegmaken?
 	// - PD niet, die is permanent
 	aStelling.checkStelling();
-	PageDescriptor PD = PDT[aStelling.getWk()][aStelling.getZk()][aStelling.isAanZet() ? 1 : 0];
+	PageDescriptor PD = PDT[aStelling.getWk()][aStelling.getZk()][aStelling.getAanZet().ordinal()];
 	if ( PD.getWaar() == Lokatie.InRAM )
 	{
 		PageOut( PD ); // Checkt of de page vuil is
@@ -760,7 +762,7 @@ public void Create( String aNaam )
             		.zk( zk )
             		.s3( 0 )
             		.s4( 0 )
-            		.aanZet( AanZet == 0 ? false : true )
+            		.aanZet( AanZet == 0 ? Wit : Zwart )
             		.build();
                 PD = PDT[wk][zk][AanZet];
                 PD.setCacheNummer( 1 );

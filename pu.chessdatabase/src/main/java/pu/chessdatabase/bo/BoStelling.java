@@ -1,5 +1,6 @@
 package pu.chessdatabase.bo;
 
+import static pu.chessdatabase.bo.Kleur.*;
 import pu.chessdatabase.dal.Dbs;
 import pu.chessdatabase.dal.ResultaatType;
 import pu.chessdatabase.dal.VMStelling;
@@ -34,7 +35,7 @@ public static final BoStelling NULL_STELLING = BoStelling.builder()
 	.zk( 0 )
 	.s3( 0 )
 	.s4( 0 )
-	.aanZet( AlgDef.Wit )
+	.aanZet( Wit )
 	.resultaat( ResultaatType.Illegaal )
 	.aantalZetten( 0 )
 	.schaak( false )
@@ -47,7 +48,7 @@ public static BoStelling fromVmStelling( VMStelling aVmStelling )
 		.zk( Dbs.CvtStuk[aVmStelling.getZk()] )
 		.s3( Dbs.CvtStuk[aVmStelling.getS3()] )
 		.s4( Dbs.CvtStuk[aVmStelling.getS4()] )
-		.aanZet( aVmStelling.isAanZet() )
+		.aanZet( aVmStelling.getAanZet() )
 		.build();
 }
 /**
@@ -60,7 +61,7 @@ private int wk;
 private int zk;
 private int s3;
 private int s4;
-private boolean aanZet;
+private Kleur aanZet;
 private ResultaatType resultaat;
 private int aantalZetten; // Was SHORTCARD, een 8 bits unsigned int
 private boolean schaak;
@@ -85,7 +86,7 @@ public String toString()
 	.append( " ZK=" ).append( Integer.toHexString( zk ) )
 	.append( " S3=" ).append( Integer.toHexString( s3 ) )
 	.append( " S4=" ).append( Integer.toHexString( s4 ) )
-	.append( " AanZet=" ).append( aanZet == false ? "W" : "Z" )
+	.append( " AanZet=" ).append( aanZet.getAfko() )
 	.append( " Resultaat=" ).append( resultaat )
 	.append( " AantalZetten=" ).append( aantalZetten )
 	.append( " Schaak=" ).append( schaak ).append( "\n" );

@@ -12,7 +12,7 @@ import lombok.ToString;
 public class Stuk
 {
 private StukType Soort;
-private boolean Kleur;
+private Kleur Kleur;
 private int Knummer;
 private char StukAfk;
 private int AtlRicht;

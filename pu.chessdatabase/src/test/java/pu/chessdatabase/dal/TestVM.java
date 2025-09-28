@@ -6,6 +6,7 @@ package pu.chessdatabase.dal;
 //===================================================================================================================== 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+import static pu.chessdatabase.bo.Kleur.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -345,9 +346,9 @@ public void testGetPage()
 		.zk( 0x31 )
 		.s3( 0x00 )
 		.s4( 0x07 )
-		.aanZet( false )
+		.aanZet( Wit )
 		.build();
-	vm.PDT[vmStelling.getWk()][vmStelling.getZk()][vmStelling.isAanZet()? 1 : 0] = pageDescriptor;
+	vm.PDT[vmStelling.getWk()][vmStelling.getZk()][vmStelling.getAanZet().ordinal()] = pageDescriptor;
 
 	Page page = vm.GetPage( vmStelling, true );
 	assertThat( TestHelper.isAll( page.getPage(), value ), is( true ) );
@@ -374,9 +375,9 @@ public void testGetPageNotDirtyAndInRam()
 		.zk( 0x31 )
 		.s3( 0x00 )
 		.s4( 0x07 )
-		.aanZet( false )
+		.aanZet( Wit )
 		.build();
-	vm.PDT[vmStelling.getWk()][vmStelling.getZk()][vmStelling.isAanZet()? 1 : 0] = pageDescriptor;
+	vm.PDT[vmStelling.getWk()][vmStelling.getZk()][vmStelling.getAanZet().ordinal()] = pageDescriptor;
 
 	Page page = vm.GetPage( vmStelling, false );
 	assertThat( TestHelper.isAll( page.getPage(), value ), is( true ) );
@@ -403,9 +404,9 @@ public void testGet()
 		.zk( 0x31 )
 		.s3( 0x00 )
 		.s4( 0x07 )
-		.aanZet( false )
+		.aanZet( Wit )
 		.build();
-	vm.PDT[vmStelling.getWk()][vmStelling.getZk()][vmStelling.isAanZet()? 1 : 0] = pageDescriptor;
+	vm.PDT[vmStelling.getWk()][vmStelling.getZk()][vmStelling.getAanZet().ordinal()] = pageDescriptor;
 
 	int dbsRec = vm.Get( vmStelling );
 	assertThat( value, is( (byte)( dbsRec & 0xff ) ) );
@@ -429,9 +430,9 @@ public void testPut()
 		.zk( 0x31 )
 		.s3( 0x00 )
 		.s4( 0x07 )
-		.aanZet( false )
+		.aanZet( Wit )
 		.build();
-	vm.PDT[vmStelling.getWk()][vmStelling.getZk()][vmStelling.isAanZet()? 1 : 0] = pageDescriptor;
+	vm.PDT[vmStelling.getWk()][vmStelling.getZk()][vmStelling.getAanZet().ordinal()] = pageDescriptor;
 
 	int dbsRec = 0x55;
 	vm.Put( vmStelling, dbsRec );
@@ -457,7 +458,7 @@ public void testFreeRecord()
 		.zk( 0x29 )
 		.s3( 0x01 )
 		.s4( 0x17 )
-		.aanZet( false )
+		.aanZet( Wit )
 		.build();
 	CacheEntry cacheEntry = CacheEntry.builder()
 		.Generatie( 15554 )
@@ -466,7 +467,7 @@ public void testFreeRecord()
 		.Vuil( true )
 		.build();
 	vm.Cache[pageDescriptor.getCacheNummer()] = cacheEntry;
-	vm.PDT[vmStelling.getWk()][vmStelling.getZk()][vmStelling.isAanZet()? 1 : 0] = pageDescriptor;
+	vm.PDT[vmStelling.getWk()][vmStelling.getZk()][vmStelling.getAanZet().ordinal()] = pageDescriptor;
 
 	vm.FreeRecord( vmStelling );
 	assertThat( cacheEntry.getGeneratie(), is( 0L ) );
@@ -547,12 +548,12 @@ public void testFlushWithSomePagesPresentAndVuil()
 		.zk( 0x00 )
 		.s3( 0x01 )
 		.s4( 0x17 )
-		.aanZet( false )
+		.aanZet( Wit )
 		.build();
 	Page newPage = vm.GetPage( vmStelling, false );
 	assertThat( TestHelper.isAllOne( newPage.getPage() ), is( true ) );
 	
-	vmStelling.setAanZet( true );
+	vmStelling.setAanZet( Wit );
 	newPage = vm.GetPage( vmStelling, false );
 	assertThat( TestHelper.isAllOne( newPage.getPage() ), is( true ) );
 }

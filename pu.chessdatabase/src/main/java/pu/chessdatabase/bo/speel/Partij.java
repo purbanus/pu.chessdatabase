@@ -1,5 +1,6 @@
 package pu.chessdatabase.bo.speel;
 
+import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.bo.speel.EindeType.*;
 import static pu.chessdatabase.dal.ResultaatType.*;
 
@@ -10,7 +11,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import pu.chessdatabase.bo.AlgDef;
 import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Gen;
 import pu.chessdatabase.bo.GenZRec;
@@ -511,7 +511,7 @@ public boolean zet( VanNaar aVanNaar )
 		//.Schaak( boStellingNaar.isSchaak() )
 		//.vanNaar( aVanNaar )
 		.build();
-	if ( boStellingNaar.isAanZet() == AlgDef.Wit )
+	if ( boStellingNaar.getAanZet() == Wit )
 	{
 		PlyRecord newPlyRecord = plies[curPartij.getCurPly()];
 		newPlyRecord.setZetNr( newPlyRecord.getZetNr() + 1 );
@@ -800,7 +800,7 @@ String heleZetToString( int aPlyNummer )
 		throw new RuntimeException( "Fout in HeleZetToStr: Plynummer > laatste zet" );
 	}
 	// Wit
-	if ( plies[aPlyNummer].getBoStelling().isAanZet() != AlgDef.Wit )
+	if ( plies[aPlyNummer].getBoStelling().getAanZet() != Wit )
 	{
 		throw new RuntimeException( "Fout in HeleZetToStr: Eerste zet is niet wit" );
 	}
@@ -810,7 +810,7 @@ String heleZetToString( int aPlyNummer )
 	aPlyNummer++;
 	if ( aPlyNummer < curPartij.getLastPly() )
 	{
-		if ( plies[aPlyNummer].getBoStelling().isAanZet() != AlgDef.Zwart )
+		if ( plies[aPlyNummer].getBoStelling().getAanZet() != Zwart )
 		{
 			throw new RuntimeException( "Fout in HeleZetToStr: Tweede zet is niet zwart" );
 		}
@@ -886,7 +886,7 @@ public PartijReport partijToString()
 		int startPly;
 		
 		// Bijzonder geval als eerste zet zwart is *)
-		if ( plies[0].getBoStelling().isAanZet() == AlgDef.Zwart )
+		if ( plies[0].getBoStelling().getAanZet() == Zwart )
 		{
 			String heleZetString = "  1.   ...   ";
 			heleZetString += plyToStr( plies[0] );
@@ -922,7 +922,7 @@ public PartijReport partijToString()
 		if ( curPartij.getCurPly() > 0 )
 		{
 			partijReport.getVooruit().setErIsVooruit( true );
-			if ( plies[0].getBoStelling().isAanZet() == AlgDef.Wit )
+			if ( plies[0].getBoStelling().getAanZet() == Wit )
 			{
 				partijReport.getVooruit().setStart( ( curPartij.getCurPly() - 1 ) / 2 + 1 );
 			}
@@ -930,7 +930,7 @@ public PartijReport partijToString()
 			{
 				partijReport.getVooruit().setStart( ( curPartij.getCurPly()     ) / 2 + 1 );
 			}
-			partijReport.getVooruit().setHalverwege( plies[curPartij.getCurPly()].getBoStelling().isAanZet() == AlgDef.Wit );
+			partijReport.getVooruit().setHalverwege( plies[curPartij.getCurPly()].getBoStelling().getAanZet() == Wit );
 		}
 	}
 	partijReport.setAantalZetten( zetNummer );
