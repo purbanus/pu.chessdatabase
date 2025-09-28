@@ -14,8 +14,11 @@ public class Stuk
 private StukType Soort;
 private Kleur Kleur;
 private int Knummer;
-private char StukAfk;
 private int AtlRicht;
 private boolean Meer;
 private int [] Richting;
+public String getAfko()
+{
+	return Soort.getAfko();
+}
 }

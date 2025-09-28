@@ -153,11 +153,11 @@ public void VulStukTabel()
 		StukTabel[x] = stuk;
 		switch ( stuk.getSoort() )
 		{
-			case StukType.Koning: stuk.setRichting( Krichting ); stuk.setAtlRicht( 8 ); stuk.setMeer( false ); stuk.setStukAfk( 'K' ); break;
-			case StukType.Dame  : stuk.setRichting( Krichting ); stuk.setAtlRicht( 8 ); stuk.setMeer( true  ); stuk.setStukAfk( 'D' ); break;
-			case StukType.Toren : stuk.setRichting( Trichting ); stuk.setAtlRicht( 4 ); stuk.setMeer( true  ); stuk.setStukAfk( 'T' ); break;
-			case StukType.Loper : stuk.setRichting( Lrichting ); stuk.setAtlRicht( 4 ); stuk.setMeer( true  ); stuk.setStukAfk( 'L' ); break;
-			case StukType.Paard : stuk.setRichting( Prichting ); stuk.setAtlRicht( 8 ); stuk.setMeer( false ); stuk.setStukAfk( 'P' ); break;
+			case StukType.Koning: stuk.setRichting( Krichting ); stuk.setAtlRicht( 8 ); stuk.setMeer( false ); break;
+			case StukType.Dame  : stuk.setRichting( Krichting ); stuk.setAtlRicht( 8 ); stuk.setMeer( true  ); break;
+			case StukType.Toren : stuk.setRichting( Trichting ); stuk.setAtlRicht( 4 ); stuk.setMeer( true  ); break;
+			case StukType.Loper : stuk.setRichting( Lrichting ); stuk.setAtlRicht( 4 ); stuk.setMeer( true  ); break;
+			case StukType.Paard : stuk.setRichting( Prichting ); stuk.setAtlRicht( 8 ); stuk.setMeer( false ); break;
 		}
 	}
 }
@@ -600,6 +600,7 @@ Comparator<BoStelling> stellingComparator = new Comparator<>()
 	@Override
 	public int compare( BoStelling L, BoStelling R )
 	{
+		// @@NOG Dit klopt nog niet erg, zie de tests
 		int compare = L.getResultaat().compareTo( R.getResultaat() );
 		if ( compare != 0 )
 		{
@@ -616,7 +617,7 @@ Comparator<BoStelling> stellingComparator = new Comparator<>()
 		{
 			if ( L.getAantalZetten() < R.getAantalZetten() )
 			{
-				return 1;
+				return -1;
 			}
 		}
 		return 0;
@@ -692,11 +693,10 @@ public StukInfo GetStukInfo( BoStelling aStelling, int aStukNummer )
 		case 4: veld = aStelling.getS4(); break;
 	}
 	StukInfo stukInfo = StukInfo.builder()
-		.Veld( veld )
-		.X( 1 + veld % 16 )
-		.Y( 1 + veld / 16 )
-		.Kleur( StukTabel[aStukNummer].getKleur() )
-		.StukAfk( StukTabel[aStukNummer].getStukAfk() )
+		.stuk( StukTabel[aStukNummer] )
+		.veld( veld )
+		.x( 1 + veld % 16 )
+		.y( 1 + veld / 16 )
 		.build();
 	return stukInfo;
 }

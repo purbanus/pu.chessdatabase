@@ -11,9 +11,16 @@ import lombok.ToString;
 @ToString
 public class StukInfo
 {
-private int Veld;
-private int X;
-private int Y;
-private Kleur Kleur;
-private char StukAfk;
+private Stuk stuk;
+private int veld;
+private int x;
+private int y;
+public Kleur getKleur()
+{
+	return getStuk().getKleur();
+}
+public String getAfko()
+{
+	return getStuk().getAfko();
+}
 }
