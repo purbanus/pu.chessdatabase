@@ -14,6 +14,10 @@ import pu.chessdatabase.dal.ResultaatType;
 public class Gen
 {
 // Bij Stukken en Kleuren wordt element 0 niet gebruikt
+public static final int MIN_STUKNUMMER = 1;
+public static final int MAX_STUKNUMMER = 4;
+public static final int MIN_KLEURNUMMER = 1;
+public static final int MAX_KLEURNUMMER = 4;
 public static final StukType [] Stukken = { null, StukType.Koning, StukType.Koning, StukType.Dame, StukType.Toren };
 public static final boolean [] Kleuren = { false, AlgDef.Wit, AlgDef.Zwart, AlgDef.Wit, AlgDef.Zwart };
 public static final BitSet BuitenBord = bitSetOfInt( 0x88 );
