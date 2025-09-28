@@ -2,5 +2,5 @@ package pu.chessdatabase.bo.speel;
 
 public enum EindeType
 {
-NogNiet, Mat, Pat
+NogNiet, Mat, Pat, Illegaal
 }
