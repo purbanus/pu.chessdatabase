@@ -1,5 +1,7 @@
 package pu.chessdatabase.dal;
 
+import pu.chessdatabase.bo.Kleur;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +19,7 @@ private int wk;
 private int zk;
 private int s3;
 private int s4;
-private boolean aanZet;
+private Kleur aanZet;
 
 public void checkStelling()
 {
@@ -42,7 +44,7 @@ public String toString()
 	.append( " ZK=" ).append( Integer.toHexString( zk ) )
 	.append( " S3=" ).append( Integer.toHexString( s3 ) )
 	.append( " S4=" ).append( Integer.toHexString( s4 ) )
-	.append( " AanZet=" ).append( aanZet == false ? "W" : "Z" ).append( "\n" );
+	.append( " AanZet=" ).append( aanZet.getAfko() ).append( "\n" );
 	for ( int rij = 7; rij >= 0; rij-- )
 	{
 		for ( int kol = 0; kol < 8; kol++ )

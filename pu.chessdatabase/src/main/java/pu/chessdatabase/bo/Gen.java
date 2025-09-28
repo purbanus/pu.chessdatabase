@@ -1,5 +1,6 @@
 package pu.chessdatabase.bo;
 
+import static pu.chessdatabase.bo.Kleur.*;
 import java.util.BitSet;
 import java.util.Comparator;
 
@@ -18,8 +19,10 @@ public static final int MIN_STUKNUMMER = 1;
 public static final int MAX_STUKNUMMER = 4;
 public static final int MIN_KLEURNUMMER = 1;
 public static final int MAX_KLEURNUMMER = 4;
+//public static final int MAX_STUKKEN = 4;
+
 public static final StukType [] Stukken = { null, StukType.Koning, StukType.Koning, StukType.Dame, StukType.Toren };
-public static final boolean [] Kleuren = { false, AlgDef.Wit, AlgDef.Zwart, AlgDef.Wit, AlgDef.Zwart };
+public static final Kleur [] Kleuren = { null, Wit, Zwart, Wit, Zwart };
 public static final BitSet BuitenBord = bitSetOfInt( 0x88 );
 public static final BitSet Nul = bitSetOfInt( 0x00 );
 public static final int Leeg = 0xFF;
@@ -145,7 +148,7 @@ public void VulStukTabel()
 		Stuk stuk = Stuk.builder()
 			.Soort( Stukken[x] )
 			.Kleur( Kleuren[x] )
-			.Knummer( Kleuren[x] == AlgDef.Wit ? 1 : 2 )
+			.Knummer( Kleuren[x] == Wit ? 1 : 2 )
 			.build();
 		StukTabel[x] = stuk;
 		switch ( stuk.getSoort() )
@@ -218,10 +221,10 @@ END IsGeomIllegaal;
 public boolean IsGeomIllegaal( BoStelling S )
 {
 	if ( ( S.getWk() == S.getZk() ) || ( S.getS3() == S.getS4()     ) ) return true;
-	if ( ( S.getWk() == S.getS3() ) && ( Kleuren[3] != AlgDef.Wit   ) ) return true;
-	if ( ( S.getWk() == S.getS4() ) && ( Kleuren[4] != AlgDef.Wit   ) ) return true;
-	if ( ( S.getZk() == S.getS3() ) && ( Kleuren[3] != AlgDef.Zwart ) ) return true;
-	if ( ( S.getZk() == S.getS4() ) && ( Kleuren[4] != AlgDef.Zwart ) ) return true;
+	if ( ( S.getWk() == S.getS3() ) && ( Kleuren[3] != Wit   ) ) return true;
+	if ( ( S.getWk() == S.getS4() ) && ( Kleuren[4] != Wit   ) ) return true;
+	if ( ( S.getZk() == S.getS3() ) && ( Kleuren[3] != Zwart ) ) return true;
+	if ( ( S.getZk() == S.getS4() ) && ( Kleuren[4] != Zwart ) ) return true;
 	return false;
 }
 /**
@@ -336,7 +339,7 @@ END IsSchaak;
 */
 public boolean CheckSchaakDoorStuk( BoStelling aStelling, Stuk aStuk, int aKoningsVeld, int aStukVeld )
 {
-	if ( ( aStukVeld != aStelling.getWk() ) && ( aStukVeld != aStelling.getZk() ) && ( aStuk.isKleur() != aStelling.isAanZet() ) )
+	if ( ( aStukVeld != aStelling.getWk() ) && ( aStukVeld != aStelling.getZk() ) && ( aStuk.getKleur() != aStelling.getAanZet() ) )
 	{
 		if ( isSchaakDoorStuk( aStuk, aKoningsVeld, aStukVeld ) )
 		{
@@ -355,7 +358,7 @@ public boolean CheckSchaakDoorStuk( BoStelling aStelling, Stuk aStuk, int aKonin
 public boolean isSchaak( BoStelling aStelling )
 {
 	ZetBordOp( aStelling );
-	int KVeld = aStelling.isAanZet() == AlgDef.Wit ? aStelling.getWk() : aStelling.getZk();
+	int KVeld = aStelling.getAanZet() == Wit ? aStelling.getWk() : aStelling.getZk();
 	if ( CheckSchaakDoorStuk( aStelling, StukTabel[3], KVeld, aStelling.getS3() ) )
 	{
 		ClrBord( aStelling );
@@ -437,7 +440,7 @@ void AddZet( final BoStelling aBoStelling, int aStukNr, int aNaar, ZetSoort aZet
 		case 3: boStelling.setS3( aNaar ); break;
 		case 4: boStelling.setS4( aNaar ); break;
 	}
-	boStelling.setAanZet( ! boStelling.isAanZet() );
+	boStelling.setAanZet( boStelling.getAanZet() == Wit ? Zwart : Wit );
 	dbs.Get( boStelling );
 	if ( boStelling.getResultaat() != ResultaatType.Illegaal )
 	{
@@ -497,7 +500,7 @@ GenZRec GenZPerStuk( BoStelling aBoStelling, int aStukNummer, int aKoningsVeld, 
 			}
 			else
 			{
-				if ( StukTabel[Bord[Veld]].isKleur() != aBoStelling.isAanZet() )
+				if ( StukTabel[Bord[Veld]].getKleur() != aBoStelling.getAanZet() )
 				{
 					AddZet( aBoStelling, aStukNummer, Veld, ZetSoort.SlagZet, aKoningsVeld, aStukVeld, genZRec );
 				}
@@ -548,7 +551,7 @@ public GenZRec GenZ( BoStelling aStelling )
 	int koningsVeld;
 
 	//-------- Koningszetten --------
-	if ( aStelling.isAanZet() == AlgDef.Wit )
+	if ( aStelling.getAanZet() == Wit )
 	{
 		stukVeld = aStelling.getWk();
 		koningsVeld = aStelling.getWk();
@@ -563,14 +566,14 @@ public GenZRec GenZ( BoStelling aStelling )
 		genZRec.addAll( genZRecPerStuk );
 	}
 	//--------- Stukzetten ----------
-	if ( ( StukTabel[3].isKleur() == aStelling.isAanZet() ) && ( aStelling.getS3() != koningsVeld ) )
+	if ( ( StukTabel[3].getKleur() == aStelling.getAanZet() ) && ( aStelling.getS3() != koningsVeld ) )
 	{
 		stukVeld = aStelling.getS3();
 		koningsVeld = aStelling.getWk();
 		GenZRec genZRecPerStuk = GenZPerStuk( aStelling, 3, koningsVeld, stukVeld );
 		genZRec.addAll( genZRecPerStuk );
 	}
-	if ( ( StukTabel[4].isKleur() == aStelling.isAanZet() ) && ( aStelling.getS4() != koningsVeld ) )
+	if ( ( StukTabel[4].getKleur() == aStelling.getAanZet() ) && ( aStelling.getS4() != koningsVeld ) )
 	{
 		stukVeld = aStelling.getS4();
 		koningsVeld = aStelling.getZk();
@@ -692,7 +695,7 @@ public StukInfo GetStukInfo( BoStelling aStelling, int aStukNummer )
 		.Veld( veld )
 		.X( 1 + veld % 16 )
 		.Y( 1 + veld / 16 )
-		.Kleur( StukTabel[aStukNummer].isKleur() )
+		.Kleur( StukTabel[aStukNummer].getKleur() )
 		.StukAfk( StukTabel[aStukNummer].getStukAfk() )
 		.build();
 	return stukInfo;

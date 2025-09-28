@@ -1,5 +1,6 @@
 package pu.chessdatabase.bo;
 
+import static pu.chessdatabase.bo.Kleur.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -209,7 +210,7 @@ public void isIllegaal( BoStelling aBoStelling )
 	if ( gen.IsGeomIllegaal( boStelling ) || gen.isKKSchaak( boStelling ) )
 	{
 		boStelling.setResultaat( ResultaatType.Illegaal );
-		boStelling.setAanZet( AlgDef.Wit );
+		boStelling.setAanZet( Wit );
 		if ( HOU_STELLINGEN_BIJ )
 		{
 			illegaalStellingen.add( boStelling );
@@ -217,7 +218,7 @@ public void isIllegaal( BoStelling aBoStelling )
 		dbs.Put( boStelling );
 
 		boStelling = boStelling.clone();
-		boStelling.setAanZet( AlgDef.Zwart );
+		boStelling.setAanZet( Zwart );
 		if ( HOU_STELLINGEN_BIJ )
 		{
 			illegaalStellingen.add( boStelling );
@@ -272,7 +273,7 @@ public void schaakjes( BoStelling aBoStellingMetWitAanZet )
 	{
 		BoStelling boStellingMetWitAanZet = aBoStellingMetWitAanZet.clone();
 		BoStelling boStellingMetZwartAanZet = aBoStellingMetWitAanZet.clone();
-		boStellingMetZwartAanZet.setAanZet( AlgDef.Zwart );
+		boStellingMetZwartAanZet.setAanZet( Zwart );
 		// Wit aan zet
 		if ( gen.isSchaak( boStellingMetWitAanZet ) )
 		{
@@ -457,7 +458,7 @@ void telAlles()
 long[][] tellersMetKleur;
 void telMetKleur( BoStelling aBoStelling )
 {
-	int aanZet = aBoStelling.isAanZet() == AlgDef.Zwart ? 1 : 0;
+	int aanZet = aBoStelling.getAanZet() == Zwart ? 1 : 0;
 	tellersMetKleur[aanZet][aBoStelling.getResultaat().ordinal()]++;
 	resTeller++;
 	if ( resTeller >= rptFreq )

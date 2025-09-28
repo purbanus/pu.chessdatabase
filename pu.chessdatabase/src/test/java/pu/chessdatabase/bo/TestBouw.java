@@ -6,6 +6,7 @@ package pu.chessdatabase.bo;
 //===================================================================================================================== 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+import static pu.chessdatabase.bo.Kleur.*;
 
 import java.util.ArrayList;
 
@@ -106,6 +107,7 @@ public void testIsIllegaal()
 		.zk( 0x05 )
 		.s3( 0x15 )
 		.s4( 0x16 )
+		.aanZet( Wit )
 		.build();
 	bouw.isIllegaal( boStelling );
 	
@@ -124,7 +126,7 @@ public void testSchaakjes()
 		.zk( 0x27 )
 		.s3( 0x76 )
 		.s4( 0x10 )
-		.aanZet( AlgDef.Wit )
+		.aanZet( Wit )
 		.resultaat( ResultaatType.Remise )
 		.build();
 	bouw.schaakjes( boStelling );
@@ -132,7 +134,7 @@ public void testSchaakjes()
 	assertThat( boStelling.isSchaak(), is( true ) );
 	assertThat( boStelling.getResultaat(), is( ResultaatType.Remise ) );
 	
-	boStelling.setAanZet( AlgDef.Zwart );
+	boStelling.setAanZet( Zwart );
 	dbs.Get( boStelling );
 	assertThat( boStelling.isSchaak(), is( false ) );
 	assertThat( boStelling.getResultaat(), is( ResultaatType.Illegaal ) );
@@ -175,7 +177,7 @@ public void testIsMat()
 		.zk( 0x27 )
 		.s3( 0x26 )
 		.s4( 0x10 )
-		.aanZet( AlgDef.Zwart )
+		.aanZet( Zwart )
 		.schaak( true )
 		.resultaat( ResultaatType.Remise )
 		.aantalZetten( 0 )
@@ -192,7 +194,7 @@ public void testIsMat()
 		.zk( 0x00 )
 		.s3( 0x06 )
 		.s4( 0x04 )
-		.aanZet( AlgDef.Wit)
+		.aanZet( Wit)
 		.schaak( true )
 		.resultaat( ResultaatType.Remise )
 		.aantalZetten( 0 )
@@ -218,7 +220,7 @@ ZK ZT WK .. .. .. .. ..
 		.zk( 0x00 )
 		.s3( 0x52 )
 		.s4( 0x01 )
-		.aanZet( AlgDef.Wit)
+		.aanZet( Wit)
 		.schaak( true )
 		.resultaat( ResultaatType.Remise )
 		.aantalZetten( 0 )
@@ -234,7 +236,7 @@ ZK ZT WK .. .. .. .. ..
 		.zk( 0x00 )
 		.s3( 0x50 )
 		.s4( 0x01 )
-		.aanZet( AlgDef.Zwart )
+		.aanZet( Zwart )
 		.schaak( true )
 		.resultaat( ResultaatType.Remise )
 		.aantalZetten( 0 )
@@ -276,7 +278,7 @@ public void testMarkeer()
 		.zk( 0x12 )
 		.s3( 0x00 )
 		.s4( 0x21 )
-		.aanZet( AlgDef.Zwart )
+		.aanZet( Zwart )
 		.schaak( false )
 		.resultaat( ResultaatType.Remise )
 		.aantalZetten( 0 )
@@ -292,7 +294,7 @@ public void testMarkeer()
 		.zk( 0x12 )
 		.s3( 0x10 )
 		.s4( 0x21 )
-		.aanZet( AlgDef.Wit )
+		.aanZet( Wit )
 		.schaak( false )
 		.resultaat( ResultaatType.Remise )
 		.aantalZetten( 0 )

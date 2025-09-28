@@ -14,6 +14,6 @@ public class StukInfo
 private int Veld;
 private int X;
 private int Y;
-private boolean Kleur;
+private Kleur Kleur;
 private char StukAfk;
 }

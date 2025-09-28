@@ -6,6 +6,7 @@ package pu.chessdatabase.dal;
 //===================================================================================================================== 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+import static pu.chessdatabase.bo.Kleur.*;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,10 +14,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import pu.chessdatabase.bo.AlgDef;
 import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Bouw;
 import pu.chessdatabase.util.Vector;
+
 
 @SpringBootTest
 public class TestDbs
@@ -176,7 +177,7 @@ public void testCardinaliseer()
 		.zk( 0x12 )
 		.s3( 0x00 )
 		.s4( 0x13 )
-		.aanZet( AlgDef.Wit )
+		.aanZet( Wit )
 		.build();
 	VMStelling vmStelling = dbs.Cardinaliseer( boStelling );
 	//System.out.println( boStelling );
@@ -186,7 +187,7 @@ public void testCardinaliseer()
 		.zk( 0x11 )
 		.s3( 0x00 )
 		.s4( 0x19 )
-		.aanZet( AlgDef.Wit )
+		.aanZet( Wit )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
 	
@@ -195,7 +196,7 @@ public void testCardinaliseer()
 		.zk( 0x26 )
 		.s3( 0x07 )
 		.s4( 0x27 )
-		.aanZet( AlgDef.Wit )
+		.aanZet( Wit )
 		.build();
 	vmStelling = dbs.Cardinaliseer( boStelling );
 	//System.out.println( boStelling );
@@ -205,7 +206,7 @@ public void testCardinaliseer()
 		.zk( 0x11 )
 		.s3( 0x00 )
 		.s4( 0x10 )
-		.aanZet( AlgDef.Wit )
+		.aanZet( Wit )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
 	
@@ -214,7 +215,7 @@ public void testCardinaliseer()
 		.zk( 0x27 )
 		.s3( 0x76 )
 		.s4( 0x10 )
-		.aanZet( AlgDef.Wit )
+		.aanZet( Wit )
 		.build();
 	vmStelling = dbs.Cardinaliseer( boStelling );
 	newVmStelling = VMStelling.builder()
@@ -222,7 +223,7 @@ public void testCardinaliseer()
 		.zk( 0x17 )
 		.s3( 0x3e )
 		.s4( 0x08 )
-		.aanZet( AlgDef.Wit )
+		.aanZet( Wit )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
 
@@ -239,7 +240,7 @@ public void testPut()
 		.zk( 0x12 )
 		.s3( 0x00 )
 		.s4( 0x13 )
-		.aanZet( false )
+		.aanZet( Wit )
 		.resultaat( ResultaatType.Illegaal )
 		.aantalZetten( 0 )
 		.schaak( false )
@@ -258,7 +259,7 @@ public void testPut()
 		.zk( 0x12 )
 		.s3( 0x00 )
 		.s4( 0x13 )
-		.aanZet( false )
+		.aanZet( Wit )
 		.resultaat( ResultaatType.Remise )
 		.aantalZetten( 0 )
 		.schaak( false )
@@ -275,7 +276,7 @@ public void testPut()
 		.zk( 0x12 )
 		.s3( 0x00 )
 		.s4( 0x13 )
-		.aanZet( false )
+		.aanZet( Wit )
 		.resultaat( ResultaatType.Gewonnen )
 		.aantalZetten( 13 )
 		.schaak( false )
@@ -292,7 +293,7 @@ public void testPut()
 		.zk( 0x12 )
 		.s3( 0x00 )
 		.s4( 0x13 )
-		.aanZet( false )
+		.aanZet( Wit )
 		.resultaat( ResultaatType.Verloren )
 		.aantalZetten( 27 )
 		.schaak( false )
@@ -309,7 +310,7 @@ public void testPut()
 		.zk( 0x12 )
 		.s3( 0x00 )
 		.s4( 0x13 )
-		.aanZet( false )
+		.aanZet( Wit )
 		.resultaat( ResultaatType.Remise )
 		.aantalZetten( 27 )
 		.schaak( true )
@@ -340,7 +341,7 @@ public void testFreeRecord()
 		.zk( 0x12 )
 		.s3( 0x00 )
 		.s4( 0x13 )
-		.aanZet( false )
+		.aanZet( Wit )
 		.resultaat( ResultaatType.Verloren )
 		.aantalZetten( 27 )
 		.schaak( false )
@@ -383,7 +384,7 @@ public void testPass34()
 		.zk( 0x00 )
 		.s3( 0x11 )
 		.s4( 0x13 )
-		.aanZet( false )
+		.aanZet( Wit )
 		.resultaat( ResultaatType.Gewonnen )
 		.aantalZetten( 13 )
 		.schaak( false )
@@ -391,11 +392,11 @@ public void testPass34()
 	VMStelling vmStelling = dbs.Cardinaliseer( boStelling );
 	dbs.Pass34( boStelling, vmStelling, bouw::isIllegaal );
 	dbs.flush();
-	vmStelling.setAanZet( false );
+	vmStelling.setAanZet( Wit );
 	Page page = vm.GetPage( vmStelling, false );
 	assertThat( TestHelper.isAll( page.getPage(), (byte)0xff ), is( true ) );
 	
-	vmStelling.setAanZet( true );
+	vmStelling.setAanZet( Zwart );
 	page = vm.GetPage( vmStelling, false );
 	assertThat( TestHelper.isAll( page.getPage(), (byte)0xff ), is( true ) );
 }
@@ -426,10 +427,10 @@ public void testMarkeerWitPassMet0x0b()
 		for ( int zk = 0; zk < 64; zk++ )
 		{
 			vmStelling.setZk( zk );
-			vmStelling.setAanZet( false );
+			vmStelling.setAanZet( Wit );
 			page = vm.GetPage( vmStelling, false );
 			assertThat( TestHelper.isAll( page.getPage(), (byte)0x0b ), is( true ) );
-			vmStelling.setAanZet( true );
+			vmStelling.setAanZet( Zwart );
 			page = vm.GetPage( vmStelling, false );
 			assertThat( TestHelper.isAll( page.getPage(), (byte)0x00 ), is( true ) );
 		}
@@ -450,10 +451,10 @@ public void testMarkeerWitPassMet0x8b()
 		for ( int zk = 0; zk < 64; zk++ )
 		{
 			vmStelling.setZk( zk );
-			vmStelling.setAanZet( AlgDef.Wit );
+			vmStelling.setAanZet( Wit );
 			page = vm.GetPage( vmStelling, false );
 			assertThat( TestHelper.isAll( page.getPage(), (byte)0x8b ), is( true ) );
-			vmStelling.setAanZet( AlgDef.Zwart );
+			vmStelling.setAanZet( Zwart );
 			page = vm.GetPage( vmStelling, false );
 			assertThat( TestHelper.isAll( page.getPage(), (byte)0x00 ), is( true ) );
 		}
@@ -481,10 +482,10 @@ public void testMarkeerZwartPass()
 		for ( int zk = 0; zk < 64; zk++ )
 		{
 			vmStelling.setZk( zk );
-			vmStelling.setAanZet( false );
+			vmStelling.setAanZet( Wit );
 			page = vm.GetPage( vmStelling, false );
 			assertThat( TestHelper.isAll( page.getPage(), (byte)0x00 ), is( true ) );
-			vmStelling.setAanZet( true );
+			vmStelling.setAanZet( Zwart );
 			page = vm.GetPage( vmStelling, false );
 			assertThat( TestHelper.isAll( page.getPage(), (byte)0x11 ), is( true ) );
 		}
@@ -505,17 +506,17 @@ public void testMarkeerWitEnZwartPass()
 	// Alle pagina's moeten nu 0x34 zijn
 	VMStelling vmStelling = new VMStelling();
 	Page page;
-	vmStelling.setAanZet( true );
+	vmStelling.setAanZet( Zwart );
 	for ( int wk = 0; wk < 10; wk++ )
 	{
 		vmStelling.setWk( wk );
 		for ( int zk = 0; zk < 64; zk++ )
 		{
 			vmStelling.setZk( zk );
-			vmStelling.setAanZet( false );
+			vmStelling.setAanZet( Wit );
 			page = vm.GetPage( vmStelling, false );
 			assertThat( TestHelper.isAll( page.getPage(), (byte)0x34 ), is( true ) );
-			vmStelling.setAanZet( true );
+			vmStelling.setAanZet( Zwart );
 			page = vm.GetPage( vmStelling, false );
 			assertThat( TestHelper.isAll( page.getPage(), (byte)0x34 ), is( true ) );
 		}

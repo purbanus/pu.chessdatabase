@@ -8,6 +8,7 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 //import static org.mockito.ArgumentMatchers.*;
+import static pu.chessdatabase.bo.Kleur.*;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import pu.chessdatabase.bo.AlgDef;
 import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.dal.Dbs;
 
@@ -58,7 +58,7 @@ public void testIsLegaleStelling()
 		.zk( 0 )
 		.s3( 0 )
 		.s4( 0 )
-		.aanZet( AlgDef.Wit )
+		.aanZet( Wit )
 		.build();
 	assertThat( partij.isLegaleStelling( boStelling ), is( false ) );
 	boStelling = BoStelling.builder()
@@ -66,7 +66,7 @@ public void testIsLegaleStelling()
 		.zk( 6 )
 		.s3( 7 )
 		.s4( 8 )
-		.aanZet( AlgDef.Wit )
+		.aanZet( Wit )
 		.build();
 	assertThat( partij.isLegaleStelling( boStelling ), is( false ) );
 	boStelling = BoStelling.builder()
@@ -74,14 +74,14 @@ public void testIsLegaleStelling()
 		.zk( 0x77 )
 		.s3( 0x11 )
 		.s4( 0x66 )
-		.aanZet( AlgDef.Wit )
+		.aanZet( Wit )
 		.build();
 	boStelling = BoStelling.builder()
 		.wk( 5 )
 		.zk( 6 )
 		.s3( 7 )
 		.s4( 8 )
-		.aanZet( AlgDef.Wit )
+		.aanZet( Wit )
 		.build();
 	assertThat( partij.isLegaleStelling( boStelling ), is( false ) );
 }
