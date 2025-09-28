@@ -16,7 +16,4 @@ private int X;
 private int Y;
 private boolean Kleur;
 private char StukAfk;
-
-
-
 }
