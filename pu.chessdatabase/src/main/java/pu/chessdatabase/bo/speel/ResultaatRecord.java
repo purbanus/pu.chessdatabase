@@ -11,7 +11,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResultaatRec
+public class ResultaatRecord
 {
 private String res1;
 private String res2;

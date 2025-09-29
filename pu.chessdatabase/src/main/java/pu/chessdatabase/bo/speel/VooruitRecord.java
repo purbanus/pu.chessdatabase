@@ -1,8 +1,5 @@
 package pu.chessdatabase.bo.speel;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,9 +11,9 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @Builder
-public class GenReport
+public class VooruitRecord
 {
-private int aantalZetten;
-@Builder.Default
-private List<String> genZetten = new ArrayList<>(); // Liep in Modula-2 van 1 tot 130!
+private boolean erIsVooruit;
+private int start;
+private boolean halverwege;
 }

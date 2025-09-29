@@ -98,7 +98,7 @@ public void testIsEindStelling()
 		.s4( 0 )
 		.aanZet( WIT )
 		.build();
-	assertThat( partij.isEindStelling( boStelling ), is( EindeType.Illegaal ) );
+	assertThat( partij.isEindStelling( boStelling ), is( EindeType.ILLEGAAL ) );
 	boStelling = BoStelling.builder()
 		.wk( 0x00 )
 		.zk( 0x77 )
@@ -106,7 +106,7 @@ public void testIsEindStelling()
 		.s4( 0x66 )
 		.aanZet( WIT )
 		.build();
-	assertThat( partij.isEindStelling( boStelling ), is( NogNiet ) );
+	assertThat( partij.isEindStelling( boStelling ), is( NOG_NIET ) );
 	boStelling = BoStelling.builder()
 		.wk( 0x00 )
 		.zk( 0x12 )
@@ -114,7 +114,7 @@ public void testIsEindStelling()
 		.s4( 0x20 )
 		.aanZet( WIT )
 		.build();
-	assertThat( partij.isEindStelling( boStelling ), is( Mat ) );
+	assertThat( partij.isEindStelling( boStelling ), is( MAT ) );
 	boStelling = BoStelling.builder()
 		.wk( 0x00 )
 		.zk( 0x02 )
@@ -122,7 +122,7 @@ public void testIsEindStelling()
 		.s4( 0x12 )
 		.aanZet( WIT )
 		.build();
-	assertThat( partij.isEindStelling( boStelling ), is( Pat ) );
+	assertThat( partij.isEindStelling( boStelling ), is( PAT ) );
 }
 @Test
 public void testNewGame()
@@ -138,7 +138,7 @@ public void testNewGame()
 	assertThat( startStelling.isSchaak(), is( false ) );
 	PlyRecord plyRecord = PlyRecord.builder()
 		.boStelling( startStelling )
-		.einde( NogNiet )
+		.einde( NOG_NIET )
 		.zetNr( 1 )
 		.vanNaar( VanNaar.ILLEGAL_VAN_NAAR )
 		.build();
@@ -169,7 +169,7 @@ public void testIsEindePartij()
 		.aanZet( WIT )
 		.build();
 	partij.newGame( startStelling );
-	assertThat( partij.isEindePartij(), is( NogNiet ) );
+	assertThat( partij.isEindePartij(), is( NOG_NIET ) );
 
 	startStelling = BoStelling.builder()
 		.wk( 0x00 )
@@ -179,7 +179,7 @@ public void testIsEindePartij()
 		.aanZet( WIT )
 		.build();
 	partij.newGame( startStelling );
-	assertThat( partij.isEindePartij(), is( Mat ) );
+	assertThat( partij.isEindePartij(), is( MAT ) );
 }
 @SuppressWarnings( "null" )
 @Test
@@ -298,9 +298,9 @@ public void testZet()
 	assertThat( partij.zet( vanNaar ), is( false ) );
 
 	partij.curPartij.setBegonnen( true );
-	partij.plies[0].setEinde( Mat );
+	partij.plies[0].setEinde( MAT );
 	assertThat( partij.zet( vanNaar ), is( false ) );
-	partij.plies[0].setEinde( NogNiet );
+	partij.plies[0].setEinde( NOG_NIET );
 	
 	partij.newGame( boStellingVan );
 	assertThat( partij.plies[0].getBoStelling(), is( boStellingVan ) );
@@ -311,7 +311,7 @@ public void testZet()
 	assertThat( partij.curPartij.getCurPly(), is( 1 ) );
 	assertThat( partij.curPartij.getLastPly(), is( 1 ) );
 	assertThat( partij.plies[1].getBoStelling(), is( boStellingNaar ) );
-	assertThat( partij.plies[1].getEinde(), is( NogNiet ) );
+	assertThat( partij.plies[1].getEinde(), is( NOG_NIET ) );
 	assertThat( partij.plies[1].getZetNr(), is( 1 ) );
 }
 @Test
@@ -345,7 +345,7 @@ public void testZetMetZwart()
 	assertThat( partij.curPartij.getCurPly(), is( 1 ) );
 	assertThat( partij.curPartij.getLastPly(), is( 1 ) );
 	assertThat( partij.plies[1].getBoStelling(), is( boStellingNaar ) );
-	assertThat( partij.plies[1].getEinde(), is( NogNiet ) );
+	assertThat( partij.plies[1].getEinde(), is( NOG_NIET ) );
 	assertThat( partij.plies[1].getZetNr(), is( 2 ) );
 }
 @Test
@@ -379,7 +379,7 @@ public void testZetStelling()
 	assertThat( partij.curPartij.getCurPly(), is( 1 ) );
 	assertThat( partij.curPartij.getLastPly(), is( 1 ) );
 	assertThat( partij.plies[1].getBoStelling(), is( boStellingNaar ) );
-	assertThat( partij.plies[1].getEinde(), is( NogNiet ) );
+	assertThat( partij.plies[1].getEinde(), is( NOG_NIET ) );
 	assertThat( partij.plies[1].getZetNr(), is( 2 ) );
 }
 @Test
@@ -414,7 +414,7 @@ public void testBedenk()
 	assertThat( partij.curPartij.getCurPly(), is( 1 ) );
 	assertThat( partij.curPartij.getLastPly(), is( 1 ) );
 	assertThat( partij.plies[1].getBoStelling(), is( boStellingNaar ) );
-	assertThat( partij.plies[1].getEinde(), is( NogNiet ) );
+	assertThat( partij.plies[1].getEinde(), is( NOG_NIET ) );
 	assertThat( partij.plies[1].getZetNr(), is( 1 ) );
 }
 @Test
@@ -446,7 +446,7 @@ public void testPlyToString()
 	VanNaar vanNaar = new VanNaar( 0x11, 0x22 );
 	PlyRecord plyRecord = PlyRecord.builder()
 		.boStelling( boStelling )
-		.einde( NogNiet )
+		.einde( NOG_NIET )
 		.vanNaar( vanNaar )
 		.zetNr( 1 )
 		.build();

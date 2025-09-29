@@ -1,7 +1,5 @@
 package pu.chessdatabase.bo.speel;
 
-import org.eclipse.jdt.annotation.NonNull;
-
 import pu.chessdatabase.bo.BoStelling;
 
 import lombok.AllArgsConstructor;
@@ -26,7 +24,7 @@ public class PlyRecord
 {
 public static final PlyRecord NULL_PLY_RECORD = PlyRecord.builder()
 	.boStelling( BoStelling.NULL_STELLING )
-	.einde( EindeType.NogNiet )
+	.einde( EindeType.NOG_NIET )
 	.zetNr( Partij.MAX_HELE_ZET_NUMMER )
 	.vanNaar( VanNaar.ILLEGAL_VAN_NAAR )
 	.build();

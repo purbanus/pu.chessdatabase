@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import pu.chessdatabase.bo.BoStelling;
-import pu.chessdatabase.bo.ReportProc;
+import pu.chessdatabase.bo.ReportFunction;
 import pu.chessdatabase.util.Matrix;
 import pu.chessdatabase.util.Range;
 import pu.chessdatabase.util.Vector;
@@ -116,7 +116,7 @@ public long [] report = new long [4];
 long [] reportArray = new long [4];
 int reportTeller;
 int reportFrequentie;
-ReportProc reportProc;
+ReportFunction reportProc;
 
 public Dbs()
 {
@@ -178,7 +178,7 @@ BEGIN
 	RptProc:=R;
 END SetReport;
  */
-public void setReport( int aFrequency, ReportProc aReportProc )
+public void setReport( int aFrequency, ReportFunction aReportProc )
 {
 	reportFrequentie = aFrequency;
 	reportTeller = 0;
@@ -574,7 +574,7 @@ END Pass34;
 /**
  * --------- Pass over stukken 3 en 4 ----------------------------------
  */
-public void pass34( BoStelling aBoStelling, VMStelling aVmStelling, PassProc aPassProc )
+public void pass34( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassProc )
 {
 	aVmStelling.setS3( 0 );
 	while ( aVmStelling.getS3() <= 63 )
@@ -623,7 +623,7 @@ END Wpass;
 /**
  * --------- Pass over de remisestellingen met wit aan zet -------------
  */
-void markeerWitPass( PassProc aPassProc )
+void markeerWitPass( PassFunction aPassProc )
 {
 	VMStelling vmStelling = new VMStelling();
 	vmStelling.setAanZet( WIT );
@@ -664,7 +664,7 @@ END Zpass;
 /**
  * --------- Pass over de remisestellingen met zwart aan zet -------------
  */
-void markeerZwartPass( PassProc aPassProc )
+void markeerZwartPass( PassFunction aPassProc )
 {
 	VMStelling vmStelling = new VMStelling();
 	vmStelling.setAanZet( ZWART );
@@ -722,7 +722,7 @@ END WenZpass;
 /**
  * --------- Pass over alle stellingen -------------
  */
-void markeerWitEnZwartPass( PassProc aPassProc )
+void markeerWitEnZwartPass( PassFunction aPassProc )
 {
 	VMStelling vmStelling = new VMStelling();
 	BoStelling boStelling = new BoStelling();
@@ -778,7 +778,7 @@ BEGIN
 	Close();
 END Pass;
  */
-public void pass( PassType aPassType, PassProc aPassProc )
+public void pass( PassType aPassType, PassFunction aPassProc )
 {
 	open();
 //	Window.PutOnTop(Win.CacheWin);

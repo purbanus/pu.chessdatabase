@@ -20,7 +20,7 @@ public class PartijReport
 {
 private boolean erZijnZetten;
 private int aantalZetten;
-private VooruitRec vooruit;
+private VooruitRecord vooruit;
 @Builder.Default
 private List<String> PartijZetten = new ArrayList<>(); // Liep in Modula-2 van 1 tot 130!
 }

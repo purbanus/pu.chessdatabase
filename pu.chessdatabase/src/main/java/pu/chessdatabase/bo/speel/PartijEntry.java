@@ -11,9 +11,17 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @Builder
-public class VooruitRec
+public class PartijEntry
 {
-private boolean erIsVooruit;
-private int start;
-private boolean halverwege;
+public PartijEntry()
+{
+	desc = "";
+	curPly = 0;
+	lastPly = 0;
+	begonnen = false;
+}
+private String desc;
+private int curPly;
+private int lastPly;
+private boolean begonnen;
 }
