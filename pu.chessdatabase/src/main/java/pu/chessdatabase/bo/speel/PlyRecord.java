@@ -15,6 +15,13 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @Builder
+/**
+ * Als we 'van' en 'naar' hebben, dan bevat een PlyRecord
+ * - De BoStelling 'van'
+ * - Of de BoStelling ten einde is
+ * - Het zetnummer van de opky (een zet is twee ply)
+ * - De VanNaar( 'van', 'naar' ) d.w.z. de VanNaar die gespeeld is vanuit de boStelling
+ */
 public class PlyRecord
 {
 public static final PlyRecord NULL_PLY_RECORD = PlyRecord.builder()

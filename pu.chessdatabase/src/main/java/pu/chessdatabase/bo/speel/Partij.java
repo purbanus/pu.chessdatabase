@@ -581,8 +581,7 @@ public boolean bedenk()
 	}
 	return false;
 }
-/**
- * =====================================================================================
+/** =====================================================================================
 		Deel 5: Rapportage
 =====================================================================================
 
@@ -641,7 +640,7 @@ END PlyToStr;
 /**
  * ---------- Ply omzetten in string (Kd1-d2+) --------------
  */
-String plyToStr( PlyRecord aPlyRecord )
+String plyToString( PlyRecord aPlyRecord )
 {
 	StringBuilder sb = new StringBuilder();
 	sb.append( watStaatErOp( aPlyRecord.getBoStelling(), aPlyRecord.getVanNaar().getVan() ) );
@@ -670,7 +669,7 @@ String curPlyToString()
 	{
 		return "";
 	}
-	return plyToStr( plies[curPartij.getCurPly() - 1] );
+	return plyToString( plies[curPartij.getCurPly() - 1] );
 }
 /**
 PROCEDURE ResToStr(): ResultaatRec;
@@ -813,7 +812,7 @@ String heleZetToString( int aPlyNummer )
 	{
 		throw new RuntimeException( "Fout in HeleZetToStr: Eerste zet is niet wit" );
 	}
-	sb.append( plyToStr( plies[aPlyNummer] ) );
+	sb.append( plyToString( plies[aPlyNummer] ) );
 	
 	// Zwart
 	aPlyNummer++;
@@ -823,7 +822,7 @@ String heleZetToString( int aPlyNummer )
 		{
 			throw new RuntimeException( "Fout in HeleZetToStr: Tweede zet is niet zwart" );
 		}
-		sb.append( " " ).append( plyToStr( plies[aPlyNummer] ) );
+		sb.append( " " ).append( plyToString( plies[aPlyNummer] ) );
 	}
 	return sb.toString();
 }
@@ -898,7 +897,7 @@ public PartijReport partijToString()
 		if ( plies[0].getBoStelling().getAanZet() == Zwart )
 		{
 			String heleZetString = "  1.   ...   ";
-			heleZetString += plyToStr( plies[0] );
+			heleZetString += plyToString( plies[0] );
 			partijZetString.add( heleZetString );
 			startPly = 1;
 			zetNummer++;
@@ -999,7 +998,7 @@ String genZetToString( int aZetNummer, BoStelling aBoStellingVan, BoStelling aBo
 	}
 	StringBuilder sb = new StringBuilder();
 	sb.append( zetNummerToString( plyRecord.getZetNr() ) ).append( ". " );
-	sb.append( plyToStr( plyRecord ) ).append(  "  " ).append( resString );
+	sb.append( plyToString( plyRecord ) ).append(  "  " ).append( resString );
 	return sb.toString();
 }
 

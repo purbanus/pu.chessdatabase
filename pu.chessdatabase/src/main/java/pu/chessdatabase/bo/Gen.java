@@ -595,6 +595,10 @@ END GenZsort;
 /**
  * -------- Genereer zetten gesorteerd ----------		
  */
+/* Dit is incorrect. Je moet sowieso onderscheid maken tussen wit en zwart aan zet.
+ * - Bij Zwart aan zet is de volgorde Verloren, kleinste aantal zetten, Remise, Gewonnen met grootste aantal zetten
+ * - Bij Wit @@NOG precies andersom???
+ */
 Comparator<BoStelling> stellingComparator = new Comparator<>()
 {
 	@Override
