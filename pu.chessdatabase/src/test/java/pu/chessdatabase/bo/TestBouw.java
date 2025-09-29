@@ -29,8 +29,8 @@ public class TestBouw
 @BeforeEach
 public void setup()
 {
-	dbs.Name( "Pipo" );
-	dbs.Create();
+	dbs.name( "Pipo" );
+	dbs.create();
 }
 @AfterEach
 public void destroy()
@@ -73,19 +73,19 @@ public void testShowThisPass()
 {
 	long [] totalsArray = new long [] { 1L, 2L, 3L, 4L };
 	bouw.showThisPass( totalsArray );
-	assertThat( totalsArray[ResultaatType.Remise.ordinal()], is( -7L ) );
+	assertThat( totalsArray[ResultaatType.REMISE.ordinal()], is( -7L ) );
 }
 @Test
 public void testReportNewPass()
 {
-	dbs.Rpt = new long[] { 10L, 11L, 12L, 13L };
+	dbs.report = new long[] { 10L, 11L, 12L, 13L };
 	bouw.rptTot  = new long[] { 5L, 6L, 7L, 9L };
 	bouw.rptPrev = new long[] { 1L, 2L, 3L, 4L };
 	long [] totals = new long[] { 6L, 8L, 10L, 13L };
 	bouw.reportNewPass( "Pipo Koeie" );
 	for ( int x = 0; x < 4; x++ )
 	{
-		if ( x == ResultaatType.Remise.ordinal() ) //Remise = 2
+		if ( x == ResultaatType.REMISE.ordinal() ) //Remise = 2
 		{
 			assertThat( bouw.rptPrev[x], is( -34L ) ); 
 			assertThat( bouw.rptTot [x], is( -27L ) ); 
@@ -107,13 +107,13 @@ public void testIsIllegaal()
 		.zk( 0x05 )
 		.s3( 0x15 )
 		.s4( 0x16 )
-		.aanZet( Wit )
+		.aanZet( WIT )
 		.build();
 	bouw.isIllegaal( boStelling );
 	
 	// Dit is VMStelling(WK=2, ZK=2, s3=10, s4=9, AanZet=false)
-	dbs.Get( boStelling );
-	assertThat( boStelling.getResultaat(), is( ResultaatType.Illegaal ) );
+	dbs.get( boStelling );
+	assertThat( boStelling.getResultaat(), is( ResultaatType.ILLEGAAL ) );
 }
 @Test
 public void testSchaakjes()
@@ -126,18 +126,18 @@ public void testSchaakjes()
 		.zk( 0x27 )
 		.s3( 0x76 )
 		.s4( 0x10 )
-		.aanZet( Wit )
-		.resultaat( ResultaatType.Remise )
+		.aanZet( WIT )
+		.resultaat( ResultaatType.REMISE )
 		.build();
 	bouw.schaakjes( boStelling );
-	dbs.Get( boStelling );
+	dbs.get( boStelling );
 	assertThat( boStelling.isSchaak(), is( true ) );
-	assertThat( boStelling.getResultaat(), is( ResultaatType.Remise ) );
+	assertThat( boStelling.getResultaat(), is( ResultaatType.REMISE ) );
 	
-	boStelling.setAanZet( Zwart );
-	dbs.Get( boStelling );
+	boStelling.setAanZet( ZWART );
+	dbs.get( boStelling );
 	assertThat( boStelling.isSchaak(), is( false ) );
-	assertThat( boStelling.getResultaat(), is( ResultaatType.Illegaal ) );
+	assertThat( boStelling.getResultaat(), is( ResultaatType.ILLEGAAL ) );
 }
 private void markeerIllegaal()
 {
@@ -146,16 +146,16 @@ private void markeerIllegaal()
 	bouw.illegaalStellingen  = new ArrayList<>();
 	
 	bouw.passNr = 0;
-	dbs.SetReport( dbs.DFT_RPT_FREQ, bouw::showThisPass );
-	dbs.ClearTellers();
+	dbs.setReport( dbs.DFT_RPT_FREQ, bouw::showThisPass );
+	dbs.clearTellers();
 	bouw.inzReport();
 	bouw.reportNewPass( "Reserveren schijfruimte" );
 
 	bouw.reportNewPass( "Illegaal" );
-	dbs.Pass( PassType.MarkeerWit, bouw::isIllegaal );
+	dbs.pass( PassType.MARKEER_WIT, bouw::isIllegaal );
 
 	bouw.reportNewPass( "Schaakjes" );
-	dbs.Pass( PassType.MarkeerWit, bouw::schaakjes );
+	dbs.pass( PassType.MARKEER_WIT, bouw::schaakjes );
 
 //	dbs.SetReport( 100, bouw::showThisPass );
 //	bouw.reportNewPass( "Matstellingen" );
@@ -169,7 +169,7 @@ public void testIsMat()
 	// Je moet nu eerst de illegale stellingen markeren anders denkt genZPerStuk
 	// dat in het schaak gaan staan een legale zet is
 	markeerIllegaal();
-	dbs.Open(); // Want hij wordt gesloten in dbs.Pass
+	dbs.open(); // Want hij wordt gesloten in dbs.Pass
 	BoStelling boStelling;
 	
 	boStelling = BoStelling.builder()
@@ -177,15 +177,15 @@ public void testIsMat()
 		.zk( 0x27 )
 		.s3( 0x26 )
 		.s4( 0x10 )
-		.aanZet( Zwart )
+		.aanZet( ZWART )
 		.schaak( true )
-		.resultaat( ResultaatType.Remise )
+		.resultaat( ResultaatType.REMISE )
 		.aantalZetten( 0 )
 		.build();
 	bouw.isMat( boStelling );
-	dbs.Get( boStelling );
+	dbs.get( boStelling );
 	assertThat( boStelling.isSchaak(), is( false ) );
-	assertThat( boStelling.getResultaat(), is( ResultaatType.Verloren ) );
+	assertThat( boStelling.getResultaat(), is( ResultaatType.VERLOREN ) );
 	assertThat( boStelling.getAantalZetten(), is( 1 ) );
 
 	//WK=2 ZK=0 S3=6 S4=4 AanZet=W
@@ -194,15 +194,15 @@ public void testIsMat()
 		.zk( 0x00 )
 		.s3( 0x06 )
 		.s4( 0x04 )
-		.aanZet( Wit)
+		.aanZet( WIT)
 		.schaak( true )
-		.resultaat( ResultaatType.Remise )
+		.resultaat( ResultaatType.REMISE )
 		.aantalZetten( 0 )
 		.build();
 	bouw.isMat( boStelling );
-	dbs.Get( boStelling );
+	dbs.get( boStelling );
 	assertThat( boStelling.isSchaak(), is( true ) );
-	assertThat( boStelling.getResultaat(), is( ResultaatType.Remise ) );
+	assertThat( boStelling.getResultaat(), is( ResultaatType.REMISE ) );
 	assertThat( boStelling.getAantalZetten(), is( 0 ) );
 	
 	/*WK=2 ZK=0 S3=52 S4=1 AanZet=W
@@ -220,15 +220,15 @@ ZK ZT WK .. .. .. .. ..
 		.zk( 0x00 )
 		.s3( 0x52 )
 		.s4( 0x01 )
-		.aanZet( Wit)
+		.aanZet( WIT)
 		.schaak( true )
-		.resultaat( ResultaatType.Remise )
+		.resultaat( ResultaatType.REMISE )
 		.aantalZetten( 0 )
 		.build();
 	bouw.isMat( boStelling );
-	dbs.Get( boStelling );
+	dbs.get( boStelling );
 	assertThat( boStelling.isSchaak(), is( true ) );
-	assertThat( boStelling.getResultaat(), is( ResultaatType.Remise ) );
+	assertThat( boStelling.getResultaat(), is( ResultaatType.REMISE ) );
 	assertThat( boStelling.getAantalZetten(), is( 0 ) );
 
 	boStelling = BoStelling.builder()
@@ -236,22 +236,22 @@ ZK ZT WK .. .. .. .. ..
 		.zk( 0x00 )
 		.s3( 0x50 )
 		.s4( 0x01 )
-		.aanZet( Zwart )
+		.aanZet( ZWART )
 		.schaak( true )
-		.resultaat( ResultaatType.Remise )
+		.resultaat( ResultaatType.REMISE )
 		.aantalZetten( 0 )
 		.build();
 	bouw.isMat( boStelling );
-	dbs.Get( boStelling );
+	dbs.get( boStelling );
 	assertThat( boStelling.isSchaak(), is( false ) );
-	assertThat( boStelling.getResultaat(), is( ResultaatType.Verloren ) );
+	assertThat( boStelling.getResultaat(), is( ResultaatType.VERLOREN ) );
 	assertThat( boStelling.getAantalZetten(), is( 1 ) );
 }
 @Test
 public void testTelAlles()
 {
 	bouw.pass_0();
-	dbs.Open();
+	dbs.open();
 	bouw.telAlles();
 	System.out.println( bouw.rptTot );
 	for ( int x = 0; x < 4; x++ )
@@ -269,7 +269,7 @@ public void testTelAlles()
 public void testMarkeer()
 {
 	bouw.pass_0();
-	dbs.Open();
+	dbs.open();
 	BoStelling boStelling;
 	
 	// Matstelling: WK=0 ZK=2 S3=0 S4=20 AanZet=W, de ZT geeft schaak & mat
@@ -278,15 +278,15 @@ public void testMarkeer()
 		.zk( 0x12 )
 		.s3( 0x00 )
 		.s4( 0x21 )
-		.aanZet( Zwart )
+		.aanZet( ZWART )
 		.schaak( false )
-		.resultaat( ResultaatType.Remise )
+		.resultaat( ResultaatType.REMISE )
 		.aantalZetten( 0 )
 		.build();
 	bouw.markeer( boStelling );
-	boStelling = dbs.Get( boStelling );
+	boStelling = dbs.get( boStelling );
 	assertThat( boStelling.isSchaak(), is( false ) );
-	assertThat( boStelling.getResultaat(), is( ResultaatType.Gewonnen ) );
+	assertThat( boStelling.getResultaat(), is( ResultaatType.GEWONNEN ) );
 	assertThat( boStelling.getAantalZetten(), is( 2 ) );
 	
 	boStelling = BoStelling.builder()
@@ -294,15 +294,15 @@ public void testMarkeer()
 		.zk( 0x12 )
 		.s3( 0x10 )
 		.s4( 0x21 )
-		.aanZet( Wit )
+		.aanZet( WIT )
 		.schaak( false )
-		.resultaat( ResultaatType.Remise )
+		.resultaat( ResultaatType.REMISE )
 		.aantalZetten( 0 )
 		.build();
 	bouw.markeer( boStelling );
-	boStelling = dbs.Get( boStelling );
+	boStelling = dbs.get( boStelling );
 	assertThat( boStelling.isSchaak(), is( false ) );
-	assertThat( boStelling.getResultaat(), is( ResultaatType.Verloren ) );
+	assertThat( boStelling.getResultaat(), is( ResultaatType.VERLOREN ) );
 	assertThat( boStelling.getAantalZetten(), is( 2 ) );
 }
 //@Test

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Page
 {
-byte [] page = new byte [VM.PageSize];
+byte [] page = new byte [VM.PAGE_SIZE];
 public void clearPage()
 {
 //	for ( byte b : page )

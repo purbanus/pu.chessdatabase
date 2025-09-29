@@ -2,7 +2,7 @@ package pu.chessdatabase.bo;
 
 public enum StukType
 {
-Koning( "K" ), Dame( "D" ), Toren( "T" ), Loper( "L" ), Paard( "P" ); // geen pion!
+KONING( "K" ), DAME( "D" ), TOREN( "T" ), LOPER( "L" ), PAARD( "P" ); // geen pion!
 private String afko;
 StukType( String aAfko )
 {

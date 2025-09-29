@@ -2,7 +2,7 @@ package pu.chessdatabase.bo;
 
 public enum Kleur
 {
-Wit( "W" ), Zwart( "Z" );
+WIT( "W" ), ZWART( "Z" );
 private String afko;
 Kleur( String aAfko )
 {

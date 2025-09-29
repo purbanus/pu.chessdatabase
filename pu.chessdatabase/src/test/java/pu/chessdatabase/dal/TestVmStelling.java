@@ -27,7 +27,7 @@ public void testToString()
 		.zk( 0x02 )
 		.s3( 0x11 )
 		.s4( 0x23 )
-		.aanZet( Wit )
+		.aanZet( WIT )
 		.build();
 	System.out.println( vmStelling );
 }

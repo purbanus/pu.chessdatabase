@@ -13,7 +13,7 @@ import lombok.ToString;
 @Builder
 public class VooruitRec
 {
-private boolean ErIsVooruit;
-private int Start;
-private boolean Halverwege;
+private boolean erIsVooruit;
+private int start;
+private boolean halverwege;
 }
