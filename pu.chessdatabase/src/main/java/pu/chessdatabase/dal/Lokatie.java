@@ -2,5 +2,5 @@ package pu.chessdatabase.dal;
 
 public enum Lokatie
 {
-OpSchijf, InRAM;
+OP_SCHIJF, IN_RAM;
 }

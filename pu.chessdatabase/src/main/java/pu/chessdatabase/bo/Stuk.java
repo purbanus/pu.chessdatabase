@@ -11,14 +11,14 @@ import lombok.ToString;
 @ToString
 public class Stuk
 {
-private StukType Soort;
-private Kleur Kleur;
-private int Knummer;
-private int AtlRicht;
-private boolean Meer;
-private int [] Richting;
+private StukType soort;
+private Kleur kleur;
+private int koningsNummer;
+private int aantalRichtingen;
+private boolean meer;
+private int [] richtingen;
 public String getAfko()
 {
-	return Soort.getAfko();
+	return soort.getAfko();
 }
 }

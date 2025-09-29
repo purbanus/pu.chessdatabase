@@ -37,7 +37,7 @@ public void testToString()
 		.zk( 0x02 )
 		.s3( 0x11 )
 		.s4( 0x23 )
-		.aanZet( Wit )
+		.aanZet( WIT )
 		.build();
 	assertThat( boStelling.toString().length(), is( BO_TO_STRING.length() ) );
 	assertThat( boStelling.toString(), is( BO_TO_STRING) );
@@ -50,8 +50,8 @@ public void testClone()
 		.zk( 2 )
 		.s3( 3 )
 		.s4( 4 )
-		.aanZet( Zwart )
-		.resultaat( ResultaatType.Gewonnen )
+		.aanZet( ZWART )
+		.resultaat( ResultaatType.GEWONNEN )
 		.aantalZetten( 18 )
 		.schaak( true )
 		.build();

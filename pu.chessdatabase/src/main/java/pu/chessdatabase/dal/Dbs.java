@@ -17,10 +17,10 @@ public class Dbs
 @Autowired private VM vm;
 
 public static final int MAX_RESULTAAT_TYPE = 4;
-public static final int VMillegaal      = 0xFF;
-public static final int VMremise        = 0x00;
-public static final int VMschaak        = 0x80;
-public static final int VerliesOffset   = 0x80;
+public static final int VM_ILLEGAAL      = 0xFF;
+public static final int VM_REMISE        = 0x00;
+public static final int VM_SCHAAK        = 0x80;
+public static final int VERLIES_OFFSET   = 0x80;
 public static final int OKTANTEN = 8;
 
 public static final String DFT_DBS_NAAM = "KDKT.DBS";
@@ -29,7 +29,7 @@ public static final int DFT_RPT_FREQ = 4096;
 /**==============================================================================================================
 * Konversie WK notatie van VM naar Zgen
 *==============================================================================================================*/
-public static final int [] CvtWK = {
+public static final int [] CVT_WK = {
 	0x00,0x01,0x02,0x03,
 		 0x11,0x12,0x13,
 			  0x22,0x23,
@@ -38,7 +38,7 @@ public static final int [] CvtWK = {
 /**==============================================================================================================
 * Konversie stuk (niet-WK) notatie van VM naar Zgen
 *==============================================================================================================*/
-public static final int [] CvtStuk = {
+public static final int [] CVT_STUK = {
 	0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,
 	0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17,
 	0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27,
@@ -52,7 +52,7 @@ public static final int [] CvtStuk = {
 * Oktantentabel. Deze wordt gebruikt om te kijken in welk oktant een stuk (inz. de witte koning) zich bevindt.
 * 0 = foutkode, daar wordt in Cardinaliseer() op getest.
 *==============================================================================================================*/
-public static final int [] OktTabel = {
+public static final int [] OKTANTEN_TABEL = {
    1,1,1,1,2,2,2,2,0,0,0,0,0,0,0,0,
    8,1,1,1,2,2,2,3,0,0,0,0,0,0,0,0,
    8,8,1,1,2,2,3,3,0,0,0,0,0,0,0,0,
@@ -67,7 +67,7 @@ public static final int [] OktTabel = {
 * moet hij nog naar de speciale VM-kodering (0..9) worden gebracht. Dat gebeurt hiermee
 * 10 = foutkode, wordt in VM op getest.
 *========================================================================================*/
-public static final int [] TrfWK = {
+public static final int [] TRANSFORM_WK = {
 	 0, 1, 2, 3,10,10,10,10,
 	10, 4, 5, 6,10,10,10,10,
 	10,10, 7, 8,10,10,10,10,
@@ -77,7 +77,7 @@ public static final int [] TrfWK = {
 	10,10,10,10,10,10,10,10,
 	10,10,10,10,10,10,10,10
 };
-public static final Matrix [] MatrixTabel = {
+public static final Matrix [] MATRIX_TABEL = {
 	null, // Dit heeft een matrix per oktant, en oktant 0 bestaat niet
 	new Matrix( new Vector[] { new Vector( 1, 0), new Vector( 0, 1) }),
 	new Matrix( new Vector[] { new Vector(-1, 0), new Vector( 0, 1) }),
@@ -88,7 +88,7 @@ public static final Matrix [] MatrixTabel = {
 	new Matrix( new Vector[] { new Vector( 0,-1), new Vector( 1, 0) }),
 	new Matrix( new Vector[] { new Vector( 0, 1), new Vector( 1, 0) })
 };
-public static final Vector [] TranslatieTabel = new Vector [] {
+public static final Vector [] TRANSLATIE_TABEL = new Vector [] {
 	null, // Dit heeft een vector per oktant, en oktant 0 bestaat niet
 	new Vector( 0, 0),
 	new Vector( 7, 0),
@@ -105,26 +105,26 @@ public static final Vector [] TranslatieTabel = new Vector [] {
 //Range<Integer> OKtant_0 = Range.of( 0, OKTANTEN );
 //Range<Integer> ResultaatRange = Range.of( 0, 3 );
 
-Range Veld = new Range( 0, 0x77 );
-Range OKtant = new Range( 1, OKTANTEN );
-Range OKtant_0 = new Range( 0, OKTANTEN );
-Range ResultaatRange = new Range( 0, 3 );
+Range veldRange = new Range( 0, 0x77 );
+Range oktantRange = new Range( 1, OKTANTEN );
+Range oktant_0_Range = new Range( 0, OKTANTEN );
+Range resultaatRange = new Range( 0, 3 );
 
-int[][] TrfTabel = new int [OKTANTEN + 1][Veld.getMaximum() + 1];
-String DbsNaam;
-public long [] Rpt = new long [4];
-long [] ReportArray = new long [4];
-int RptTeller;
-int RptFreq;
-ReportProc RptProc;
+int[][] transformatieTabel = new int [OKTANTEN + 1][veldRange.getMaximum() + 1];
+String dbsNaam;
+public long [] report = new long [4];
+long [] reportArray = new long [4];
+int reportTeller;
+int reportFrequentie;
+ReportProc reportProc;
 
 public Dbs()
 {
-	DbsNaam = DFT_DBS_NAAM;
-	CreateTrfTabel();
-	RptFreq = DFT_RPT_FREQ;
-	RptProc = null;
-	ClearTellers();
+	dbsNaam = DFT_DBS_NAAM;
+	createTransformatieTabel();
+	reportFrequentie = DFT_RPT_FREQ;
+	reportProc = null;
+	clearTellers();
 
 }
 //void setRpt( long [] aReportArray )
@@ -149,13 +149,13 @@ END ClearTellers;
 /**
  * ------------ Tellers leegmaken -------------------------
  */
-public void ClearTellers()
+public void clearTellers()
 {
 	for ( int x = 0; x < 4; x++ )
 	{
-		Rpt[x] = 0L;
+		report[x] = 0L;
 	}
-	RptTeller = 0;
+	reportTeller = 0;
 }
 /**
 PROCEDURE GetTellers(): ReportArray;
@@ -166,9 +166,9 @@ END GetTellers;
 /**
  * ------------- Tellerstand uitlezen ---------------------
  */
-public long [] GetTellers()
+public long [] getTellers()
 {
-	return new long [] { Rpt[0], Rpt[1], Rpt[2], Rpt[3] };
+	return new long [] { report[0], report[1], report[2], report[3] };
 }
 /**
 PROCEDURE SetReport(Freq: CARDINAL; R: ReportProc);
@@ -178,11 +178,11 @@ BEGIN
 	RptProc:=R;
 END SetReport;
  */
-public void SetReport( int aFrequency, ReportProc aReportProc )
+public void setReport( int aFrequency, ReportProc aReportProc )
 {
-	RptFreq = aFrequency;
-	RptTeller = 0;
-	RptProc = aReportProc;
+	reportFrequentie = aFrequency;
+	reportTeller = 0;
+	reportProc = aReportProc;
 }
 /**
 PROCEDURE UpdateTellers(R: ResType);
@@ -200,16 +200,16 @@ END UpdateTellers;
 /**
  * -------- Bijwerken tellers ---------------------------------
  */
-public void UpdateTellers( ResultaatType aResultaatType )
+public void updateTellers( ResultaatType aResultaatType )
 {
-	if ( RptProc != null )
+	if ( reportProc != null )
 	{
-		Rpt[aResultaatType.ordinal()]++;
-		RptTeller++;
-		if ( RptTeller >= RptFreq )
+		report[aResultaatType.ordinal()]++;
+		reportTeller++;
+		if ( reportTeller >= reportFrequentie )
 		{
-			RptTeller = 0;
-			RptProc.doReport( Rpt );
+			reportTeller = 0;
+			reportProc.doReport( report );
 		}
 	}
 }
@@ -255,21 +255,21 @@ BEGIN
 	END;
 END CreateTrfTabel;
  */
-public void CreateTrfTabel()
+public void createTransformatieTabel()
 {
 	Vector Vres;
-	for ( int oktant = 1; oktant <= OKTANTEN; oktant++ ) // @@NOG CHECK is die grens goed of moet het <= zijn
+	for ( int oktant = oktantRange.getMinimum(); oktant <= oktantRange.getMaximum(); oktant++ ) // @@NOG CHECK is die grens goed of moet het <= zijn
 	{
 		for ( int rij = 0; rij < 8; rij++ ) // @@NOG rijen?
 		{
 			for ( int kol = 0; kol < 8; kol++ ) // @@NOG kolommen?
 			{
 				Vres = new Vector( kol, rij );
-				Vres = MatrixTabel[oktant].multiply( Vres );
-				Vres = Vres.add( TranslatieTabel[oktant] );
+				Vres = MATRIX_TABEL[oktant].multiply( Vres );
+				Vres = Vres.add( TRANSLATIE_TABEL[oktant] );
 				int oudVeld = kol + 16 * rij;
 				int newVeld = Vres.get( 0 ) + 8 * Vres.get( 1 );
-				TrfTabel[oktant][oudVeld] = newVeld;
+				transformatieTabel[oktant][oudVeld] = newVeld;
 			}
 		}
 	}
@@ -301,9 +301,9 @@ END Cardinaliseer;
 /**
  * -------- Stelling van Dbs-formaat naar VM-formaat ------
  */
-public VMStelling Cardinaliseer( BoStelling aStelling )
+public VMStelling cardinaliseer( BoStelling aStelling )
 {
-	int Okt = OktTabel[aStelling.getWk()];
+	int Okt = OKTANTEN_TABEL[aStelling.getWk()];
 	if ( Okt == 0 )
 	{
 		throw new RuntimeException( "Foutief oktant in Dbs.Cardinaliseer voor WK op " + Integer.toHexString( aStelling.getWk() ) );
@@ -311,10 +311,10 @@ public VMStelling Cardinaliseer( BoStelling aStelling )
 //	int trfWk = TrfTabel[Okt][aStelling.getWk()];
 //	int trftrfWk = TrfWK[9];
 	VMStelling vmStelling = VMStelling.builder()
-		.wk( TrfWK[TrfTabel[Okt][aStelling.getWk()]] )
-		.zk( TrfTabel[Okt][aStelling.getZk()] )
-		.s3( TrfTabel[Okt][aStelling.getS3()] )
-		.s4( TrfTabel[Okt][aStelling.getS4()] )
+		.wk( TRANSFORM_WK[transformatieTabel[Okt][aStelling.getWk()]] )
+		.zk( transformatieTabel[Okt][aStelling.getZk()] )
+		.s3( transformatieTabel[Okt][aStelling.getS3()] )
+		.s4( transformatieTabel[Okt][aStelling.getS4()] )
 		.aanZet( aStelling.getAanZet() )
 		.build();
 	return vmStelling;
@@ -342,20 +342,20 @@ END Put;
 /**
  *----------- Schrijven ----------------- 
  */
-public void Put( BoStelling aStelling )
+public void put( BoStelling aStelling )
 {
 	int VMRec = 0;
-	VMStelling vmStelling = Cardinaliseer( aStelling );
+	VMStelling vmStelling = cardinaliseer( aStelling );
 	switch ( aStelling.getResultaat() )
 	{
-		case Illegaal: VMRec = VMillegaal; break;
+		case ILLEGAAL: VMRec = VM_ILLEGAAL; break;
 		// @@NOG Ook hier: waarom geldt een schaakje als remise???
-		case Remise  : VMRec = aStelling.isSchaak() ? VMschaak : VMremise; break;
-		case Gewonnen: VMRec = aStelling.getAantalZetten(); break;
-		case Verloren: VMRec = aStelling.getAantalZetten() + VerliesOffset; break;
+		case REMISE  : VMRec = aStelling.isSchaak() ? VM_SCHAAK : VM_REMISE; break;
+		case GEWONNEN: VMRec = aStelling.getAantalZetten(); break;
+		case VERLOREN: VMRec = aStelling.getAantalZetten() + VERLIES_OFFSET; break;
 	}
-	UpdateTellers( aStelling.getResultaat() );
-	vm.Put( vmStelling, VMRec );
+	updateTellers( aStelling.getResultaat() );
+	vm.put( vmStelling, VMRec );
 }
 /**
 PROCEDURE Get(VAR S: Stelling);
@@ -381,10 +381,10 @@ END Get;
 /**
  * ----------- Lezen -----------------
  */
-public BoStelling Get( BoStelling aStelling )
+public BoStelling get( BoStelling aStelling )
 {
-	VMStelling vmStelling = Cardinaliseer( aStelling );
-	return GetDirect( vmStelling, aStelling );
+	VMStelling vmStelling = cardinaliseer( aStelling );
+	return getDirect( vmStelling, aStelling );
 }
 /**
  * (*----------- Lezen zonder cardinaliseren -------*)
@@ -411,36 +411,36 @@ END GetDirect;
  */
 // @@NOG Die parm aBoStelling elimineren en gewoon een verse BoStelling retourneren
 //       Bijv vmStelling.getBoStelling();
-BoStelling GetDirect( VMStelling aVMStelling, BoStelling aBoStelling )
+BoStelling getDirect( VMStelling aVMStelling, BoStelling aBoStelling )
 {
-	int VMrec = vm.Get( aVMStelling );
+	int VMrec = vm.get( aVMStelling );
 	aBoStelling.setSchaak( false );
-	if ( VMrec == VMillegaal )
+	if ( VMrec == VM_ILLEGAAL )
 	{
-		aBoStelling.setResultaat( ResultaatType.Illegaal );
+		aBoStelling.setResultaat( ResultaatType.ILLEGAAL );
 		aBoStelling.setAantalZetten( 0 );
 	}
-	else if ( VMrec == VMremise )
+	else if ( VMrec == VM_REMISE )
 	{
-		aBoStelling.setResultaat( ResultaatType.Remise );
+		aBoStelling.setResultaat( ResultaatType.REMISE );
 		aBoStelling.setAantalZetten( 0 );
 	}
-	else if ( VMrec == VMschaak )
+	else if ( VMrec == VM_SCHAAK )
 	{
 		// @@NOG Waarom worden schaakjes als remise gezien?
-		aBoStelling.setResultaat( ResultaatType.Remise );
+		aBoStelling.setResultaat( ResultaatType.REMISE );
 		aBoStelling.setAantalZetten( 0 );
 		aBoStelling.setSchaak( true );
 	}
-	else if ( VMrec < VerliesOffset )
+	else if ( VMrec < VERLIES_OFFSET )
 	{
-		aBoStelling.setResultaat( ResultaatType.Gewonnen );
+		aBoStelling.setResultaat( ResultaatType.GEWONNEN );
 		aBoStelling.setAantalZetten( VMrec );
 	}
 	else
 	{
-		aBoStelling.setResultaat( ResultaatType.Verloren );
-		aBoStelling.setAantalZetten( VMrec - VerliesOffset );
+		aBoStelling.setResultaat( ResultaatType.VERLOREN );
+		aBoStelling.setAantalZetten( VMrec - VERLIES_OFFSET );
 	}
 	return aBoStelling;
 }
@@ -455,10 +455,10 @@ END FreeRecord;
 /**
  * ----------- Vrijgeven record ------------
  */
-public void FreeRecord( BoStelling aBoStelling )
+public void freeRecord( BoStelling aBoStelling )
 {
-	VMStelling vmStelling = Cardinaliseer( aBoStelling );
-	vm.FreeRecord( vmStelling );
+	VMStelling vmStelling = cardinaliseer( aBoStelling );
+	vm.freeRecord( vmStelling );
 }
 /**
 ==========================================================================
@@ -473,9 +473,9 @@ END Name;
 /**
  * ------- Naam geven -------------------
  */
-public void Name( String aNaam )
+public void name( String aNaam )
 {
-	DbsNaam = aNaam;
+	dbsNaam = aNaam;
 }
 /**
 PROCEDURE Create();
@@ -492,13 +492,13 @@ END Create;
 /**
  *  ------- Creeren nieuwe database ------
  */
-public void Create()
+public void create()
 {
-	if ( DbsNaam == null || DbsNaam.length() == 0 )
+	if ( dbsNaam == null || dbsNaam.length() == 0 )
 	{
 		throw new RuntimeException( "Geen naam opgegeven voor de database" );
 	}
-	vm.Create( DbsNaam );
+	vm.create( dbsNaam );
 }
 /**
 PROCEDURE Open();
@@ -515,17 +515,17 @@ END Open;
 /**
  * ------- Openen database --------------
  */
-public void Open()
+public void open()
 {
-	if ( DbsNaam == null || DbsNaam.length() == 0 )
+	if ( dbsNaam == null || dbsNaam.length() == 0 )
 	{
 		throw new RuntimeException( "Geen naam opgegeven voor de database" );
 	}
-	vm.Open( DbsNaam );
+	vm.open( dbsNaam );
 }
 public void flush()
 {
-	vm.Flush();
+	vm.flush();
 }
 /**
 PROCEDURE Close();
@@ -536,9 +536,9 @@ END Close;
 /**
  * ------- Sluiten database -------------
  */
-public void Close()
+public void close()
 {
-	vm.Close();
+	vm.close();
 }
 public void delete()
 {
@@ -574,21 +574,21 @@ END Pass34;
 /**
  * --------- Pass over stukken 3 en 4 ----------------------------------
  */
-public void Pass34( BoStelling aBoStelling, VMStelling aVmStelling, PassProc aPassProc )
+public void pass34( BoStelling aBoStelling, VMStelling aVmStelling, PassProc aPassProc )
 {
 	aVmStelling.setS3( 0 );
 	while ( aVmStelling.getS3() <= 63 )
 	{
-		aBoStelling.setS3( CvtStuk[aVmStelling.getS3()] );
+		aBoStelling.setS3( CVT_STUK[aVmStelling.getS3()] );
 		aVmStelling.setS4( 0 );
 		while ( aVmStelling.getS4() <= 63 )
 		{
-			aBoStelling.setS4( CvtStuk[aVmStelling.getS4()] ); // Nu wel
+			aBoStelling.setS4( CVT_STUK[aVmStelling.getS4()] ); // Nu wel
 
 			@SuppressWarnings( "unused" )
 			// @@NOG CHECK is aBoStelling veranderd of moet je boStelling gebruiken? 
-			BoStelling boStelling = GetDirect( aVmStelling, aBoStelling ); // aBoStelling.s4 maakt nog niet uit
-			if ( aBoStelling.getResultaat() == ResultaatType.Remise )
+			BoStelling boStelling = getDirect( aVmStelling, aBoStelling ); // aBoStelling.s4 maakt nog niet uit
+			if ( aBoStelling.getResultaat() == ResultaatType.REMISE )
 			{
 				aPassProc.doPass( aBoStelling );
 			}
@@ -598,7 +598,7 @@ public void Pass34( BoStelling aBoStelling, VMStelling aVmStelling, PassProc aPa
 	}
 	aVmStelling.setS3( aVmStelling.getS3() - 1 );
 	aVmStelling.setS4( aVmStelling.getS4() - 1 );
-	vm.FreeRecord( aVmStelling );
+	vm.freeRecord( aVmStelling );
 }
 /**
 PROCEDURE Wpass(P: PassProc);
@@ -626,18 +626,18 @@ END Wpass;
 void markeerWitPass( PassProc aPassProc )
 {
 	VMStelling vmStelling = new VMStelling();
-	vmStelling.setAanZet( Wit );
+	vmStelling.setAanZet( WIT );
 	BoStelling boStelling = new BoStelling();
-	boStelling.setAanZet( Wit );
+	boStelling.setAanZet( WIT );
 	for ( int ZK = 0; ZK < 64; ZK++ )
 	{
 		vmStelling.setZk( ZK );
-		boStelling.setZk( CvtStuk[ZK] );
+		boStelling.setZk( CVT_STUK[ZK] );
 		for ( int WK = 0; WK < 10; WK++ )
 		{
 			vmStelling.setWk( WK );
-			boStelling.setWk( CvtWK[WK] );
-			Pass34( boStelling, vmStelling, aPassProc );
+			boStelling.setWk( CVT_WK[WK] );
+			pass34( boStelling, vmStelling, aPassProc );
 		}
 	}
 }
@@ -667,18 +667,18 @@ END Zpass;
 void markeerZwartPass( PassProc aPassProc )
 {
 	VMStelling vmStelling = new VMStelling();
-	vmStelling.setAanZet( Zwart );
+	vmStelling.setAanZet( ZWART );
 	BoStelling boStelling = new BoStelling();
-	boStelling.setAanZet( Zwart );
+	boStelling.setAanZet( ZWART );
 	for ( int WK = 0; WK < 10; WK++ )
 	{
 		vmStelling.setWk( WK );
-		boStelling.setWk( CvtWK[WK] );
+		boStelling.setWk( CVT_WK[WK] );
 		for ( int ZK = 0; ZK < 64; ZK++ )
 		{
 			vmStelling.setZk( ZK );
-			boStelling.setZk( CvtStuk[ZK] );
-			Pass34( boStelling, vmStelling, aPassProc );
+			boStelling.setZk( CVT_STUK[ZK] );
+			pass34( boStelling, vmStelling, aPassProc );
 		}
 	}
 }
@@ -729,30 +729,30 @@ void markeerWitEnZwartPass( PassProc aPassProc )
 	vmStelling.setWk( 0 );
 	while ( vmStelling.getWk() < 10 )
 	{
-		boStelling.setWk( CvtWK[vmStelling.getWk()] );
+		boStelling.setWk( CVT_WK[vmStelling.getWk()] );
 		vmStelling.setZk( 0 );
 		while ( vmStelling.getZk() < 64 )
 		{
-			boStelling.setZk( CvtStuk[vmStelling.getZk()] );
+			boStelling.setZk( CVT_STUK[vmStelling.getZk()] );
 			vmStelling.setS3( 0 );
 			while ( vmStelling.getS3() < 64 )
 			{
-				boStelling.setS3( CvtStuk[vmStelling.getS3()] );
+				boStelling.setS3( CVT_STUK[vmStelling.getS3()] );
 				vmStelling.setS4( 0 );
 				while ( vmStelling.getS4() < 64 )
 				{
-					boStelling.setS4( CvtStuk[vmStelling.getS4()] );
+					boStelling.setS4( CVT_STUK[vmStelling.getS4()] );
 
 					// Wit
-					vmStelling.setAanZet( Wit );
-					BoStelling gotBoStelling = GetDirect( vmStelling, boStelling ); // @@NOG Is die gotStelling nodig??
-					gotBoStelling.setAanZet( Wit ); // @@NOG Waarom?
+					vmStelling.setAanZet( WIT );
+					BoStelling gotBoStelling = getDirect( vmStelling, boStelling ); // @@NOG Is die gotStelling nodig??
+					gotBoStelling.setAanZet( WIT ); // @@NOG Waarom?
 					aPassProc.doPass( gotBoStelling );
 					
 					// Zwart
-					vmStelling.setAanZet( Zwart );
-					gotBoStelling = GetDirect( vmStelling, boStelling ); // @@NOG Is die gotStelling nodig??
-					gotBoStelling.setAanZet( Zwart ); // @@NOG Waarom?
+					vmStelling.setAanZet( ZWART );
+					gotBoStelling = getDirect( vmStelling, boStelling ); // @@NOG Is die gotStelling nodig??
+					gotBoStelling.setAanZet( ZWART ); // @@NOG Waarom?
 					aPassProc.doPass( gotBoStelling );
 		
 					vmStelling.setS4( vmStelling.getS4() + 1 );
@@ -778,17 +778,17 @@ BEGIN
 	Close();
 END Pass;
  */
-public void Pass( PassType aPassType, PassProc aPassProc )
+public void pass( PassType aPassType, PassProc aPassProc )
 {
-	Open();
+	open();
 //	Window.PutOnTop(Win.CacheWin);
 //	Window.Clear();
 	switch ( aPassType )
 	{
-		case MarkeerWit: markeerWitPass( aPassProc ); break;
-		case MarkeerZwart: markeerZwartPass( aPassProc ); break;
-		case WitEnZwart: markeerWitEnZwartPass( aPassProc ); break;
+		case MARKEER_WIT: markeerWitPass( aPassProc ); break;
+		case MARKEER_ZWART: markeerZwartPass( aPassProc ); break;
+		case MAREKEER_WIT_EN_ZWART: markeerWitEnZwartPass( aPassProc ); break;
 	}
-	Close();
+	close();
 }
 }

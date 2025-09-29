@@ -16,20 +16,20 @@ import lombok.ToString;
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class GenZRec
+public class GegenereerdeZetten
 {
 @Builder.Default
-private List<BoStelling> Sptr = new ArrayList<>(); // Dit was een StellingPtr, met als commentaar m.z. array of stelling *)
+private List<BoStelling> stellingen = new ArrayList<>(); // Dit was een StellingPtr, met als commentaar m.z. array of stelling *)
 public int getAantal()
 {
-	return Sptr.size();
+	return stellingen.size();
 }
 public void add( BoStelling aBoStelling )
 {
-	Sptr.add( aBoStelling );
+	stellingen.add( aBoStelling );
 }
-public void addAll( GenZRec aGenZRec )
+public void addAll( GegenereerdeZetten aGenZRec )
 {
-	Sptr.addAll( aGenZRec.getSptr() );
+	stellingen.addAll( aGenZRec.getStellingen() );
 }
 }

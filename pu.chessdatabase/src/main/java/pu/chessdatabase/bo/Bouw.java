@@ -60,8 +60,8 @@ void inzReport()
 		rptPrev[resultaatType.ordinal()] = 0;
 		rptTot [resultaatType.ordinal()] = 0;
 	}
-	rptPrev[ResultaatType.Remise.ordinal()] = 5 * MEG;
-	rptTot [ResultaatType.Remise.ordinal()] = 5 * MEG;
+	rptPrev[ResultaatType.REMISE.ordinal()] = 5 * MEG;
+	rptTot [ResultaatType.REMISE.ordinal()] = 5 * MEG;
 }
 /**
 PROCEDURE SetTotals(RA: Dbs.ReportArray);
@@ -102,10 +102,10 @@ END ShowThisPass;
 void showThisPass( long [] aReportArray )
 {
 	//Window.Use(Win.BouwWin);
-	aReportArray[ResultaatType.Remise.ordinal()] = 
-		- aReportArray[ResultaatType.Illegaal.ordinal()]
-		- aReportArray[ResultaatType.Gewonnen.ordinal()]
-		- aReportArray[ResultaatType.Verloren.ordinal()];
+	aReportArray[ResultaatType.REMISE.ordinal()] = 
+		- aReportArray[ResultaatType.ILLEGAAL.ordinal()]
+		- aReportArray[ResultaatType.GEWONNEN.ordinal()]
+		- aReportArray[ResultaatType.VERLOREN.ordinal()];
 //	Window.GotoXY(12, 2); IO.WrLngInt(RA[Illegaal], 10);
 //	Window.GotoXY(12, 3); IO.WrLngInt(RA[Remise  ], 10);
 //	Window.GotoXY(12, 4); IO.WrLngInt(RA[Gewonnen], 10);
@@ -165,16 +165,16 @@ void reportNewPass( String aPassText )
 	{
 		rptTot[resultaatType.ordinal()] = rptTot[resultaatType.ordinal()] + rptPrev[resultaatType.ordinal()];
 	}
-	rptPrev = dbs.GetTellers();
-	rptPrev[ResultaatType.Remise.ordinal()] = 
-		- rptPrev[ResultaatType.Illegaal.ordinal()]
-		- rptPrev[ResultaatType.Gewonnen.ordinal()]
-		- rptPrev[ResultaatType.Verloren.ordinal()];
-	rptTot[ResultaatType.Remise.ordinal()] = 
-		- rptTot[ResultaatType.Illegaal.ordinal()]
-		- rptTot[ResultaatType.Gewonnen.ordinal()]
-		- rptTot[ResultaatType.Verloren.ordinal()];
-	dbs.ClearTellers(); // @@NOG Op de een of and're manier maakt hij nu de getallen in RptPrev allemaal nul
+	rptPrev = dbs.getTellers();
+	rptPrev[ResultaatType.REMISE.ordinal()] = 
+		- rptPrev[ResultaatType.ILLEGAAL.ordinal()]
+		- rptPrev[ResultaatType.GEWONNEN.ordinal()]
+		- rptPrev[ResultaatType.VERLOREN.ordinal()];
+	rptTot[ResultaatType.REMISE.ordinal()] = 
+		- rptTot[ResultaatType.ILLEGAAL.ordinal()]
+		- rptTot[ResultaatType.GEWONNEN.ordinal()]
+		- rptTot[ResultaatType.VERLOREN.ordinal()];
+	dbs.clearTellers(); // @@NOG Op de een of and're manier maakt hij nu de getallen in RptPrev allemaal nul
 //	Window.Use(Win.BouwWin);
 //	Window.Clear();
 //	Window.GotoXY(12, 1); IO.WrStr(' Deze pass');
@@ -207,23 +207,23 @@ List<BoStelling> matStellingen = new ArrayList<>();
 public void isIllegaal( BoStelling aBoStelling )
 {
 	BoStelling boStelling = aBoStelling.clone();
-	if ( gen.IsGeomIllegaal( boStelling ) || gen.isKKSchaak( boStelling ) )
+	if ( gen.isGeomIllegaal( boStelling ) || gen.isKKSchaak( boStelling ) )
 	{
-		boStelling.setResultaat( ResultaatType.Illegaal );
-		boStelling.setAanZet( Wit );
+		boStelling.setResultaat( ResultaatType.ILLEGAAL );
+		boStelling.setAanZet( WIT );
 		if ( HOU_STELLINGEN_BIJ )
 		{
 			illegaalStellingen.add( boStelling );
 		}
-		dbs.Put( boStelling );
+		dbs.put( boStelling );
 
 		boStelling = boStelling.clone();
-		boStelling.setAanZet( Zwart );
+		boStelling.setAanZet( ZWART );
 		if ( HOU_STELLINGEN_BIJ )
 		{
 			illegaalStellingen.add( boStelling );
 		}
-		dbs.Put( boStelling );
+		dbs.put( boStelling );
 	}
 }
 /**
@@ -269,24 +269,24 @@ public void schaakjes( BoStelling aBoStellingMetWitAanZet )
      * zowel voor wit als voor zwart remise zijn;                              
      * dat geldt trouwens ook voor illegale stellingen.                        
 	 */
-	if ( aBoStellingMetWitAanZet.getResultaat() == ResultaatType.Remise )
+	if ( aBoStellingMetWitAanZet.getResultaat() == ResultaatType.REMISE )
 	{
 		BoStelling boStellingMetWitAanZet = aBoStellingMetWitAanZet.clone();
 		BoStelling boStellingMetZwartAanZet = aBoStellingMetWitAanZet.clone();
-		boStellingMetZwartAanZet.setAanZet( Zwart );
+		boStellingMetZwartAanZet.setAanZet( ZWART );
 		// Wit aan zet
 		if ( gen.isSchaak( boStellingMetWitAanZet ) )
 		{
 			boStellingMetWitAanZet.setSchaak( true );
 			boStellingMetZwartAanZet.setSchaak( true );
-			boStellingMetZwartAanZet.setResultaat( ResultaatType.Illegaal );
+			boStellingMetZwartAanZet.setResultaat( ResultaatType.ILLEGAAL );
 		}
 		// Zwart aan zet
 		if ( gen.isSchaak( boStellingMetZwartAanZet ) )
 		{
 			boStellingMetZwartAanZet.setSchaak( true );
 			boStellingMetWitAanZet.setSchaak( true );
-			boStellingMetWitAanZet.setResultaat( ResultaatType.Illegaal );
+			boStellingMetWitAanZet.setResultaat( ResultaatType.ILLEGAAL );
 		}
 		if ( boStellingMetWitAanZet.isSchaak() )
 		{
@@ -294,7 +294,7 @@ public void schaakjes( BoStelling aBoStellingMetWitAanZet )
 			{
 				stellingenMetSchaak.add( boStellingMetWitAanZet );
 			}
-			dbs.Put( boStellingMetWitAanZet );
+			dbs.put( boStellingMetWitAanZet );
 		}
 		if ( boStellingMetZwartAanZet.isSchaak() )
 		{
@@ -302,7 +302,7 @@ public void schaakjes( BoStelling aBoStellingMetWitAanZet )
 			{
 				stellingenMetSchaak.add( boStellingMetZwartAanZet );
 			}
-			dbs.Put( boStellingMetZwartAanZet );
+			dbs.put( boStellingMetZwartAanZet );
 		}
 	}
 }
@@ -328,26 +328,20 @@ public void isMat( BoStelling aBoStelling )
 {
 	BoStelling boStelling = aBoStelling.clone();
 	
-	if ( boStelling.getResultaat() == ResultaatType.Remise && boStelling.isSchaak() == true )
+	if ( boStelling.getResultaat() == ResultaatType.REMISE && boStelling.isSchaak() == true )
 	{
-//		gen.ZetBordOp( boStelling );
-//		int stukNr = boStelling.isAanZet() ? 2 : 1;
-//		int koningsVeld = boStelling.isAanZet() ? boStelling.getZk() : boStelling.getWk();
-//		int stukVeld = koningsVeld;
-//		GenZRec genZRec = gen.GenZPerStuk( boStelling, stukNr, koningsVeld, stukVeld );
-		GenZRec genZRec = new GenZRec();
-		genZRec = gen.GenZ( boStelling );
-		if ( genZRec.getAantal() == 0 )
+		GegenereerdeZetten gegenereerdeZetten = gen.genereerZetten( boStelling );
+		if ( gegenereerdeZetten.getAantal() == 0 )
 		{
-			boStelling.setResultaat( ResultaatType.Verloren );
+			boStelling.setResultaat( ResultaatType.VERLOREN );
 			boStelling.setAantalZetten( 1 );
 			if ( HOU_STELLINGEN_BIJ )
 			{
 				matStellingen.add( boStelling );
 			}
-			dbs.Put( boStelling );
+			dbs.put( boStelling );
 		}
-		gen.ClrBord( boStelling );
+		gen.clearBord( boStelling );
 	}
 }
 /**
@@ -382,22 +376,22 @@ void pass_0()
 	matStellingen = new ArrayList<>();
 	
 	passNr = 0;
-	dbs.SetReport( rptFreq, this::showThisPass );
-	dbs.ClearTellers();
+	dbs.setReport( rptFreq, this::showThisPass );
+	dbs.clearTellers();
 	inzReport();
 	reportNewPass( "Reserveren schijfruimte" );
-	dbs.Create();
+	dbs.create();
 
 	reportNewPass( "Illegaal" );
-	dbs.Pass( PassType.MarkeerWit, this::isIllegaal );
+	dbs.pass( PassType.MARKEER_WIT, this::isIllegaal );
 
 	reportNewPass( "Schaakjes" );
-	dbs.Pass( PassType.MarkeerWit, this::schaakjes );
+	dbs.pass( PassType.MARKEER_WIT, this::schaakjes );
 
-	dbs.SetReport( 100, this::showThisPass );
+	dbs.setReport( 100, this::showThisPass );
 	reportNewPass( "Matstellingen" );
-	dbs.Pass( PassType.MarkeerWit  , this::isMat );
-	dbs.Pass( PassType.MarkeerZwart, this::isMat );
+	dbs.pass( PassType.MARKEER_WIT  , this::isMat );
+	dbs.pass( PassType.MARKEER_ZWART, this::isMat );
 }
 /**
  * ==============================================================================
@@ -449,16 +443,16 @@ END TelAlles;
 void telAlles()
 {
 	inzReport();
-	rptPrev[ResultaatType.Remise.ordinal()] = 0;
-	rptTot[ResultaatType.Remise.ordinal()] = 0;
+	rptPrev[ResultaatType.REMISE.ordinal()] = 0;
+	rptTot[ResultaatType.REMISE.ordinal()] = 0;
 	reportNewPass( "Tellen van alle stellingen" );
 	resTeller = 0;
-	dbs.Pass( PassType.WitEnZwart, this::tel );
+	dbs.pass( PassType.MAREKEER_WIT_EN_ZWART, this::tel );
 }
 long[][] tellersMetKleur;
 void telMetKleur( BoStelling aBoStelling )
 {
-	int aanZet = aBoStelling.getAanZet() == Zwart ? 1 : 0;
+	int aanZet = aBoStelling.getAanZet() == ZWART ? 1 : 0;
 	tellersMetKleur[aanZet][aBoStelling.getResultaat().ordinal()]++;
 	resTeller++;
 	if ( resTeller >= rptFreq )
@@ -472,7 +466,7 @@ void telAllesMetKleur()
 	tellersMetKleur = new long[2][4];
 	reportNewPass( "Tellen van alle stellingen" );
 	resTeller = 0;
-	dbs.Pass( PassType.WitEnZwart, this::telMetKleur );
+	dbs.pass( PassType.MAREKEER_WIT_EN_ZWART, this::telMetKleur );
 }
 void printAllesMetKleur()
 {
@@ -539,29 +533,29 @@ List<BoStelling> changes = new ArrayList<>();
 void markeer( BoStelling aBoStelling )
 {
 	BoStelling boStelling = aBoStelling.clone();
-	GenZRec genZRec = gen.GenZ( boStelling );
-	if ( genZRec.getAantal() == 0 )
+	GegenereerdeZetten gegenereerdeZetten = gen.genereerZetten( boStelling );
+	if ( gegenereerdeZetten.getAantal() == 0 )
 	{
 		return;
 	}
-	boStelling.setResultaat( ResultaatType.Verloren ); 
+	boStelling.setResultaat( ResultaatType.VERLOREN ); 
 	int minGewonnen = Integer.MAX_VALUE;
 	int maxVerloren = Integer.MIN_VALUE;
-	for ( int x = 0; x < genZRec.getAantal(); x++ )
+	for ( int x = 0; x < gegenereerdeZetten.getAantal(); x++ )
 	{
-		int aantal = genZRec.getSptr().get( x ).getAantalZetten();
-		switch( genZRec.getSptr().get( x ).getResultaat() )
+		int aantal = gegenereerdeZetten.getStellingen().get( x ).getAantalZetten();
+		switch( gegenereerdeZetten.getStellingen().get( x ).getResultaat() )
 		{
-			case ResultaatType.Verloren:
+			case ResultaatType.VERLOREN:
 			{
-				boStelling.setResultaat( ResultaatType.Gewonnen );
+				boStelling.setResultaat( ResultaatType.GEWONNEN );
 				if ( aantal < minGewonnen )
 				{
 					minGewonnen = aantal;
 				}
 				break;
 			}
-			case ResultaatType.Gewonnen:
+			case ResultaatType.GEWONNEN:
 			{
 				// @@NOG Waarom niet???
 				// boStelling.setResultaat( ResultaatType.Verloren );
@@ -571,24 +565,24 @@ void markeer( BoStelling aBoStelling )
 				}
 				break;
 			}
-			case ResultaatType.Remise:
+			case ResultaatType.REMISE:
 			{
-				if ( boStelling.getResultaat() == ResultaatType.Verloren )
+				if ( boStelling.getResultaat() == ResultaatType.VERLOREN )
 				{
-					boStelling.setResultaat( ResultaatType.Remise );
+					boStelling.setResultaat( ResultaatType.REMISE );
 				}
 				break;
 			}
 			//$CASES-OMITTED$
 			default:
 			{
-				throw new RuntimeException( "Ongeldige switch case " + genZRec.getSptr().get( x ).getResultaat() );
+				throw new RuntimeException( "Ongeldige switch case " + gegenereerdeZetten.getStellingen().get( x ).getResultaat() );
 			}
 		}
 	}
-	if ( boStelling.getResultaat() != ResultaatType.Remise )
+	if ( boStelling.getResultaat() != ResultaatType.REMISE )
 	{
-		if ( boStelling.getResultaat() == ResultaatType.Gewonnen )
+		if ( boStelling.getResultaat() == ResultaatType.GEWONNEN )
 		{
 			boStelling.setAantalZetten( minGewonnen + 1 );
 		}
@@ -600,7 +594,7 @@ void markeer( BoStelling aBoStelling )
 		{
 			changes.add( boStelling );
 		}
-		dbs.Put( boStelling );
+		dbs.put( boStelling );
 		passNchanges = true;
 	}
 }
@@ -620,12 +614,12 @@ END Pass_n;
  */
 void pass_n()
 {
-	dbs.SetReport( 100, this::showThisPass );
+	dbs.setReport( 100, this::showThisPass );
 	reportNewPass( "Wit aan zet" );
-	dbs.Pass( PassType.MarkeerWit, this::markeer );
+	dbs.pass( PassType.MARKEER_WIT, this::markeer );
 
 	reportNewPass( "Zwart aan zet" );
-	dbs.Pass( PassType.MarkeerZwart, this::markeer );
+	dbs.pass( PassType.MARKEER_ZWART, this::markeer );
 }
 /**
 PROCEDURE BouwDataBase(StartPass: CARDINAL);

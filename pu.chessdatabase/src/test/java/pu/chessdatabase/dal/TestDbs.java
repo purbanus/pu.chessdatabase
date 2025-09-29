@@ -29,8 +29,8 @@ public class TestDbs
 @BeforeEach
 public void setup()
 {
-	dbs.Name( "Pipo" );
-	dbs.Create(); // Doet ook Open, dus initialiseert de tabellen
+	dbs.name( "Pipo" );
+	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 }
 @AfterEach
 public void destroy()
@@ -40,19 +40,19 @@ public void destroy()
 @Test
 public void testResultaatRange()
 {
-	assertThat( dbs.ResultaatRange.getMinimum(), is( 0 ) );
-	assertThat( dbs.ResultaatRange.getMaximum(), is( 3 ) );
+	assertThat( dbs.resultaatRange.getMinimum(), is( 0 ) );
+	assertThat( dbs.resultaatRange.getMaximum(), is( 3 ) );
 }
 
 @Test
 public void testClearTellers()
 {
-	dbs.ClearTellers();
-	for ( int x = dbs.ResultaatRange.getMinimum(); x < dbs.ResultaatRange.getMaximum() + 1; x++ )
+	dbs.clearTellers();
+	for ( int x = dbs.resultaatRange.getMinimum(); x < dbs.resultaatRange.getMaximum() + 1; x++ )
 	{
-		assertThat( dbs.Rpt[x], is( 0L ) );
+		assertThat( dbs.report[x], is( 0L ) );
 	}
-	assertThat( dbs.RptTeller, is( 0 ) );
+	assertThat( dbs.reportTeller, is( 0 ) );
 }
 static boolean messageGegeven = false;
 private void doReport( long [] aReportArray )
@@ -71,8 +71,8 @@ private void doReport( long [] aReportArray )
 public void testSetReport()
 {
 	messageGegeven = false;
-	dbs.SetReport( 5000, this::doReport );
-	assertThat( dbs.RptFreq, is( 5000 ) );
+	dbs.setReport( 5000, this::doReport );
+	assertThat( dbs.reportFrequentie, is( 5000 ) );
 	// Je kunt lambdas niet vergelijken, behalve misschien met Serializable; viond ik overdone
 	//assertThat( dbs.RptProc, is( this::doReport ) );
 }
@@ -81,11 +81,11 @@ public void testSetReport()
 public void testUpdateTellers()
 {
 	messageGegeven = false;
-	dbs.SetReport( 5000, this::doReport );
-	dbs.Rpt = new long [] { 1L, 2L, 3L, 4L };
-	dbs.UpdateTellers( ResultaatType.Gewonnen );
-	assertThat( dbs.Rpt[ResultaatType.Gewonnen.ordinal()], is( 3L ) );
-	assertThat( dbs.RptTeller, is( 1 ) );
+	dbs.setReport( 5000, this::doReport );
+	dbs.report = new long [] { 1L, 2L, 3L, 4L };
+	dbs.updateTellers( ResultaatType.GEWONNEN );
+	assertThat( dbs.report[ResultaatType.GEWONNEN.ordinal()], is( 3L ) );
+	assertThat( dbs.reportTeller, is( 1 ) );
 }
 /**
  * public static final int [] OktTabel = {
@@ -108,7 +108,7 @@ public void testCreateTrfTabel()
 	{
 		for ( int kol = 0; kol < 8; kol++ )
 		{
-			assertThat( dbs.TrfTabel[oktant][kol + 16 * rij], is( kol + 8 * rij ) );
+			assertThat( dbs.transformatieTabel[oktant][kol + 16 * rij], is( kol + 8 * rij ) );
 		}
 	}
 	// Oktant 2 is een spiegeling over de y-as
@@ -118,12 +118,12 @@ public void testCreateTrfTabel()
 		for ( int kol = 0; kol < 8; kol++ )
 		{
 			Vector vector = new Vector( kol, rij );
-			Vector resVector = dbs.MatrixTabel[oktant].multiply( vector );
-			resVector = resVector.add( dbs.TranslatieTabel[oktant] );
+			Vector resVector = dbs.MATRIX_TABEL[oktant].multiply( vector );
+			resVector = resVector.add( dbs.TRANSLATIE_TABEL[oktant] );
 			int oudVeld = kol + 16 * rij;
 			int newVeld = resVector.get( 0 ) + 8 * resVector.get( 1 );
 			//System.out.print( Integer.toHexString( oudVeld ) + "->" + Integer.toHexString( newVeld ) + " " );
-			assertThat( dbs.TrfTabel[oktant][oudVeld], is( newVeld ) );
+			assertThat( dbs.transformatieTabel[oktant][oudVeld], is( newVeld ) );
 		}
 		System.out.println();
 	}
@@ -162,9 +162,9 @@ public void printTrfTabel()
 {
 	for ( int oktant = 1; oktant < dbs.OKTANTEN; oktant++ ) // @@NOG CHECK is die grens goed of moet het <= zijn
 	{
-		for ( int x = dbs.Veld.getMinimum(); x < dbs.Veld.getMaximum(); x++ )
+		for ( int x = dbs.veldRange.getMinimum(); x < dbs.veldRange.getMaximum(); x++ )
 		{
-			System.out.print( Integer.toHexString( dbs.TrfTabel[oktant][x] ) + " " );
+			System.out.print( Integer.toHexString( dbs.transformatieTabel[oktant][x] ) + " " );
 		}
 		System.out.println();
 	}
@@ -177,9 +177,9 @@ public void testCardinaliseer()
 		.zk( 0x12 )
 		.s3( 0x00 )
 		.s4( 0x13 )
-		.aanZet( Wit )
+		.aanZet( WIT )
 		.build();
-	VMStelling vmStelling = dbs.Cardinaliseer( boStelling );
+	VMStelling vmStelling = dbs.cardinaliseer( boStelling );
 	//System.out.println( boStelling );
 	//System.out.println( vmStelling );
 	VMStelling newVmStelling = VMStelling.builder()
@@ -187,7 +187,7 @@ public void testCardinaliseer()
 		.zk( 0x11 )
 		.s3( 0x00 )
 		.s4( 0x19 )
-		.aanZet( Wit )
+		.aanZet( WIT )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
 	
@@ -196,9 +196,9 @@ public void testCardinaliseer()
 		.zk( 0x26 )
 		.s3( 0x07 )
 		.s4( 0x27 )
-		.aanZet( Wit )
+		.aanZet( WIT )
 		.build();
-	vmStelling = dbs.Cardinaliseer( boStelling );
+	vmStelling = dbs.cardinaliseer( boStelling );
 	//System.out.println( boStelling );
 	//System.out.println( vmStelling );
 	newVmStelling = VMStelling.builder()
@@ -206,7 +206,7 @@ public void testCardinaliseer()
 		.zk( 0x11 )
 		.s3( 0x00 )
 		.s4( 0x10 )
-		.aanZet( Wit )
+		.aanZet( WIT )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
 	
@@ -215,15 +215,15 @@ public void testCardinaliseer()
 		.zk( 0x27 )
 		.s3( 0x76 )
 		.s4( 0x10 )
-		.aanZet( Wit )
+		.aanZet( WIT )
 		.build();
-	vmStelling = dbs.Cardinaliseer( boStelling );
+	vmStelling = dbs.cardinaliseer( boStelling );
 	newVmStelling = VMStelling.builder()
 		.wk( 0x04 )
 		.zk( 0x17 )
 		.s3( 0x3e )
 		.s4( 0x08 )
-		.aanZet( Wit )
+		.aanZet( WIT )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
 
@@ -240,17 +240,17 @@ public void testPut()
 		.zk( 0x12 )
 		.s3( 0x00 )
 		.s4( 0x13 )
-		.aanZet( Wit )
-		.resultaat( ResultaatType.Illegaal )
+		.aanZet( WIT )
+		.resultaat( ResultaatType.ILLEGAAL )
 		.aantalZetten( 0 )
 		.schaak( false )
 		.build();
-	dbs.Put( boStelling );
+	dbs.put( boStelling );
 	
-	BoStelling newBoStelling = dbs.Get( boStelling );
+	BoStelling newBoStelling = dbs.get( boStelling );
 	// Dit moet je niet doen want het is altijd true!!
 	// assertThat( newBoStelling, is( boStelling ) );
-	assertThat( newBoStelling.getResultaat(), is( ResultaatType.Illegaal ) );
+	assertThat( newBoStelling.getResultaat(), is( ResultaatType.ILLEGAAL ) );
 	assertThat( newBoStelling.getAantalZetten(), is( 0 ) );
 	assertThat( newBoStelling.isSchaak(), is( false ) );
 	
@@ -259,15 +259,15 @@ public void testPut()
 		.zk( 0x12 )
 		.s3( 0x00 )
 		.s4( 0x13 )
-		.aanZet( Wit )
-		.resultaat( ResultaatType.Remise )
+		.aanZet( WIT )
+		.resultaat( ResultaatType.REMISE )
 		.aantalZetten( 0 )
 		.schaak( false )
 		.build();
-	dbs.Put( boStelling );
+	dbs.put( boStelling );
 	
-	newBoStelling = dbs.Get( boStelling );
-	assertThat( newBoStelling.getResultaat(), is( ResultaatType.Remise ) );
+	newBoStelling = dbs.get( boStelling );
+	assertThat( newBoStelling.getResultaat(), is( ResultaatType.REMISE ) );
 	assertThat( newBoStelling.getAantalZetten(), is( 0 ) );
 	assertThat( newBoStelling.isSchaak(), is( false ) );
 	
@@ -276,15 +276,15 @@ public void testPut()
 		.zk( 0x12 )
 		.s3( 0x00 )
 		.s4( 0x13 )
-		.aanZet( Wit )
-		.resultaat( ResultaatType.Gewonnen )
+		.aanZet( WIT )
+		.resultaat( ResultaatType.GEWONNEN )
 		.aantalZetten( 13 )
 		.schaak( false )
 		.build();
-	dbs.Put( boStelling );
+	dbs.put( boStelling );
 	
-	newBoStelling = dbs.Get( boStelling );
-	assertThat( newBoStelling.getResultaat(), is( ResultaatType.Gewonnen ) );
+	newBoStelling = dbs.get( boStelling );
+	assertThat( newBoStelling.getResultaat(), is( ResultaatType.GEWONNEN ) );
 	assertThat( newBoStelling.getAantalZetten(), is( 13 ) );
 	assertThat( newBoStelling.isSchaak(), is( false ) );
 	
@@ -293,15 +293,15 @@ public void testPut()
 		.zk( 0x12 )
 		.s3( 0x00 )
 		.s4( 0x13 )
-		.aanZet( Wit )
-		.resultaat( ResultaatType.Verloren )
+		.aanZet( WIT )
+		.resultaat( ResultaatType.VERLOREN )
 		.aantalZetten( 27 )
 		.schaak( false )
 		.build();
-	dbs.Put( boStelling );
+	dbs.put( boStelling );
 	
-	newBoStelling = dbs.Get( boStelling );
-	assertThat( newBoStelling.getResultaat(), is( ResultaatType.Verloren ) );
+	newBoStelling = dbs.get( boStelling );
+	assertThat( newBoStelling.getResultaat(), is( ResultaatType.VERLOREN ) );
 	assertThat( newBoStelling.getAantalZetten(), is( 27 ) );
 	assertThat( newBoStelling.isSchaak(), is( false ) );
 	
@@ -310,15 +310,15 @@ public void testPut()
 		.zk( 0x12 )
 		.s3( 0x00 )
 		.s4( 0x13 )
-		.aanZet( Wit )
-		.resultaat( ResultaatType.Remise )
+		.aanZet( WIT )
+		.resultaat( ResultaatType.REMISE )
 		.aantalZetten( 27 )
 		.schaak( true )
 		.build();
-	dbs.Put( boStelling );
+	dbs.put( boStelling );
 	
-	newBoStelling = dbs.Get( boStelling );
-	assertThat( newBoStelling.getResultaat(), is( ResultaatType.Remise ) );
+	newBoStelling = dbs.get( boStelling );
+	assertThat( newBoStelling.getResultaat(), is( ResultaatType.REMISE ) );
 	assertThat( newBoStelling.getAantalZetten(), is( 0 ) );
 	assertThat( newBoStelling.isSchaak(), is( true ) );
 
@@ -341,20 +341,20 @@ public void testFreeRecord()
 		.zk( 0x12 )
 		.s3( 0x00 )
 		.s4( 0x13 )
-		.aanZet( Wit )
-		.resultaat( ResultaatType.Verloren )
+		.aanZet( WIT )
+		.resultaat( ResultaatType.VERLOREN )
 		.aantalZetten( 27 )
 		.schaak( false )
 		.build();
-	dbs.Put( boStelling );
-	dbs.FreeRecord( boStelling );
+	dbs.put( boStelling );
+	dbs.freeRecord( boStelling );
 	// Dit is verder in TestVM al getest
 }
 @Test
 public void testName()
 {
-	dbs.Name( "Mamaloe" );
-	assertThat( dbs.DbsNaam, is( "Mamaloe" ) );
+	dbs.name( "Mamaloe" );
+	assertThat( dbs.dbsNaam, is( "Mamaloe" ) );
 }
 @Test
 public void testCreate()
@@ -384,33 +384,33 @@ public void testPass34()
 		.zk( 0x00 )
 		.s3( 0x11 )
 		.s4( 0x13 )
-		.aanZet( Wit )
-		.resultaat( ResultaatType.Gewonnen )
+		.aanZet( WIT )
+		.resultaat( ResultaatType.GEWONNEN )
 		.aantalZetten( 13 )
 		.schaak( false )
 		.build();
-	VMStelling vmStelling = dbs.Cardinaliseer( boStelling );
-	dbs.Pass34( boStelling, vmStelling, bouw::isIllegaal );
+	VMStelling vmStelling = dbs.cardinaliseer( boStelling );
+	dbs.pass34( boStelling, vmStelling, bouw::isIllegaal );
 	dbs.flush();
-	vmStelling.setAanZet( Wit );
-	Page page = vm.GetPage( vmStelling, false );
+	vmStelling.setAanZet( WIT );
+	Page page = vm.getPage( vmStelling, false );
 	assertThat( TestHelper.isAll( page.getPage(), (byte)0xff ), is( true ) );
 	
-	vmStelling.setAanZet( Zwart );
-	page = vm.GetPage( vmStelling, false );
+	vmStelling.setAanZet( ZWART );
+	page = vm.getPage( vmStelling, false );
 	assertThat( TestHelper.isAll( page.getPage(), (byte)0xff ), is( true ) );
 }
 void set0x0b( BoStelling aBoStelling )
 {
-	aBoStelling.setResultaat( ResultaatType.Gewonnen );
+	aBoStelling.setResultaat( ResultaatType.GEWONNEN );
 	aBoStelling.setAantalZetten( 0x0b );
-	dbs.Put( aBoStelling );
+	dbs.put( aBoStelling );
 }
 void set0x8b( BoStelling aBoStelling )
 {
-	aBoStelling.setResultaat( ResultaatType.Gewonnen );
+	aBoStelling.setResultaat( ResultaatType.GEWONNEN );
 	aBoStelling.setAantalZetten( 0x8b );
-	dbs.Put( aBoStelling );
+	dbs.put( aBoStelling );
 }
 @Test
 public void testMarkeerWitPassMet0x0b()
@@ -427,11 +427,11 @@ public void testMarkeerWitPassMet0x0b()
 		for ( int zk = 0; zk < 64; zk++ )
 		{
 			vmStelling.setZk( zk );
-			vmStelling.setAanZet( Wit );
-			page = vm.GetPage( vmStelling, false );
+			vmStelling.setAanZet( WIT );
+			page = vm.getPage( vmStelling, false );
 			assertThat( TestHelper.isAll( page.getPage(), (byte)0x0b ), is( true ) );
-			vmStelling.setAanZet( Zwart );
-			page = vm.GetPage( vmStelling, false );
+			vmStelling.setAanZet( ZWART );
+			page = vm.getPage( vmStelling, false );
 			assertThat( TestHelper.isAll( page.getPage(), (byte)0x00 ), is( true ) );
 		}
 	}
@@ -451,11 +451,11 @@ public void testMarkeerWitPassMet0x8b()
 		for ( int zk = 0; zk < 64; zk++ )
 		{
 			vmStelling.setZk( zk );
-			vmStelling.setAanZet( Wit );
-			page = vm.GetPage( vmStelling, false );
+			vmStelling.setAanZet( WIT );
+			page = vm.getPage( vmStelling, false );
 			assertThat( TestHelper.isAll( page.getPage(), (byte)0x8b ), is( true ) );
-			vmStelling.setAanZet( Zwart );
-			page = vm.GetPage( vmStelling, false );
+			vmStelling.setAanZet( ZWART );
+			page = vm.getPage( vmStelling, false );
 			assertThat( TestHelper.isAll( page.getPage(), (byte)0x00 ), is( true ) );
 		}
 	}
@@ -463,9 +463,9 @@ public void testMarkeerWitPassMet0x8b()
 
 void set0x11( BoStelling aBoStelling )
 {
-	aBoStelling.setResultaat( ResultaatType.Gewonnen );
+	aBoStelling.setResultaat( ResultaatType.GEWONNEN );
 	aBoStelling.setAantalZetten( 0x11 );
-	dbs.Put( aBoStelling );
+	dbs.put( aBoStelling );
 }
 @Test
 public void testMarkeerZwartPass()
@@ -482,20 +482,20 @@ public void testMarkeerZwartPass()
 		for ( int zk = 0; zk < 64; zk++ )
 		{
 			vmStelling.setZk( zk );
-			vmStelling.setAanZet( Wit );
-			page = vm.GetPage( vmStelling, false );
+			vmStelling.setAanZet( WIT );
+			page = vm.getPage( vmStelling, false );
 			assertThat( TestHelper.isAll( page.getPage(), (byte)0x00 ), is( true ) );
-			vmStelling.setAanZet( Zwart );
-			page = vm.GetPage( vmStelling, false );
+			vmStelling.setAanZet( ZWART );
+			page = vm.getPage( vmStelling, false );
 			assertThat( TestHelper.isAll( page.getPage(), (byte)0x11 ), is( true ) );
 		}
 	}
 }
 void set0x34( BoStelling aBoStelling )
 {
-	aBoStelling.setResultaat( ResultaatType.Gewonnen );
+	aBoStelling.setResultaat( ResultaatType.GEWONNEN );
 	aBoStelling.setAantalZetten( 0x34 );
-	dbs.Put( aBoStelling );
+	dbs.put( aBoStelling );
 }
 @Test
 public void testMarkeerWitEnZwartPass()
@@ -506,18 +506,18 @@ public void testMarkeerWitEnZwartPass()
 	// Alle pagina's moeten nu 0x34 zijn
 	VMStelling vmStelling = new VMStelling();
 	Page page;
-	vmStelling.setAanZet( Zwart );
+	vmStelling.setAanZet( ZWART );
 	for ( int wk = 0; wk < 10; wk++ )
 	{
 		vmStelling.setWk( wk );
 		for ( int zk = 0; zk < 64; zk++ )
 		{
 			vmStelling.setZk( zk );
-			vmStelling.setAanZet( Wit );
-			page = vm.GetPage( vmStelling, false );
+			vmStelling.setAanZet( WIT );
+			page = vm.getPage( vmStelling, false );
 			assertThat( TestHelper.isAll( page.getPage(), (byte)0x34 ), is( true ) );
-			vmStelling.setAanZet( Zwart );
-			page = vm.GetPage( vmStelling, false );
+			vmStelling.setAanZet( ZWART );
+			page = vm.getPage( vmStelling, false );
 			assertThat( TestHelper.isAll( page.getPage(), (byte)0x34 ), is( true ) );
 		}
 	}
@@ -525,9 +525,9 @@ public void testMarkeerWitEnZwartPass()
 @Test
 public void testPass()
 {
-	dbs.Pass( PassType.MarkeerWit, this::set0x0b );
-	dbs.Pass( PassType.MarkeerZwart, this::set0x0b );
-	dbs.Pass( PassType.WitEnZwart, this::set0x0b );
+	dbs.pass( PassType.MARKEER_WIT, this::set0x0b );
+	dbs.pass( PassType.MARKEER_ZWART, this::set0x0b );
+	dbs.pass( PassType.MAREKEER_WIT_EN_ZWART, this::set0x0b );
 	// Die markeer-methodes zijn hierboven al getest, we checken hier alleen of de aanroepjes goed gaan
 }
 

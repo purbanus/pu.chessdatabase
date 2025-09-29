@@ -16,7 +16,7 @@ import lombok.ToString;
 @Builder
 public class GenReport
 {
-private int AantalZetten;
+private int aantalZetten;
 @Builder.Default
-private List<String> GenZetten = new ArrayList<>(); // Liep in Modula-2 van 1 tot 130!
+private List<String> genZetten = new ArrayList<>(); // Liep in Modula-2 van 1 tot 130!
 }

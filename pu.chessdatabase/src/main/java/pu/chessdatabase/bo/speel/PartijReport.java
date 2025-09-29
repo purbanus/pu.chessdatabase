@@ -18,9 +18,9 @@ import lombok.ToString;
 @Builder
 public class PartijReport
 {
-private boolean ErZijnZetten;
-private int AantalZetten;
-private VooruitRec Vooruit;
+private boolean erZijnZetten;
+private int aantalZetten;
+private VooruitRec vooruit;
 @Builder.Default
 private List<String> PartijZetten = new ArrayList<>(); // Liep in Modula-2 van 1 tot 130!
 }

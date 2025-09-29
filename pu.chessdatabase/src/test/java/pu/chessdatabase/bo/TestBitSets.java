@@ -46,7 +46,7 @@ public void testBuitenBord()
 	BitSet BuitenBord = bitSetOfInt( 0x88 );
 	BitSet nul = bitSetOfInt( 0x00 );
 	List<Integer> goodVelden= new ArrayList<>();
-	int [] richting = Gen.Krichting;
+	int [] richting = Gen.KRICHTING;
 	for ( int x = 0; x < 8; x++ )
 	{
 		int Veld = 0x11;
@@ -70,7 +70,7 @@ public void testBuitenBordMetVeld33()
 	BitSet BuitenBord = bitSetOfInt( 0x88 );
 	BitSet nul = bitSetOfInt( 0x00 );
 	List<Integer> goodVelden= new ArrayList<>();
-	int [] richting = Gen.Trichting;
+	int [] richting = Gen.TRICHTING;
 	for ( int x = 0; x < 4; x++ )
 	{
 		int Veld = 0x33;

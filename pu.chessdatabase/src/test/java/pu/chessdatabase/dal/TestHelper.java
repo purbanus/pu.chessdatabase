@@ -32,8 +32,8 @@ public static Page createPageWithAllOnes()
 }
 public static Page createPageWithAll( byte aValue )
 {
-	byte [] entries = new byte [VM.PageSize];
-	for ( int x = 0; x < VM.PageSize; x++ )
+	byte [] entries = new byte [VM.PAGE_SIZE];
+	for ( int x = 0; x < VM.PAGE_SIZE; x++ )
 	{
 		
 		entries[x] = aValue;

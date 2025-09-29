@@ -2,5 +2,5 @@ package pu.chessdatabase.dal;
 
 public enum PassType
 {
-MarkeerWit, MarkeerZwart, WitEnZwart;
+MARKEER_WIT, MARKEER_ZWART, MAREKEER_WIT_EN_ZWART;
 }

@@ -26,16 +26,16 @@ Doel   : Implementeren van een virtual memory systeem voor de chess
 @Component
 public class VM
 {
-static final int CacheSize     = 30;                 // Aantal pagina"s
+static final int CACHE_SIZE     = 30;                 // Aantal pagina"s
 @SuppressWarnings( "unused" )
-private static final int CacheSizeDiv2 = CacheSize / 2;      // Voor rapportagescherm
-static final int PageSize      = 4096;               // Bytes per page
+private static final int CACHE_SIZE_DIV_2 = CACHE_SIZE / 2;      // Voor rapportagescherm
+static final int PAGE_SIZE      = 4096;               // Bytes per page
 
-Range WKveld = new Range( 0, 9 );
-Range Veld = new Range( 0, 63 );
+Range wkveldRange = new Range( 0, 9 );
+Range veldRange = new Range( 0, 63 );
 
-PageDescriptor[][][] PDT = new PageDescriptor[10][64][2];
-CacheEntry [] Cache = new CacheEntry[CacheSize];
+PageDescriptor[][][] pageDescriptorTabel = new PageDescriptor[10][64][2];
+CacheEntry [] Cache = new CacheEntry[CACHE_SIZE];
 private File databaseFile;
 private RandomAccessFile Database = null;
 long GeneratieTeller;
@@ -44,7 +44,7 @@ public VM()
 {
     //FIO.IOcheck:=FALSE;
     GeneratieTeller = 1L;
-    CreateCache();
+    createCache();
     setDatabase( null );
     setDatabaseFile( null );
 }
@@ -85,7 +85,7 @@ Doel      : Initialisatie van de gegevensstrukturen
     END;
 END;
  */
-public void InzPDT()
+public void initializePageDescriptorTabel()
 {
 long Adres = 0;
 for ( int WK = 0; WK < 10; WK++ )
@@ -94,13 +94,12 @@ for ( int WK = 0; WK < 10; WK++ )
 	{
 		for ( int AanZet = 0; AanZet < 2; AanZet++ )
 		{
-			PageDescriptor pageDescriptor = PageDescriptor.builder()
-				.waar( Lokatie.OpSchijf )
+			pageDescriptorTabel[WK][ZK][AanZet] = PageDescriptor.builder()
+				.waar( Lokatie.OP_SCHIJF )
 				.schijfAdres( Adres )
 				.cacheNummer( Integer.MAX_VALUE )
 				.build();
-			PDT[WK][ZK][AanZet] = pageDescriptor;
-			Adres += PageSize;
+			Adres += PAGE_SIZE;
 		}
 	}
 }
@@ -127,7 +126,7 @@ BEGIN
     END;
 END InzCache;
  */
-public void InzCache()
+public void initializeCache()
 {
 	// Cache is een array van 30 CacheEntry
 	// In een CacheEntry zit een PageDescriptor en een Page, onder meer
@@ -135,15 +134,15 @@ public void InzCache()
 	// Er was hier nog een truc voor de performance, namelijk eerst cache[1]" page vullen met nullen
 	// en die daarna copieren naar de andere cacheEntries. Die truc laten we hier achterwege
 	//for ( CacheEntry cacheEntry : Cache )
-	for ( int x = 1; x < CacheSize; x++)
+	for ( int x = 1; x < CACHE_SIZE; x++)
 	{
 		Cache[x] = CacheEntry.builder()
-			.PDPointer( null )
-			.PagePointer( new Page() )
-			.Vuil( false )
-			.Generatie( 0 )
+			.pageDescriptor( null )
+			.page( new Page() )
+			.vuil( false )
+			.generatie( 0 )
 			.build();
-		Cache[x].getPagePointer().clearPage();
+		Cache[x].getPage().clearPage();
 	}
 }
 /**
@@ -232,7 +231,7 @@ BEGIN
 END Report;
  */
 // @@NOG Report, wat doen we ermee?
-public void Report( PageDescriptor aPageDescriptor, VMStelling aStelling )
+public void report( PageDescriptor aPageDescriptor, VMStelling aStelling )
 {
 	// @@NOG effe niks
 	/*
@@ -280,14 +279,14 @@ BEGIN
     END;
 END GetFreeCacheEntry;
  */
-public int GetFreeCacheEntry()
+public int getFreeCacheEntry()
 {
     //---- laagste generatienummers -------
     long LaagsteGeneratie        = Long.MAX_VALUE;
     long LaagsteSchoneGeneratie  = Long.MAX_VALUE;
     int LaagsteGeneratieNr      = Integer.MAX_VALUE;
     int LaagsteSchoneGeneratieNr= Integer.MAX_VALUE;
-    for ( int x = 1; x < CacheSize; x++ ) 
+    for ( int x = 1; x < CACHE_SIZE; x++ ) 
     {
     	CacheEntry C = Cache[x];
         if ( C.getGeneratie() < LaagsteGeneratie )
@@ -318,10 +317,10 @@ void getRawPageData( PageDescriptor aPageDescriptor )
     try
 	{
 		getDatabase().seek( aPageDescriptor.getSchijfAdres() );
-		int Aantal = getDatabase().read( Cache[aPageDescriptor.getCacheNummer()].getPagePointer().getPage(), 0, PageSize );
-		if ( Aantal != PageSize )
+		int Aantal = getDatabase().read( Cache[aPageDescriptor.getCacheNummer()].getPage().getPage(), 0, PAGE_SIZE );
+		if ( Aantal != PAGE_SIZE )
 		{
-			throw new RuntimeException( "Ernstig: VM.GetPage heeft " + Aantal + " records gelezen. Dat zouden er " + PageSize + " moeten zijn" );
+			throw new RuntimeException( "Ernstig: VM.GetPage heeft " + Aantal + " records gelezen. Dat zouden er " + PAGE_SIZE + " moeten zijn" );
 		}
 	}
 	catch ( IOException e )
@@ -335,7 +334,7 @@ void putRawPageData( PageDescriptor aPageDescriptor )
 	try
 	{
 		getDatabase().seek( aPageDescriptor.getSchijfAdres() );
-	    getDatabase().write( Cache[aPageDescriptor.getCacheNummer()].getPagePointer().getPage(), 0, PageSize );
+	    getDatabase().write( Cache[aPageDescriptor.getCacheNummer()].getPage().getPage(), 0, PAGE_SIZE );
 	}
 	catch ( IOException e )
 	{
@@ -357,7 +356,7 @@ END PageOut;
  * @throws IOException 
  */
 //*------------ Pagina schrijven naar de schijf ------
-void PageOut( PageDescriptor aPageDescriptor )
+void pageOut( PageDescriptor aPageDescriptor )
 {
     if ( aPageDescriptor != null && Cache[aPageDescriptor.getCacheNummer()].isVuil() )
     {
@@ -432,20 +431,20 @@ BEGIN
     END;
 END PageIn;
  */
-void PageIn( PageDescriptor aPageDescriptor )
+void pageIn( PageDescriptor aPageDescriptor )
 {
-    if ( aPageDescriptor.getWaar() == Lokatie.OpSchijf )
+    if ( aPageDescriptor.getWaar() == Lokatie.OP_SCHIJF )
     {
-    	aPageDescriptor.setCacheNummer( GetFreeCacheEntry() );
+    	aPageDescriptor.setCacheNummer( getFreeCacheEntry() );
     }
     CacheEntry cacheEntry = Cache[aPageDescriptor.getCacheNummer()];
     
     //-------- Update oude page descriptor -------
-    PageDescriptor oudePageDescriptor = cacheEntry.getPDPointer();
-    PageOut( oudePageDescriptor );
+    PageDescriptor oudePageDescriptor = cacheEntry.getPageDescriptor();
+    pageOut( oudePageDescriptor );
     if ( oudePageDescriptor != null )
     {
-        oudePageDescriptor.setWaar( Lokatie.OpSchijf );
+        oudePageDescriptor.setWaar( Lokatie.OP_SCHIJF );
         oudePageDescriptor.setCacheNummer( Integer.MAX_VALUE );
     }
 
@@ -453,13 +452,13 @@ void PageIn( PageDescriptor aPageDescriptor )
  	getRawPageData( aPageDescriptor );
 
     //-------- Update cache ----------------------
-    cacheEntry.setPDPointer( aPageDescriptor );
+    cacheEntry.setPageDescriptor( aPageDescriptor );
     cacheEntry.setVuil( false );
     cacheEntry.setGeneratie( GeneratieTeller );
     GeneratieTeller++;
 
     //-------- Update Page descriptor ------------
-    aPageDescriptor.setWaar( Lokatie.InRAM );
+    aPageDescriptor.setWaar( Lokatie.IN_RAM );
 }
 /**
 PROCEDURE (*$N*) GetPage(S: Stelling; MaakVuil: BOOLEAN): PagePointer;
@@ -479,20 +478,20 @@ END GetPage;
 /**
  *  ------- Haal pagina op uit de cache ---------
  */
-Page GetPage( VMStelling aStelling, boolean aMaakVuil )
+Page getPage( VMStelling aStelling, boolean aMaakVuil )
 {
 	aStelling.checkStelling();
-	PageDescriptor pageDescriptor = PDT[aStelling.getWk()][aStelling.getZk()][aStelling.getAanZet().ordinal()];
-	if ( pageDescriptor.getWaar() == Lokatie.OpSchijf )
+	PageDescriptor pageDescriptor = pageDescriptorTabel[aStelling.getWk()][aStelling.getZk()][aStelling.getAanZet().ordinal()];
+	if ( pageDescriptor.getWaar() == Lokatie.OP_SCHIJF )
 	{
-		Report( pageDescriptor, aStelling );
-		PageIn( pageDescriptor );
+		report( pageDescriptor, aStelling );
+		pageIn( pageDescriptor );
 	}
 	if ( aMaakVuil )
 	{
 		Cache[pageDescriptor.getCacheNummer()].setVuil( true );
 	}
-	Page page = Cache[pageDescriptor.getCacheNummer()].getPagePointer();
+	Page page = Cache[pageDescriptor.getCacheNummer()].getPage();
 	return page;
 }
 /**
@@ -513,10 +512,10 @@ END Get;
 /**
  *  ------------ Ophalen database record --------------
  */
-public int Get( VMStelling aStelling )
+public int get( VMStelling aStelling )
 {
 	aStelling.checkStelling();
-    Page page = GetPage( aStelling, false );
+    Page page = getPage( aStelling, false );
     byte vmRec = page.getPage()[aStelling.getPositionWithinPage()];
     return Byte.toUnsignedInt( vmRec );
 }
@@ -539,11 +538,11 @@ END Put;
 /**
  * --------- Wegschrijven database record -----------
  */
-public void Put( VMStelling aStelling, int aDbsRec )
+public void put( VMStelling aStelling, int aDbsRec )
 {
 	// Dit gebeurt al in GetPage
 	// aStelling.checkStelling();
-    Page page = GetPage( aStelling, true );
+    Page page = getPage( aStelling, true );
     byte vmRec = (byte)( aDbsRec & 0xff );
     page.getPage()[aStelling.getPositionWithinPage()] = vmRec;
 }
@@ -567,15 +566,15 @@ END FreeRecord;
 /**
  *  -------- Cache entry vrijmaken --------------------
  */
-public void FreeRecord( VMStelling aStelling )
+public void freeRecord( VMStelling aStelling )
 {
 	// En na de clear, page en pageDescriptor leegmaken?
 	// - PD niet, die is permanent
 	aStelling.checkStelling();
-	PageDescriptor PD = PDT[aStelling.getWk()][aStelling.getZk()][aStelling.getAanZet().ordinal()];
-	if ( PD.getWaar() == Lokatie.InRAM )
+	PageDescriptor PD = pageDescriptorTabel[aStelling.getWk()][aStelling.getZk()][aStelling.getAanZet().ordinal()];
+	if ( PD.getWaar() == Lokatie.IN_RAM )
 	{
-		PageOut( PD ); // Checkt of de page vuil is
+		pageOut( PD ); // Checkt of de page vuil is
 		Cache[PD.getCacheNummer()].setGeneratie( 0 );
 	}
 }
@@ -595,13 +594,13 @@ END Flush;
 /**
  * -------- Hele cache vrijmaken ---------------------
  */
-public void Flush()
+public void flush()
 {
-	for ( int x = 1; x < CacheSize; x++ )
+	for ( int x = 1; x < CACHE_SIZE; x++ )
 	{
-		if ( Cache[x].getPDPointer() != null && Cache[x].getPDPointer().getCacheNummer() != Integer.MAX_VALUE )
+		if ( Cache[x].getPageDescriptor() != null && Cache[x].getPageDescriptor().getCacheNummer() != Integer.MAX_VALUE )
 		{
-			PageOut( Cache[x].getPDPointer() );
+			pageOut( Cache[x].getPageDescriptor() );
 			Cache[x].setGeneratie( 0 );
 		}
 	}
@@ -619,11 +618,11 @@ END Close;
 /**
  *  --------- Sluiten van de database --------------
  */
-public void Close()
+public void close()
 {
 	if ( getDatabase() != null )
 	{
-		Flush();
+		flush();
 		try
 		{
 			getDatabase().close();
@@ -636,7 +635,7 @@ public void Close()
 		//databaseFile = null;
 	}
 }
-public void ChkDatabaseFile( String aFileNaam )
+public void checkDatabaseFile( String aFileNaam )
 {
 	setDatabaseFile( new File( aFileNaam ) );
 	if ( ! getDatabaseFile().exists() )
@@ -674,10 +673,10 @@ END Open;
 /**
  *  ----------- Openen van een database -------------
  */
-public void Open( String aNaam )
+public void open( String aNaam )
 {
-	Close();
-	ChkDatabaseFile( aNaam ); // Throws RuntimeException-als er iets niet goed is
+	close();
+	checkDatabaseFile( aNaam ); // Throws RuntimeException-als er iets niet goed is
 	try
 	{
 		/**Zie doc for mode = "rwd" or "rws". "rw" betekent volgens mij dat een update direct naar
@@ -689,8 +688,8 @@ public void Open( String aNaam )
 	{
 		throw new RuntimeException( e );
 	}
-    InzPDT(); //@@@@@ later frequentie hiervan verlagen 
-    InzCache();
+    initializePageDescriptorTabel(); //@@@@@ later frequentie hiervan verlagen 
+    initializeCache();
 }
 /**
 PROCEDURE (*$N*) Create(Naam: ARRAY OF CHAR);
@@ -728,7 +727,7 @@ END Create;
 /**
  *  ---------- Leegmaken cq creeren van de database -------
  */
-void CreateFile( String aNaam )
+void createFile( String aNaam )
 {
 	setDatabaseFile( new File( aNaam ) );
 	if ( ! getDatabaseFile().exists() )
@@ -743,17 +742,17 @@ void CreateFile( String aNaam )
 		}
 	}
 }
-public void Create( String aNaam )
+public void create( String aNaam )
 {
-    PageDescriptor PD;
-    Close();
+    PageDescriptor pageDescriptor;
+    close();
     //Window.PutOnTop(Win.CacheWin);
     //Window.Clear();
-    CreateFile( aNaam );
-    Open( aNaam );
-    for ( int wk = WKveld.getMinimum(); wk < WKveld.getMaximum() + 1; wk++ )
+    createFile( aNaam );
+    open( aNaam );
+    for ( int wk = wkveldRange.getMinimum(); wk < wkveldRange.getMaximum() + 1; wk++ )
     {
-        for ( int zk = Veld.getMinimum(); zk < Veld.getMaximum() + 1; zk++ )
+        for ( int zk = veldRange.getMinimum(); zk < veldRange.getMaximum() + 1; zk++ )
         {
             for ( int AanZet = 0; AanZet < 2; AanZet++ )
             {
@@ -762,20 +761,20 @@ public void Create( String aNaam )
             		.zk( zk )
             		.s3( 0 )
             		.s4( 0 )
-            		.aanZet( AanZet == 0 ? Wit : Zwart )
+            		.aanZet( AanZet == 0 ? WIT : ZWART )
             		.build();
-                PD = PDT[wk][zk][AanZet];
-                PD.setCacheNummer( 1 );
+                pageDescriptor = pageDescriptorTabel[wk][zk][AanZet];
+                pageDescriptor.setCacheNummer( 1 );
                 Cache[1].setVuil( true );
-                Report( PD, stelling );
-                PageOut( PD );
+                report( pageDescriptor, stelling );
+                pageOut( pageDescriptor );
             }
         }
     }
 }
 void delete()
 {
-	Close();
+	close();
 	if ( getDatabaseFile() != null )
 	{
 		getDatabaseFile().delete();
@@ -804,7 +803,7 @@ END CreateCache;
 /**
  * ---------- Maken (alloceren) cache -------------*)
  */
-void CreateCache()
+void createCache()
 {
 	// In Java gebeurt dit vanzelf
 }

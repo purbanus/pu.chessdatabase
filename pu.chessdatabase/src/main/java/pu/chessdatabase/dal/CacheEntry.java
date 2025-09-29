@@ -11,8 +11,8 @@ import lombok.ToString;
 @ToString
 public class CacheEntry
 {
-private PageDescriptor PDPointer;
-private Page PagePointer;
-private boolean Vuil;
-private long Generatie;
+private PageDescriptor pageDescriptor;
+private Page page;
+private boolean vuil;
+private long generatie;
 }

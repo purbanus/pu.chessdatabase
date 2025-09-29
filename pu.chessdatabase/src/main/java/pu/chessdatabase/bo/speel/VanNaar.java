@@ -14,6 +14,6 @@ import lombok.ToString;
 public class VanNaar
 {
 public static final @NonNull VanNaar ILLEGAL_VAN_NAAR = new VanNaar( 0x0f, 0x0f );
-private int Van;
-private int Naar;
+private int van;
+private int naar;
 }
