@@ -77,7 +77,7 @@ private Dbs dbs;
 @Autowired private Gen gen;
 
 PlyRecord[] plies = new PlyRecord[256];
-PartijRec curPartij;
+PartijEntry curPartij;
 List<String> partijZetString = new ArrayList<>();
 //private String plyString;
 //private String zetNummerString;
@@ -131,7 +131,7 @@ END InzPartij;
  */
 void inzPartij()
 {
-	curPartij = new PartijRec();
+	curPartij = new PartijEntry();
 	for ( int x = 0; x <= MAX_PLY_NUMMER; x++ )
 	{
 		plies[x] = PlyRecord.NULL_PLY_RECORD;
@@ -176,14 +176,14 @@ public EindeType isEindStelling( BoStelling aBoStelling )
 {
 	if ( dbs.get( aBoStelling ).getResultaat() == ResultaatType.ILLEGAAL )
 	{
-		return EindeType.Illegaal;
+		return EindeType.ILLEGAAL;
 	}
 	GegenereerdeZetten gegenereerdeZetten = gen.genereerZetten( aBoStelling );
 	if ( gegenereerdeZetten.getAantal() > 0 )
 	{
-		return NogNiet;
+		return NOG_NIET;
 	}
-	return gen.isSchaak( aBoStelling ) ? Mat : Pat;
+	return gen.isSchaak( aBoStelling ) ? MAT : PAT;
 }
 /**
 PROCEDURE NewGame(StartS: Dbs.Stelling);
@@ -490,7 +490,7 @@ void clearPliesVoorZet()
 public boolean zet( VanNaar aVanNaar )
 {
 	BoStelling boStellingNaar = vanNaarToStelling( aVanNaar );
-	if ( ! isBegonnen() || isEindePartij() != NogNiet || boStellingNaar == null )
+	if ( ! isBegonnen() || isEindePartij() != NOG_NIET || boStellingNaar == null )
 	{
 		return false;
 	}
@@ -567,7 +567,7 @@ END Bedenk;
  */
 public boolean bedenk()
 {
-	if ( isBegonnen() && isEindePartij() == NogNiet )
+	if ( isBegonnen() && isEindePartij() == NOG_NIET )
 	{
 		if ( curPartij.getCurPly() < MAX_PLY_NUMMER )
 		{
@@ -700,12 +700,12 @@ END ResToStr;
 /**
  * -------- Resultaat omzetten in string ------------------------------
  */
-ResultaatRec resultaatToString() // @@NOG getResultaatRec?
+ResultaatRecord resultaatToString() // @@NOG getResultaatRec?
 {
-	ResultaatRec resultaatRec = new ResultaatRec();
+	ResultaatRecord resultaatRec = new ResultaatRecord();
 	resultaatRec.setRes2( "" );
 	PlyRecord plyRecord = plies[curPartij.getCurPly()];
-	if ( plyRecord.getEinde() != NogNiet )
+	if ( plyRecord.getEinde() != NOG_NIET )
 	{
 		resultaatRec.setRes1( plyRecord.getEinde().toString() );
 	}
@@ -914,8 +914,8 @@ public PartijReport partijToString()
 		// Aan het einde kreet geven
 		switch ( plies[curPartij.getLastPly()].getEinde() )
 		{
-			case Mat: partijZetString.add( "     Mat." ); break;
-			case Pat: partijZetString.add( "     Pat." ); break;
+			case MAT: partijZetString.add( "     Mat." ); break;
+			case PAT: partijZetString.add( "     Pat." ); break;
 			//$CASES-OMITTED$
 			default:
 			{
@@ -983,7 +983,7 @@ String genZetToString( int aZetNummer, BoStelling aBoStellingVan, BoStelling aBo
 	PlyRecord plyRecord = PlyRecord.builder()
 		.zetNr( aZetNummer )
 		.boStelling( aBoStellingVan )
-		.einde( NogNiet ) // @@NOG klopt dit??
+		.einde( NOG_NIET ) // @@NOG klopt dit??
 		.vanNaar( stellingToVanNaar( aBoStellingVan, aBoStellingNaar ) )
 		.build();
 	String resString;
@@ -1034,7 +1034,7 @@ END GenToStr;
 /**
  * -------- Gegenereerde zetten omzetten naar strings ---------------------------------
  */
-public GenReport genToStr( int aMax )
+public GegenereerdeZettenReport gegenereerdeZettenToString( int aMax )
 {
 	BoStelling boStellingVan = plies[curPartij.getCurPly()].getBoStelling();
 	GegenereerdeZetten gegenereerdeZetten = gen.genereerZettenGesorteerd( boStellingVan );
@@ -1057,9 +1057,9 @@ public GenReport genToStr( int aMax )
 		}
 		zetNummer = gegenereerdAantal;
 	}
-	GenReport genReport = GenReport.builder()
+	GegenereerdeZettenReport genReport = GegenereerdeZettenReport.builder()
 		.aantalZetten( zetNummer )
-		.genZetten( partijZetString )
+		.gegenereerdeZetten( partijZetString )
 		.build();
 	return genReport;
 }

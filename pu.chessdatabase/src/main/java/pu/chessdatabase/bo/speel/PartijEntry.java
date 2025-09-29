@@ -11,9 +11,9 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @Builder
-public class PartijRec
+public class PartijEntry
 {
-public PartijRec()
+public PartijEntry()
 {
 	desc = "";
 	curPly = 0;

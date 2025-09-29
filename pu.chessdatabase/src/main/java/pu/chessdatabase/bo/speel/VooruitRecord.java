@@ -1,18 +1,19 @@
 package pu.chessdatabase.bo.speel;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Data
 @EqualsAndHashCode
 @ToString
 @AllArgsConstructor
-@NoArgsConstructor
-public class ResultaatRec
+@Builder
+public class VooruitRecord
 {
-private String res1;
-private String res2;
+private boolean erIsVooruit;
+private int start;
+private boolean halverwege;
 }

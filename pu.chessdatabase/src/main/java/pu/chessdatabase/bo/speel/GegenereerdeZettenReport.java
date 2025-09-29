@@ -14,9 +14,25 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @Builder
-public class GenReport
+public class GegenereerdeZettenReport
 {
 private int aantalZetten;
 @Builder.Default
-private List<String> genZetten = new ArrayList<>(); // Liep in Modula-2 van 1 tot 130!
+private List<String> gegenereerdeZetten = new ArrayList<>(); // Liep in Modula-2 van 1 tot 130!
+public int getAantalZetten()
+{
+	return aantalZetten;
+}
+public void setAantalZetten( int aAantalZetten )
+{
+	aantalZetten = aAantalZetten;
+}
+public List<String> getGenZetten()
+{
+	return gegenereerdeZetten;
+}
+public void setGenZetten( List<String> aGenZetten )
+{
+	gegenereerdeZetten = aGenZetten;
+}
 }
