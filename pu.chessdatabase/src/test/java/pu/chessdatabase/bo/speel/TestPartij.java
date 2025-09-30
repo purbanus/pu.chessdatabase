@@ -12,6 +12,8 @@ import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.bo.speel.EindeType.*;
 import static pu.chessdatabase.dal.ResultaatType.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,7 +52,7 @@ public void testInzPartij()
 	assertNotNull( partij.curPartij );
 	for ( PlyRecord plyRecord : partij.plies )
 	{
-		assertThat( plyRecord, is( PlyRecord.NULL_PLY_RECORD ) );
+		assertThat( plyRecord, is( PlyRecord.getNullPlyRecord() ) );
 	}
 }
 @Test
@@ -143,6 +145,17 @@ public void testNewGame()
 		.vanNaar( VanNaar.ILLEGAL_VAN_NAAR )
 		.build();
 	assertThat( partij.plies[0], is( plyRecord ) );
+	
+	final BoStelling illegaleStartStelling = BoStelling.builder()
+		.wk( 0x35 )
+		.zk( 0x37 )
+		.s3( 0x36 )
+		.s4( 0x00 )
+		.aanZet( WIT )
+		.build();
+	assertThrows( RuntimeException.class, () -> partij.newGame( illegaleStartStelling ) );
+	;
+//@@HIERO
 }
 @Test
 public void testIsBegonnen()
@@ -238,7 +251,8 @@ public void testIsLegaal()
 	assertThat( partij.isLegaal( new VanNaar( 0x21, 0x20 ) ), is( true ) );
 	
 	boStelling.setAanZet( WIT );
-	assertThat( partij.isLegaal( new VanNaar( 0x21, 0x20 ) ), is( false ) );
+	assertThrows( RuntimeException.class, () -> partij.isLegaal( new VanNaar( 0x21, 0x20 ) ) );
+
 }
 @Test
 public void testZetVooruit()
@@ -271,6 +285,42 @@ public void testZetTerug()
 	partij.zetTerug();
 	assertThat( partij.curPartij.getCurPly(), is( 1 ) );
 }
+/** @@NOG Deze tests ook inbouwen
+ * De belangrijkste struktuur is Plies. Een aantal voorbeelden:
+
+Voorbeeld a):  Wit begint
+
+1. Ke2-e3 Ta1-a8
+2. Ke3-e4 Kf6-g6
+
+Plies ziet er als volgt uit:
+
+                 Stelling       ZetNr       Van/naar
+Plies[0]     Ke2Dh1Kf6Ta1 waz     1          e2 e3
+Plies[1]     Ke3Dh1Kf6Ta1 zaz     1          a1 a8
+Plies[2]     Ke3Dh1Kf6Ta8 waz     2          e3 e4
+Plies[3]     Ke4Dh1Kf6Ta8 zaz     2          f6 g6
+Plies[4]     Ke3Dh1Kg6Ta8 waz     3           ...
+
+Voorbeeld b):  Zwart begint
+
+1.   ...  Ta1-a8
+2. Ke3-e4 Kf6-g6
+
+Het plyarray ziet er als volgt uit:
+
+                 Stelling       ZetNr       Van/naar
+Plies[0]     Ke3Dh1Kf6Ta1 zaz     1          a1 a8
+Plies[1]     Ke3Dh1Kf6Ta8 waz     2          e3 e4
+Plies[2]     Ke4Dh1Kf6Ta8 zaz     2          f6 g6
+Plies[3]     Ke3Dh1Kg6Ta8 waz     3           ...
+
+Met andere woorden, in een plyrecord zit de stelling waaruit zetten
+gegenereerd worden, plus de zet die uiteindelijk gedaan is. Het zetnummer
+is gewoon het nummer dat afgedrukt moet worden.
+
+
+ */
 @Test
 public void testZet()
 {
@@ -295,11 +345,11 @@ public void testZet()
 	VanNaar vanNaar = new VanNaar( 0x11, 0x22 );
 	partij.curPartij.setBegonnen( false );
 	
-	assertThat( partij.zet( vanNaar ), is( false ) );
+	assertThrows( RuntimeException.class, () -> partij.zet( vanNaar ) );
 
 	partij.curPartij.setBegonnen( true );
 	partij.plies[0].setEinde( MAT );
-	assertThat( partij.zet( vanNaar ), is( false ) );
+	assertThrows( RuntimeException.class, () -> partij.zet( vanNaar ) );
 	partij.plies[0].setEinde( NOG_NIET );
 	
 	partij.newGame( boStellingVan );
@@ -347,6 +397,29 @@ public void testZetMetZwart()
 	assertThat( partij.plies[1].getBoStelling(), is( boStellingNaar ) );
 	assertThat( partij.plies[1].getEinde(), is( NOG_NIET ) );
 	assertThat( partij.plies[1].getZetNr(), is( 2 ) );
+}
+@Test
+public void testIsSlagZet()
+{
+	BoStelling boStelling = BoStelling.builder()
+		.wk( 0x00 )
+		.zk( 0x77 )
+		.s3( 0x11 )
+		.s4( 0x66 )
+		.aanZet( WIT )
+		.build();
+	VanNaar vanNaar = new VanNaar( 0x11, 0x66 );
+	assertThat( partij.isSlagZet( boStelling, vanNaar ), is( true ) );
+
+	boStelling = BoStelling.builder()
+		.wk( 0x00 )
+		.zk( 0x77 )
+		.s3( 0x11 )
+		.s4( 0x66 )
+		.aanZet( WIT )
+		.build();
+	vanNaar = new VanNaar( 0x11, 0x17 );
+	assertThat( partij.isSlagZet( boStelling, vanNaar ), is( false ) );
 }
 @Test
 public void testZetStelling()
@@ -449,8 +522,297 @@ public void testPlyToString()
 		.einde( NOG_NIET )
 		.vanNaar( vanNaar )
 		.zetNr( 1 )
+		.schaak( false )
 		.build();
 	assertThat( partij.plyToString( plyRecord ), is( "Db2-c3 " ) );
+
+	boStelling = BoStelling.builder()
+		.wk( 0x00 )
+		.zk( 0x77 )
+		.s3( 0x11 )
+		.s4( 0x66 )
+		.aanZet( WIT )
+		.build();
+	vanNaar = new VanNaar( 0x11, 0x66 );
+	plyRecord = PlyRecord.builder()
+		.boStelling( boStelling )
+		.einde( NOG_NIET )
+		.vanNaar( vanNaar )
+		.zetNr( 1 )
+		.schaak( true )
+		.build();
+	assertThat( partij.plyToString( plyRecord ), is( "Db2xg7+" ) );
+
+	boStelling = BoStelling.builder()
+		.wk( 0x00 )
+		.zk( 0x77 )
+		.s3( 0x11 )
+		.s4( 0x66 )
+		.schaak(  true )
+		.aanZet( WIT )
+		.build();
+	vanNaar = new VanNaar( 0x11, 0x17 );
+	plyRecord = PlyRecord.builder()
+		.boStelling( boStelling )
+		.einde( NOG_NIET )
+		.vanNaar( vanNaar )
+		.zetNr( 1 )
+		.schaak( true )
+		.build();
+	assertThat( partij.plyToString( plyRecord ), is( "Db2-h2+" ) );
+}
+@Test
+public void testCurPlyToString()
+{
+	BoStelling boStelling = BoStelling.builder()
+		.wk( 0x00 )
+		.zk( 0x77 )
+		.s3( 0x11 )
+		.s4( 0x66 )
+		.aanZet( WIT )
+		.build();
+	VanNaar vanNaar = new VanNaar( 0x11, 0x22 );
+	partij.newGame( boStelling );
+	partij.zet( vanNaar );
+	assertThat( partij.curPlyToString(), is( "Db2-c3 " ) );
+
+	boStelling = BoStelling.builder()
+		.wk( 0x00 )
+		.zk( 0x77 )
+		.s3( 0x11 )
+		.s4( 0x66 )
+		.schaak( false )
+		.aanZet( WIT )
+		.build();
+	vanNaar = new VanNaar( 0x11, 0x17 );
+	partij.newGame( boStelling );
+	partij.zet( vanNaar );
+	assertThat( partij.curPlyToString(), is( "Db2-h2+" ) );
+}
+@Test
+public void testResultaatToString()
+{
+	BoStelling boStelling = BoStelling.builder()
+		.wk( 0x35 )
+		.zk( 0x37 )
+		.s3( 0x36 )
+		.s4( 0x00 )
+		.aanZet( ZWART )
+		.build();
+	partij.newGame( boStelling );
+	ResultaatRecord resultaatRecord = new ResultaatRecord( "Mat", "" );
+	assertThat( partij.getResultaatRecord(), is( resultaatRecord ) );
+
+	boStelling = BoStelling.builder()
+		.wk( 0x00 )
+		.zk( 0x77 )
+		.s3( 0x11 )
+		.s4( 0x66 )
+		.aanZet( WIT )
+		.build();
+	partij.newGame( boStelling );
+	resultaatRecord = new ResultaatRecord( "Gewonnen", "Mat in 29" );
+	assertThat( partij.getResultaatRecord(), is( resultaatRecord ) );
+	boStelling = BoStelling.builder()
+		.wk( 0x00 )
+		.zk( 0x77 )
+		.s3( 0x11 )
+		.s4( 0x66 )
+		.aanZet( ZWART )
+		.build();
+	partij.newGame( boStelling );
+	resultaatRecord = new ResultaatRecord( "Verloren", "Mat in 30" );
+	assertThat( partij.getResultaatRecord(), is( resultaatRecord ) );
+}
+@Test
+public void testZetNummerToString()
+{
+	assertThat( partij.zetNummerToString(   3 ), is ( "  3" ) );
+	assertThat( partij.zetNummerToString(  13 ), is ( " 13" ) );
+	assertThat( partij.zetNummerToString( 313 ), is ( "313" ) );
+}
+@Test
+public void testHeleZetToString()
+{
+	BoStelling boStelling = BoStelling.builder()
+		.wk( 0x00 )
+		.zk( 0x77 )
+		.s3( 0x11 )
+		.s4( 0x66 )
+		.aanZet( WIT )
+		.build();
+	partij.newGame( boStelling );
+	VanNaar vanNaar = new VanNaar( 0x11, 0x66 );
+	partij.zet( vanNaar );
+	vanNaar = new VanNaar( 0x77, 0x66 );
+	partij.zet( vanNaar );
+	assertThat( partij.heleZetToString( 0 ), is( "  1. Db2xg7+ Kh8xg7 " ) );
+}
+@Test
+public void testCreateZetten()
+{
+	BoStelling boStelling = BoStelling.builder()
+		.wk( 0x00 )
+		.zk( 0x77 )
+		.s3( 0x11 )
+		.s4( 0x66 )
+		.aanZet( WIT )
+		.build();
+	partij.newGame( boStelling );
+	VanNaar vanNaar = new VanNaar( 0x11, 0x66 );
+	partij.zet( vanNaar );
+	vanNaar = new VanNaar( 0x77, 0x66 );
+	partij.zet( vanNaar );
+	
+	List<String> zetten = partij.createZetten();
+	assertThat( zetten.size(), is( 1 ) );
+	assertThat( zetten.get( 0 ), is( "  1. Db2xg7+ Kh8xg7 " ) );
+	
+	boStelling = BoStelling.builder()
+		.wk( 0x00 )
+		.zk( 0x77 )
+		.s3( 0x11 )
+		.s4( 0x66 )
+		.aanZet( ZWART )
+		.build();
+	partij.newGame( boStelling );
+	vanNaar = new VanNaar( 0x77, 0x76 );
+	partij.zet( vanNaar );
+	vanNaar = new VanNaar( 0x11, 0x71 );
+	partij.zet( vanNaar );
+	
+	zetten = partij.createZetten();
+	assertThat( zetten.size(), is( 2 ) );
+	assertThat( zetten.get( 0 ), is( "  1.   ...   Kh8-g8 " ) );
+	assertThat( zetten.get( 1 ), is( "  2. Db2-b8+" ) );
+}
+@Test
+public void testCreateVooruit()
+{
+	BoStelling boStelling = BoStelling.builder()
+		.wk( 0x00 )
+		.zk( 0x77 )
+		.s3( 0x11 )
+		.s4( 0x66 )
+		.aanZet( WIT )
+		.build();
+	partij.newGame( boStelling );
+	VooruitRecord vooruitRecord = VooruitRecord.builder()
+		.erIsVooruit( true )
+		.start( 1 )
+		.halverwege( false ) // ??
+		.build();
+	assertThat( partij.createVooruit(), is( vooruitRecord ) );
+
+	boStelling = BoStelling.builder()
+		.wk( 0x00 )
+		.zk( 0x77 )
+		.s3( 0x11 )
+		.s4( 0x66 )
+		.aanZet( ZWART )
+		.build();
+	partij.newGame( boStelling );
+	VanNaar vanNaar = new VanNaar( 0x77, 0x76 );
+	partij.zet( vanNaar );
+	vanNaar = new VanNaar( 0x11, 0x71 );
+	partij.zet( vanNaar );
+	vooruitRecord = VooruitRecord.builder()
+		.erIsVooruit( true )
+		.start( 2 )
+		.halverwege( true )
+		.build();
+	assertThat( partij.createVooruit(), is( vooruitRecord ) );
+	
+	boStelling = BoStelling.builder()
+		.wk( 0x00 )
+		.zk( 0x77 )
+		.s3( 0x11 )
+		.s4( 0x66 )
+		.aanZet( ZWART )
+		.build();
+	partij.newGame( boStelling );
+	vooruitRecord = VooruitRecord.builder()
+		.erIsVooruit( true )
+		.start( 1 )
+		.halverwege( true ) // ZAZ
+		.build();
+	assertThat( partij.createVooruit(), is( vooruitRecord ) );
+
+	vanNaar = new VanNaar( 0x77, 0x76 );
+	partij.zet( vanNaar );
+	vooruitRecord = VooruitRecord.builder()
+		.erIsVooruit( true )
+		.start( 1 )
+		.halverwege( false ) // WAZ
+		.build();
+	assertThat( partij.createVooruit(), is( vooruitRecord ) );
+
+	vanNaar = new VanNaar( 0x11, 0x71 );
+	partij.zet( vanNaar );
+	vooruitRecord = VooruitRecord.builder()
+		.erIsVooruit( true )
+		.start( 2 )
+		.halverwege( true )
+		.build();
+	assertThat( partij.createVooruit(), is( vooruitRecord ) );
+
+	vanNaar = new VanNaar( 0x76, 0x67 );
+	partij.zet( vanNaar );
+	vooruitRecord = VooruitRecord.builder()
+		.erIsVooruit( true )
+		.start( 2 )
+		.halverwege( false )
+		.build();
+	assertThat( partij.createVooruit(), is( vooruitRecord ) );
+	
+	boStelling = BoStelling.builder()
+		.wk( 0x00 )
+		.zk( 0x77 )
+		.s3( 0x11 )
+		.s4( 0x66 )
+		.aanZet( ZWART )
+		.build();
+	partij.newGame( boStelling );
+	partij.curPartij.setLastPly( 15 ); // Dit heeft dus geen effect
+	vooruitRecord = VooruitRecord.builder()
+		.erIsVooruit( true )
+		.start( 1 )
+		.halverwege( true ) // ZAZ
+		.build();
+	assertThat( partij.createVooruit(), is( vooruitRecord ) );
+}
+@Test
+public void testPartijReport()
+{
+	BoStelling boStelling = BoStelling.builder()
+		.wk( 0x00 )
+		.zk( 0x77 )
+		.s3( 0x11 )
+		.s4( 0x66 )
+		.aanZet( ZWART )
+		.build();
+	partij.newGame( boStelling );
+	VanNaar vanNaar = new VanNaar( 0x77, 0x76 );
+	partij.zet( vanNaar );
+	vanNaar = new VanNaar( 0x11, 0x71 );
+	partij.zet( vanNaar );
+	vanNaar = new VanNaar( 0x76, 0x67 );
+	partij.zet( vanNaar );
+	
+	PartijReport partijReport = partij.getPartijReport();
+	assertThat( partijReport.isErZijnZetten(), is( true ) );
+	
+	VooruitRecord vooruitRecord = VooruitRecord.builder()
+		.erIsVooruit( true )
+		.start( 2 )
+		.halverwege( false )
+		.build();
+	assertThat( partijReport.getVooruit(), is( vooruitRecord ) );
+	
+	List<String> zetten = partijReport.getZetten();
+	assertThat( zetten.size(), is( 2 ) );
+	assertThat( zetten.get( 0 ), is( "  1.   ...   Kh8-g8 " ) );
+	assertThat( zetten.get( 1 ), is( "  2. Db2-b8+ Kg8-h7 " ) );
 }
 
 
