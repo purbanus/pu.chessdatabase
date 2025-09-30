@@ -442,6 +442,9 @@ void addZet( final BoStelling aBoStelling, int aStukNr, int aNaar, ZetSoort aZet
 	}
 	boStelling.setAanZet( boStelling.getAanZet() == WIT ? ZWART : WIT );
 	dbs.get( boStelling );
+	// Dit moet je niet doen want isSchaak cleart het bord
+	// boStelling.setSchaak( isSchaak( boStelling ) );
+	// @@NOG Goede les: elimineer Bord as globale variabele!!
 	if ( boStelling.getResultaat() != ResultaatType.ILLEGAAL )
 	{
 		aGegenereerdeZetten.add( boStelling );

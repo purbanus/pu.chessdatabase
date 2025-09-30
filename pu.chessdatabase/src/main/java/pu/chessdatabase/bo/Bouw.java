@@ -262,6 +262,7 @@ END Schaakjes;
 /**
  *------------- Kontroleer schaakjes ---------------------------
  */
+// @@!NOG Ik begrijp niet hoe dit werkt
 public void schaakjes( BoStelling aBoStellingMetWitAanZet )
 {
 	/*
@@ -274,7 +275,11 @@ public void schaakjes( BoStelling aBoStellingMetWitAanZet )
 		BoStelling boStellingMetWitAanZet = aBoStellingMetWitAanZet.clone();
 		BoStelling boStellingMetZwartAanZet = aBoStellingMetWitAanZet.clone();
 		boStellingMetZwartAanZet.setAanZet( ZWART );
+//		boStellingMetWitAanZet.setSchaak( gen.isSchaak( boStellingMetWitAanZet ) );
+//		boStellingMetZwartAanZet.setSchaak( gen.isSchaak( boStellingMetZwartAanZet ) );
+
 		// Wit aan zet
+//		if ( boStellingMetWitAanZet.isSchaak() )
 		if ( gen.isSchaak( boStellingMetWitAanZet ) )
 		{
 			boStellingMetWitAanZet.setSchaak( true );
@@ -282,6 +287,7 @@ public void schaakjes( BoStelling aBoStellingMetWitAanZet )
 			boStellingMetZwartAanZet.setResultaat( ResultaatType.ILLEGAAL );
 		}
 		// Zwart aan zet
+//		if ( boStellingMetZwartAanZet.isSchaak() )
 		if ( gen.isSchaak( boStellingMetZwartAanZet ) )
 		{
 			boStellingMetZwartAanZet.setSchaak( true );
@@ -327,7 +333,7 @@ END IsMat;
 public void isMat( BoStelling aBoStelling )
 {
 	BoStelling boStelling = aBoStelling.clone();
-	
+//	boStelling.setSchaak( gen.isSchaak( boStelling ) );
 	if ( boStelling.getResultaat() == ResultaatType.REMISE && boStelling.isSchaak() == true )
 	{
 		GegenereerdeZetten gegenereerdeZetten = gen.genereerZetten( boStelling );
@@ -447,7 +453,7 @@ void telAlles()
 	rptTot[ResultaatType.REMISE.ordinal()] = 0;
 	reportNewPass( "Tellen van alle stellingen" );
 	resTeller = 0;
-	dbs.pass( PassType.MAREKEER_WIT_EN_ZWART, this::tel );
+	dbs.pass( PassType.MARKEER_WIT_EN_ZWART, this::tel );
 }
 long[][] tellersMetKleur;
 void telMetKleur( BoStelling aBoStelling )
@@ -466,7 +472,7 @@ void telAllesMetKleur()
 	tellersMetKleur = new long[2][4];
 	reportNewPass( "Tellen van alle stellingen" );
 	resTeller = 0;
-	dbs.pass( PassType.MAREKEER_WIT_EN_ZWART, this::telMetKleur );
+	dbs.pass( PassType.MARKEER_WIT_EN_ZWART, this::telMetKleur );
 }
 void printAllesMetKleur()
 {

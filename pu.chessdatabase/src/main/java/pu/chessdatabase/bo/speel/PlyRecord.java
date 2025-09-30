@@ -22,19 +22,24 @@ import lombok.ToString;
  */
 public class PlyRecord
 {
-public static final PlyRecord NULL_PLY_RECORD = PlyRecord.builder()
-	.boStelling( BoStelling.NULL_STELLING )
-	.einde( EindeType.NOG_NIET )
-	.zetNr( Partij.MAX_HELE_ZET_NUMMER )
-	.vanNaar( VanNaar.ILLEGAL_VAN_NAAR )
-	.build();
+public static PlyRecord getNullPlyRecord()
+{
+	PlyRecord plyRecord = PlyRecord.builder()
+		.boStelling( BoStelling.NULL_STELLING )
+		.einde( EindeType.NOG_NIET )
+		.zetNr( Partij.MAX_HELE_ZET_NUMMER )
+		.vanNaar( VanNaar.ILLEGAL_VAN_NAAR )
+		.build();
+	return plyRecord;
+}
 private BoStelling boStelling;
 private EindeType einde;
 private int zetNr; // Liep in Modula van 1 tot 130!
 private VanNaar vanNaar;
-public boolean isSchaak()
-{
-	return getBoStelling().isSchaak();
-}
-
+// Dit moet je niet doen, het is het schaak in de VORIGE ply dat geldt
+//public boolean isSchaak()
+//{
+//	return getBoStelling().isSchaak();
+//}
+private boolean schaak;
 }

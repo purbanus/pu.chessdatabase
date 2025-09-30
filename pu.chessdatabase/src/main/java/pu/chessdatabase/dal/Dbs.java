@@ -14,13 +14,7 @@ import pu.chessdatabase.util.Vector;
 @Component
 public class Dbs
 {
-@Autowired private VM vm;
-
 public static final int MAX_RESULTAAT_TYPE = 4;
-public static final int VM_ILLEGAAL      = 0xFF;
-public static final int VM_REMISE        = 0x00;
-public static final int VM_SCHAAK        = 0x80;
-public static final int VERLIES_OFFSET   = 0x80;
 public static final int OKTANTEN = 8;
 
 public static final String DFT_DBS_NAAM = "KDKT.DBS";
@@ -99,6 +93,8 @@ public static final Vector [] TRANSLATIE_TABEL = new Vector [] {
 	new Vector( 7, 0),
 	new Vector( 0, 0)
 };
+
+@Autowired private VM vm;
 
 //Range<Integer> Veld = Range.of( 0, 0x77 );
 //Range<Integer> OKtant = Range.of( 1, OKTANTEN );
@@ -348,11 +344,11 @@ public void put( BoStelling aStelling )
 	VMStelling vmStelling = cardinaliseer( aStelling );
 	switch ( aStelling.getResultaat() )
 	{
-		case ILLEGAAL: VMRec = VM_ILLEGAAL; break;
+		case ILLEGAAL: VMRec = VM.VM_ILLEGAAL; break;
 		// @@NOG Ook hier: waarom geldt een schaakje als remise???
-		case REMISE  : VMRec = aStelling.isSchaak() ? VM_SCHAAK : VM_REMISE; break;
+		case REMISE  : VMRec = aStelling.isSchaak() ? VM.VM_SCHAAK : VM.VM_REMISE; break;
 		case GEWONNEN: VMRec = aStelling.getAantalZetten(); break;
-		case VERLOREN: VMRec = aStelling.getAantalZetten() + VERLIES_OFFSET; break;
+		case VERLOREN: VMRec = aStelling.getAantalZetten() + VM.VERLIES_OFFSET; break;
 	}
 	updateTellers( aStelling.getResultaat() );
 	vm.put( vmStelling, VMRec );
@@ -414,25 +410,31 @@ END GetDirect;
 BoStelling getDirect( VMStelling aVMStelling, BoStelling aBoStelling )
 {
 	int VMrec = vm.get( aVMStelling );
+	// @@NOG Erg onhandig! Je kunt hier niet Gen gebruiken want dan krijg je een circulaire 
+	//       referentie: Gen gebruikt Dbs en Dbs gebruikt dan ook Gen. Er zijn twee oplossingen:
+	//       - De isSchaak uit Gen tillen en in een aparte class stoppen (ik weet trouwens niet of
+	//         dat gaat werken, of je dan geen circulaire referentie hebt.
+	//       - Overal waar getDirect gebruikt wordt, isSchaak() aanroepen
+	//aBoStelling.setSchaak( gen.isSchaak( aBoStelling) );
 	aBoStelling.setSchaak( false );
-	if ( VMrec == VM_ILLEGAAL )
+	if ( VMrec == VM.VM_ILLEGAAL )
 	{
 		aBoStelling.setResultaat( ResultaatType.ILLEGAAL );
 		aBoStelling.setAantalZetten( 0 );
 	}
-	else if ( VMrec == VM_REMISE )
+	else if ( VMrec == VM.VM_REMISE )
 	{
 		aBoStelling.setResultaat( ResultaatType.REMISE );
 		aBoStelling.setAantalZetten( 0 );
 	}
-	else if ( VMrec == VM_SCHAAK )
+	else if ( VMrec == VM.VM_SCHAAK )
 	{
 		// @@NOG Waarom worden schaakjes als remise gezien?
 		aBoStelling.setResultaat( ResultaatType.REMISE );
 		aBoStelling.setAantalZetten( 0 );
 		aBoStelling.setSchaak( true );
 	}
-	else if ( VMrec < VERLIES_OFFSET )
+	else if ( VMrec < VM.VERLIES_OFFSET )
 	{
 		aBoStelling.setResultaat( ResultaatType.GEWONNEN );
 		aBoStelling.setAantalZetten( VMrec );
@@ -440,7 +442,7 @@ BoStelling getDirect( VMStelling aVMStelling, BoStelling aBoStelling )
 	else
 	{
 		aBoStelling.setResultaat( ResultaatType.VERLOREN );
-		aBoStelling.setAantalZetten( VMrec - VERLIES_OFFSET );
+		aBoStelling.setAantalZetten( VMrec - VM.VERLIES_OFFSET );
 	}
 	return aBoStelling;
 }
@@ -587,7 +589,8 @@ public void pass34( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction
 
 			@SuppressWarnings( "unused" )
 			// @@NOG CHECK is aBoStelling veranderd of moet je boStelling gebruiken? 
-			BoStelling boStelling = getDirect( aVmStelling, aBoStelling ); // aBoStelling.s4 maakt nog niet uit
+			BoStelling boStelling = getDirect( aVmStelling, aBoStelling ); //1 aBoStelling.s4 maakt nog niet uit
+			// @@NOG Je kunt hier niet Gen.isSchaak() aanroependus moet het in de proc
 			if ( aBoStelling.getResultaat() == ResultaatType.REMISE )
 			{
 				aPassProc.doPass( aBoStelling );
@@ -746,12 +749,14 @@ void markeerWitEnZwartPass( PassFunction aPassProc )
 					// Wit
 					vmStelling.setAanZet( WIT );
 					BoStelling gotBoStelling = getDirect( vmStelling, boStelling ); // @@NOG Is die gotStelling nodig??
+					// @@NOG Je kunt hier niet Gen.isSchaak() aanroependus moet het in de proc
 					gotBoStelling.setAanZet( WIT ); // @@NOG Waarom?
 					aPassProc.doPass( gotBoStelling );
 					
 					// Zwart
 					vmStelling.setAanZet( ZWART );
 					gotBoStelling = getDirect( vmStelling, boStelling ); // @@NOG Is die gotStelling nodig??
+					// @@NOG Je kunt hier niet Gen.isSchaak() aanroependus moet het in de proc
 					gotBoStelling.setAanZet( ZWART ); // @@NOG Waarom?
 					aPassProc.doPass( gotBoStelling );
 		
@@ -787,7 +792,7 @@ public void pass( PassType aPassType, PassFunction aPassProc )
 	{
 		case MARKEER_WIT: markeerWitPass( aPassProc ); break;
 		case MARKEER_ZWART: markeerZwartPass( aPassProc ); break;
-		case MAREKEER_WIT_EN_ZWART: markeerWitEnZwartPass( aPassProc ); break;
+		case MARKEER_WIT_EN_ZWART: markeerWitEnZwartPass( aPassProc ); break;
 	}
 	close();
 }
