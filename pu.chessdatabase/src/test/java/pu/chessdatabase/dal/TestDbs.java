@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Bouw;
+import pu.chessdatabase.bo.Gen;
 import pu.chessdatabase.util.Vector;
 
 
@@ -25,6 +26,7 @@ public class TestDbs
 @Autowired private Dbs dbs;
 @Autowired private Bouw bouw;
 @Autowired private VM vm;
+@Autowired private Gen gen;
 
 @BeforeEach
 public void setup()
@@ -248,6 +250,7 @@ public void testPut()
 	dbs.put( boStelling );
 	
 	BoStelling newBoStelling = dbs.get( boStelling );
+	boStelling.setSchaak( gen.isSchaak( boStelling ) );
 	// Dit moet je niet doen want het is altijd true!!
 	// assertThat( newBoStelling, is( boStelling ) );
 	assertThat( newBoStelling.getResultaat(), is( ResultaatType.ILLEGAAL ) );
@@ -527,7 +530,7 @@ public void testPass()
 {
 	dbs.pass( PassType.MARKEER_WIT, this::set0x0b );
 	dbs.pass( PassType.MARKEER_ZWART, this::set0x0b );
-	dbs.pass( PassType.MAREKEER_WIT_EN_ZWART, this::set0x0b );
+	dbs.pass( PassType.MARKEER_WIT_EN_ZWART, this::set0x0b );
 	// Die markeer-methodes zijn hierboven al getest, we checken hier alleen of de aanroepjes goed gaan
 }
 
