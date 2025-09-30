@@ -25,6 +25,7 @@ public class TestBouw
 {
 @Autowired private Bouw bouw;
 @Autowired private Dbs dbs;
+@Autowired private Gen gen;
 
 @BeforeEach
 public void setup()
@@ -131,11 +132,13 @@ public void testSchaakjes()
 		.build();
 	bouw.schaakjes( boStelling );
 	dbs.get( boStelling );
+	boStelling.setSchaak( gen.isSchaak( boStelling ) );
 	assertThat( boStelling.isSchaak(), is( true ) );
 	assertThat( boStelling.getResultaat(), is( ResultaatType.REMISE ) );
 	
 	boStelling.setAanZet( ZWART );
 	dbs.get( boStelling );
+	boStelling.setSchaak( gen.isSchaak( boStelling ) );
 	assertThat( boStelling.isSchaak(), is( false ) );
 	assertThat( boStelling.getResultaat(), is( ResultaatType.ILLEGAAL ) );
 }
@@ -143,7 +146,7 @@ private void markeerIllegaal()
 {
 	bouw.illegaalStellingen = new ArrayList<>();
 	bouw.stellingenMetSchaak = new ArrayList<>();
-	bouw.illegaalStellingen  = new ArrayList<>();
+	bouw.matStellingen  = new ArrayList<>();
 	
 	bouw.passNr = 0;
 	dbs.setReport( dbs.DFT_RPT_FREQ, bouw::showThisPass );
@@ -184,7 +187,8 @@ public void testIsMat()
 		.build();
 	bouw.isMat( boStelling );
 	dbs.get( boStelling );
-	assertThat( boStelling.isSchaak(), is( false ) );
+	boStelling.setSchaak( gen.isSchaak( boStelling ) );
+	assertThat( boStelling.isSchaak(), is( true ) );
 	assertThat( boStelling.getResultaat(), is( ResultaatType.VERLOREN ) );
 	assertThat( boStelling.getAantalZetten(), is( 1 ) );
 
@@ -285,6 +289,7 @@ public void testMarkeer()
 		.build();
 	bouw.markeer( boStelling );
 	boStelling = dbs.get( boStelling );
+	boStelling.setSchaak( gen.isSchaak( boStelling ) );
 	assertThat( boStelling.isSchaak(), is( false ) );
 	assertThat( boStelling.getResultaat(), is( ResultaatType.GEWONNEN ) );
 	assertThat( boStelling.getAantalZetten(), is( 2 ) );
