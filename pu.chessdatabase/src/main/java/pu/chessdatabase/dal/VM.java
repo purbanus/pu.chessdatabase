@@ -39,6 +39,10 @@ CacheEntry [] Cache = new CacheEntry[CACHE_SIZE];
 private File databaseFile;
 private RandomAccessFile Database = null;
 long GeneratieTeller;
+public static final int VERLIES_OFFSET   = 0x80;
+public static final int VM_SCHAAK        = 0x80;
+public static final int VM_REMISE        = 0x00;
+public static final int VM_ILLEGAAL      = 0xFF;
 
 public VM()
 {
