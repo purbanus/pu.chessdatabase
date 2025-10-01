@@ -8,8 +8,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import pu.chessdatabase.bo.speel.GegenereerdeZettenReport;
 import pu.chessdatabase.dal.Dbs;
 import pu.chessdatabase.dal.ResultaatType;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Component
 public class Gen
@@ -25,8 +30,6 @@ public static final StukType [] STUKKEN = { null, StukType.KONING, StukType.KONI
 public static final Kleur [] KLEUREN = { null, WIT, ZWART, WIT, ZWART };
 public static final BitSet BUITENBORD = bitSetOfInt( 0x88 );
 public static final BitSet NUL = bitSetOfInt( 0x00 );
-public static final int LEEG = 0xFF;
-
 public static final int [] KRICHTING = new int [] { 0x01, 0x11, 0x10, 0x0F,	-0x01,-0x11,-0x10,-0x0F };
 public static final int [] TRICHTING = new int [] {	0x01, 0x10,-0x01,-0x10,	0x00, 0x00, 0x00, 0x00 }; //@@NOG Je kunt die laatste 4 gewoon weglaten denk ik
 public static final int [] LRICHTING = new int [] { 0x11, 0x0F,-0x11,-0x0F,	0x00, 0x00, 0x00, 0x00 };
@@ -52,28 +55,6 @@ public static final String [] NOTATIE = new String [] {
  * etc
  */
 Stuk [] stukTabel = new Stuk [5]; // 0 wordt niet gebruikt
-int [] bord = new int[0x78];
-public void printBord()
-{
-	StringBuilder sb = new StringBuilder();
-	for ( int rij = 7; rij >= 0; rij-- )
-	{
-		for ( int kol = 0; kol < 8; kol++ )
-		{
-			int index = 16 * rij + kol;
-			int veld = bord[index];
-			String veldString;
-			if ( veld == 1 ) veldString = "WK";
-			else if ( veld == 2 ) veldString = "ZK";
-			else if ( veld == 3 ) veldString = "WD";
-			else if ( veld == 4 ) veldString = "ZT";
-			else veldString = ( veld < 16 ? "0":"" ) + Integer.toHexString( veld  );
-			sb.append( veldString ).append( " " );
-		}
-		sb.append( "\n" );
-	}
-	System.out.println( sb );
-}
 
 static BitSet bitSetOfInt( int aInt )
 {
@@ -94,28 +75,8 @@ static BitSet veldToBitSetAndBuitenBord( int Veld )
 public Gen()
 {
 	vulStukTabel();
-	maakBordLeeg();
 }
 
-/**
-PROCEDURE MaakBordLeeg();
-VAR x: SHORTCARD;
-BEGIN
-	FOR x:=0 TO 77H DO
-		Bord[x]:=Leeg;
-	END;
-END MaakBordLeeg;
- */
-/**
- * -------- Maak het bord leeg -------------------------------
- */
-public void maakBordLeeg()
-{
-	for ( int x = 0; x < 0x78; x++ )
-	{
-		bord[x] = LEEG;
-	}
-}
 /**
  * PROCEDURE VulStukTabel();
 VAR x: StukNummer;
@@ -160,47 +121,6 @@ public void vulStukTabel()
 			case StukType.PAARD : stuk.setRichtingen( PRICHTING ); stuk.setAantalRichtingen( 8 ); stuk.setMeer( false ); break;
 		}
 	}
-}
-/**
-PROCEDURE ZetBordOp(S: Dbs.Stelling);
-BEGIN
-	(* eerst de stukken, dan kunnen ze eventueel uitgeveegd worden door de koningen *)
-	Bord[S.s3]:=3;
-	Bord[S.s4]:=4;
-	Bord[S.WK]:=1;
-	Bord[S.ZK]:=2;
-END ZetBordOp;
- */
-/**
- * -------- Zet stukken op het bord ------------------------
- */
-public void zetBordOp( BoStelling aStelling )
-{
-	// eerst de stukken, dan kunnen ze eventueel uitgeveegd worden door de koningen 
-	bord[aStelling.getS3()] = 3;
-	bord[aStelling.getS4()] = 4;
-	bord[aStelling.getWk()] = 1;
-	bord[aStelling.getZk()] = 2;
-}
-/**
-PROCEDURE ClrBord(S: Dbs.Stelling);
-BEGIN
-	Bord[S.Wk]:=Leeg;
-	Bord[S.ZK]:=Leeg;
-	Bord[S.s3]:=Leeg;
-	Bord[S.s4]:=Leeg;
-END ClrBord;
-*/
-/**
- * Haal ze er weer vanaf ------------------------
- */
-
-public void clearBord( BoStelling aStelling )
-{
-	bord[aStelling.getS3()] = LEEG;
-	bord[aStelling.getS4()] = LEEG;
-	bord[aStelling.getWk()] = LEEG;
-	bord[aStelling.getZk()] = LEEG;
 }
 /**
 PROCEDURE IsGeomIllegaal(S: Dbs.Stelling): BOOLEAN;
@@ -281,14 +201,14 @@ public boolean isKKSchaak( BoStelling S )
  * -------- Kijk of degene die aan zet is, schaak staat ----------		
  */
 
-boolean isSchaakDoorStuk( Stuk aStuk, int aKoningsVeld, int aStukVeld )
+boolean isSchaakDoorStuk( Stuk aStuk, int aKoningsVeld, int aStukVeld, Bord aBord )
 {
 	for ( int x = 0; x < aStuk.getAantalRichtingen(); x++ )
 	{
 		int Veld = aStukVeld + aStuk.getRichtingen()[x];
 		if ( aStuk.isMeer() )
 		{
-			while ( veldToBitSetAndBuitenBord( Veld ).equals( NUL ) && bord[Veld] == LEEG )
+			while ( veldToBitSetAndBuitenBord( Veld ).equals( NUL ) && aBord.isVeldLeeg( Veld ) )
 			{
 				Veld += aStuk.getRichtingen()[x];
 			}
@@ -337,11 +257,11 @@ END IsSchaak;
  * - Of het stuk niet aan zet is
  * Als dat allemaal waar is wordt is
 */
-public boolean checkSchaakDoorStuk( BoStelling aStelling, Stuk aStuk, int aKoningsVeld, int aStukVeld )
+public boolean checkSchaakDoorStuk( BoStelling aStelling, Stuk aStuk, int aKoningsVeld, int aStukVeld, Bord aBord )
 {
 	if ( ( aStukVeld != aStelling.getWk() ) && ( aStukVeld != aStelling.getZk() ) && ( aStuk.getKleur() != aStelling.getAanZet() ) )
 	{
-		if ( isSchaakDoorStuk( aStuk, aKoningsVeld, aStukVeld ) )
+		if ( isSchaakDoorStuk( aStuk, aKoningsVeld, aStukVeld, aBord ) )
 		{
 			return true;
 		}
@@ -357,19 +277,16 @@ public boolean checkSchaakDoorStuk( BoStelling aStelling, Stuk aStuk, int aKonin
  */
 public boolean isSchaak( BoStelling aStelling )
 {
-	zetBordOp( aStelling );
+	Bord bord = new Bord( aStelling );
 	int KVeld = aStelling.getAanZet() == WIT ? aStelling.getWk() : aStelling.getZk();
-	if ( checkSchaakDoorStuk( aStelling, stukTabel[3], KVeld, aStelling.getS3() ) )
+	if ( checkSchaakDoorStuk( aStelling, stukTabel[3], KVeld, aStelling.getS3(), bord ) )
 	{
-		clearBord( aStelling );
 		return true;
 	}
-	if ( checkSchaakDoorStuk( aStelling, stukTabel[4], KVeld, aStelling.getS4() ) )
+	if ( checkSchaakDoorStuk( aStelling, stukTabel[4], KVeld, aStelling.getS4(), bord ) )
 	{
-		clearBord( aStelling );
 		return true;
 	}
-	clearBord( aStelling );
 	return false;
 }
 /**
@@ -479,7 +396,7 @@ BEGIN
 END GenZperStuk;
 (*$O=*) (* Overflow check *)
  */
-GegenereerdeZetten genereerZettenPerStuk( BoStelling aBoStelling, int aStukNummer, int aKoningsVeld, int aStukVeld )
+GegenereerdeZetten genereerZettenPerStuk( BoStelling aBoStelling, int aStukNummer, int aKoningsVeld, int aStukVeld, Bord aBord )
 {
 	GegenereerdeZetten gegenereerdeZetten = new GegenereerdeZetten();
 	Stuk stuk = stukTabel[aStukNummer];
@@ -488,7 +405,7 @@ GegenereerdeZetten genereerZettenPerStuk( BoStelling aBoStelling, int aStukNumme
 		int Veld = aStukVeld + stuk.getRichtingen()[x];
 		if ( stuk.isMeer() )
 		{
-			while ( veldToBitSetAndBuitenBord( Veld ).equals( NUL ) && bord[Veld] == LEEG )
+			while ( veldToBitSetAndBuitenBord( Veld ).equals( NUL ) && aBord.isVeldLeeg( Veld ) )
 			{
 //				void AddZet( Stelling aStelling, int aStukNr, int Naar, ZetSoort aZsoort, int aKVeld, int aSVeld, GenZRec GZ )
 				addZet( aBoStelling, aStukNummer, Veld, ZetSoort.GEWOON, aKoningsVeld, aStukVeld, gegenereerdeZetten );
@@ -497,13 +414,13 @@ GegenereerdeZetten genereerZettenPerStuk( BoStelling aBoStelling, int aStukNumme
 		}
 		if ( veldToBitSetAndBuitenBord( Veld ).equals( NUL ) )
 		{
-			if ( bord[Veld] == LEEG )
+			if ( aBord.isVeldLeeg( Veld ) )
 			{
 				addZet( aBoStelling, aStukNummer, Veld, ZetSoort.GEWOON, aKoningsVeld, aStukVeld, gegenereerdeZetten );
 			}
 			else
 			{
-				if ( stukTabel[bord[Veld]].getKleur() != aBoStelling.getAanZet() )
+				if ( stukTabel[aBord.getVeld( Veld )].getKleur() != aBoStelling.getAanZet() )
 				{
 					addZet( aBoStelling, aStukNummer, Veld, ZetSoort.SLAGZET, aKoningsVeld, aStukVeld, gegenereerdeZetten );
 				}
@@ -549,7 +466,7 @@ END GenZ;
 public GegenereerdeZetten genereerZetten( BoStelling aStelling )
 {
 	GegenereerdeZetten gegenereerdeZetten = new GegenereerdeZetten();
-	zetBordOp( aStelling );
+	Bord bord = new Bord( aStelling );
 	int stukVeld;
 	int koningsVeld;
 
@@ -558,14 +475,14 @@ public GegenereerdeZetten genereerZetten( BoStelling aStelling )
 	{
 		stukVeld = aStelling.getWk();
 		koningsVeld = aStelling.getWk();
-		GegenereerdeZetten gegenereerdeZettenPerStuk = genereerZettenPerStuk( aStelling, 1, koningsVeld, stukVeld );
+		GegenereerdeZetten gegenereerdeZettenPerStuk = genereerZettenPerStuk( aStelling, 1, koningsVeld, stukVeld, bord );
 		gegenereerdeZetten.addAll( gegenereerdeZettenPerStuk );
 	}
 	else
 	{
 		stukVeld = aStelling.getZk();
 		koningsVeld = aStelling.getZk();
-		GegenereerdeZetten gegenereerdeZettenPerStuk = genereerZettenPerStuk( aStelling, 2, koningsVeld, stukVeld );
+		GegenereerdeZetten gegenereerdeZettenPerStuk = genereerZettenPerStuk( aStelling, 2, koningsVeld, stukVeld, bord );
 		gegenereerdeZetten.addAll( gegenereerdeZettenPerStuk );
 	}
 	//--------- Stukzetten ----------
@@ -573,17 +490,16 @@ public GegenereerdeZetten genereerZetten( BoStelling aStelling )
 	{
 		stukVeld = aStelling.getS3();
 		koningsVeld = aStelling.getWk();
-		GegenereerdeZetten gegenereerdeZettenPerStuk = genereerZettenPerStuk( aStelling, 3, koningsVeld, stukVeld );
+		GegenereerdeZetten gegenereerdeZettenPerStuk = genereerZettenPerStuk( aStelling, 3, koningsVeld, stukVeld, bord );
 		gegenereerdeZetten.addAll( gegenereerdeZettenPerStuk );
 	}
 	if ( ( stukTabel[4].getKleur() == aStelling.getAanZet() ) && ( aStelling.getS4() != koningsVeld ) )
 	{
 		stukVeld = aStelling.getS4();
 		koningsVeld = aStelling.getZk();
-		GegenereerdeZetten gegenereerdeZettenPerStuk = genereerZettenPerStuk( aStelling, 4, koningsVeld, stukVeld );
+		GegenereerdeZetten gegenereerdeZettenPerStuk = genereerZettenPerStuk( aStelling, 4, koningsVeld, stukVeld, bord );
 		gegenereerdeZetten.addAll( gegenereerdeZettenPerStuk );
 	}
-	clearBord( aStelling );
 	return gegenereerdeZetten;
 }
 /**
@@ -598,33 +514,47 @@ END GenZsort;
 /**
  * -------- Genereer zetten gesorteerd ----------		
  */
-/* Dit is incorrect. Je moet sowieso onderscheid maken tussen wit en zwart aan zet.
- * - Bij Zwart aan zet is de volgorde Verloren, kleinste aantal zetten, Remise, Gewonnen met grootste aantal zetten
- * - Bij Wit @@NOG precies andersom???
+/* 
+ * Je moet het zo bekijken: als hier zwart aan zet is, dan bekijk je de zetten vanuit het oogpunt van wit
+ * - Bij Zwart aan zet is de volgorde Gewonnen, kleinste aantal zetten, Remise, Verloren met grootste aantal zetten
+ * - Bij Wit   aan zet is de volgorde Verloren, kleinste aantal zetten, Remise, Gewonnen met grootste aantal zetten 
+ * 
+ * ResultaatType = ILLEGAAL( "Illegaal" ), GEWONNEN( "Gewonnen" ), REMISE( "Remise"), VERLOREN( "Verloren" );
  */
 Comparator<BoStelling> stellingComparator = new Comparator<>()
 {
 	@Override
 	public int compare( BoStelling L, BoStelling R )
 	{
-		// @@NOG Dit klopt nog niet erg, zie de tests
 		int compare = L.getResultaat().compareTo( R.getResultaat() );
 		if ( compare != 0 )
 		{
-			return compare;
+			return L.getAanZet() == ZWART ? compare : -compare;
+		}
+		if ( L.getAantalZetten() == R.getAantalZetten() )
+		{
+			return 0;
 		}
 		if ( L.getResultaat() == ResultaatType.GEWONNEN )
 		{
 			if ( L.getAantalZetten() > R.getAantalZetten() )
 			{
-				return 1;
+				return L.getAanZet() == ZWART ? 1 : -1;
+			}
+			else
+			{
+				return L.getAanZet() == ZWART ? -1 : 1;
 			}
 		}
 		if ( L.getResultaat() == ResultaatType.VERLOREN )
 		{
-			if ( L.getAantalZetten() < R.getAantalZetten() )
+			if ( L.getAantalZetten() > R.getAantalZetten() )
 			{
-				return -1;
+				return L.getAanZet() == ZWART ? -1 : 1;
+			}
+			else
+			{
+				return L.getAanZet() == ZWART ? 1 : -1;
 			}
 		}
 		return 0;
@@ -636,11 +566,6 @@ public GegenereerdeZetten genereerZettenGesorteerd( BoStelling aStelling )
 	GegenereerdeZetten gegenereerdeZetten = genereerZetten( aStelling );
 	gegenereerdeZetten.getStellingen().sort( stellingComparator );
 	return gegenereerdeZetten;
-}
-public boolean isPat()
-{
-	//@@NOG
-	return false;
 }
 /**
 PROCEDURE VeldToAscii(V: Dbs.Veld): AsciiVeld;
@@ -707,4 +632,5 @@ public StukInfo getStukInfo( BoStelling aStelling, int aStukNummer )
 		.build();
 	return stukInfo;
 }
+
 }
