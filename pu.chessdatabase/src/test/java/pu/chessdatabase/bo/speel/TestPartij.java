@@ -154,8 +154,6 @@ public void testNewGame()
 		.aanZet( WIT )
 		.build();
 	assertThrows( RuntimeException.class, () -> partij.newGame( illegaleStartStelling ) );
-	;
-//@@HIERO
 }
 @Test
 public void testIsBegonnen()

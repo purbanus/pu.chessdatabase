@@ -1,6 +1,7 @@
 package pu.chessdatabase.bo;
 
 import static pu.chessdatabase.bo.Kleur.*;
+
 import java.util.BitSet;
 import java.util.Comparator;
 
@@ -8,13 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import pu.chessdatabase.bo.speel.GegenereerdeZettenReport;
 import pu.chessdatabase.dal.Dbs;
 import pu.chessdatabase.dal.ResultaatType;
-
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 @Component
 public class Gen

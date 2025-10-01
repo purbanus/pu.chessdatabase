@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.BoStelling;
-import pu.chessdatabase.dal.Dbs;
 
 @SpringBootTest
 public class TestDbsOverProductie

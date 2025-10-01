@@ -4,7 +4,6 @@ import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.bo.speel.EindeType.*;
 import static pu.chessdatabase.dal.ResultaatType.*;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pu.chessdatabase.bo.BoStelling;
-import pu.chessdatabase.bo.Gen;
 import pu.chessdatabase.bo.GegenereerdeZetten;
+import pu.chessdatabase.bo.Gen;
 import pu.chessdatabase.bo.StukInfo;
 import pu.chessdatabase.dal.Dbs;
 import pu.chessdatabase.dal.ResultaatType;
