@@ -643,6 +643,7 @@ END BouwDataBase;
  */
 public void bouwDatabase()
 {
+	System.out.println( "We bouwen op: " + dbs.getDbsNaam() );
 	StopWatch overallTimer = new StopWatch();
 	passNr = 0;
 	pass_0();
