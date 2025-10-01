@@ -255,7 +255,7 @@ END IsSchaak;
  * - Of het stuk niet geslagen is door wit
  * - Of het stuk niet geslagen is door zwart
  * - Of het stuk niet aan zet is
- * Als dat allemaal waar is wordt is
+ * Als dat allemaal waar is wordt isSchaakDoorStuk aangeroepen
 */
 public boolean checkSchaakDoorStuk( BoStelling aStelling, Stuk aStuk, int aKoningsVeld, int aStukVeld, Bord aBord )
 {
@@ -358,13 +358,13 @@ void addZet( final BoStelling aBoStelling, int aStukNr, int aNaar, ZetSoort aZet
 		case 4: boStelling.setS4( aNaar ); break;
 	}
 	boStelling.setAanZet( boStelling.getAanZet() == WIT ? ZWART : WIT );
-	dbs.get( boStelling );
+	BoStelling gotBoStelling = dbs.get( boStelling );
 	// Dit moet je niet doen want isSchaak cleart het bord
 	// boStelling.setSchaak( isSchaak( boStelling ) );
 	// @@NOG Goede les: elimineer Bord as globale variabele!!
-	if ( boStelling.getResultaat() != ResultaatType.ILLEGAAL )
+	if ( gotBoStelling.getResultaat() != ResultaatType.ILLEGAAL )
 	{
-		aGegenereerdeZetten.add( boStelling );
+		aGegenereerdeZetten.add( gotBoStelling );
 	}
 }
 /**
