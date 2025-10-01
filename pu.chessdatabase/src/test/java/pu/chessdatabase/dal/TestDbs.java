@@ -250,7 +250,7 @@ public void testPut()
 	dbs.put( boStelling );
 	
 	BoStelling newBoStelling = dbs.get( boStelling );
-	boStelling.setSchaak( gen.isSchaak( boStelling ) );
+	newBoStelling.setSchaak( gen.isSchaak( newBoStelling ) );
 	// Dit moet je niet doen want het is altijd true!!
 	// assertThat( newBoStelling, is( boStelling ) );
 	assertThat( newBoStelling.getResultaat(), is( ResultaatType.ILLEGAAL ) );
