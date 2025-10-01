@@ -347,7 +347,6 @@ public void isMat( BoStelling aBoStelling )
 			}
 			dbs.put( boStelling );
 		}
-		gen.clearBord( boStelling );
 	}
 }
 /**
