@@ -7,6 +7,7 @@ package pu.chessdatabase.bo;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static pu.chessdatabase.bo.Kleur.*;
+import static pu.chessdatabase.dal.ResultaatType.*;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,15 +38,6 @@ public void testVeldToBitSetAndBuitenBord()
 	assertThat( gen.veldToBitSetAndBuitenBord( 0x77 ), is( gen.NUL ) );
 	assertThat( gen.veldToBitSetAndBuitenBord( 0x78 ), is( gen.bitSetOfInt( 8 ) ) );
 	assertThat( gen.veldToBitSetAndBuitenBord( -1 ), is( gen.bitSetOfInt( 0x88 ) ) ); // 136
-}
-@Test
-public void testMaakBordLeeg()
-{
-	gen.maakBordLeeg();
-	for ( int x = 0; x < 0x77; x++ )
-	{
-		assertThat( gen.bord[x], is( gen.LEEG ) );
-	}
 }
 @Test
 public void testVulStukTabel()
@@ -87,56 +79,6 @@ public void testVulStukTabel()
 	assertThat( stuk.isMeer(), is( true ) );
 	assertThat( stuk.getAfko(), is( "T" ) );
 
-}
-@Test
-public void testZetBordOp()
-{
-	gen.maakBordLeeg();
-	BoStelling stelling = BoStelling.builder()
-		.wk( 5 )
-		.zk( 6 )
-		.s3( 7 )
-		.s4( 8 )
-		.build();
-	gen.zetBordOp( stelling );
-	assertThat( gen.bord[5], is( 1 ) );
-	assertThat( gen.bord[6], is( 2 ) );
-	assertThat( gen.bord[7], is( 3 ) );
-	assertThat( gen.bord[8], is( 4 ) );
-	for ( int x = 0; x < 5; x++ )
-	{
-		assertThat( gen.bord[x], is( gen.LEEG ) );
-	}
-	for ( int x = 9; x < 0x77; x++ )
-	{
-		assertThat( gen.bord[x], is( gen.LEEG ) );
-	}
-	gen.clearBord( stelling );
-}
-@Test
-public void testClrBord()
-{
-	gen.maakBordLeeg();
-	BoStelling stelling = BoStelling.builder()
-		.wk( 5 )
-		.zk( 6 )
-		.s3( 7 )
-		.s4( 8 )
-		.build();
-	gen.zetBordOp( stelling );
-	System.out.println( "In testClrBord" );
-	gen.printBord();
-	gen.clearBord( stelling );
-	System.out.println();
-	gen.printBord();
-	for ( int x = 0; x < 0x78; x++ )
-	{
-		if ( ! ( gen.bord[x] == gen.LEEG ) )
-		{
-			System.out.println( "x=" + x + " Bord[x]=" + gen.bord[x] );
-		}
-		assertThat( gen.bord[x], is( gen.LEEG ) );
-	}
 }
 @Test
 public void testIsGeomIllegaal()
@@ -213,9 +155,8 @@ public void testIsSchaakDoorStuk()
 		.s4( 0x33 )
 		.aanZet( ZWART )
 		.build();
-	gen.zetBordOp( stelling );
-	assertThat( gen.isSchaakDoorStuk( gen.stukTabel[4], 0x11, 0x33 ), is( false ) );
-	gen.clearBord( stelling );
+	Bord bord = new Bord( stelling );
+	assertThat( gen.isSchaakDoorStuk( gen.stukTabel[4], 0x11, 0x33, bord ), is( false ) );
 
 	// T links
 	stelling = BoStelling.builder()
@@ -225,9 +166,8 @@ public void testIsSchaakDoorStuk()
 		.s4( 0x10 )
 		.aanZet( ZWART )
 		.build();
-	gen.zetBordOp( stelling );
-	assertThat( gen.isSchaakDoorStuk( gen.stukTabel[4], 0x11, 0x10 ), is( true ) );
-	gen.clearBord( stelling );
+	bord = new Bord( stelling );
+	assertThat( gen.isSchaakDoorStuk( gen.stukTabel[4], 0x11, 0x10, bord ), is( true ) );
 
 	// T uiterst rechts
 	stelling = BoStelling.builder()
@@ -237,9 +177,8 @@ public void testIsSchaakDoorStuk()
 		.s4( 0x17 )
 		.aanZet( ZWART )
 		.build();
-	gen.zetBordOp( stelling );
-	assertThat( gen.isSchaakDoorStuk( gen.stukTabel[4], 0x11, 0x17 ), is( true ) );
-	gen.clearBord( stelling );
+	bord = new Bord( stelling );
+	assertThat( gen.isSchaakDoorStuk( gen.stukTabel[4], 0x11, 0x17, bord ), is( true ) );
 
 	// T nog steeds uiterst rechts, maar D ertussen
 	stelling = BoStelling.builder()
@@ -249,9 +188,8 @@ public void testIsSchaakDoorStuk()
 		.s4( 0x17 )
 		.aanZet( ZWART )
 		.build();
-	gen.zetBordOp( stelling );
-	assertThat( gen.isSchaakDoorStuk( gen.stukTabel[4], 0x11, 0x17 ), is( false ) );
-	gen.clearBord( stelling );
+	bord = new Bord( stelling );
+	assertThat( gen.isSchaakDoorStuk( gen.stukTabel[4], 0x11, 0x17, bord ), is( false ) );
 
 	// Check of Z schaak staat
 	stelling = BoStelling.builder()
@@ -261,9 +199,8 @@ public void testIsSchaakDoorStuk()
 		.s4( 0x77 )
 		.aanZet( WIT )
 		.build();
-	gen.zetBordOp( stelling );
-	assertThat( gen.isSchaakDoorStuk( gen.stukTabel[3], 0x27, 0x20 ), is( true ) );
-	gen.clearBord( stelling );
+	bord = new Bord( stelling );
+	assertThat( gen.isSchaakDoorStuk( gen.stukTabel[3], 0x27, 0x20, bord ), is( true ) );
 }
 @Test
 public void testCheckSchaakDoorStuk()
@@ -276,9 +213,8 @@ public void testCheckSchaakDoorStuk()
 		.s4( 0x33 )
 		.aanZet( ZWART )
 		.build();
-	gen.zetBordOp( stelling );
-	assertThat( gen.checkSchaakDoorStuk( stelling, gen.stukTabel[3], 0x11, 0x11 ), is( false ) );
-	gen.clearBord( stelling );
+	Bord bord = new Bord( stelling );
+	assertThat( gen.checkSchaakDoorStuk( stelling, gen.stukTabel[3], 0x11, 0x11, bord ), is( false ) );
 
 	// Check aStukVeld == aStelling.getZK(), d.w.z. het zwarte stuk is geslagen
 	stelling = BoStelling.builder()
@@ -288,9 +224,8 @@ public void testCheckSchaakDoorStuk()
 		.s4( 0x27 )
 		.aanZet( ZWART )
 		.build();
-	gen.zetBordOp( stelling );
-	assertThat( gen.checkSchaakDoorStuk( stelling, gen.stukTabel[4], 0x27, 0x27 ), is( false ) );
-	gen.clearBord( stelling );
+	bord = new Bord( stelling );
+	assertThat( gen.checkSchaakDoorStuk( stelling, gen.stukTabel[4], 0x27, 0x27, bord ), is( false ) );
 
 	// Check dat het stuk aan zet is
 	stelling = BoStelling.builder()
@@ -300,9 +235,8 @@ public void testCheckSchaakDoorStuk()
 		.s4( 0x33 )
 		.aanZet( ZWART )
 		.build();
-	gen.zetBordOp( stelling );
-	assertThat( gen.checkSchaakDoorStuk( stelling, gen.stukTabel[4], 0x11, 0x33 ), is( false ) );
-	gen.clearBord( stelling );
+	bord = new Bord( stelling );
+	assertThat( gen.checkSchaakDoorStuk( stelling, gen.stukTabel[4], 0x11, 0x33, bord ), is( false ) );
 
 	// T links
 	stelling = BoStelling.builder()
@@ -312,9 +246,8 @@ public void testCheckSchaakDoorStuk()
 		.s4( 0x10 )
 		.aanZet( WIT )
 		.build();
-	gen.zetBordOp( stelling );
-	assertThat( gen.checkSchaakDoorStuk( stelling, gen.stukTabel[4], 0x11, 0x10 ), is( true ) );
-	gen.clearBord( stelling );
+	bord = new Bord( stelling );
+	assertThat( gen.checkSchaakDoorStuk( stelling, gen.stukTabel[4], 0x11, 0x10, bord ), is( true ) );
 }
 @Test
 public void testIsSchaak()
@@ -328,7 +261,6 @@ public void testIsSchaak()
 		.aanZet( ZWART )
 		.build();
 	assertThat( gen.isSchaak( stelling ), is( false ) );
-	gen.clearBord( stelling );
 
 	// Check aStukVeld == aStelling.getZK(), d.w.z. het stuk is geslagen door zwart
 	stelling = BoStelling.builder()
@@ -339,7 +271,6 @@ public void testIsSchaak()
 		.aanZet( ZWART )
 		.build();
 	assertThat( gen.isSchaak( stelling ), is( false ) );
-	gen.clearBord( stelling );
 
 	// Check dat het stuk aan zet is
 	stelling = BoStelling.builder()
@@ -350,7 +281,6 @@ public void testIsSchaak()
 		.aanZet( ZWART )
 		.build();
 	assertThat( gen.isSchaak( stelling ), is( false ) );
-	gen.clearBord( stelling );
 
 	// T links geeft schaak
 	stelling = BoStelling.builder()
@@ -361,7 +291,6 @@ public void testIsSchaak()
 		.aanZet( WIT )
 		.build();
 	assertThat( gen.isSchaak( stelling ), is( true ) );
-	gen.clearBord( stelling );
 }
 @Test
 public void testAddZet()
@@ -445,8 +374,8 @@ public void testGenZetPerStuk()
 		.s4( 0x33 )
 		.aanZet( ZWART )
 		.build();
-	gen.zetBordOp( boStelling );
-	GegenereerdeZetten genZRec = gen.genereerZettenPerStuk( boStelling, 4, 0x27, 0x33 );
+	Bord bord = new Bord( boStelling );
+	GegenereerdeZetten genZRec = gen.genereerZettenPerStuk( boStelling, 4, 0x27, 0x33, bord );
 	assertThat( genZRec.getAantal(), is( 14 ) );
 	assertThat( genZRec.getStellingen().get(  0 ).getS4(), is( 0x34 ) );
 	assertThat( genZRec.getStellingen().get(  0 ).getAanZet(), is( WIT ) );
@@ -476,7 +405,6 @@ public void testGenZetPerStuk()
 	assertThat( genZRec.getStellingen().get( 12 ).getAanZet(), is( WIT ) );
 	assertThat( genZRec.getStellingen().get( 13 ).getS4(), is( 0x03 ) );
 	assertThat( genZRec.getStellingen().get( 13 ).getAanZet(), is( WIT ) );
-	gen.clearBord( boStelling );
 	
 	boStelling = BoStelling.builder()
 		.wk( 0x11 )
@@ -487,9 +415,9 @@ public void testGenZetPerStuk()
 		.build();
 	//System.out.println( "In testGenZetPerStuk" );
 	//gen.printBord();
-	gen.zetBordOp( boStelling );
+	bord = new Bord( boStelling );
 	//gen.printBord();
-	genZRec = gen.genereerZettenPerStuk( boStelling, 4, 0x27, 0x77 );
+	genZRec = gen.genereerZettenPerStuk( boStelling, 4, 0x27, 0x77, bord );
 	assertThat( genZRec.getAantal(), is( 5 ) );
 	assertThat( genZRec.getStellingen().get(  0 ).getS4(), is( 0x76 ) );
 	assertThat( genZRec.getStellingen().get(  0 ).getS3(), is( 0x11 ) );
@@ -497,7 +425,6 @@ public void testGenZetPerStuk()
 	assertThat( genZRec.getStellingen().get(  2 ).getS4(), is( 0x57 ) );
 	assertThat( genZRec.getStellingen().get(  3 ).getS4(), is( 0x47 ) );
 	assertThat( genZRec.getStellingen().get(  4 ).getS4(), is( 0x37 ) );
-	gen.clearBord( boStelling );
 	
 	boStelling = BoStelling.builder()
 		.wk( 0x02 )
@@ -509,9 +436,9 @@ public void testGenZetPerStuk()
 		.resultaat( ResultaatType.REMISE )
 		.aantalZetten( 0 )
 		.build();
-	gen.zetBordOp( boStelling );
+	bord = new Bord( boStelling );
 	//gen.printBord();
-	genZRec = gen.genereerZettenPerStuk( boStelling, 1, 0x02, 0x02 );
+	genZRec = gen.genereerZettenPerStuk( boStelling, 1, 0x02, 0x02, bord );
 	assertThat( genZRec.getAantal(), is( 5 ) );
 
 }
@@ -536,7 +463,7 @@ public void testGenZet()
 
 	assertThat( genZRec.getStellingen().get(  0 ).getZk(), is( 0x37 ) );
 	assertThat( genZRec.getStellingen().get(  1 ).getZk(), is( 0x36 ) );
-	assertThat( genZRec.getStellingen().get(  2 ).getZk(), is( 0x26 ) );
+	assertThat( genZRec.getStellingen().get(  2 ).getZk(), is( 0x26 ) ); //@@NOG Dit is een illegale stelling
 	assertThat( genZRec.getStellingen().get(  3 ).getZk(), is( 0x16 ) );
 	assertThat( genZRec.getStellingen().get(  4 ).getZk(), is( 0x17 ) );
 
@@ -556,6 +483,93 @@ public void testGenZet()
 	assertThat( genZRec.getStellingen().get( 18 ).getS4(), is( 0x03 ) );
 }
 @Test
+public void testCompareResultaten()
+{
+	assertThat( ILLEGAAL.compareTo( GEWONNEN ), is( lessThan( 0 ) ) );
+	assertThat( GEWONNEN.compareTo( REMISE ), is( lessThan( 0 ) ) );
+	assertThat( GEWONNEN.compareTo( VERLOREN ), is( lessThan( 0 ) ) );
+	// Ze comparen dus gewoon op ordinal
+}
+/* 
+ * Je moet het zo bekijken: als hier zwart aan zet is, dan bekijk je de zetten vanuit het oogpunt van wit
+ * - Bij Zwart aan zet is de volgorde Gewonnen, kleinste aantal zetten, Remise, Verloren met grootste aantal zetten
+ * - Bij Wit   aan zet is de volgorde Verloren, kleinste aantal zetten, Remise, Gewonnen met grootste aantal zetten 
+ * 
+ * ResultaatType = ILLEGAAL( "Illegaal" ), GEWONNEN( "Gewonnen" ), REMISE( "Remise"), VERLOREN( "Verloren" );
+ */
+
+@Test
+public void testStellingComparator()
+{
+	// Resultaten ongelijk
+	BoStelling links = BoStelling.builder()
+		.aanZet( WIT )
+		.resultaat( GEWONNEN )
+		.aantalZetten( 11 )
+		.build();
+	BoStelling rechts = BoStelling.builder()
+		.aanZet( WIT )
+		.resultaat( VERLOREN )
+		.aantalZetten( 9 )
+		.build();
+	assertThat( gen.stellingComparator.compare( links, rechts ), is( greaterThan( 0 ) ) );
+
+	links.setAanZet( ZWART );
+	rechts.setAanZet( ZWART );
+	assertThat( gen.stellingComparator.compare( links, rechts ), is( lessThan( 0 ) ) );
+
+	// Aantal zetten ongelijk, links groter dan rechts
+	links = BoStelling.builder()
+		.aanZet( WIT )
+		.resultaat( GEWONNEN )
+		.aantalZetten( 11 )
+		.build();
+	rechts = BoStelling.builder()
+		.aanZet( WIT )
+		.resultaat( GEWONNEN )
+		.aantalZetten( 9 )
+		.build();
+	assertThat( gen.stellingComparator.compare( links, rechts ), is( lessThan( 0 ) ) );
+
+	links.setAanZet( ZWART );
+	rechts.setAanZet( ZWART );
+	assertThat( gen.stellingComparator.compare( links, rechts ), is( greaterThan( 0 ) ) );
+	
+	// Aantal zetten ongelijk, links < rechts
+	links = BoStelling.builder()
+		.aanZet( WIT )
+		.resultaat( GEWONNEN )
+		.aantalZetten( 9 )
+		.build();
+	rechts = BoStelling.builder()
+		.aanZet( WIT )
+		.resultaat( GEWONNEN )
+		.aantalZetten( 11 )
+		.build();
+	assertThat( gen.stellingComparator.compare( links, rechts ), is( greaterThan( 0 ) ) );
+
+	links.setAanZet( ZWART );
+	rechts.setAanZet( ZWART );
+	assertThat( gen.stellingComparator.compare( links, rechts ), is( lessThan( 0 ) ) );
+
+	// Aantal zetten ongelijk, links groter dan rechts
+	links = BoStelling.builder()
+		.aanZet( WIT )
+		.resultaat( VERLOREN )
+		.aantalZetten( 11 )
+		.build();
+	rechts = BoStelling.builder()
+		.aanZet( WIT )
+		.resultaat( VERLOREN )
+		.aantalZetten( 9 )
+		.build();
+	assertThat( gen.stellingComparator.compare( links, rechts ), is( greaterThan( 0 ) ) );
+
+	links.setAanZet( ZWART );
+	rechts.setAanZet( ZWART );
+	assertThat( gen.stellingComparator.compare( links, rechts ), is( lessThan( 0 ) ) );
+}
+@Test
 public void testGenZetSort()
 {
 	dbs.name( "Pipo" );
@@ -564,6 +578,7 @@ public void testGenZetSort()
 	BoStelling stelling;
 	GegenereerdeZetten genZRec;
 	
+	// Zwart aan zet
 	stelling = BoStelling.builder()
 		.wk( 0x11 )
 		.zk( 0x27 )
@@ -586,10 +601,8 @@ public void testGenZetSort()
 	
 	genZRec.getStellingen().sort( gen.stellingComparator );
 	
-	// @@NOG Dit klopt nog niet. Hij sorteert Gewonnen in 11 zetten vòòr Gewonnen in 9 setten
-	// en of we nu 1 of -1 retourneren in de Gewonnen tak, maakt niets uit
-	assertThat( genZRec.getStellingen().get(  0 ).getS4(), is( 0x34 ) );
-	assertThat( genZRec.getStellingen().get(  1 ).getS4(), is( 0x36 ) );
+	assertThat( genZRec.getStellingen().get(  0 ).getS4(), is( 0x37 ) );
+	assertThat( genZRec.getStellingen().get(  1 ).getS4(), is( 0x35 ) );
 
 	assertThat( genZRec.getStellingen().get(  2 ).getZk(), is( 0x37 ) );
 	assertThat( genZRec.getStellingen().get(  3 ).getZk(), is( 0x36 ) );
@@ -608,8 +621,52 @@ public void testGenZetSort()
 	assertThat( genZRec.getStellingen().get( 15 ).getS4(), is( 0x13 ) );
 	assertThat( genZRec.getStellingen().get( 16 ).getS4(), is( 0x03 ) );
 
-	assertThat( genZRec.getStellingen().get( 17 ).getS4(), is( 0x37 ) );
-	assertThat( genZRec.getStellingen().get( 18 ).getS4(), is( 0x35 ) );
+	// @@NOG Dit zou moeten
+	assertThat( genZRec.getStellingen().get( 17 ).getS4(), is( 0x34 ) );
+	assertThat( genZRec.getStellingen().get( 18 ).getS4(), is( 0x36 ) );
+
+	// Wit aan zet
+	stelling = BoStelling.builder()
+		.wk( 0x11 )
+		.zk( 0x27 )
+		.s3( 0x76 )
+		.s4( 0x33 )
+		.aanZet( WIT )
+		.build();
+	genZRec = gen.genereerZetten( stelling );
+	assertThat( genZRec.getAantal(), is( 29 ) );
+
+	// Om een beetje verschil te krijgen
+	genZRec.getStellingen().get( 5 ).setResultaat( ResultaatType.GEWONNEN );
+	genZRec.getStellingen().get( 5 ).setAantalZetten( 11 );
+	genZRec.getStellingen().get( 6 ).setResultaat( ResultaatType.VERLOREN );
+	genZRec.getStellingen().get( 6 ).setAantalZetten( 11 );
+	genZRec.getStellingen().get( 7 ).setResultaat( ResultaatType.GEWONNEN );
+	genZRec.getStellingen().get( 7 ).setAantalZetten( 9 );
+	genZRec.getStellingen().get( 8 ).setResultaat( ResultaatType.VERLOREN );
+	genZRec.getStellingen().get( 8 ).setAantalZetten( 9 );
+
+	// Verwijder een groot aantal remisestellingen
+	int size = genZRec.getStellingen().size();
+	for ( int x = 11; x < size; x++ )
+	{
+		genZRec.getStellingen().remove( 11 );
+	}
+	genZRec.getStellingen().sort( gen.stellingComparator );
+	
+	assertThat( genZRec.getStellingen().get(  0 ).getWk(), is( 0x02 ) );
+	assertThat( genZRec.getStellingen().get(  1 ).getWk(), is( 0x00 ) );
+
+	assertThat( genZRec.getStellingen().get(  2 ).getWk(), is( 0x12 ) );
+	assertThat( genZRec.getStellingen().get(  3 ).getWk(), is( 0x22 ) );
+	assertThat( genZRec.getStellingen().get(  4 ).getWk(), is( 0x21 ) );
+	assertThat( genZRec.getStellingen().get(  5 ).getWk(), is( 0x20 ) );
+	assertThat( genZRec.getStellingen().get(  6 ).getWk(), is( 0x10 ) );
+
+	assertThat( genZRec.getStellingen().get(  7 ).getS3(), is( 0x75 ) );
+	assertThat( genZRec.getStellingen().get(  8 ).getS3(), is( 0x74 ) );
+	assertThat( genZRec.getStellingen().get(  9 ).getWk(), is( 0x01 ) );
+	assertThat( genZRec.getStellingen().get( 10 ).getS3(), is( 0x77 ) );
 }
 
 @Test
