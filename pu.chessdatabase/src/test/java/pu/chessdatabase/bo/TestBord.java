@@ -69,7 +69,7 @@ public void testClrBord()
 	{
 		if ( ! bord.isVeldLeeg( x ) )
 		{
-			System.out.println( "Bord is niet helemaal leeg, veld=" + x + " Bord[x]=" + bord.bord[x] );
+			System.out.println( "Bord is niet helemaal leeg, veld=" + x + " Bord[veld]=" + bord.getVeld( x ) );
 		}
 		assertThat( bord.isVeldLeeg( x ), is( true ) );
 	}
