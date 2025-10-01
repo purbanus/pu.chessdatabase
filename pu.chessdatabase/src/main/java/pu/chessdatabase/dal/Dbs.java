@@ -123,6 +123,10 @@ public Dbs()
 	clearTellers();
 
 }
+public String getDbsNaam()
+{ 
+	return dbsNaam;
+}
 //void setRpt( long [] aReportArray )
 //{
 //	Rpt = aReportArray;
@@ -409,6 +413,7 @@ END GetDirect;
 //       Bijv vmStelling.getBoStelling();
 BoStelling getDirect( VMStelling aVMStelling, BoStelling aBoStelling )
 {
+	BoStelling boStelling = aBoStelling.clone();
 	int VMrec = vm.get( aVMStelling );
 	// @@NOG Erg onhandig! Je kunt hier niet Gen gebruiken want dan krijg je een circulaire 
 	//       referentie: Gen gebruikt Dbs en Dbs gebruikt dan ook Gen. Er zijn twee oplossingen:
@@ -416,35 +421,35 @@ BoStelling getDirect( VMStelling aVMStelling, BoStelling aBoStelling )
 	//         dat gaat werken, of je dan geen circulaire referentie hebt.
 	//       - Overal waar getDirect gebruikt wordt, isSchaak() aanroepen
 	//aBoStelling.setSchaak( gen.isSchaak( aBoStelling) );
-	aBoStelling.setSchaak( false );
+	boStelling.setSchaak( false );
 	if ( VMrec == VM.VM_ILLEGAAL )
 	{
-		aBoStelling.setResultaat( ResultaatType.ILLEGAAL );
-		aBoStelling.setAantalZetten( 0 );
+		boStelling.setResultaat( ResultaatType.ILLEGAAL );
+		boStelling.setAantalZetten( 0 );
 	}
 	else if ( VMrec == VM.VM_REMISE )
 	{
-		aBoStelling.setResultaat( ResultaatType.REMISE );
-		aBoStelling.setAantalZetten( 0 );
+		boStelling.setResultaat( ResultaatType.REMISE );
+		boStelling.setAantalZetten( 0 );
 	}
 	else if ( VMrec == VM.VM_SCHAAK )
 	{
 		// @@NOG Waarom worden schaakjes als remise gezien?
-		aBoStelling.setResultaat( ResultaatType.REMISE );
-		aBoStelling.setAantalZetten( 0 );
-		aBoStelling.setSchaak( true );
+		boStelling.setResultaat( ResultaatType.REMISE );
+		boStelling.setAantalZetten( 0 );
+		boStelling.setSchaak( true );
 	}
 	else if ( VMrec < VM.VERLIES_OFFSET )
 	{
-		aBoStelling.setResultaat( ResultaatType.GEWONNEN );
-		aBoStelling.setAantalZetten( VMrec );
+		boStelling.setResultaat( ResultaatType.GEWONNEN );
+		boStelling.setAantalZetten( VMrec );
 	}
 	else
 	{
-		aBoStelling.setResultaat( ResultaatType.VERLOREN );
-		aBoStelling.setAantalZetten( VMrec - VM.VERLIES_OFFSET );
+		boStelling.setResultaat( ResultaatType.VERLOREN );
+		boStelling.setAantalZetten( VMrec - VM.VERLIES_OFFSET );
 	}
-	return aBoStelling;
+	return boStelling;
 }
 /**
 PROCEDURE FreeRecord(S: Stelling);
@@ -578,30 +583,31 @@ END Pass34;
  */
 public void pass34( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassProc )
 {
-	aVmStelling.setS3( 0 );
-	while ( aVmStelling.getS3() <= 63 )
+	BoStelling boStelling = aBoStelling.clone();
+	VMStelling vmStelling = aVmStelling.clone();
+	vmStelling.setS3( 0 );
+	while ( vmStelling.getS3() < 64 )
 	{
-		aBoStelling.setS3( CVT_STUK[aVmStelling.getS3()] );
-		aVmStelling.setS4( 0 );
-		while ( aVmStelling.getS4() <= 63 )
+		boStelling.setS3( CVT_STUK[vmStelling.getS3()] );
+		vmStelling.setS4( 0 );
+		while ( vmStelling.getS4() < 64 )
 		{
-			aBoStelling.setS4( CVT_STUK[aVmStelling.getS4()] ); // Nu wel
+			boStelling.setS4( CVT_STUK[vmStelling.getS4()] ); // Nu wel
 
-			@SuppressWarnings( "unused" )
 			// @@NOG CHECK is aBoStelling veranderd of moet je boStelling gebruiken? 
-			BoStelling boStelling = getDirect( aVmStelling, aBoStelling ); //1 aBoStelling.s4 maakt nog niet uit
+			BoStelling gotBoStelling = getDirect( vmStelling, boStelling ); //1 aBoStelling.s4 maakt nog niet uit
 			// @@NOG Je kunt hier niet Gen.isSchaak() aanroependus moet het in de proc
-			if ( aBoStelling.getResultaat() == ResultaatType.REMISE )
+			if ( gotBoStelling.getResultaat() == ResultaatType.REMISE )
 			{
-				aPassProc.doPass( aBoStelling );
+				aPassProc.doPass( gotBoStelling.clone() );
 			}
-			aVmStelling.setS4( aVmStelling.getS4() + 1 );
+			vmStelling.setS4( vmStelling.getS4() + 1 );
 		}
-		aVmStelling.setS3( aVmStelling.getS3() + 1 );
+		vmStelling.setS3( vmStelling.getS3() + 1 );
 	}
-	aVmStelling.setS3( aVmStelling.getS3() - 1 );
-	aVmStelling.setS4( aVmStelling.getS4() - 1 );
-	vm.freeRecord( aVmStelling );
+	vmStelling.setS3( vmStelling.getS3() - 1 );
+	vmStelling.setS4( vmStelling.getS4() - 1 );
+	vm.freeRecord( vmStelling );
 }
 /**
 PROCEDURE Wpass(P: PassProc);
@@ -749,16 +755,16 @@ void markeerWitEnZwartPass( PassFunction aPassProc )
 					// Wit
 					vmStelling.setAanZet( WIT );
 					BoStelling gotBoStelling = getDirect( vmStelling, boStelling ); // @@NOG Is die gotStelling nodig??
-					// @@NOG Je kunt hier niet Gen.isSchaak() aanroependus moet het in de proc
+					// @@NOG Je kunt hier niet Gen.isSchaak() aanroepen dus moet het in de proc
 					gotBoStelling.setAanZet( WIT ); // @@NOG Waarom?
-					aPassProc.doPass( gotBoStelling );
+					aPassProc.doPass( gotBoStelling.clone() );
 					
 					// Zwart
 					vmStelling.setAanZet( ZWART );
 					gotBoStelling = getDirect( vmStelling, boStelling ); // @@NOG Is die gotStelling nodig??
-					// @@NOG Je kunt hier niet Gen.isSchaak() aanroependus moet het in de proc
+					// @@NOG Je kunt hier niet Gen.isSchaak() aanroepen dus moet het in de proc
 					gotBoStelling.setAanZet( ZWART ); // @@NOG Waarom?
-					aPassProc.doPass( gotBoStelling );
+					aPassProc.doPass( gotBoStelling.clone() );
 		
 					vmStelling.setS4( vmStelling.getS4() + 1 );
 				}

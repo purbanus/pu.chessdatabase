@@ -4,7 +4,6 @@ import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.bo.speel.EindeType.*;
 import static pu.chessdatabase.dal.ResultaatType.*;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pu.chessdatabase.bo.BoStelling;
-import pu.chessdatabase.bo.Gen;
 import pu.chessdatabase.bo.GegenereerdeZetten;
+import pu.chessdatabase.bo.Gen;
 import pu.chessdatabase.bo.StukInfo;
 import pu.chessdatabase.dal.Dbs;
 import pu.chessdatabase.dal.ResultaatType;
@@ -214,11 +213,13 @@ public void newGame( BoStelling aStartStelling )
 		throw new RuntimeException( "Je kunt niet met een illegale stelling starten bij newGame()" );
 	}
 	inzPartij();
-	BoStelling boStelling = dbs.get( aStartStelling );
-	boStelling.setSchaak( gen.isSchaak( boStelling ) );
+	// @@NOG Later: een BoStelling retourneren
+	//BoStelling boStelling = dbs.get( aStartStelling );
+	aStartStelling = dbs.get( aStartStelling );
+	aStartStelling.setSchaak( gen.isSchaak( aStartStelling ) );
 	plies[0] = PlyRecord.builder()
-		.boStelling( boStelling )
-		.einde( isEindStelling( boStelling ) )
+		.boStelling( aStartStelling )
+		.einde( isEindStelling( aStartStelling ) )
 		.zetNr( 1 )
 		.vanNaar( VanNaar.ILLEGAL_VAN_NAAR )
 		.build();

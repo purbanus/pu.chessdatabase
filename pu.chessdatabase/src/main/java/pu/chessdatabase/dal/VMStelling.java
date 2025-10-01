@@ -1,5 +1,6 @@
 package pu.chessdatabase.dal;
 
+import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Kleur;
 
 import lombok.AllArgsConstructor;
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class VMStelling
+public class VMStelling implements Cloneable
 {
 private int wk;
 private int zk;
@@ -35,6 +36,28 @@ public void checkStelling()
 public int getPositionWithinPage()
 {
 	return (getS3() << 6) + getS4();
+}
+@Override
+public VMStelling clone()
+{
+	try
+	{
+		return (VMStelling) super.clone();
+	}
+	catch ( CloneNotSupportedException e )
+	{
+		throw new RuntimeException( e );
+	}
+}
+public BoStelling getBoStelling()
+{
+	return BoStelling.builder()
+		.wk( Dbs.CVT_WK[getWk()] )
+		.zk( Dbs.CVT_STUK[getWk()] )
+		.s3( Dbs.CVT_STUK[getS3()] )
+		.s4( Dbs.CVT_STUK[getS4()] )
+		.aanZet( getAanZet() )
+		.build();
 }
 @Override
 public String toString()
