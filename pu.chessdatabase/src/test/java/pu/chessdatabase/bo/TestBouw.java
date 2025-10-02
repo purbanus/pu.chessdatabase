@@ -305,7 +305,7 @@ public void testMarkeer()
 		.aantalZetten( 0 )
 		.build();
 	bouw.markeer( boStelling );
-	gotBoStelling = dbs.get( gotBoStelling );
+	gotBoStelling = dbs.get( boStelling );
 	assertThat( gotBoStelling.isSchaak(), is( false ) );
 	assertThat( gotBoStelling.getResultaat(), is( ResultaatType.VERLOREN ) );
 	assertThat( gotBoStelling.getAantalZetten(), is( 2 ) );

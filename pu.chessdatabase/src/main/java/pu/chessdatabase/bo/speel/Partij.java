@@ -206,24 +206,23 @@ END NewGame;
 /**
  * ------------ Een nieuwe partij beginnen ------------
  */
-public void newGame( BoStelling aStartStelling )
+public BoStelling newGame( BoStelling aStartStelling )
 {
 	if ( ! isLegaleStelling( aStartStelling ) )
 	{
 		throw new RuntimeException( "Je kunt niet met een illegale stelling starten bij newGame()" );
 	}
 	inzPartij();
-	// @@NOG Later: een BoStelling retourneren
-	//BoStelling boStelling = dbs.get( aStartStelling );
-	aStartStelling = dbs.get( aStartStelling );
-	aStartStelling.setSchaak( gen.isSchaak( aStartStelling ) );
+	BoStelling boStelling = dbs.get( aStartStelling );
+	boStelling.setSchaak( gen.isSchaak( boStelling ) );
 	plies[0] = PlyRecord.builder()
-		.boStelling( aStartStelling )
-		.einde( isEindStelling( aStartStelling ) )
+		.boStelling( boStelling )
+		.einde( isEindStelling( boStelling ) )
 		.zetNr( 1 )
 		.vanNaar( VanNaar.ILLEGAL_VAN_NAAR )
 		.build();
 	curPartij.setBegonnen( true );
+	return boStelling;
 }
 /**
  * =====================================================================================
@@ -330,9 +329,14 @@ END VanNaarToStelling;
 /**
  * ----------- Stelling Bepalen uit Van/Naar -------------------
  */
-BoStelling vanNaarToStelling( VanNaar aVanNaar )
+
+BoStelling vanCurNaarToStelling( VanNaar aVanNaar )
 {
-	BoStelling boStellingVan = plies[curPartij.getCurPly()].getBoStelling();
+	return vanNaarToStelling( plies[curPartij.getCurPly()], aVanNaar );
+}
+BoStelling vanNaarToStelling( PlyRecord aPlyRecord, VanNaar aVanNaar )
+{
+	BoStelling boStellingVan = aPlyRecord.getBoStelling();
 	GegenereerdeZetten gegenereerdeZetten = gen.genereerZetten( boStellingVan );
 	if ( gegenereerdeZetten.getAantal() > 0 )
 	{
@@ -359,7 +363,7 @@ END IsLegaal;
  */
 boolean isLegaal( VanNaar aVanNaar )
 {
-	return vanNaarToStelling( aVanNaar ) != null;
+	return vanCurNaarToStelling( aVanNaar ) != null;
 }
 /**
  * =====================================================================================
@@ -496,7 +500,7 @@ void clearPliesVoorZet()
 }
 public boolean zet( VanNaar aVanNaar )
 {
-	BoStelling boStellingNaar = vanNaarToStelling( aVanNaar );
+	BoStelling boStellingNaar = vanCurNaarToStelling( aVanNaar );
 	if ( ! isBegonnen() || isEindePartij() != NOG_NIET || boStellingNaar == null )
 	{
 		return false;
@@ -1014,14 +1018,9 @@ END GenZetToStr;
 /**
  * -------- Gegenereerde zet omzetten naar string ( 55. Ke1-e2+ (+100) -------
  */
-String gegenereerdeZetToString( int aZetNummer, BoStelling aBoStellingVan, BoStelling aBoStellingNaar )
+String gegenereerdeZetToString( PlyRecord aPlyRecord, BoStelling aBoStellingNaar )
 {
-	PlyRecord plyRecord = PlyRecord.builder()
-		.zetNr( aZetNummer )
-		.boStelling( aBoStellingVan )
-		.einde( NOG_NIET ) // @@NOG klopt dit??
-		.vanNaar( stellingToVanNaar( aBoStellingVan, aBoStellingNaar ) )
-		.build();
+//	BoStelling aBoStellingNaar = vanNaarToStelling( aPlyRecord, aPlyRecord.getVanNaar() )
 	String resString;
 	if ( aBoStellingNaar.getResultaat() == REMISE )
 	{
@@ -1029,12 +1028,12 @@ String gegenereerdeZetToString( int aZetNummer, BoStelling aBoStellingVan, BoSte
 	}
 	else
 	{
-		resString = aBoStellingNaar.getResultaat() == GEWONNEN ? "-" : "+";
-		resString += aBoStellingNaar.getAantalZetten() - 1;
+		resString = aBoStellingNaar.getResultaat() == GEWONNEN ? "- " : "+ ";
+		resString += aBoStellingNaar.getAantalZetten()/* @@NOG Waarom? - 1*/;
 	}
 	StringBuilder sb = new StringBuilder();
-	sb.append( zetNummerToString( plyRecord.getZetNr() ) ).append( ". " );
-	sb.append( plyToString( plyRecord ) ).append(  "  " ).append( resString );
+	sb.append( zetNummerToString( aPlyRecord.getZetNr() + 1 ) ).append( ". " );
+	sb.append( plyToString( aPlyRecord ) ).append(  "  " ).append( resString );
 	return sb.toString();
 }
 
@@ -1070,36 +1069,44 @@ END GenToStr;
 /**
  * -------- Gegenereerde zetten omzetten naar strings ---------------------------------
  */
-public GegenereerdeZettenReport getGegenereerdeZettenReport( int aMax )
+List<String> createGegenereerdeZetten( int aMax, BoStelling aBoStellingVan, GegenereerdeZetten aGegenereerdeZetten )
 {
 	List<String> zetten = new ArrayList<>();
-	BoStelling boStellingVan = plies[curPartij.getCurPly()].getBoStelling();
-	GegenereerdeZetten gegenereerdeZetten = gen.genereerZettenGesorteerd( boStellingVan );
-	int zetNummer = 0;
-	if ( gegenereerdeZetten.getAantal() == 0 )
+	if ( aGegenereerdeZetten.getAantal() == 0 )
 	{
-		zetNummer = 1; // @@NOG Moet dat??
 		zetten.add( "    (Geen zetten)" );
 	}
 	else
 	{
-		int gegenereerdAantal = gegenereerdeZetten.getAantal();
+		int gegenereerdAantal = aGegenereerdeZetten.getAantal();
 		if ( gegenereerdAantal > aMax )
 		{
 			gegenereerdAantal = aMax;
 		}
-		for ( BoStelling boStelling : gegenereerdeZetten.getStellingen() )
+		int zetNummer = 0;
+		for ( BoStelling boStellingNaar : aGegenereerdeZetten.getStellingen() )
 		{
-			zetten.add( gegenereerdeZetToString( zetNummer, boStellingVan, boStelling ) );
+			PlyRecord plyRecord = PlyRecord.builder()
+				.zetNr( zetNummer )
+				.boStelling( aBoStellingVan )
+				.einde( NOG_NIET ) // @@NOG klopt dit??
+				.vanNaar( stellingToVanNaar( aBoStellingVan, boStellingNaar ) )
+				.schaak( gen.isSchaak( boStellingNaar ) )
+				.build();
+			zetten.add( gegenereerdeZetToString( plyRecord, boStellingNaar ) );
+			zetNummer++;
 		}
-		zetNummer = gegenereerdAantal;
 	}
-	GegenereerdeZettenReport genReport = GegenereerdeZettenReport.builder()
-		.aantalZetten( zetNummer )
-		.gegenereerdeZetten( zetten )
-		.build();
-	return genReport;
+	return zetten;
 }
+public List<String> getGegenereerdeZettenStrings( int aMax )
+{
+	BoStelling boStellingVan = plies[curPartij.getCurPly()].getBoStelling();
+	GegenereerdeZetten gegenereerdeZetten = gen.genereerZettenGesorteerd( boStellingVan );
+	List<String> gegenereerdeZettenStrings = createGegenereerdeZetten( aMax, boStellingVan, gegenereerdeZetten );
+	return gegenereerdeZettenStrings;
+}
+
 /**
 PROCEDURE GetStand(): Dbs.Stelling; (*@@@@@@@ of meer informatie? *)
 BEGIN
