@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<property name="LOG_FILE" value="logs/app.log" />
+	<property name="SIMPLE_PATTERN" value="%highlight(%date %-5level [%thread] %message -- %logger)s %n" />
+	<property name="EXTENDED_PATTERN" value="%date{yyyy-MM-dd HH:mm:ss.SSS} %5level ${hostName} --- [%15.15thread] %-40.40logger{15} : %message%n%exception" />
+
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+<!-- 		<withJansi>true</withJansi> -->
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>${SIMPLE_PATTERN}</Pattern>
+		</layout>
+	</appender>
+
+	<appender name="ROLLING-FILE"	class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_FILE}.log</file>
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- daily rollover -->
+			<fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.gz</fileNamePattern>
+
+			<!-- keep 30 days' worth of history capped at 3GB total size -->
+			<maxHistory>30</maxHistory>
+			<totalSizeCap>3GB</totalSizeCap>
+		</rollingPolicy>
+		<encoder>
+			<Pattern>${EXTENDED_PATTERN}</Pattern>
+		</encoder>
+	</appender>
+
+<!-- Deze zorgt voor dat afschuwelijke configuration report -->
+	<logger name="org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener" level="info" additivity="false" />
+	<logger name="org.springframework.beans" level="info" additivity="false" />
+	<logger name="org.hibernate.type" level="info" additivity="true" />
+
+	<!-- Deze drie genereren grammar diagrammen -->
+	<logger name="org.hibernate.hql.internal.ast.QueryTranslatorImpl" level="info" additivity="false" />
+	<logger name="org.hibernate.hql.internal.ast.util.JoinProcessor" level="info" additivity="false" />
+	<logger name="org.hibernate.loader.plan.build.spi.LoadPlanTreePrinter" level="info" additivity="false" />
+
+	<!-- Voortdurende meldingen over zijn pooltjes -->
+	<logger name="com.zaxxer.hikari.pool.HikariPool" level="info" additivity="false" />
+	
+	<!-- In plaats van alles wat je niet hoeft te zien hierboven op INFO te zetten, kun je ook alles wat je WEL wilt zien hieronder op DEBUG zetten -->
+	<logger name="org.springframework.web.servlet.HandlerMapping.Mappings" level="debug" additivity="false" />
+	<logger name="org.springframework.web.servlet.DispatcherServlet" level="debug" additivity="false" />
+	<logger name="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping" level="debug" additivity="false" />
+	<logger name="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" level="debug" additivity="false" />
+	<logger name="org.springframework.ui.freemarker.SpringTemplateLoader" level="debug" additivity="false" />
+	<logger name="org.springframework.web.servlet.view.ContentNegotiatingViewResolver " level="debug" additivity="false" />
+	<logger name="org.springframework.web.servlet.view.InternalResourceView" level="debug" additivity="false" />
+	<logger name="org.springframework.web.servlet.resource.ResourceHttpRequestHandle" level="debug" additivity="false" />
+	<logger name="org.springframework.web.servlet.view.ContentNegotiatingViewResolver" level="debug" additivity="false" />
+	<logger name="org.springframework.jdbc.datasource.init.ScriptUtils" level="debug" additivity="true" />
+	<logger name="freemarker" level="debug" additivity="true" />
+4	
+
+<!-- 	<logger name="pu.heavymetal" level="debug" additivity="false">
+		<appender-ref ref="CONSOLE" />
+	</logger>
+ -->	
+	<root level="trace">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="ROLLING-FILE" />
+	</root>
+
+</configuration>
