@@ -1,0 +1,173 @@
+/*****
+body
+{
+  background-image: url("/heavymetal/resources/images/computers-background.jpg");
+  background-repeat: no-repeat;
+}
+*************/
+body
+{
+/** Vroeger font-family: "Tahoma", "Arial", sans-serif;*/
+	font-family: "Trebuchet MS", verdana, arial, helvetica, sans-serif;
+	font-size: 12px; /* 11 voor de Trebuchet, 12 voor Tahoma */
+	color: #000;
+}
+h1
+{
+	font-size: 18px;
+}
+pre
+{
+	font-family: Consolas, "Lucida Console", "Courier New", "Andale Mono", Monaco, monospace; 
+	background-color: #edf3fe;
+	border: 1px solid #666666;
+}
+
+.paginator
+{
+    display: inline-block;
+}
+.paginator a
+{
+    color: black;
+    padding: 4px 8px;
+    border-top: 1px solid grey;
+    border-bottom: 1px solid grey;
+    border-right: 1px solid grey;
+    text-decoration: none;
+    transition: background-color .3s;
+    float: left;
+    font-size: 120%;
+}
+.paginator a.left
+{
+    border-left: 1px solid grey;
+	
+}
+.paginator a.active
+{
+    /*background-color: #4CAF50;*/
+    background-color: #0000c0;
+    color: white;
+}
+.paginator a:hover:not(.active) 
+{
+	background-color: #ddd;
+}
+/************* Waarom werkt die vertical-align nou GVD niet!
+.paginator a .prevnext 
+{
+	font-size: 170%;
+	vertical-align: 180%;
+}*****************/
+
+img.frontCover{
+	width: 250px;
+	position: absolute;
+	margin-left: 27%;
+}
+img.backCover{
+	width: 250px;
+	position: absolute;
+	margin-left: 44%;
+}
+
+table
+{
+	border-spacing: 0;
+	border-collapse: collapse;
+	border: 1px solid #666666;
+}
+table.issueDetails
+{
+	position: absolute;
+	width: 25%;
+}
+table.issue
+{
+	position: absolute;
+	margin-top: 360px
+}
+
+tr.even{background-color: white}
+tr.odd {background-color: #edf3fe}
+/******** Waarom was deze zo specifiek?
+table thead tr th
+{
+	text-align: right;
+	color: white;
+	background-color: #0000c0;
+	font-weight: bold;
+	font-size: 11px;
+	padding: 3px 8px;
+	border-left: 1px solid white;
+}********************/
+table.sortable thead tr .headerSortDown, table.sortable thead tr .headerSortUp {
+    background-color: #0090ff;	
+}
+table.sortable thead tr .header {
+   background-image: url(/heavymetal/images/bg.gif);
+    background-repeat: no-repeat;
+    background-position: center right;
+    cursor: pointer;
+}
+table.sortable thead tr .headerSortDown {
+    background-image: url(/heavymetal/images/desc.gif);
+}
+table.sortable thead tr .headerSortUp {
+    background-image: url(/heavymetal/images/asc.gif);
+}
+table.sortable {
+	text-align: left;
+}
+
+table tr img.frontCover{
+	width: 150px;
+	position: absolute;
+	margin-top: 2%;
+	margin-left: 0%;
+}
+table tr img.backCover{
+	width: 150px;
+	position: absolute;
+	margin-top: 2%;
+	margin-left: 10%;
+}
+
+th
+{
+	color: white;
+	background-color: #0000c0;
+	font-weight: bold;
+	font-size: 11px;
+	padding: 3px 8px;
+	border-left: 1px solid white;
+}
+
+td
+{
+	font-size: 11px;
+	padding: 3px 8px;
+	border-left: 1px solid #D9D9D9;
+}
+/***** werkt niet. weet iemnand waarom niet?
+table number { text-align: right; }
+table string { text-align: left; }
+table date   { text-align: center; }
+**********/
+th.number { text-align: right; }
+th.string { text-align: left; }
+th.date   { text-align: center; }
+th.boolean{ text-align: center; }
+th.label  { text-align: left; }
+td.number { text-align: right; }
+td.string { text-align: left; }
+td.date   { text-align: center; }
+td.boolean{ text-align: center; }
+
+.error
+{
+	color: red;
+	font-weight: bold;
+}
+

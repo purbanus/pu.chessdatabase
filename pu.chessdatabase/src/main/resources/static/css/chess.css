@@ -1,0 +1,43 @@
+.chess-board {
+	border-spacing: 0;
+	border-collapse: collapse;
+}
+
+.chess-board th {
+	padding: .5em;
+}
+
+.chess-board th+th {
+	border-bottom: 1px solid #000;
+}
+
+.chess-board th:first-child, .chess-board td:last-child {
+	border-right: 1px solid #000;
+}
+
+.chess-board tr:last-child td {
+	border-bottom: 1px solid;
+}
+
+.chess-board th:empty {
+	border: none;
+}
+
+.chess-board td {
+	width: 1em;
+	height: 1em;
+	text-align: center;
+	font-size: 40px;
+	line-height: 0;
+}
+
+.chess-board .light {
+	background: #eee;
+}
+
+.chess-board .dark {
+	background: #aaa;
+}
+.mogelijke-zetten td {
+		font-family: Consolas, "Lucida Console", "Courier New", "Andale Mono", Monaco, monospace; 
+}

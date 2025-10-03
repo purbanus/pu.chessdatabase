@@ -21,8 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.BoStelling;
-import pu.chessdatabase.bo.GegenereerdeZetten;
-import pu.chessdatabase.bo.Gen;
 import pu.chessdatabase.dal.Dbs;
 
 @SpringBootTest
@@ -30,7 +28,6 @@ public class TestPartij
 {
 @Autowired private Partij partij;
 @Autowired private Dbs dbs;
-@Autowired private Gen gen;
 
 @BeforeEach
 public void setup()
@@ -591,7 +588,7 @@ public void testCurPlyToString()
 	assertThat( partij.curPlyToString(), is( "Db2-h2+" ) );
 }
 @Test
-public void testResultaatToString()
+public void testResultaatRecord()
 {
 	BoStelling boStelling = BoStelling.builder()
 		.wk( 0x35 )
@@ -633,7 +630,7 @@ public void testZetNummerToString()
 	assertThat( partij.zetNummerToString( 313 ), is ( "313" ) );
 }
 @Test
-public void testHeleZetToString()
+public void testCreateZetDocument()
 {
 	BoStelling boStelling = BoStelling.builder()
 		.wk( 0x00 )
@@ -647,7 +644,39 @@ public void testHeleZetToString()
 	partij.zet( vanNaar );
 	vanNaar = new VanNaar( 0x77, 0x66 );
 	partij.zet( vanNaar );
-	assertThat( partij.heleZetToString( 0 ), is( "  1. Db2xg7+ Kh8xg7 " ) );
+	ZetDocument zetDocument = ZetDocument.builder()
+		.zetNummer( 1 )
+		.witZet( "Db2xg7+" )
+		.zwartZet( "Kh8xg7 " )
+		.build();
+	assertThat( partij.createZetDocument( 0 ), is( zetDocument ) );
+
+	// Begint met een zwarte zet
+	boStelling = BoStelling.builder()
+		.wk( 0x00 )
+		.zk( 0x77 )
+		.s3( 0x11 )
+		.s4( 0x66 )
+		.aanZet( ZWART )
+		.build();
+	partij.newGame( boStelling );
+	vanNaar = new VanNaar( 0x77, 0x76 );
+	partij.zet( vanNaar );
+	vanNaar = new VanNaar( 0x11, 0x71 );
+	partij.zet( vanNaar );
+	ZetDocument zetDocument1 = ZetDocument.builder()
+		.zetNummer( 1 )
+		.witZet( "..." )
+		.zwartZet( "Kh8-g8 " )
+		.build();
+	ZetDocument zetDocument2 = ZetDocument.builder()
+		.zetNummer( 2 )
+		.witZet( "Db2-b8+" )
+		.zwartZet( "..." )
+		.build();
+	assertThat( partij.createZetDocument( 0 ), is( zetDocument1 ) );
+	assertThat( partij.createZetDocument( 1 ), is( zetDocument2 ) );
+
 }
 @Test
 public void testCreateZetten()
@@ -665,9 +694,14 @@ public void testCreateZetten()
 	vanNaar = new VanNaar( 0x77, 0x66 );
 	partij.zet( vanNaar );
 	
-	List<String> zetten = partij.createZetten();
+	List<ZetDocument> zetten = partij.createZetten();
+	ZetDocument zetDocument = ZetDocument.builder()
+		.zetNummer( 1 )
+		.witZet( "Db2xg7+" )
+		.zwartZet( "Kh8xg7 " )
+		.build();
 	assertThat( zetten.size(), is( 1 ) );
-	assertThat( zetten.get( 0 ), is( "  1. Db2xg7+ Kh8xg7 " ) );
+	assertThat( zetten.get( 0 ), is( zetDocument ) );
 	
 	boStelling = BoStelling.builder()
 		.wk( 0x00 )
@@ -683,9 +717,20 @@ public void testCreateZetten()
 	partij.zet( vanNaar );
 	
 	zetten = partij.createZetten();
+	ZetDocument zetDocument1 = ZetDocument.builder()
+		.zetNummer( 1 )
+		.witZet( "..." )
+		.zwartZet( "Kh8-g8 " )
+		.build();
+	ZetDocument zetDocument2 = ZetDocument.builder()
+		.zetNummer( 2 )
+		.witZet( "Db2-b8+" )
+		.zwartZet( "..." )
+		.build();
+
 	assertThat( zetten.size(), is( 2 ) );
-	assertThat( zetten.get( 0 ), is( "  1.   ...   Kh8-g8 " ) );
-	assertThat( zetten.get( 1 ), is( "  2. Db2-b8+" ) );
+	assertThat( zetten.get( 0 ), is( zetDocument1 ) );
+	assertThat( zetten.get( 1 ), is( zetDocument2 ) );
 }
 @Test
 public void testCreateVooruit()
@@ -810,13 +855,24 @@ public void testPartijReport()
 		.build();
 	assertThat( partijReport.getVooruit(), is( vooruitRecord ) );
 	
-	List<String> zetten = partijReport.getZetten();
+	List<ZetDocument> zetten = partijReport.getZetten();
+	ZetDocument zetDocument1 = ZetDocument.builder()
+		.zetNummer( 1 )
+		.witZet( "..." )
+		.zwartZet( "Kh8-g8 " )
+		.build();
+	ZetDocument zetDocument2 = ZetDocument.builder()
+		.zetNummer( 2 )
+		.witZet( "Db2-b8+" )
+		.zwartZet( "Kg8-h7 " )
+		.build();
+
 	assertThat( zetten.size(), is( 2 ) );
-	assertThat( zetten.get( 0 ), is( "  1.   ...   Kh8-g8 " ) );
-	assertThat( zetten.get( 1 ), is( "  2. Db2-b8+ Kg8-h7 " ) );
+	assertThat( zetten.get( 0 ), is( zetDocument1 ) );
+	assertThat( zetten.get( 1 ), is( zetDocument2 ) );
 }
 @Test
-public void testGegenereerdeZetToString()
+public void testGegenereerdeZetDocument()
 {
 	BoStelling boStellingVan = BoStelling.builder()
 		.wk( 0x00 )
@@ -833,8 +889,14 @@ public void testGegenereerdeZetToString()
 		.zetNr( 15 )
 		.schaak( false )
 		.build();
+	GegenereerdeZetDocument gegenereerdeZetDocument = GegenereerdeZetDocument.builder()
+		.zetNummer( 16 )
+		.zet( "Db2-c3 " )
+		.resultaat( "Verloren" )
+		.matInHoeveel( "Mat in 30" )
+		.build();
 	BoStelling boStellingNaar= partij.vanNaarToStelling( plyRecord, vanNaar );
-	assertThat( partij.gegenereerdeZetToString( plyRecord, boStellingNaar ), is( " 16. Db2-c3   + 30" ) );
+	assertThat( partij.getGegenereerdeZetDocument( plyRecord, boStellingNaar ), is( gegenereerdeZetDocument ) );
 
 	boStellingVan = BoStelling.builder()
 		.wk( 0x00 )
@@ -851,27 +913,17 @@ public void testGegenereerdeZetToString()
 		.zetNr( 17 )
 		.schaak( true )
 		.build();
-	boStellingNaar= partij.vanNaarToStelling( plyRecord, vanNaar );
-	assertThat( partij.gegenereerdeZetToString( plyRecord, boStellingNaar ), is( " 18. Db2xg7+   =" ) );
-}
-@Test
-public void testcreateGegenereerdeZetten()
-{
-	BoStelling boStellingVan = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x77 )
-		.s3( 0x11 )
-		.s4( 0x66 )
-		.aanZet( ZWART )
+	gegenereerdeZetDocument = GegenereerdeZetDocument.builder()
+		.zetNummer( 18 )
+		.zet( "Db2xg7+" )
+		.resultaat( "Remise" )
+		.matInHoeveel( "Onbekend" )
 		.build();
-	GegenereerdeZetten gegenereerdeZetten = gen.genereerZetten( boStellingVan );
-	List<String> zetten = partij.createGegenereerdeZetten( 1500, boStellingVan, gegenereerdeZetten );
-	assertThat( zetten.size(), is( 2 ) );
-	assertThat( zetten.get( 0 ), is( "  1. Kh8-g8   - 30" ) );
-	assertThat( zetten.get( 1 ), is( "  2. Kh8-h7   - 30" ) );
+	boStellingNaar= partij.vanNaarToStelling( plyRecord, vanNaar );
+	assertThat( partij.getGegenereerdeZetDocument( plyRecord, boStellingNaar ), is( gegenereerdeZetDocument ) );
 }
 @Test
-public void testGegenereerdeZettenReport()
+public void testGeGegenereerdeZetten()
 {
 	BoStelling boStellingVan = BoStelling.builder()
 		.wk( 0x00 )
@@ -881,10 +933,22 @@ public void testGegenereerdeZettenReport()
 		.aanZet( ZWART )
 		.build();
 	partij.newGame( boStellingVan );
-	List<String> zetten = partij.getGegenereerdeZettenStrings( 1500 );
+	List<GegenereerdeZetDocument> zetten = partij.getGegenereerdeZetten();
 	assertThat( zetten.size(), is( 2 ) );
-	assertThat( zetten.get( 0 ), is( "  1. Kh8-g8   - 30" ) );
-	assertThat( zetten.get( 1 ), is( "  2. Kh8-h7   - 30" ) );
+	GegenereerdeZetDocument gegenereerdeZetDocument = GegenereerdeZetDocument.builder()
+		.zetNummer( 1 )
+		.zet( "Kh8-g8 " )
+		.resultaat( "Gewonnen" )
+		.matInHoeveel( "Mat in 30" )
+		.build();
+	assertThat( zetten.get( 0 ), is( gegenereerdeZetDocument ) );
+	gegenereerdeZetDocument = GegenereerdeZetDocument.builder()
+		.zetNummer( 2 )
+		.zet( "Kh8-h7 " )
+		.resultaat( "Gewonnen" )
+		.matInHoeveel( "Mat in 30" )
+		.build();
+	assertThat( zetten.get( 1 ), is( gegenereerdeZetDocument ) );
 }
 @Test
 public void testGetStand()
