@@ -14,11 +14,10 @@ import lombok.Value;
 @Builder
 public class PartijDocument
 {
-//private final String wk;
-//private final String zk;
-//private final String s3;
-//private final String s4;
-//private final String aanZet;
+private final int wk;
+private final int zk;
+private final int s3;
+private final int s4;
 private final BoStelling stelling;
 private final ResultaatRecord resultaat;
 private final List<ZetDocument> zetten;

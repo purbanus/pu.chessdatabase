@@ -32,11 +32,20 @@ public PartijDocument getPartijDocument( NewGameResponse aNewGameResponse )
 		partij.newGame( stelling );
 	}
 	return PartijDocument.builder()
+		.wk( toHexGetal( stelling.getWk() ) )
+		.zk( toHexGetal( stelling.getZk() ) )
+		.s3( toHexGetal( stelling.getS3() ) )
+		.s4( toHexGetal( stelling.getS4() ) )
 		.stelling( stelling )
 		.resultaat( partij.getResultaatRecord() )
 		.zetten( partij.getPartijReport().getZetten() )
 		.gegenereerdeZetten( partij.getGegenereerdeZetten() )
 		.build();
+}
+int toHexGetal( int aDecimaalGetal )
+{
+	String hexString = Integer.toHexString( aDecimaalGetal );
+	return Integer.parseInt( hexString );
 }
 BoStelling createBoStelling( NewGameResponse aNewGameResponse )
 {
