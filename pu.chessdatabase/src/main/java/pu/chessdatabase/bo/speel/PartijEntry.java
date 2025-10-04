@@ -15,13 +15,13 @@ public class PartijEntry
 {
 public PartijEntry()
 {
-	desc = "";
-	curPly = 0;
+	description = "";
+	currentPly = 0;
 	lastPly = 0;
 	begonnen = false;
 }
-private String desc;
-private int curPly;
+private String description;
+private int currentPly;
 private int lastPly;
 private boolean begonnen;
 }
