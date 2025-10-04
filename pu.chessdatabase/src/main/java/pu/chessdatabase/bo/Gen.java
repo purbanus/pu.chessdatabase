@@ -67,6 +67,38 @@ static BitSet veldToBitSetAndBuitenBord( int Veld )
 	veldSet.and( BUITENBORD );
 	return veldSet;
 }
+/**
+PROCEDURE VeldToAscii(V: Dbs.Veld): AsciiVeld;
+BEGIN
+	RETURN(Notatie[V]);
+END VeldToAscii;
+ */
+/**
+ * ------- Veld naar ASCII ----------------------------------
+ */
+public static String veldToAlfa( int aVeld )
+{
+	return NOTATIE[aVeld];
+}
+/**
+PROCEDURE AsciiToVeld(A: AsciiVeld): Dbs.Veld;
+BEGIN
+	A[0]:=CAP(A[0]);
+	RETURN(Dbs.Veld(ORD(A[0]) - ORD('A') + 16 * (ORD(A[1]) - ORD('1'))));
+END AsciiToVeld;
+ */
+/**
+ * ------- ASCII naar veld -----------------------------------
+ */
+public static int alfaToVeld( String aAlfaVeld )
+{
+	if ( aAlfaVeld.length() != 2 )
+	{
+		throw new RuntimeException( "AsciiVeld moet 2 lang zijn: " + aAlfaVeld );
+	}
+	String alfaVeldCap = StringUtils.capitalize( aAlfaVeld );
+	return alfaVeldCap.charAt( 0 ) - 'A' + 16 * ( alfaVeldCap.charAt( 1 ) - '1' );
+}
 
 public Gen()
 {
@@ -562,38 +594,6 @@ public GegenereerdeZetten genereerZettenGesorteerd( BoStelling aStelling )
 	GegenereerdeZetten gegenereerdeZetten = genereerZetten( aStelling );
 	gegenereerdeZetten.getStellingen().sort( stellingComparator );
 	return gegenereerdeZetten;
-}
-/**
-PROCEDURE VeldToAscii(V: Dbs.Veld): AsciiVeld;
-BEGIN
-	RETURN(Notatie[V]);
-END VeldToAscii;
- */
-/**
- * ------- Veld naar ASCII ----------------------------------
- */
-public String veldToAscii( int aVeld )
-{
-	return NOTATIE[aVeld];
-}
-/**
-PROCEDURE AsciiToVeld(A: AsciiVeld): Dbs.Veld;
-BEGIN
-	A[0]:=CAP(A[0]);
-	RETURN(Dbs.Veld(ORD(A[0]) - ORD('A') + 16 * (ORD(A[1]) - ORD('1'))));
-END AsciiToVeld;
- */
-/**
- * ------- ASCII naar veld -----------------------------------
- */
-public int asciiToVeld( String aAsciiVeld )
-{
-	if ( aAsciiVeld.length() != 2 )
-	{
-		throw new RuntimeException( "AsciiVeld moet 2 lang zijn: " + aAsciiVeld );
-	}
-	String asciiVeldCap = StringUtils.capitalize( aAsciiVeld );
-	return asciiVeldCap.charAt( 0 ) - 'A' + 16 * ( asciiVeldCap.charAt( 1 ) - '1' );
 }
 /**
 PROCEDURE GetStukInfo(S: Dbs.Stelling; Nr: StukNummer): StukInfoRec;
