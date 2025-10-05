@@ -677,19 +677,19 @@ public void testIsPat()
 @Test
 public void testVeldToAscii()
 {
-	assertThat( gen.veldToAscii( 0x00 ), is( "a1" ) );
-	assertThat( gen.veldToAscii( 0x07 ), is( "h1" ) );
-	assertThat( gen.veldToAscii( 0x08 ), is( "??" ) );
-	assertThat( gen.veldToAscii( 0x70 ), is( "a8" ) );
-	assertThat( gen.veldToAscii( 0x77 ), is( "h8" ) );
+	assertThat( gen.veldToAlfa( 0x00 ), is( "a1" ) );
+	assertThat( gen.veldToAlfa( 0x07 ), is( "h1" ) );
+	assertThat( gen.veldToAlfa( 0x08 ), is( "??" ) );
+	assertThat( gen.veldToAlfa( 0x70 ), is( "a8" ) );
+	assertThat( gen.veldToAlfa( 0x77 ), is( "h8" ) );
 }
 @Test
 public void testAsciiToVeld()
 {
-	assertThat( gen.asciiToVeld( "a1" ), is( 0x00 ) );
-	assertThat( gen.asciiToVeld( "h1" ), is( 0x07 ) );
-	assertThat( gen.asciiToVeld( "a8" ), is( 0x70 ) );
-	assertThat( gen.asciiToVeld( "h8" ), is( 0x77 ) );
+	assertThat( gen.alfaToVeld( "a1" ), is( 0x00 ) );
+	assertThat( gen.alfaToVeld( "h1" ), is( 0x07 ) );
+	assertThat( gen.alfaToVeld( "a8" ), is( 0x70 ) );
+	assertThat( gen.alfaToVeld( "h8" ), is( 0x77 ) );
 	// @@NOG hoe werken die exceptions nou?
 	//assertThrows( RuntimeException.class, () -> { gen.AsciiToVeld( "a9" ); } );
 }
