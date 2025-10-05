@@ -156,10 +156,9 @@
 
 <table class="mogelijke-zetten">
 	<thead>
- <#-- 		<tr>
+  		<tr>
  			<th colspan="4">Mogelijke zetten</th>
  		</tr>
- -->
 		<tr>
 			<th class="string">Zetnr</th>
 			<th class="string">Zet</th>
