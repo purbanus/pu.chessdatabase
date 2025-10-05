@@ -94,7 +94,7 @@ public static int alfaToVeld( String aAlfaVeld )
 {
 	if ( aAlfaVeld.length() != 2 )
 	{
-		throw new RuntimeException( "AsciiVeld moet 2 lang zijn: " + aAlfaVeld );
+		throw new RuntimeException( "AlfaVeld moet 2 lang zijn: " + aAlfaVeld );
 	}
 	String alfaVeldCap = StringUtils.capitalize( aAlfaVeld );
 	return alfaVeldCap.charAt( 0 ) - 'A' + 16 * ( alfaVeldCap.charAt( 1 ) - '1' );
