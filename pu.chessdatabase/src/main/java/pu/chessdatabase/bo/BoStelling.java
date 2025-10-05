@@ -4,6 +4,7 @@ import static pu.chessdatabase.bo.Kleur.*;
 import pu.chessdatabase.dal.Dbs;
 import pu.chessdatabase.dal.ResultaatType;
 import pu.chessdatabase.dal.VMStelling;
+import pu.chessdatabase.service.BoStellingKey;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -110,4 +111,15 @@ public String toString()
 	}
 	return sb.toString();
 }
+public BoStellingKey getBoStellingKey()
+{
+	return BoStellingKey.builder()
+		.wk( wk )
+		.zk( zk )
+		.s3( s3 )
+		.s4( s4 )
+		.aanZet( aanZet )
+		.build();
+}
+
 }

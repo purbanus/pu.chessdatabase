@@ -12,6 +12,7 @@ import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.bo.speel.EindeType.*;
 import static pu.chessdatabase.dal.ResultaatType.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -40,6 +41,28 @@ public void setup()
 public void destroy()
 {
 	dbs.close();
+}
+@Test
+public void testHexGetalToVeld()
+{
+	assertThat( Partij.hexGetalToVeld(  0 ), is( 0x00 ) );
+	assertThat( Partij.hexGetalToVeld(  7 ), is( 0x07 ) );
+	assertThat( Partij.hexGetalToVeld( 10 ), is( 0x10 ) );
+	assertThat( Partij.hexGetalToVeld( 17 ), is( 0x17 ) );
+	assertThat( Partij.hexGetalToVeld( 70 ), is( 0x70 ) );
+	assertThat( Partij.hexGetalToVeld( 77 ), is( 0x77 ) );
+	assertThat( Partij.hexGetalToVeld( 78 ), is( 0x78 ) ); // Maar dit is eigenlijk buiten het bord
+}
+@Test
+public void testVeldToHexGetal()
+{
+	assertThat( Partij.veldToHexGetal( 0x00 ), is(  0 ) );
+	assertThat( Partij.veldToHexGetal( 0x07 ), is(  7 ) );
+	assertThat( Partij.veldToHexGetal( 0x10 ), is( 10 ) );
+	assertThat( Partij.veldToHexGetal( 0x17 ), is( 17 ) );
+	assertThat( Partij.veldToHexGetal( 0x70 ), is( 70 ) );
+	assertThat( Partij.veldToHexGetal( 0x77 ), is( 77 ) );
+	assertThat( Partij.veldToHexGetal( 0x78 ), is( 78 ) ); // Maar dit is eigenlijk buiten het bord
 }
 
 @Test
@@ -222,7 +245,7 @@ public void testvanCurNaarToStelling()
 		.s4( 0x66 )
 		.aanZet( WIT )
 		.build();
-	partij.plies[partij.curPartij.getCurPly()].setBoStelling( boStellingVan );
+	partij.plies[partij.curPartij.getCurrentPly()].setBoStelling( boStellingVan );
 	BoStelling boStellingNaar = BoStelling.builder()
 		.wk( 0x00 )
 		.zk( 0x77 )
@@ -245,7 +268,7 @@ public void testIsLegaal()
 		.s4( 0x21 )
 		.aanZet( ZWART )
 		.build();
-	partij.plies[partij.curPartij.getCurPly()].setBoStelling( boStelling );
+	partij.plies[partij.curPartij.getCurrentPly()].setBoStelling( boStelling );
 	assertThat( partij.isLegaal( new VanNaar( 0x21, 0x20 ) ), is( true ) );
 	
 	boStelling.setAanZet( WIT );
@@ -263,10 +286,10 @@ public void testZetVooruit()
 		.aanZet( WIT )
 		.build();
 	partij.newGame( boStelling );
-	partij.curPartij.setCurPly( 2 );
+	partij.curPartij.setCurrentPly( 2 );
 	partij.curPartij.setLastPly( 15 );
 	partij.zetVooruit();
-	assertThat( partij.curPartij.getCurPly(), is( 3 ) );
+	assertThat( partij.curPartij.getCurrentPly(), is( 3 ) );
 }
 @Test
 public void testZetTerug()
@@ -279,9 +302,9 @@ public void testZetTerug()
 		.aanZet( WIT )
 		.build();
 	partij.newGame( boStelling );
-	partij.curPartij.setCurPly( 2 );
+	partij.curPartij.setCurrentPly( 2 );
 	partij.zetTerug();
-	assertThat( partij.curPartij.getCurPly(), is( 1 ) );
+	assertThat( partij.curPartij.getCurrentPly(), is( 1 ) );
 }
 /** @@NOG Deze tests ook inbouwen
  * De belangrijkste struktuur is Plies. Een aantal voorbeelden:
@@ -356,7 +379,7 @@ public void testZet()
 	
 	assertThat( partij.zet( vanNaar ), is( true ) );
 	assertThat( partij.plies[0].getVanNaar(), is( vanNaar ) );
-	assertThat( partij.curPartij.getCurPly(), is( 1 ) );
+	assertThat( partij.curPartij.getCurrentPly(), is( 1 ) );
 	assertThat( partij.curPartij.getLastPly(), is( 1 ) );
 	assertThat( partij.plies[1].getBoStelling(), is( boStellingNaar ) );
 	assertThat( partij.plies[1].getEinde(), is( NOG_NIET ) );
@@ -390,7 +413,7 @@ public void testZetMetZwart()
 	
 	assertThat( partij.zet( vanNaar ), is( true ) );
 	assertThat( partij.plies[0].getVanNaar(), is( vanNaar ) );
-	assertThat( partij.curPartij.getCurPly(), is( 1 ) );
+	assertThat( partij.curPartij.getCurrentPly(), is( 1 ) );
 	assertThat( partij.curPartij.getLastPly(), is( 1 ) );
 	assertThat( partij.plies[1].getBoStelling(), is( boStellingNaar ) );
 	assertThat( partij.plies[1].getEinde(), is( NOG_NIET ) );
@@ -447,7 +470,7 @@ public void testZetStelling()
 	
 	assertThat( partij.zetStelling( boStellingNaar ), is( true ) );
 	assertThat( partij.plies[0].getVanNaar(), is( vanNaar ) );
-	assertThat( partij.curPartij.getCurPly(), is( 1 ) );
+	assertThat( partij.curPartij.getCurrentPly(), is( 1 ) );
 	assertThat( partij.curPartij.getLastPly(), is( 1 ) );
 	assertThat( partij.plies[1].getBoStelling(), is( boStellingNaar ) );
 	assertThat( partij.plies[1].getEinde(), is( NOG_NIET ) );
@@ -482,7 +505,7 @@ public void testBedenk()
 	
 	assertThat( partij.bedenk(), is( true ) );
 	assertThat( partij.plies[0].getVanNaar(), is( vanNaar ) );
-	assertThat( partij.curPartij.getCurPly(), is( 1 ) );
+	assertThat( partij.curPartij.getCurrentPly(), is( 1 ) );
 	assertThat( partij.curPartij.getLastPly(), is( 1 ) );
 	assertThat( partij.plies[1].getBoStelling(), is( boStellingNaar ) );
 	assertThat( partij.plies[1].getEinde(), is( NOG_NIET ) );
@@ -572,7 +595,7 @@ public void testCurPlyToString()
 	VanNaar vanNaar = new VanNaar( 0x11, 0x22 );
 	partij.newGame( boStelling );
 	partij.zet( vanNaar );
-	assertThat( partij.curPlyToString(), is( "Db2-c3 " ) );
+	assertThat( partij.currentPlyToString(), is( "Db2-c3 " ) );
 
 	boStelling = BoStelling.builder()
 		.wk( 0x00 )
@@ -585,7 +608,7 @@ public void testCurPlyToString()
 	vanNaar = new VanNaar( 0x11, 0x17 );
 	partij.newGame( boStelling );
 	partij.zet( vanNaar );
-	assertThat( partij.curPlyToString(), is( "Db2-h2+" ) );
+	assertThat( partij.currentPlyToString(), is( "Db2-h2+" ) );
 }
 @Test
 public void testResultaatRecord()
@@ -628,6 +651,47 @@ public void testZetNummerToString()
 	assertThat( partij.zetNummerToString(   3 ), is ( "  3" ) );
 	assertThat( partij.zetNummerToString(  13 ), is ( " 13" ) );
 	assertThat( partij.zetNummerToString( 313 ), is ( "313" ) );
+}
+@Test
+public void testGetPartijReport()
+{
+	BoStelling boStelling = BoStelling.builder()
+		.wk( 0x00 )
+		.zk( 0x77 )
+		.s3( 0x11 )
+		.s4( 0x66 )
+		.aanZet( WIT )
+		.build();
+	VooruitRecord vooruitRecord = VooruitRecord.builder()
+		.erIsVooruit( true )
+		.start( 1 )
+		.halverwege( false ) // ??
+		.build();
+	PartijReport partijReport = PartijReport.builder()
+		.erZijnZetten( true )
+		.vooruit( vooruitRecord )
+		.zetten( new ArrayList<>() )
+		.build();
+	partij.newGame( boStelling );
+	assertThat( partij.getPartijReport(), is( partijReport ) );
+	
+	VanNaar vanNaar = new VanNaar( 0x11, 0x66 );
+	partij.zet( vanNaar );
+	vanNaar = new VanNaar( 0x77, 0x66 );
+	partij.zet( vanNaar );
+	ZetDocument zetDocument1 = ZetDocument.builder()
+		.zetNummer( 1 )
+		.witZet( "Db2xg7+" )
+		.zwartZet( "Kh8xg7 " )
+		.build();
+	List<ZetDocument> zetten = List.of( zetDocument1 );
+	partijReport = PartijReport.builder()
+		.erZijnZetten( true )
+		.vooruit( vooruitRecord )
+		.zetten( zetten )
+		.build();
+	assertThat( partij.getPartijReport(), is( partijReport ) );
+
 }
 @Test
 public void testCreateZetDocument()

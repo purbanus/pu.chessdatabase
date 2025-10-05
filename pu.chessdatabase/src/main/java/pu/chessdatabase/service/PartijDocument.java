@@ -18,6 +18,7 @@ private final int wk;
 private final int zk;
 private final int s3;
 private final int s4;
+private final String aanZet;
 private final BoStelling stelling;
 private final ResultaatRecord resultaat;
 private final List<ZetDocument> zetten;

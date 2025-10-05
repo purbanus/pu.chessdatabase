@@ -11,20 +11,21 @@ import lombok.ToString;
 @Data
 @ToString
 @AllArgsConstructor
-public class NewGameResponse
+public class ZetResponse
 {
-private String wkAlfa;
-private String zkAlfa;
-private String s3Alfa;
-private String s4Alfa;
+private int wk;
+private int zk;
+private int s3;
+private int s4;
 private String aanZet;
+private String nieuweZet;
 public BoStellingKey getBoStellingKey()
 {
 	return BoStellingKey.builder()
-		.wk( Partij.alfaToVeld( wkAlfa ) )
-		.zk( Partij.alfaToVeld( zkAlfa ) )
-		.s3( Partij.alfaToVeld( s3Alfa ) )
-		.s4( Partij.alfaToVeld( s4Alfa ) )
+		.wk( Partij.hexGetalToVeld( wk ) ) 
+		.zk( Partij.hexGetalToVeld( zk ) ) 
+		.s3( Partij.hexGetalToVeld( s3 ) ) 
+		.s4( Partij.hexGetalToVeld( s4 ) ) 
 		.aanZet( Kleur.fromString( aanZet ) )
 		.build();
 }

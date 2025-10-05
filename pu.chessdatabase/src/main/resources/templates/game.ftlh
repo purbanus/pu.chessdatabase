@@ -10,10 +10,6 @@
 	<script src="<@spring.url '/js/script.js' />" ></script>
 </head>
 <body>
-	<div hidden id="wk">${partijDocument.wk}</div>
-	<div hidden id="zk">${partijDocument.zk}</div>
-	<div hidden id="s3">${partijDocument.s3}</div>
-	<div hidden id="s4">${partijDocument.s4}</div>
 	<h1>Peter's Chessdatabase</h1>
   <table class="chess-board">
     <tbody>
@@ -119,21 +115,44 @@
     </tbody>
 </table>
 
-<p>${partijDocument.resultaat.res1}, ${partijDocument.resultaat.res2}</p>
+<p>${partijDocument.stelling.aanZet} aan zet. ${partijDocument.resultaat.res1}, ${partijDocument.resultaat.res2}
+		<form action='<@spring.url "/do-zet" />' method="post">
+			<input hidden id="wk" type="text" name="wk" value="${partijDocument.wk}" />
+			<input hidden id="zk" type="text" name="zk" value="${partijDocument.zk}" />
+			<input hidden id="s3" type="text" name="s3" value="${partijDocument.s3}" />
+			<input hidden id="s4" type="text" name="s4" value="${partijDocument.s4}" />
+			<input hidden id="aanZet" type="text" name="aanZet" value="${partijDocument.aanZet}" />
+			
+<!--
+			<div hidden id="wk1">${partijDocument.wk}</div>
+			<div hidden id="zk1">${partijDocument.zk}</div>
+			<div hidden id="s31">${partijDocument.s3}</div>
+			<div hidden id="s41">${partijDocument.s4}</div>
+			<div hidden id="aanZet1">${partijDocument.aanZet}</div>
+-->
+			<label for="nieuweZet">Nieuwe zet:</label><Input id="nieuweZet type="text" name="nieuweZet" />
+			<button type="submit" name="submit">Doen!</button>
+		</form>
+</p>
+<div>Partijverloop</div>
 <table class="partij-verloop">
  	<thead>
 		<tr>
-			<th>PartijVerloop</th>
+			<th class="String">ZetNr</th>
+			<th class="String">Wit</th>
+			<th class="String">Zwart</th>
 		</tr>
 	</thead>
 	<#list partijDocument.zetten as zet>
 		<tr class=${zet?itemParity}>
-			<td class="string">${zet}</td>
+			<td class="number">${zet.zetNummer}</td>
+			<td class="string">${zet.witZet}</td>
+			<td class="string">${zet.zwartZet}</td>
 		</tr>
 	</#list>
 </table
 
-<p>Mogelijke zetten<p>
+<div>Mogelijke zetten</div>
 <table class="mogelijke-zetten">
 	<thead>
 		<tr>
