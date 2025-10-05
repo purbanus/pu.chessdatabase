@@ -45,39 +45,55 @@ public String newGame( Model aModel )
 	aModel.addAttribute( "zk", "h8" );
 	aModel.addAttribute( "s3", "b2" );
 	aModel.addAttribute( "s4", "g7" );
-	aModel.addAttribute( "aanZet", "wit" );
+	aModel.addAttribute( "aanZet", "Wit" );
 	LOG.debug( "Model na vullen=" + aModel.asMap() );
 
 	return "newgame";
 }
 @PostMapping(value = { "/do-newgame" } )
-public RedirectView doNewGame( @ModelAttribute NewGameResponse aNewGameResponse, Model aModel ) 
+public RedirectView doNewGame( @ModelAttribute NewGameResponse aGameResponse, Model aModel ) 
 {
 	LOG.info( "NewGame response gestart" );
 	LOG.debug( "Model=" + aModel.asMap() );
-	LOG.debug( "NewGameResponse=" + aNewGameResponse );
+	LOG.debug( "NewGameResponse=" + aGameResponse );
 
-	getChessDatabaseService().newGame( aNewGameResponse );
+	PartijDocument partijDocument = getChessDatabaseService().newGame( aGameResponse );
 	return new RedirectView( "/game.html"
-		+ "?wk=" + aNewGameResponse.getWk()
-		+ "&zk=" + aNewGameResponse.getZk()
-		+ "&s3=" + aNewGameResponse.getS3()
-		+ "&s4=" + aNewGameResponse.getS4()
-		+ "&aanZet=" + aNewGameResponse.getAanZet()
+		+ "?wk=" + partijDocument.getWk()
+		+ "&zk=" + partijDocument.getZk()
+		+ "&s3=" + partijDocument.getS3()
+		+ "&s4=" + partijDocument.getS4()
+		+ "&aanZet=" + partijDocument.getAanZet()
 	);
 }
 @GetMapping( { "/game", "/game.html" } )
-public String game( @ModelAttribute NewGameResponse aNewGameResponse, Model aModel )
+public String game( @ModelAttribute GameResponse aGameResponse, Model aModel )
 {
 	LOG.info( "Game response gestart" );
 	LOG.debug( "Model=" + aModel.asMap() );
-	LOG.debug( "GameResponse=" + aNewGameResponse );
+	LOG.debug( "GameResponse=" + aGameResponse );
 
-	PartijDocument partijDocument = getChessDatabaseService().getPartijDocument( aNewGameResponse );
+	PartijDocument partijDocument = getChessDatabaseService().getPartijDocument( aGameResponse.getBoStellingKey() );
 	aModel.addAttribute( "partijDocument", partijDocument );
 	LOG.info( "NewGame response klaar. Model=" + aModel.asMap() );
 
 	return "game";
+}
+@PostMapping(value = { "/do-zet" } )
+public RedirectView doZet( @ModelAttribute ZetResponse aZetResponse, Model aModel ) 
+{
+	LOG.info( "Zet response gestart" );
+	LOG.debug( "Model=" + aModel.asMap() );
+	LOG.debug( "NewGameResponse=" + aZetResponse );
+
+	PartijDocument partijDocument = getChessDatabaseService().zet( aZetResponse );
+	return new RedirectView( "/game.html"
+		+ "?wk=" + partijDocument.getWk()
+		+ "&zk=" + partijDocument.getZk()
+		+ "&s3=" + partijDocument.getS3()
+		+ "&s4=" + partijDocument.getS4()
+		+ "&aanZet=" + partijDocument.getAanZet()
+	);
 }
 
 }
