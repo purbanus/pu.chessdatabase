@@ -134,9 +134,11 @@
 			<button type="submit" name="submit">Doen!</button>
 		</form>
 </p>
-<div>Partijverloop</div>
 <table class="partij-verloop">
  	<thead>
+ 		<tr>
+ 			<th colspan="3">Partijverloop</th>
+ 		</tr>
 		<tr>
 			<th class="String">ZetNr</th>
 			<th class="String">Wit</th>
@@ -150,11 +152,13 @@
 			<td class="string">${zet.zwartZet}</td>
 		</tr>
 	</#list>
-</table
+</table>
 
-<div>Mogelijke zetten</div>
 <table class="mogelijke-zetten">
 	<thead>
+  		<tr>
+ 			<th colspan="4">Mogelijke zetten</th>
+ 		</tr>
 		<tr>
 			<th class="string">Zetnr</th>
 			<th class="string">Zet</th>
@@ -164,12 +168,22 @@
 	</thead>
 	<#list partijDocument.gegenereerdeZetten as zet>
 		<tr class=${zet?itemParity}>
-			<td class="string">${zet.zetNummer}</td>
-			<td class="string">${zet.zet}</td>
+			<td class="number">${zet.zetNummer}</td>
+			<td class="string">
+				<a href='<@spring.url "/do-zet
+					?nieuweZet=${zet.zet}
+					&wk=${partijDocument.wk}
+					&zk=${partijDocument.zk}
+					&s3=${partijDocument.s3}
+					&s4=${partijDocument.s4}
+					&aanZet=${partijDocument.aanZet}" />'>
+					${zet.zet}
+				</a>
+			</td>
 			<td class="string">${zet.resultaat}</td>
 			<td class="string">${zet.matInHoeveel}</td>
 		</tr>
 	</#list>
-</table
+</table>
 
 </body>

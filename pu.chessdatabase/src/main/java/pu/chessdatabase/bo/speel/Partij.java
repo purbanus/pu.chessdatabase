@@ -7,6 +7,7 @@ import static pu.chessdatabase.dal.ResultaatType.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -526,10 +527,19 @@ void clearPliesVoorZet()
 }
 public boolean zet( String aVanNaar )
 {
-	String vanNaar = aVanNaar.trim();
+	String vanNaar = aVanNaar.trim().toLowerCase();
+	char first = vanNaar.charAt( 0 );
+	if ( first == 'k' || first == 'd' || first == 't' || first == 'l' || first == 'p' || first == 'o'  )
+	{
+		vanNaar = vanNaar.substring( 1 );
+	}
+	vanNaar = StringUtils.remove( vanNaar, '-' );
+	vanNaar = StringUtils.remove( vanNaar, '+' );
+	vanNaar = StringUtils.remove( vanNaar, '=' );
+	vanNaar = StringUtils.remove( vanNaar, '#' );
 	return zet( VanNaar.builder()
-		.van( alfaToVeld( vanNaar.substring( 0,  2 ) ) )
-		.naar( alfaToVeld( vanNaar.charAt(  2 ) == '-' ? vanNaar.substring( 3 ) : vanNaar.substring( 2 ) ) )
+		.van ( alfaToVeld( vanNaar.substring( 0, 2 ) ) )
+		.naar( alfaToVeld( vanNaar.substring( 2, 4 ) ) )
 		.build()
 	);
 }

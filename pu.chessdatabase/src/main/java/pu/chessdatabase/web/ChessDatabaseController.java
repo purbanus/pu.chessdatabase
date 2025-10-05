@@ -79,12 +79,13 @@ public String game( @ModelAttribute GameResponse aGameResponse, Model aModel )
 
 	return "game";
 }
-@PostMapping(value = { "/do-zet" } )
+@GetMapping(value = { "/do-zet" } )
+//@PostMapping(value = { "/do-zet" } )
 public RedirectView doZet( @ModelAttribute ZetResponse aZetResponse, Model aModel ) 
 {
 	LOG.info( "Zet response gestart" );
 	LOG.debug( "Model=" + aModel.asMap() );
-	LOG.debug( "NewGameResponse=" + aZetResponse );
+	LOG.debug( "ZetResponse=" + aZetResponse );
 
 	PartijDocument partijDocument = getChessDatabaseService().zet( aZetResponse );
 	return new RedirectView( "/game.html"
