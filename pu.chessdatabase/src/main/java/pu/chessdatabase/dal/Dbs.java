@@ -107,7 +107,7 @@ Range oktant_0_Range = new Range( 0, OKTANTEN );
 Range resultaatRange = new Range( 0, 3 );
 
 int[][] transformatieTabel = new int [OKTANTEN + 1][veldRange.getMaximum() + 1];
-String dbsNaam;
+private String dbsNaam = null;
 public long [] report = new long [4];
 long [] reportArray = new long [4];
 int reportTeller;
@@ -116,17 +116,33 @@ ReportFunction reportProc;
 
 public Dbs()
 {
-	dbsNaam = DFT_DBS_NAAM;
 	createTransformatieTabel();
 	reportFrequentie = DFT_RPT_FREQ;
 	reportProc = null;
 	clearTellers();
-
 }
 public String getDbsNaam()
-{ 
+{
+	if ( dbsNaam == null )
+	{
+		dbsNaam = DFT_DBS_NAAM;
+	}
 	return dbsNaam;
 }
+/**
+*PROCEDURE Name(Naam: ARRAY OF CHAR);
+BEGIN
+	Str.Copy(DbsNaam, Naam);
+END Name;
+ */
+/**
+ * ------- Naam geven -------------------
+ */
+public void setDbsNaam( String aNaam )
+{
+	dbsNaam = aNaam;
+}
+
 //void setRpt( long [] aReportArray )
 //{
 //	Rpt = aReportArray;
@@ -501,11 +517,11 @@ END Create;
  */
 public void create()
 {
-	if ( dbsNaam == null || dbsNaam.length() == 0 )
+	if ( getDbsNaam() == null || getDbsNaam().length() == 0 )
 	{
 		throw new RuntimeException( "Geen naam opgegeven voor de database" );
 	}
-	vm.create( dbsNaam );
+	vm.create( getDbsNaam() );
 }
 /**
 PROCEDURE Open();
@@ -524,11 +540,11 @@ END Open;
  */
 public void open()
 {
-	if ( dbsNaam == null || dbsNaam.length() == 0 )
+	if ( getDbsNaam() == null || getDbsNaam().length() == 0 )
 	{
 		throw new RuntimeException( "Geen naam opgegeven voor de database" );
 	}
-	vm.open( dbsNaam );
+	vm.open( getDbsNaam() );
 }
 public void flush()
 {
