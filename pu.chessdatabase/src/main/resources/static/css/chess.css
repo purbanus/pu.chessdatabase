@@ -38,6 +38,13 @@
 .chess-board .dark {
 	background: #aaa;
 }
+
 .mogelijke-zetten td {
-		font-family: Consolas, "Lucida Console", "Courier New", "Andale Mono", Monaco, monospace; 
+	font-family: Consolas, "Lucida Console", "Courier New", "Andale Mono", Monaco, monospace;
+}
+
+.inlineTable {
+	display: inline-block;
+	/* border-left: 100px; /* Heeft geen effect */
+}
 }

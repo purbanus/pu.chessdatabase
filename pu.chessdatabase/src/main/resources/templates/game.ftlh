@@ -11,7 +11,7 @@
 </head>
 <body>
 	<h1>Peter's Chessdatabase</h1>
-  <table class="chess-board">
+  <table class="chess-board inlineTable">
     <tbody>
         <tr>
             <th></th>
@@ -115,7 +115,39 @@
     </tbody>
 </table>
 
-<p>${partijDocument.stelling.aanZet} aan zet. ${partijDocument.resultaat.res1}, ${partijDocument.resultaat.res2}
+<table class="mogelijkeZetten inlineTable">
+	<thead>
+  		<tr>
+ 			<th colspan="4">Mogelijke zetten</th>
+ 		</tr>
+		<tr>
+			<th class="string">Zetnr</th>
+			<th class="string">Zet</th>
+			<th class="string">Resultaat</th>
+			<th class="string">Mat in hoeveel</th>
+		</tr>
+	</thead>
+	<#list partijDocument.gegenereerdeZetten as zet>
+		<tr class=${zet?itemParity}>
+			<td class="number">${zet.zetNummer}</td>
+			<td class="string">
+				<a href='<@spring.url "/do-zet
+					?nieuweZet=${zet.zet}
+					&wk=${partijDocument.wk}
+					&zk=${partijDocument.zk}
+					&s3=${partijDocument.s3}
+					&s4=${partijDocument.s4}
+					&aanZet=${partijDocument.aanZet}" />'>
+					${zet.zet}
+				</a>
+			</td>
+			<td class="string">${zet.resultaat}</td>
+			<td class="string">${zet.matInHoeveel}</td>
+		</tr>
+	</#list>
+</table>
+
+<p>${partijDocument.aanZet} aan zet, ${partijDocument.resultaat.res1}, ${partijDocument.resultaat.res2}
 		<form action='<@spring.url "/do-zet" />' method="post">
 			<input hidden id="wk" type="text" name="wk" value="${partijDocument.wk}" />
 			<input hidden id="zk" type="text" name="zk" value="${partijDocument.zk}" />
@@ -154,36 +186,5 @@
 	</#list>
 </table>
 
-<table class="mogelijke-zetten">
-	<thead>
-  		<tr>
- 			<th colspan="4">Mogelijke zetten</th>
- 		</tr>
-		<tr>
-			<th class="string">Zetnr</th>
-			<th class="string">Zet</th>
-			<th class="string">Resultaat</th>
-			<th class="string">Mat in hoeveel</th>
-		</tr>
-	</thead>
-	<#list partijDocument.gegenereerdeZetten as zet>
-		<tr class=${zet?itemParity}>
-			<td class="number">${zet.zetNummer}</td>
-			<td class="string">
-				<a href='<@spring.url "/do-zet
-					?nieuweZet=${zet.zet}
-					&wk=${partijDocument.wk}
-					&zk=${partijDocument.zk}
-					&s3=${partijDocument.s3}
-					&s4=${partijDocument.s4}
-					&aanZet=${partijDocument.aanZet}" />'>
-					${zet.zet}
-				</a>
-			</td>
-			<td class="string">${zet.resultaat}</td>
-			<td class="string">${zet.matInHoeveel}</td>
-		</tr>
-	</#list>
-</table>
 
 </body>
