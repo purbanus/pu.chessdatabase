@@ -19,7 +19,7 @@ public class TestDbsOverProductie
 @BeforeEach
 public void setup()
 {
-	dbs.name( dbs.DFT_DBS_NAAM );
+	dbs.setDbsNaam( dbs.DFT_DBS_NAAM );
 	dbs.open();
 }
 @AfterEach

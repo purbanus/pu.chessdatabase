@@ -295,7 +295,7 @@ public void testIsSchaak()
 @Test
 public void testAddZet()
 {
-	dbs.name( "Pipo" );
+	dbs.setDbsNaam( "Pipo" );
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 
 	BoStelling stelling;
@@ -362,7 +362,7 @@ public void testAddZet()
 @Test
 public void testGenZetPerStuk()
 {
-	dbs.name( "Pipo" );
+	dbs.setDbsNaam( "Pipo" );
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 
 	BoStelling boStelling;
@@ -445,7 +445,7 @@ public void testGenZetPerStuk()
 @Test
 public void testGenZet()
 {
-	dbs.name( "Pipo" );
+	dbs.setDbsNaam( "Pipo" );
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 
 	BoStelling stelling;
@@ -572,7 +572,7 @@ public void testStellingComparator()
 @Test
 public void testGenZetSort()
 {
-	dbs.name( "Pipo" );
+	dbs.setDbsNaam( "Pipo" );
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 
 	BoStelling stelling;

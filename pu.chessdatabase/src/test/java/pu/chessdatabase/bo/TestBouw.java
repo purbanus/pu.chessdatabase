@@ -30,7 +30,7 @@ public class TestBouw
 @BeforeEach
 public void setup()
 {
-	dbs.name( "Pipo" );
+	dbs.setDbsNaam( "Pipo" );
 	dbs.create();
 }
 @AfterEach

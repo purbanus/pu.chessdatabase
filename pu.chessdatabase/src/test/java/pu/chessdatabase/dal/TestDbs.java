@@ -31,7 +31,7 @@ public class TestDbs
 @BeforeEach
 public void setup()
 {
-	dbs.name( "Pipo" );
+	dbs.setDbsNaam( "Pipo" );
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 }
 @AfterEach
@@ -356,8 +356,8 @@ public void testFreeRecord()
 @Test
 public void testName()
 {
-	dbs.name( "Mamaloe" );
-	assertThat( dbs.dbsNaam, is( "Mamaloe" ) );
+	dbs.setDbsNaam( "Mamaloe" );
+	assertThat( dbs.getDbsNaam(), is( "Mamaloe" ) );
 }
 @Test
 public void testCreate()
