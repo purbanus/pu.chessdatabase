@@ -19,6 +19,7 @@ import pu.chessdatabase.service.PartijDocument;
 import lombok.Data;
 
 @Controller
+//@Scope( "session" )
 @Data
 public class ChessDatabaseController
 {
@@ -35,7 +36,7 @@ public String goHome(Locale locale, Model model)
 	return "redirect:/newgame";
 }
 @GetMapping( { "/newgame", "/newgame.html" } )
-public String newGame( Model aModel )
+public String newGame( Model aModel /*, HttpSession aHttpSession*/ )
 {
 	LOG.info( "NewGame gestart" );
 	LOG.debug( "Model=" + aModel.asMap() );
