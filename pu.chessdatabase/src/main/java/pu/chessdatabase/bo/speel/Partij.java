@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.GegenereerdeZetten;
@@ -66,23 +66,17 @@ is gewoon het nummer dat afgedrukt moet worden.
 ===================================================================================
 */
 
-@Service
+@Component
 public class Partij
 {
 public static final int MAX_HELE_ZET_NUMMER = 130;
 public static final int MAX_PLY_NUMMER = 255;
-//public static final DecimalFormat THREE_DIGIT_FORMATTER = new DecimalFormat( "  0" );
 
 private Dbs dbs;
 @Autowired private Gen gen;
 
 PlyRecord[] plies = new PlyRecord[256];
 PartijEntry curPartij;
-//List<String> partijZetString = new ArrayList<>();
-//private String plyString;
-//private String zetNummerString;
-//private String heleZetString;
-//private String resulaatString;
 /**
  * BEGIN
 	Dbs.Open();
