@@ -1,6 +1,5 @@
 package pu.chessdatabase.service;
 
-import pu.chessdatabase.web.GameResponse;
 import pu.chessdatabase.web.NewGameResponse;
 import pu.chessdatabase.web.ZetResponse;
 

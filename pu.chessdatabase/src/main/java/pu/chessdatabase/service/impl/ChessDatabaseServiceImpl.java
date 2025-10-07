@@ -8,7 +8,6 @@ import pu.chessdatabase.bo.speel.Partij;
 import pu.chessdatabase.service.BoStellingKey;
 import pu.chessdatabase.service.ChessDatabaseService;
 import pu.chessdatabase.service.PartijDocument;
-import pu.chessdatabase.web.GameResponse;
 import pu.chessdatabase.web.NewGameResponse;
 import pu.chessdatabase.web.ZetResponse;
 
