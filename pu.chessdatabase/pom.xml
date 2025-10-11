@@ -117,7 +117,13 @@
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-</dependencies>
+		<!--Voor matrices-->
+<!--		<dependency>
+			<groupId>org.ejml</groupId>
+			<artifactId>ejml-all</artifactId>
+			<version>0.38</version>
+		</dependency>
+-->	</dependencies>
 
 	<build>
 		<plugins>
