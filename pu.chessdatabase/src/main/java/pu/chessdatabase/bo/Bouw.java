@@ -204,6 +204,8 @@ END IsIllegaal;
 List<BoStelling> illegaalStellingen = new ArrayList<>();
 List<BoStelling> stellingenMetSchaak = new ArrayList<>();
 List<BoStelling> matStellingen = new ArrayList<>();
+List<BoStelling> matStellingenMetWit = new ArrayList<>();
+List<BoStelling> matStellingenMetZwart = new ArrayList<>();
 public void isIllegaal( BoStelling aBoStelling )
 {
 	BoStelling boStelling = aBoStelling.clone();
@@ -344,6 +346,14 @@ public void isMat( BoStelling aBoStelling )
 			if ( HOU_STELLINGEN_BIJ )
 			{
 				matStellingen.add( boStelling );
+			}
+			if ( boStelling.getAanZet() == WIT )
+			{
+				matStellingenMetWit.add( boStelling );
+			}
+			else
+			{
+				matStellingenMetZwart.add( boStelling );
 			}
 			dbs.put( boStelling );
 		}
