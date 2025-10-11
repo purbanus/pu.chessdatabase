@@ -2,11 +2,7 @@ package pu.chessdatabase.bo;
 
 import static pu.chessdatabase.bo.Kleur.*;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import pu.chessdatabase.dal.Dbs;
 import pu.chessdatabase.dal.ResultaatType;
-import pu.chessdatabase.dal.VMStelling;
 import pu.chessdatabase.service.BoStellingKey;
 
 import lombok.AllArgsConstructor;
