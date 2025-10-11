@@ -19,7 +19,7 @@ public class TestBoStelling
 // Gelukkig bestaat er een \s waarmee je een niet-verwijderbare space
 // definieert. FYI: alle spaces voor die \s worden evenmin verwijderd
 public static final String BO_TO_STRING = """
-WK=0 ZK=2 S3=11 S4=23 AanZet=W Resultaat=null AantalZetten=0 Schaak=false
+WK=a1 ZK=c1 S3=b2 S4=d3 AanZet=W Resultaat=null AantalZetten=0 Schaak=false
 .. .. .. .. .. .. .. ..\s
 .. .. .. .. .. .. .. ..\s
 .. .. .. .. .. .. .. ..\s
@@ -57,5 +57,19 @@ public void testClone()
 		.build();
 	BoStelling boStelling2 = boStelling.clone();
 	assertThat( boStelling2, is( boStelling ) );
+}
+@Test
+public void testAlfaBuilder()
+{
+	BoStelling boStelling  = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "c1" )
+		.s3( "b2" )
+		.s4( "d3" )
+		.aanZet( WIT )
+		.build();
+	assertThat( boStelling.toString().length(), is( BO_TO_STRING.length() ) );
+	assertThat( boStelling.toString(), is( BO_TO_STRING) );
+
 }
 }

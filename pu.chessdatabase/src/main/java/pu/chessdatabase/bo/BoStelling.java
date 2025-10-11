@@ -1,6 +1,9 @@
 package pu.chessdatabase.bo;
 
 import static pu.chessdatabase.bo.Kleur.*;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import pu.chessdatabase.dal.Dbs;
 import pu.chessdatabase.dal.ResultaatType;
 import pu.chessdatabase.dal.VMStelling;
@@ -31,6 +34,23 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 public class BoStelling implements Cloneable
 {
+public static class AlfaBuilder
+{
+private BoStelling boStelling = new BoStelling();
+public AlfaBuilder wk( String aWk ) { boStelling.setWk( Gen.alfaToVeld( aWk ) ); return this; };
+public AlfaBuilder zk( String aZk ) { boStelling.setZk( Gen.alfaToVeld( aZk ) ); return this; };
+public AlfaBuilder s3( String aS3 ) { boStelling.setS3( Gen.alfaToVeld( aS3 ) ); return this; };
+public AlfaBuilder s4( String aS4 ) { boStelling.setS4( Gen.alfaToVeld( aS4 ) ); return this; };
+public AlfaBuilder aanZet( Kleur aAanZet ) { boStelling.setAanZet( aAanZet ); return this; };
+public BoStelling build()
+{
+	return boStelling;
+}
+}
+public static AlfaBuilder alfaBuilder()
+{
+	return new AlfaBuilder();
+}
 public static final BoStelling NULL_STELLING = BoStelling.builder()
 	.wk( 0 )
 	.zk( 0 )
@@ -42,16 +62,6 @@ public static final BoStelling NULL_STELLING = BoStelling.builder()
 	.schaak( false )
 	.build();
 
-public static BoStelling fromVmStelling( VMStelling aVmStelling )
-{
-	return builder()
-		.wk( Dbs.CVT_WK[aVmStelling.getWk()] )
-		.zk( Dbs.CVT_STUK[aVmStelling.getZk()] )
-		.s3( Dbs.CVT_STUK[aVmStelling.getS3()] )
-		.s4( Dbs.CVT_STUK[aVmStelling.getS4()] )
-		.aanZet( aVmStelling.getAanZet() )
-		.build();
-}
 /**
  * CASE : BOOLEAN OF
         |	TRUE : WK, ZK, s3, s4: Veld;
@@ -83,29 +93,27 @@ public BoStelling clone()
 public String toString()
 {
 	StringBuilder sb = new StringBuilder();
-	sb.append( "WK=" ).append( Integer.toHexString( wk ) )
-	.append( " ZK=" ).append( Integer.toHexString( zk ) )
-	.append( " S3=" ).append( Integer.toHexString( s3 ) )
-	.append( " S4=" ).append( Integer.toHexString( s4 ) )
+	sb
+	.append( "WK="  ).append( Gen.veldToAlfa( wk ) )
+	.append( " ZK=" ).append( Gen.veldToAlfa( zk ) )
+	.append( " S3=" ).append( Gen.veldToAlfa( s3 ) )
+	.append( " S4=" ).append( Gen.veldToAlfa( s4 ) )
 	.append( " AanZet=" ).append( aanZet.getAfko() )
 	.append( " Resultaat=" ).append( resultaat )
 	.append( " AantalZetten=" ).append( aantalZetten )
 	.append( " Schaak=" ).append( schaak ).append( "\n" );
 	for ( int rij = 7; rij >= 0; rij-- )
 	{
-		if ( rij < 8 )
+		for ( int kol = 0; kol < 8; kol++ )
 		{
-			for ( int kol = 0; kol < 8; kol++ )
-			{
-				int veld = 16 * rij + kol;
-				String veldString;
-				if ( veld == wk ) veldString = "WK";
-				else if ( veld == zk ) veldString = "ZK";
-				else if ( veld == s3 ) veldString = "WD";
-				else if ( veld == s4 ) veldString = "ZT";
-				else veldString = "..";
-				sb.append( veldString ).append( " " );
-			}
+			int veld = 16 * rij + kol;
+			String veldString;
+			if ( veld == wk ) veldString = "WK";
+			else if ( veld == zk ) veldString = "ZK";
+			else if ( veld == s3 ) veldString = "WD";
+			else if ( veld == s4 ) veldString = "ZT";
+			else veldString = "..";
+			sb.append( veldString ).append( " " );
 		}
 		sb.append( "\n" );
 	}
