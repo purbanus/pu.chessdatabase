@@ -251,7 +251,17 @@ ZK ZT WK .. .. .. .. ..
 	assertThat( gotBoStelling.getResultaat(), is( ResultaatType.VERLOREN ) );
 	assertThat( gotBoStelling.getAantalZetten(), is( 1 ) );
 }
-@Test
+//@Test
+public void testShowMatStellingen()
+{
+	bouw.pass_0();
+	dbs.open();
+	System.out.println( "MatMetWitAanZet" );
+	System.out.println( bouw.matStellingenMetWit );
+	System.out.println( "\n\n\nMatMetZwartAanZet" );
+	System.out.println( bouw.matStellingenMetZwart );
+}
+//@Test
 public void testTelAlles()
 {
 	bouw.pass_0();

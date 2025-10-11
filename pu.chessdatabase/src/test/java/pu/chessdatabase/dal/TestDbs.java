@@ -127,7 +127,7 @@ public void testCreateTrfTabel()
 			//System.out.print( Integer.toHexString( oudVeld ) + "->" + Integer.toHexString( newVeld ) + " " );
 			assertThat( dbs.transformatieTabel[oktant][oudVeld], is( newVeld ) );
 		}
-		System.out.println();
+		//System.out.println();
 	}
 }
 /*
@@ -174,17 +174,295 @@ public void printTrfTabel()
 @Test
 public void testCardinaliseer()
 {
+	// Test Oktant 1: behalve dan dat de WK nog 
+	// een speciale afbeelding krijgt om 'm in de VM-notatie te krijgen; hij gaat van 9 naar 4.
+}
+int transFormVeld( int aVeld )
+{
+	return 0;
+}
+@Test
+public void testSpiegelEnRoteerAlleenWk()
+{
 	BoStelling boStelling = BoStelling.builder()
+		.wk( 0 )
+		.zk( 0 )
+		.s3( 0 )
+		.s4( 0 )
+		.aanZet( WIT )
+		.build();
+	VMStelling expectedVmStelling = VMStelling.builder()
+		.wk( 0 )
+		.zk( 0 )
+		.s3( 0 )
+		.s4( 0 )
+		.aanZet( WIT )
+		.build();
+	
+	boStelling.setWk( 0x11 );
+	// De WK staat in oktant 1, dit krijgt een identieke afbeelding,
+	VMStelling actualVmStelling = dbs.spiegelEnRoteer( boStelling );
+	expectedVmStelling.setWk( 0x09 );
+	assertThat( actualVmStelling, is( actualVmStelling ) );
+
+	boStelling.setWk( 0x06 );
+	// De WK staat in oktant 2. Dit krijgt een spiegeling in de y-as van het midden van het bord
+	actualVmStelling = dbs.spiegelEnRoteer( boStelling );
+	expectedVmStelling.setWk( 0x01 );
+	assertThat( actualVmStelling, is( actualVmStelling ) );
+
+	boStelling = BoStelling.builder()
+		.wk( 0x17 )
+		.zk( 0x11 )
+		.s3( 0x57 )
+		.s4( 0x20 )
+		.aanZet( WIT )
+		.build();
+	// De WK staat in oktant 3. Dit krijgt een rotatie over +90 graden
+	actualVmStelling = dbs.spiegelEnRoteer( boStelling );
+	actualVmStelling = VMStelling.builder()
+		.wk( 0x01 )
+		.zk( 0x31 )
+		.s3( 0x05 )
+		.s4( 0x3a )
+		.aanZet( WIT )
+		.build();
+	assertThat( actualVmStelling, is( actualVmStelling ) );
+	
+	boStelling = BoStelling.builder()
+		.wk( 0x57 )
+		.zk( 0x11 )
+		.s3( 0x43 )
+		.s4( 0x20 )
+		.aanZet( WIT )
+		.build();
+	// De WK staat in oktant 4. Dit krijgt een rotatie van 180 graden om het middelpunt
+	actualVmStelling = dbs.spiegelEnRoteer( boStelling );
+	actualVmStelling = VMStelling.builder()
+		.wk( 0x01 )
+		.zk( 0x31 )
+		.s3( 0x05 )
+		.s4( 0x3a )
+		.aanZet( WIT )
+		.build();
+	assertThat( actualVmStelling, is( actualVmStelling ) );
+	
+	boStelling = BoStelling.builder()
 		.wk( 0x10 )
 		.zk( 0x12 )
 		.s3( 0x00 )
 		.s4( 0x13 )
 		.aanZet( WIT )
 		.build();
-	VMStelling vmStelling = dbs.cardinaliseer( boStelling );
-	//System.out.println( boStelling );
-	//System.out.println( vmStelling );
-	VMStelling newVmStelling = VMStelling.builder()
+	// De WK zit in oktant 8. Dit krijgt een spiegeling in de diagonaal a1-h8 
+	actualVmStelling = dbs.spiegelEnRoteer( boStelling );
+	actualVmStelling = VMStelling.builder()
+		.wk( 0x01 )
+		.zk( 0x11 )
+		.s3( 0x00 )
+		.s4( 0x19 )
+		.aanZet( WIT )
+		.build();
+	assertThat( actualVmStelling, is( actualVmStelling ) );
+	
+}
+public static final int [] OKTANTEN_TABEL = {
+	   1,1,1,1,2,2,2,2,0,0,0,0,0,0,0,0,
+	   8,1,1,1,2,2,2,3,0,0,0,0,0,0,0,0,
+	   8,8,1,1,2,2,3,3,0,0,0,0,0,0,0,0,
+	   8,8,8,1,2,3,3,3,0,0,0,0,0,0,0,0,
+	   7,7,7,6,5,4,4,4,0,0,0,0,0,0,0,0,
+	   7,7,6,6,5,5,4,4,0,0,0,0,0,0,0,0,
+	   7,6,6,6,5,5,5,4,0,0,0,0,0,0,0,0,
+	   6,6,6,6,5,5,5,5
+	};
+
+@Test
+public void testSpiegelEnRoteer()
+{
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "b1" )
+		.zk( "b3" )
+		.s3( "a1" )
+		.s4( "a3" )
+		.aanZet( WIT )
+		.build();
+	// De WK staat in oktant 1, dit krijgt een identieke afbeelding,
+	assertThat( dbs.getOktant( boStelling ), is( 1 ) );
+	VMStelling vmStelling = dbs.spiegelEnRoteer( boStelling );
+	VMStelling newVmStelling = VMStelling.alfaBuilder()
+		.wk( "b1" )
+		.zk( "b3" )
+		.s3( "a1" )
+		.s4( "a3" )
+		.aanZet( WIT )
+		.build();
+	assertThat( vmStelling, is( newVmStelling ) );
+
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "g1" )
+		.zk( "g3" )
+		.s3( "h1" )
+		.s4( "h3" )
+		.aanZet( WIT )
+		.build();
+	// De WK staat in oktant 2. Dit krijgt een spiegeling in de y-as
+	assertThat( dbs.getOktant( boStelling ), is( 2 ) );
+	vmStelling = dbs.spiegelEnRoteer( boStelling );
+	newVmStelling = VMStelling.alfaBuilder()
+		.wk( "b1" )
+		.zk( "b3" )
+		.s3( "a1" )
+		.s4( "a3" )
+		.aanZet( WIT )
+		.build();
+	assertThat( vmStelling, is( newVmStelling ) );
+	
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "h4" )
+		.zk( "h6" )
+		.s3( "g4" )
+		.s4( "g6" )
+		.aanZet( WIT )
+		.build();
+	// De WK staat in oktant 3. Dit krijgt een rotatie over -90 graden
+	assertThat( dbs.getOktant( boStelling ), is( 3 ) );
+	vmStelling = dbs.spiegelEnRoteer( boStelling );
+	newVmStelling = VMStelling.alfaBuilder()
+		.wk( "d1" )
+		.zk( "f1" )
+		.s3( "d2" )
+		.s4( "f2" )
+		.aanZet( WIT )
+		.build();
+	assertThat( vmStelling, is( newVmStelling ) );
+	
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "h5" )
+		.zk( "h7" )
+		.s3( "g5" )
+		.s4( "g7" )
+		.aanZet( WIT )
+		.build();
+	// De WK staat in oktant 4. Dit krijgt een spiegeling in de diagonaal a8-h1
+	assertThat( dbs.getOktant( boStelling ), is( 4 ) );
+	vmStelling = dbs.spiegelEnRoteer( boStelling );
+	newVmStelling = VMStelling.alfaBuilder()
+		.wk( "d1" )
+		.zk( "b1" )
+		.s3( "d2" )
+		.s4( "b2" )
+		.aanZet( WIT )
+		.build();
+	assertThat( vmStelling, is( newVmStelling ) );
+
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "f5" )
+		.zk( "f7" )
+		.s3( "e5" )
+		.s4( "e7" )
+		.aanZet( WIT )
+		.build();
+	// De WK staat in oktant 4. Dit krijgt een spiegeling in de diagonaal a8-h1
+	assertThat( dbs.getOktant( boStelling ), is( 4 ) );
+	vmStelling = dbs.spiegelEnRoteer( boStelling );
+	newVmStelling = VMStelling.alfaBuilder()
+		.wk( "d3" )
+		.zk( "b3" )
+		.s3( "d4" )
+		.s4( "b4" )
+		.aanZet( WIT )
+		.build();
+	assertThat( vmStelling, is( newVmStelling ) );
+
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "e5" )
+		.zk( "e3" )
+		.s3( "f5" )
+		.s4( "f3" )
+		.aanZet( WIT )
+		.build();
+	// De WK staat in oktant 5. Dit krijgt een spiegeling in de x-as gevolgd door een spiegeling in de y-as
+	assertThat( dbs.getOktant( boStelling ), is( 5 ) );
+	vmStelling = dbs.spiegelEnRoteer( boStelling );
+	newVmStelling = VMStelling.alfaBuilder()
+		.wk( "d4" )
+		.zk( "d6" )
+		.s3( "c4" )
+		.s4( "c6" )
+		.aanZet( WIT )
+		.build();
+	assertThat( vmStelling, is( newVmStelling ) );
+	
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "d5" )
+		.zk( "d3" )
+		.s3( "e5" )
+		.s4( "e3" )
+		.aanZet( WIT )
+		.build();
+	// De WK staat in oktant 6. Dit krijgt een spiegeling in de x-as
+	assertThat( dbs.getOktant( boStelling ), is( 6 ) );
+	vmStelling = dbs.spiegelEnRoteer( boStelling );
+	newVmStelling = VMStelling.alfaBuilder()
+		.wk( "d4" )
+		.zk( "d6" )
+		.s3( "e4" )
+		.s4( "e6" )
+		.aanZet( WIT )
+		.build();
+	assertThat( vmStelling, is( newVmStelling ) );
+	
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "c5" )
+		.zk( "c3" )
+		.s3( "d5" )
+		.s4( "d3" )
+		.aanZet( WIT )
+		.build();
+	// De WK staat in oktant 7. Dit krijgt een rotatie over +90 graden
+	assertThat( dbs.getOktant( boStelling ), is( 7 ) );
+	vmStelling = dbs.spiegelEnRoteer( boStelling );
+	newVmStelling = VMStelling.alfaBuilder()
+		.wk( "d3" )
+		.zk( "f3" )
+		.s3( "d4" )
+		.s4( "f4" )
+		.aanZet( WIT )
+		.build();
+	assertThat( vmStelling, is( newVmStelling ) );
+	
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "c4" )
+		.zk( "d4" )
+		.s3( "c6" )
+		.s4( "d6" )
+		.aanZet( WIT )
+		.build();
+	// De WK staat in oktant 8. Dit krijgt een spiegeling in de diagonaal a1-h8
+	assertThat( dbs.getOktant( boStelling ), is( 8 ) );
+	vmStelling = dbs.spiegelEnRoteer( boStelling );
+	newVmStelling = VMStelling.alfaBuilder()
+		.wk( "d3" )
+		.zk( "d4" )
+		.s3( "f3" )
+		.s4( "f4" )
+		.aanZet( WIT )
+		.build();
+	assertThat( vmStelling, is( newVmStelling ) );
+
+	// Oude stijl
+	boStelling = BoStelling.builder()
+		.wk( 0x10 )
+		.zk( 0x12 )
+		.s3( 0x00 )
+		.s4( 0x13 )
+		.aanZet( WIT )
+		.build();
+	// De WK zit in oktant 8. Dit krijgt een spiegeling in de diagonaal a1-h8 
+	assertThat( dbs.getOktant( boStelling ), is( 8 ) );
+	vmStelling = dbs.spiegelEnRoteer( boStelling );
+	newVmStelling = VMStelling.builder()
 		.wk( 0x01 )
 		.zk( 0x11 )
 		.s3( 0x00 )
@@ -193,43 +471,69 @@ public void testCardinaliseer()
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
 	
-	boStelling = BoStelling.builder()
-		.wk( 0x06 )
-		.zk( 0x26 )
-		.s3( 0x07 )
-		.s4( 0x27 )
+}
+@Test
+public void testSpiegelEnRoteerOktant5()
+{
+	// We proberen te bewijzen dat oktant 5 twee keer over -90 graden roteert
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "e5" )
+		.zk( "e3" )
+		.s3( "f5" )
+		.s4( "f3" )
 		.aanZet( WIT )
 		.build();
-	vmStelling = dbs.cardinaliseer( boStelling );
-	//System.out.println( boStelling );
-	//System.out.println( vmStelling );
-	newVmStelling = VMStelling.builder()
-		.wk( 0x01 )
-		.zk( 0x11 )
-		.s3( 0x00 )
-		.s4( 0x10 )
+	// De WK staat in oktant 5, maar we gaan roteren in oktant 3
+	VMStelling vmStelling = dbs.spiegelEnRoteer( boStelling, 3 );
+	VMStelling newVmStelling = VMStelling.alfaBuilder()
+		.wk( "e4" )
+		.zk( "c4" )
+		.s3( "e3" )
+		.s4( "c3" )
 		.aanZet( WIT )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
 	
-	boStelling = BoStelling.builder()
-		.wk( 0x11 )
-		.zk( 0x27 )
-		.s3( 0x76 )
-		.s4( 0x10 )
+	// Nogmaals over -90 graden roteren
+	boStelling = boStelling.alfaBuilder()
+		.wk( "e4" )
+		.zk( "c4" )
+		.s3( "e3" )
+		.s4( "c3" )
 		.aanZet( WIT )
 		.build();
-	vmStelling = dbs.cardinaliseer( boStelling );
-	newVmStelling = VMStelling.builder()
-		.wk( 0x04 )
-		.zk( 0x17 )
-		.s3( 0x3e )
-		.s4( 0x08 )
+	vmStelling = dbs.spiegelEnRoteer( boStelling, 3 );
+	VMStelling oktant3Stelling = VMStelling.alfaBuilder()
+		.wk( "d4" )
+		.zk( "d6" )
+		.s3( "c4" )
+		.s4( "c6" )
 		.aanZet( WIT )
 		.build();
-	assertThat( vmStelling, is( newVmStelling ) );
-
+	assertThat( vmStelling, is( oktant3Stelling ) );
+	
+	// Vergelijken met de transformatie in oktant 5
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "e5" )
+		.zk( "e3" )
+		.s3( "f5" )
+		.s4( "f3" )
+		.aanZet( WIT )
+		.build();
+	// De WK staat in oktant 5. Dit krijgt een spiegeling in de x-as gevolgd door een spiegeling in de y-as
+	assertThat( dbs.getOktant( boStelling ), is( 5 ) );
+	vmStelling = dbs.spiegelEnRoteer( boStelling );
+	VMStelling oktant5Stelling = VMStelling.alfaBuilder()
+		.wk( "d4" )
+		.zk( "d6" )
+		.s3( "c4" )
+		.s4( "c6" )
+		.aanZet( WIT )
+		.build();
+	assertThat( vmStelling, is( oktant3Stelling ) );
+	assertThat( oktant3Stelling, is( oktant5Stelling ) );
 }
+
 @Test
 public void testPut()
 {

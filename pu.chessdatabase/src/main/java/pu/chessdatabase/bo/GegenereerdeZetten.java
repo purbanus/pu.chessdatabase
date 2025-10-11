@@ -32,4 +32,8 @@ public void addAll( GegenereerdeZetten aGenZRec )
 {
 	stellingen.addAll( aGenZRec.getStellingen() );
 }
+public void reverse()
+{
+	stellingen = stellingen.reversed();
+}
 }

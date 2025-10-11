@@ -1,11 +1,11 @@
 package pu.chessdatabase.util;
 
-import lombok.ToString;
+import lombok.Data;
 
-@ToString
+@Data
 public class Vector
 {
-public final int[] elements;
+final int[] elements;
 
 private Vector( int [] aElements )
 {
@@ -24,4 +24,10 @@ public Vector add( Vector aVector )
 {
 	return new Vector( get( 0 ) + aVector.get( 0 ), get( 1 ) + aVector.get( 1 ) );
 }
+@Override
+public String toString()
+{
+	return "[" + get( 0 ) + " " + get( 1 ) + "]";
+}
+
 }

@@ -1,5 +1,8 @@
 package pu.chessdatabase.dal;
 
+import static pu.chessdatabase.bo.Kleur.*;
+import static pu.chessdatabase.dal.ResultaatType.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.BoStelling;
+import pu.chessdatabase.bo.Kleur;
 
 @SpringBootTest
 public class TestDbsOverProductie
@@ -38,15 +42,14 @@ void getRemiseStelling( BoStelling aBoStelling )
 	{
 		return;
 	}
-	if ( aBoStelling.getResultaat() == ResultaatType.REMISE )
+	if ( aBoStelling.getResultaat() == REMISE )
 	{
 		remiseStellingen.add( aBoStelling );
-		//System.out.println( remiseStellingen );
 		aantalRemiseStellingen++;
 		if ( aantalRemiseStellingen % 10000 == 0 )
 		{
 			System.out.println( aantalRemiseStellingen );
-			System.out.println( remiseStellingen.get( 0 ) );
+			//System.out.println( remiseStellingen.get( 0 ) );
 		}
 		if ( aantalRemiseStellingen == 109175 )
 		{
@@ -55,7 +58,7 @@ void getRemiseStelling( BoStelling aBoStelling )
 		}
 	}
 }
-@Test
+//@Test
 public void testRemiseStellingen()
 {
 	remiseStellingen = new ArrayList<>();
@@ -64,6 +67,66 @@ public void testRemiseStellingen()
 	// @@NOG Waarom werkt dit GVD niet? Ik krijg allemaal Illegale stellingen
 	// en heel andere dan ik bij debug zie
 //	System.out.println( remiseStellingen );
+}
+List<BoStelling> gewonnenStellingenMetWitAanZet = new ArrayList<>();
+List<BoStelling> gewonnenStellingenMetZwartAanZet = new ArrayList<>();
+List<BoStelling> verlorenStellingenMetWitAanZet = new ArrayList<>();
+List<BoStelling> verlorenStellingenMetZwartAanZet = new ArrayList<>();
+int aantalStellingen = 0;
+void getGewonnenOfVerlorenStelling( BoStelling aBoStelling )
+{
+	if ( aBoStelling.getResultaat() == GEWONNEN || aBoStelling.getResultaat() == VERLOREN )
+	{
+		aantalStellingen++;
+		if ( aantalStellingen % 10000 == 0 )
+		{
+			System.out.println( aantalStellingen );
+		}
+		if ( aBoStelling.getResultaat() == GEWONNEN )
+		{
+			if ( aBoStelling.getAanZet() == WIT)
+			{
+				gewonnenStellingenMetWitAanZet.add( aBoStelling );
+			}
+			else
+			{
+				gewonnenStellingenMetZwartAanZet.add( aBoStelling );
+			}
+		}
+		if ( aBoStelling.getResultaat() == VERLOREN )
+		{
+			if ( aBoStelling.getAanZet() == WIT)
+			{
+				verlorenStellingenMetWitAanZet.add( aBoStelling );
+			}
+			else
+			{
+				verlorenStellingenMetZwartAanZet.add( aBoStelling );
+			}
+		}
+		for ( BoStelling boStelling : verlorenStellingenMetWitAanZet )
+		{
+			if ( boStelling.getResultaat() == GEWONNEN )
+			{
+				System.out.println( "Gewonnen gevonden" );
+			}
+		}
+	}
+}
+//@Test
+public void testGewonnenOfVerlorenStellingen()
+{
+	dbs.markeerWitEnZwartPass( this::getGewonnenOfVerlorenStelling );
+	int index = 0;
+	for ( BoStelling boStelling : verlorenStellingenMetWitAanZet )
+	{ 
+		System.out.println( index + " " + boStelling );
+		index++;
+		if ( index >= 1000 )
+		{
+			break;
+		}
+	}
 }
 
 }

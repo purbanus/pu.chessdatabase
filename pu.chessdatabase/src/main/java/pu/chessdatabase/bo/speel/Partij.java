@@ -528,6 +528,7 @@ public boolean zet( String aVanNaar )
 		vanNaar = vanNaar.substring( 1 );
 	}
 	vanNaar = StringUtils.remove( vanNaar, '-' );
+	vanNaar = StringUtils.remove( vanNaar, 'x' );
 	vanNaar = StringUtils.remove( vanNaar, '+' );
 	vanNaar = StringUtils.remove( vanNaar, '=' );
 	vanNaar = StringUtils.remove( vanNaar, '#' );
@@ -1052,9 +1053,24 @@ GegenereerdeZetDocument getGegenereerdeZetDocument( PlyRecord aPlyRecord, BoStel
 	return GegenereerdeZetDocument.builder()
 		.zetNummer( aPlyRecord.getZetNr() + 1 )
 		.zet( plyToString( aPlyRecord ) )
-		.resultaat( aBoStellingNaar.getResultaat().getNormaleSpelling() )
+		.resultaat( getGegenereerdeZetResultaat( aBoStellingNaar.getResultaat() ).getNormaleSpelling() )
 		.matInHoeveel( aBoStellingNaar.getResultaat() == REMISE ? "Onbekend" : "Mat in " + aBoStellingNaar.getAantalZetten()/* @@NOG Waarom? - 1*/ )
 		.build();
+}
+ResultaatType getGegenereerdeZetResultaat( ResultaatType aResultaat )
+{
+	// We doen het hier precies andersom: GEWONNEN <-> VERLOREN, want dat is psychologisch beter.
+	// Want stel dat wit gewonnen staat, dan zijn al die zetten VERLOREN, immers in al die zetten
+	// is zwart aan zet. Wij willen dan GEWONNEN zien.
+	if ( aResultaat == GEWONNEN )
+	{
+		return VERLOREN;
+	}
+	if ( aResultaat == VERLOREN )
+	{
+		return GEWONNEN;
+	}
+	return aResultaat;
 }
 
 /**

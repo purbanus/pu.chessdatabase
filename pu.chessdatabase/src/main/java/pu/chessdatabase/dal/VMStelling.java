@@ -1,7 +1,9 @@
 package pu.chessdatabase.dal;
 
 import pu.chessdatabase.bo.BoStelling;
+//import pu.chessdatabase.bo.Gen;
 import pu.chessdatabase.bo.Kleur;
+import pu.chessdatabase.bo.BoStelling.AlfaBuilder;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +18,24 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 public class VMStelling implements Cloneable
 {
+public static class AlfaBuilder
+{
+private VMStelling vmStelling = new VMStelling();
+public AlfaBuilder wk( String aWk ) { vmStelling.setWk( VM.alfaToVeld( aWk ) ); return this; };
+public AlfaBuilder zk( String aZk ) { vmStelling.setZk( VM.alfaToVeld( aZk ) ); return this; };
+public AlfaBuilder s3( String aS3 ) { vmStelling.setS3( VM.alfaToVeld( aS3 ) ); return this; };
+public AlfaBuilder s4( String aS4 ) { vmStelling.setS4( VM.alfaToVeld( aS4 ) ); return this; };
+public AlfaBuilder aanZet( Kleur aAanZet ) { vmStelling.setAanZet( aAanZet ); return this; };
+public VMStelling build()
+{
+	return vmStelling;
+}
+}
+public static AlfaBuilder alfaBuilder()
+{
+	return new AlfaBuilder();
+}
+
 private int wk;
 private int zk;
 private int s3;
@@ -53,20 +73,22 @@ public BoStelling getBoStelling()
 {
 	return BoStelling.builder()
 		.wk( Dbs.CVT_WK[getWk()] )
-		.zk( Dbs.CVT_STUK[getWk()] )
+		.zk( Dbs.CVT_STUK[getZk()] )
 		.s3( Dbs.CVT_STUK[getS3()] )
 		.s4( Dbs.CVT_STUK[getS4()] )
 		.aanZet( getAanZet() )
 		.build();
 }
 @Override
+
 public String toString()
 {
 	StringBuilder sb = new StringBuilder();
-	sb.append( "WK=" ).append( Integer.toHexString( wk ) )
-	.append( " ZK=" ).append( Integer.toHexString( zk ) )
-	.append( " S3=" ).append( Integer.toHexString( s3 ) )
-	.append( " S4=" ).append( Integer.toHexString( s4 ) )
+	sb
+	.append( "WK="  ).append( VM.veldToAlfa( wk ) )
+	.append( " ZK=" ).append( VM.veldToAlfa( zk ) )
+	.append( " S3=" ).append( VM.veldToAlfa( s3 ) )
+	.append( " S4=" ).append( VM.veldToAlfa( s4 ) )
 	.append( " AanZet=" ).append( aanZet.getAfko() ).append( "\n" );
 	for ( int rij = 7; rij >= 0; rij-- )
 	{

@@ -23,6 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.dal.Dbs;
+import pu.chessdatabase.dal.ResultaatType;
 
 @SpringBootTest
 public class TestPartij
@@ -58,6 +59,7 @@ public void testVeldToHexGetal()
 {
 	assertThat( Partij.veldToHexGetal( 0x00 ), is(  0 ) );
 	assertThat( Partij.veldToHexGetal( 0x07 ), is(  7 ) );
+// @@NOG	assertThat( Partij.veldToHexGetal( 0x0a ), is( 0x0a ) );
 	assertThat( Partij.veldToHexGetal( 0x10 ), is( 10 ) );
 	assertThat( Partij.veldToHexGetal( 0x17 ), is( 17 ) );
 	assertThat( Partij.veldToHexGetal( 0x70 ), is( 70 ) );
@@ -486,19 +488,18 @@ public void testBedenk()
 		.s4( 0x66 )
 		.aanZet( WIT )
 		.build();
-	partij.curPartij.setBegonnen( false );
-	// @@NOG Dit klopt niet. 
+ 	partij.curPartij.setBegonnen( false );
 	BoStelling boStellingNaar = BoStelling.builder()
 		.wk( 0x00 )
 		.zk( 0x77 )
-		.s3( 0x16 )
+		.s3( 0x44 )
 		.s4( 0x66 )
 		.aanZet( ZWART )
-		.resultaat( GEWONNEN )
-		.aantalZetten( 12 )
+		.resultaat( VERLOREN )
+		.aantalZetten( 28 )
 		.schaak( false )
 		.build();
-	VanNaar vanNaar = new VanNaar( 0x11, 0x16 );
+	VanNaar vanNaar = new VanNaar( 0x11, 0x44 );
 	BoStelling newBoStelling = partij.newGame( boStellingVan );
 	assertThat( partij.plies[0].getBoStelling(), is( newBoStelling ) );
 	assertThat( partij.vanCurNaarToStelling( vanNaar ), is( boStellingNaar ) );
@@ -936,6 +937,14 @@ public void testPartijReport()
 	assertThat( zetten.get( 1 ), is( zetDocument2 ) );
 }
 @Test
+public void testGetGegenereerdeZetResultaat()
+{
+	assertThat( partij.getGegenereerdeZetResultaat( GEWONNEN ), is ( VERLOREN ) );
+	assertThat( partij.getGegenereerdeZetResultaat( VERLOREN ), is ( GEWONNEN ) );
+	assertThat( partij.getGegenereerdeZetResultaat( REMISE   ), is ( REMISE   ) );
+	assertThat( partij.getGegenereerdeZetResultaat( ResultaatType.ILLEGAAL ), is ( ResultaatType.ILLEGAAL ) );
+}
+@Test
 public void testGegenereerdeZetDocument()
 {
 	BoStelling boStellingVan = BoStelling.builder()
@@ -956,7 +965,7 @@ public void testGegenereerdeZetDocument()
 	GegenereerdeZetDocument gegenereerdeZetDocument = GegenereerdeZetDocument.builder()
 		.zetNummer( 16 )
 		.zet( "Db2-c3 " )
-		.resultaat( "Verloren" )
+		.resultaat( "Gewonnen" )
 		.matInHoeveel( "Mat in 30" )
 		.build();
 	BoStelling boStellingNaar= partij.vanNaarToStelling( plyRecord, vanNaar );
@@ -1002,14 +1011,14 @@ public void testGeGegenereerdeZetten()
 	GegenereerdeZetDocument gegenereerdeZetDocument = GegenereerdeZetDocument.builder()
 		.zetNummer( 1 )
 		.zet( "Kh8-g8 " )
-		.resultaat( "Gewonnen" )
+		.resultaat( "Verloren" )
 		.matInHoeveel( "Mat in 30" )
 		.build();
 	assertThat( zetten.get( 0 ), is( gegenereerdeZetDocument ) );
 	gegenereerdeZetDocument = GegenereerdeZetDocument.builder()
 		.zetNummer( 2 )
 		.zet( "Kh8-h7 " )
-		.resultaat( "Gewonnen" )
+		.resultaat( "Verloren" )
 		.matInHoeveel( "Mat in 30" )
 		.build();
 	assertThat( zetten.get( 1 ), is( gegenereerdeZetDocument ) );

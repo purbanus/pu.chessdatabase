@@ -21,8 +21,14 @@ public static final String DFT_DBS_NAAM = "KDKT.DBS";
 public static final int DFT_RPT_FREQ = 4096;
 
 /**==============================================================================================================
-* Konversie WK notatie van VM naar Zgen
+* Konversie WK notatie van VM naar Gen
 *==============================================================================================================*/
+// De WK moet in het eerste oktant zitten, dwz de veldwaarde moet tussen 0 en 9 zitten
+// De CVT_WK transformeert hem dan naar een van de velden
+// a1, b1, c1, d1,   0, 1, 2, 3  
+//     b2, c2, d3,      4, 5, 6
+//         c3, d3,         7, 8
+//             d4,            9
 public static final int [] CVT_WK = {
 	0x00,0x01,0x02,0x03,
 		 0x11,0x12,0x13,
@@ -45,6 +51,15 @@ public static final int [] CVT_STUK = {
 /**==============================================================================================================
 * Oktantentabel. Deze wordt gebruikt om te kijken in welk oktant een stuk (inz. de witte koning) zich bevindt.
 * 0 = foutkode, daar wordt in Cardinaliseer() op getest.
+* oktant 1 - Identieke transformatie
+* oktant 2 - Spiegeling in de y-as
+* oktant 3 - Rotatie van -90 graden
+* oktant 4 - Spiegeling in de diagonaal a8-h1
+* oktant 5 - Spiegeling in de x-as gevolgd door een spiegeling in de y-as,
+*            oftewel een rotatie over 180 graden
+* oktant 6 - Spiegeling in de x-as
+* oktant 7 - Rotatie over +90 graden
+* oktant 8 - Spiegeling in de diagonaal a1-h8
 *==============================================================================================================*/
 public static final int [] OKTANTEN_TABEL = {
    1,1,1,1,2,2,2,2,0,0,0,0,0,0,0,0,
@@ -56,6 +71,18 @@ public static final int [] OKTANTEN_TABEL = {
    7,6,6,6,5,5,5,4,0,0,0,0,0,0,0,0,
    6,6,6,6,5,5,5,5
 };
+/*
+ * Zo ziet hij eruit met de a-lijn onderaan
+   6,6,6,6,5,5,5,5
+   7,6,6,6,5,5,5,4,0,0,0,0,0,0,0,0,
+   7,7,6,6,5,5,4,4,0,0,0,0,0,0,0,0,
+   7,7,7,6,5,4,4,4,0,0,0,0,0,0,0,0,
+   8,8,8,1,2,3,3,3,0,0,0,0,0,0,0,0,
+   8,8,1,1,2,2,3,3,0,0,0,0,0,0,0,0,
+   8,1,1,1,2,2,2,3,0,0,0,0,0,0,0,0,
+   1,1,1,1,2,2,2,2,0,0,0,0,0,0,0,0,
+ */
+
 /**========================================================================================
 * Transformatietabel voor WK. Nadat WK is getransformeerd naar het juiste oktant,
 * moet hij nog naar de speciale VM-kodering (0..9) worden gebracht. Dat gebeurt hiermee
@@ -276,9 +303,9 @@ public void createTransformatieTabel()
 	Vector Vres;
 	for ( int oktant = oktantRange.getMinimum(); oktant <= oktantRange.getMaximum(); oktant++ ) // @@NOG CHECK is die grens goed of moet het <= zijn
 	{
-		for ( int rij = 0; rij < 8; rij++ ) // @@NOG rijen?
+		for ( int rij = 0; rij < 8; rij++ )
 		{
-			for ( int kol = 0; kol < 8; kol++ ) // @@NOG kolommen?
+			for ( int kol = 0; kol < 8; kol++ )
 			{
 				Vres = new Vector( kol, rij );
 				Vres = MATRIX_TABEL[oktant].multiply( Vres );
@@ -319,21 +346,53 @@ END Cardinaliseer;
  */
 public VMStelling cardinaliseer( BoStelling aStelling )
 {
-	int Okt = OKTANTEN_TABEL[aStelling.getWk()];
-	if ( Okt == 0 )
-	{
-		throw new RuntimeException( "Foutief oktant in Dbs.Cardinaliseer voor WK op " + Integer.toHexString( aStelling.getWk() ) );
-	}
-//	int trfWk = TrfTabel[Okt][aStelling.getWk()];
-//	int trftrfWk = TrfWK[9];
-	VMStelling vmStelling = VMStelling.builder()
-		.wk( TRANSFORM_WK[transformatieTabel[Okt][aStelling.getWk()]] )
-		.zk( transformatieTabel[Okt][aStelling.getZk()] )
-		.s3( transformatieTabel[Okt][aStelling.getS3()] )
-		.s4( transformatieTabel[Okt][aStelling.getS4()] )
+	int oktant = OKTANTEN_TABEL[aStelling.getWk()];
+	int trfWk = transformatieTabel[oktant][aStelling.getWk()];
+	int trftrfWk = TRANSFORM_WK[trfWk];
+	
+	VMStelling vmStelling = spiegelEnRoteer( aStelling );
+	vmStelling.setWk( TRANSFORM_WK[ vmStelling.getWk()] );
+	return vmStelling;
+//	int okt = OKTANTEN_TABEL[aStelling.getWk()];
+//	if ( okt == 0 )
+//	{
+//		throw new RuntimeException( "Foutief oktant in Dbs.Cardinaliseer voor WK op " + Integer.toHexString( aStelling.getWk() ) );
+//	}
+//	int trfWk = transformatieTabel[okt][aStelling.getWk()];
+//	int trftrfWk = TRANSFORM_WK[trfWk];
+//	VMStelling vmStelling = VMStelling.builder()
+//		.wk( TRANSFORM_WK[transformatieTabel[okt][aStelling.getWk()]] )
+//		.zk( transformatieTabel[okt][aStelling.getZk()] )
+//		.s3( transformatieTabel[okt][aStelling.getS3()] )
+//		.s4( transformatieTabel[okt][aStelling.getS4()] )
+//		.aanZet( aStelling.getAanZet() )
+//		.build();
+//	return vmStelling;
+}
+public VMStelling spiegelEnRoteer( BoStelling aStelling )
+{
+	int oktant = getOktant( aStelling );
+	return spiegelEnRoteer( aStelling, oktant );
+}
+VMStelling spiegelEnRoteer( BoStelling aStelling, int aOktant )
+{
+	return VMStelling.builder()
+		.wk( transformatieTabel[aOktant][aStelling.getWk()] )
+		.zk( transformatieTabel[aOktant][aStelling.getZk()] )
+		.s3( transformatieTabel[aOktant][aStelling.getS3()] )
+		.s4( transformatieTabel[aOktant][aStelling.getS4()] )
 		.aanZet( aStelling.getAanZet() )
 		.build();
-	return vmStelling;
+}
+
+int getOktant( BoStelling aStelling )
+{
+	int oktant = OKTANTEN_TABEL[aStelling.getWk()];
+	if ( oktant < 1 || oktant > 8)
+	{
+		throw new RuntimeException( "Foutief oktant in Dbs.spiegelEnRoteer voor WK op " + Integer.toHexString( aStelling.getWk() ) );
+	}
+	return oktant;
 }
 /**
 ============================================================================
@@ -365,7 +424,9 @@ public void put( BoStelling aStelling )
 	switch ( aStelling.getResultaat() )
 	{
 		case ILLEGAAL: VMRec = VM.VM_ILLEGAAL; break;
-		// @@NOG Ook hier: waarom geldt een schaakje als remise???
+		// Waarom worden schaakjes als remise gezien?
+		// ==> Omdat ze alleen in pass_0 VM_SCHAAK krijgen en dat betekent dat de stelling remise is,
+		//     maar een potentiele matkandidaat
 		case REMISE  : VMRec = aStelling.isSchaak() ? VM.VM_SCHAAK : VM.VM_REMISE; break;
 		case GEWONNEN: VMRec = aStelling.getAantalZetten(); break;
 		case VERLOREN: VMRec = aStelling.getAantalZetten() + VM.VERLIES_OFFSET; break;
@@ -450,7 +511,9 @@ BoStelling getDirect( VMStelling aVMStelling, BoStelling aBoStelling )
 	}
 	else if ( VMrec == VM.VM_SCHAAK )
 	{
-		// @@NOG Waarom worden schaakjes als remise gezien?
+		// Waarom worden schaakjes als remise gezien?
+		// ==> Omdat ze alleen in pass_0 VM_SCHAAK krijgen en dat betekent dat de stelling remise is,
+		//     maar een potentiele matkandidaat
 		boStelling.setResultaat( ResultaatType.REMISE );
 		boStelling.setAantalZetten( 0 );
 		boStelling.setSchaak( true );

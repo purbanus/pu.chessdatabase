@@ -6,6 +6,7 @@ package pu.chessdatabase.bo;
 //===================================================================================================================== 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.dal.ResultaatType.*;
 
@@ -39,6 +40,33 @@ public void testVeldToBitSetAndBuitenBord()
 	assertThat( gen.veldToBitSetAndBuitenBord( 0x78 ), is( gen.bitSetOfInt( 8 ) ) );
 	assertThat( gen.veldToBitSetAndBuitenBord( -1 ), is( gen.bitSetOfInt( 0x88 ) ) ); // 136
 }
+@Test
+public void testVeldToAlfa()
+{
+	assertThat( gen.veldToAlfa( 0x00 ), is( "a1" ) );
+	assertThat( gen.veldToAlfa( 0x07 ), is( "h1" ) );
+	assertThat( gen.veldToAlfa( 0x70 ), is( "a8" ) );
+	assertThat( gen.veldToAlfa( 0x77 ), is( "h8" ) );
+	assertThrows( RuntimeException.class, () -> { Gen.veldToAlfa( -31415 ); } );
+	assertThrows( RuntimeException.class, () -> { Gen.veldToAlfa(   0x08 ); } );
+	assertThrows( RuntimeException.class, () -> { Gen.veldToAlfa(     63 ); } );
+	assertThrows( RuntimeException.class, () -> { Gen.veldToAlfa(   1000 ); } );
+}
+@Test
+public void testAlfaToVeld()
+{
+	assertThat( gen.alfaToVeld( "a1" ), is( 0x00 ) );
+	assertThat( gen.alfaToVeld( "h1" ), is( 0x07 ) );
+	assertThat( gen.alfaToVeld( "a8" ), is( 0x70 ) );
+	assertThat( gen.alfaToVeld( "h8" ), is( 0x77 ) );
+	assertThat( gen.alfaToVeld( "A8" ), is( 0x70 ) );
+	assertThat( gen.alfaToVeld( "H8" ), is( 0x77 ) );
+	assertThrows( RuntimeException.class, () -> { Gen.alfaToVeld( "a9" ); } );
+	assertThrows( RuntimeException.class, () -> { Gen.alfaToVeld( "i2" ); } );
+	assertThrows( RuntimeException.class, () -> { Gen.alfaToVeld( "a" ); } );
+	assertThrows( RuntimeException.class, () -> { Gen.alfaToVeld( "abc" ); } );
+}
+
 @Test
 public void testVulStukTabel()
 {
@@ -413,10 +441,7 @@ public void testGenZetPerStuk()
 		.s4( 0x77 )
 		.aanZet( ZWART )
 		.build();
-	//System.out.println( "In testGenZetPerStuk" );
-	//gen.printBord();
 	bord = new Bord( boStelling );
-	//gen.printBord();
 	genZRec = gen.genereerZettenPerStuk( boStelling, 4, 0x27, 0x77, bord );
 	assertThat( genZRec.getAantal(), is( 5 ) );
 	assertThat( genZRec.getStellingen().get(  0 ).getS4(), is( 0x76 ) );
@@ -448,17 +473,17 @@ public void testGenZet()
 	dbs.setDbsNaam( "Pipo" );
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 
-	BoStelling stelling;
+	BoStelling boStelling;
 	GegenereerdeZetten genZRec;
 	
-	stelling = BoStelling.builder()
+	boStelling = BoStelling.builder()
 		.wk( 0x11 )
 		.zk( 0x27 )
 		.s3( 0x76 )
 		.s4( 0x33 )
 		.aanZet( ZWART )
 		.build();
-	genZRec = gen.genereerZetten( stelling );
+	genZRec = gen.genereerZetten( boStelling );
 	assertThat( genZRec.getAantal(), is( 19 ) );
 
 	assertThat( genZRec.getStellingen().get(  0 ).getZk(), is( 0x37 ) );
@@ -482,6 +507,7 @@ public void testGenZet()
 	assertThat( genZRec.getStellingen().get( 17 ).getS4(), is( 0x13 ) );
 	assertThat( genZRec.getStellingen().get( 18 ).getS4(), is( 0x03 ) );
 }
+
 @Test
 public void testCompareResultaten()
 {
@@ -673,25 +699,6 @@ public void testGenZetSort()
 public void testIsPat()
 {
 	// @@@NOG
-}
-@Test
-public void testVeldToAscii()
-{
-	assertThat( gen.veldToAlfa( 0x00 ), is( "a1" ) );
-	assertThat( gen.veldToAlfa( 0x07 ), is( "h1" ) );
-	assertThat( gen.veldToAlfa( 0x08 ), is( "??" ) );
-	assertThat( gen.veldToAlfa( 0x70 ), is( "a8" ) );
-	assertThat( gen.veldToAlfa( 0x77 ), is( "h8" ) );
-}
-@Test
-public void testAsciiToVeld()
-{
-	assertThat( gen.alfaToVeld( "a1" ), is( 0x00 ) );
-	assertThat( gen.alfaToVeld( "h1" ), is( 0x07 ) );
-	assertThat( gen.alfaToVeld( "a8" ), is( 0x70 ) );
-	assertThat( gen.alfaToVeld( "h8" ), is( 0x77 ) );
-	// @@NOG hoe werken die exceptions nou?
-	//assertThrows( RuntimeException.class, () -> { gen.AsciiToVeld( "a9" ); } );
 }
 @Test
 public void testGetStukInfo()

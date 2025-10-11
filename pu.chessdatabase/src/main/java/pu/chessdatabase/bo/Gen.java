@@ -78,6 +78,15 @@ END VeldToAscii;
  */
 public static String veldToAlfa( int aVeld )
 {
+	if ( aVeld < 0 || aVeld >= 120 )
+	{
+		throw new RuntimeException( "Veld moet tussen 0 en 119 liggen: " + aVeld );
+	}
+	String alfaVeld = NOTATIE[aVeld];
+	if ( "??".equals( alfaVeld ) ) 
+	{
+		throw new RuntimeException( "Dit is geen geldig veld: " + aVeld + ". Het ligt buiten het bord." );
+	}
 	return NOTATIE[aVeld];
 }
 /**
@@ -96,8 +105,18 @@ public static int alfaToVeld( String aAlfaVeld )
 	{
 		throw new RuntimeException( "AlfaVeld moet 2 lang zijn: " + aAlfaVeld );
 	}
-	String alfaVeldCap = StringUtils.capitalize( aAlfaVeld );
-	return alfaVeldCap.charAt( 0 ) - 'A' + 16 * ( alfaVeldCap.charAt( 1 ) - '1' );
+	String capAlfaVeld = aAlfaVeld.toUpperCase();
+	char capAlfaIndex0 = capAlfaVeld.charAt( 0 );
+	if ( capAlfaIndex0 < 'A' || capAlfaIndex0 > 'H' )
+	{
+		throw new RuntimeException( "De kolom (de letter) moet tussen A en H liggen" );
+	}
+	char capAlfaIndex1 = capAlfaVeld.charAt( 1 );
+	if ( capAlfaIndex1 < '1' || capAlfaIndex1 > '8' )
+	{
+		throw new RuntimeException( "De rij (het cijfer) moet tussen 1 en 8 liggen" );
+	}
+	return capAlfaVeld.charAt( 0 ) - 'A' + 16 * ( capAlfaVeld.charAt( 1 ) - '1' );
 }
 
 public Gen()
@@ -593,6 +612,12 @@ public GegenereerdeZetten genereerZettenGesorteerd( BoStelling aStelling )
 {
 	GegenereerdeZetten gegenereerdeZetten = genereerZetten( aStelling );
 	gegenereerdeZetten.getStellingen().sort( stellingComparator );
+	// @@NOG Met zwart aan zet geeft hij de juiste volgorde, met wit precies de omgekeerde
+	// Dus omdat ik geen zin heb om dat sorteren opnieuw te doen, doen we hier een reverse()
+	if ( aStelling.getAanZet() == WIT )
+	{
+		gegenereerdeZetten.reverse();
+	}
 	return gegenereerdeZetten;
 }
 /**
