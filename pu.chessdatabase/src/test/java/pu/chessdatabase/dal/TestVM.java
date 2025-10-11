@@ -6,6 +6,7 @@ package pu.chessdatabase.dal;
 //===================================================================================================================== 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static pu.chessdatabase.bo.Kleur.*;
 
 import java.io.File;
@@ -57,6 +58,33 @@ public void testByteToInt()
 	assertThat( (int)x, is( -128 ) ); // Dat is dus niet wat we willen
 	assertThat( Byte.toUnsignedInt( x ), is( 128 ) );
 }
+@Test
+public void testVeldToAlfa()
+{
+	assertThat( VM.veldToAlfa( 0x00 ), is( "a1" ) );
+	assertThat( VM.veldToAlfa( 0x07 ), is( "h1" ) );
+	assertThat( VM.veldToAlfa( 0x08 ), is( "a2" ) );
+	assertThat( VM.veldToAlfa( 0x38 ), is( "a8" ) );
+	assertThat( VM.veldToAlfa( 0x3f ), is( "h8" ) );
+	assertThrows( RuntimeException.class, () -> { VM.veldToAlfa( -31415 ); } );
+	assertThrows( RuntimeException.class, () -> { VM.veldToAlfa( 64 ); } );
+	assertThrows( RuntimeException.class, () -> { VM.veldToAlfa( 100 ); } );
+}
+@Test
+public void testAlfaToVeld()
+{
+	assertThat( VM.alfaToVeld( "a1" ), is( 0x00 ) );
+	assertThat( VM.alfaToVeld( "h1" ), is( 0x07 ) );
+	assertThat( VM.alfaToVeld( "a8" ), is( 0x38 ) );
+	assertThat( VM.alfaToVeld( "h8" ), is( 0x3f ) );
+	assertThat( VM.alfaToVeld( "A8" ), is( 0x38 ) );
+	assertThat( VM.alfaToVeld( "H8" ), is( 0x3f ) );
+	assertThrows( RuntimeException.class, () -> { VM.alfaToVeld( "a9" ); } );
+	assertThrows( RuntimeException.class, () -> { VM.alfaToVeld( "i2" ); } );
+	assertThrows( RuntimeException.class, () -> { VM.alfaToVeld( "a" ); } );
+	assertThrows( RuntimeException.class, () -> { VM.alfaToVeld( "abc" ); } );
+}
+
 @SuppressWarnings( "unused" )
 private void writePage0WithAllOnes()
 {
@@ -85,7 +113,7 @@ public void testShowCache()
 {
 	vm.initializePageDescriptorTabel();
 	vm.initializeCache();
-	//showCache( vm );
+	showCache( vm );
 }
 public static void showCache( VM vm )
 {

@@ -43,6 +43,49 @@ public static final int VERLIES_OFFSET   = 0x80;
 public static final int VM_SCHAAK        = 0x80;
 public static final int VM_REMISE        = 0x00;
 public static final int VM_ILLEGAAL      = 0xFF;
+public static final String [] NOTATIE = new String [] {
+	"a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1",
+	"a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2",
+	"a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3",
+	"a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4",
+	"a5", "b5", "c5", "d5", "e5", "f5", "g5", "h5",
+	"a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6",
+	"a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7",
+	"a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"
+};
+/**
+ * ------- Veld naar alfa ----------------------------------
+ */
+public static String veldToAlfa( int aVeld )
+{
+	if ( aVeld < 0 || aVeld >= 64 )
+	{
+		throw new RuntimeException( "Veld moet tussen 0 en 63 liggen: " + aVeld );
+	}
+	return NOTATIE[aVeld];
+}
+/**
+ * ------- alfa naar veld -----------------------------------
+ */
+public static int alfaToVeld( String aAlfaVeld )
+{
+	if ( aAlfaVeld.length() != 2 )
+	{
+		throw new RuntimeException( "AlfaVeld moet 2 lang zijn: " + aAlfaVeld );
+	}
+	String capAlfaVeld = aAlfaVeld.toUpperCase();
+	char capAlfaIndex0 = capAlfaVeld.charAt( 0 );
+	if ( capAlfaIndex0 < 'A' || capAlfaIndex0 > 'H' )
+	{
+		throw new RuntimeException( "De kolom (de letter) moet tussen A en H liggen" );
+	}
+	char capAlfaIndex1 = capAlfaVeld.charAt( 1 );
+	if ( capAlfaIndex1 < '1' || capAlfaIndex1 > '8' )
+	{
+		throw new RuntimeException( "De rij (het cijfer) moet tussen 1 en 8 liggen" );
+	}
+	return capAlfaVeld.charAt( 0 ) - 'A' + 8 * ( capAlfaVeld.charAt( 1 ) - '1' );
+}
 
 public VM()
 {
