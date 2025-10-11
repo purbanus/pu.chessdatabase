@@ -6,6 +6,7 @@ package pu.chessdatabase.bo;
 //===================================================================================================================== 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+import static pu.chessdatabase.bo.Bord.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,17 +62,22 @@ public void testClrBord()
 		.s4( 8 )
 		.build();
 	bord.zetBordOp( stelling );
-	System.out.println( bord );
-	bord.clearBord( stelling );
-	System.out.println();
-	System.out.println( bord );
-	for ( int x = 0; x < 0x78; x++ )
+	for ( int x = 0; x <= 4; x++ )
 	{
-		if ( ! bord.isVeldLeeg( x ) )
-		{
-			System.out.println( "Bord is niet helemaal leeg, veld=" + x + " Bord[veld]=" + bord.getVeld( x ) );
-		}
-		assertThat( bord.isVeldLeeg( x ), is( true ) );
+		assertThat( bord.getVeld( x ), is( LEEG ) );
+	}
+	assertThat( bord.getVeld( 5 ), is( 1 ) );
+	assertThat( bord.getVeld( 6 ), is( 2 ) );
+	assertThat( bord.getVeld( 7 ), is( 3 ) );
+	assertThat( bord.getVeld( 8 ), is( 4 ) );
+	for ( int x = 9; x <= MAX_BORD; x++ )
+	{
+		assertThat( bord.getVeld( x ), is( LEEG ) );
+	}
+	bord.clearBord( stelling );
+	for ( int x = 0; x <= MAX_BORD; x++ )
+	{
+		assertThat( bord.getVeld( x ), is( LEEG ) );
 	}
 }
 
