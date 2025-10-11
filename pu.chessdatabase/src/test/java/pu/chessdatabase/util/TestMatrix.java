@@ -7,15 +7,13 @@ package pu.chessdatabase.util;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import pu.chessdatabase.bo.speel.Partij;
 import pu.chessdatabase.dal.Dbs;
 
-public class TestMatrices
+public class TestMatrix
 {
 @Autowired private Dbs dbs;
 @Autowired private Partij partij;
