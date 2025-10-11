@@ -8,8 +8,9 @@ import lombok.EqualsAndHashCode;
 public class Bord
 {
 public static final int LEEG = 0xFF;
+public static final int MAX_BORD = 0x77;
 
-private int [] bord = new int[0x78];
+private int [] bord = new int[MAX_BORD + 1];
 
 public Bord()
 {
@@ -36,7 +37,7 @@ END MaakBordLeeg;
  */
 public void maakBordLeeg()
 {
-	for ( int x = 0; x < 0x78; x++ )
+	for ( int x = 0; x <= MAX_BORD; x++ )
 	{
 		bord[x] = LEEG;
 	}
@@ -78,10 +79,10 @@ END ClrBord;
 
 public void clearBord( BoStelling aStelling )
 {
-	bord[aStelling.getS3()] = Bord.LEEG;
-	bord[aStelling.getS4()] = Bord.LEEG;
-	bord[aStelling.getWk()] = Bord.LEEG;
-	bord[aStelling.getZk()] = Bord.LEEG;
+	bord[aStelling.getS3()] = LEEG;
+	bord[aStelling.getS4()] = LEEG;
+	bord[aStelling.getWk()] = LEEG;
+	bord[aStelling.getZk()] = LEEG;
 }
 public int getVeld( int aVeld )
 {
