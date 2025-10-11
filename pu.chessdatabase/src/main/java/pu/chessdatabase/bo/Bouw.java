@@ -347,14 +347,14 @@ public void isMat( BoStelling aBoStelling )
 			{
 				matStellingen.add( boStelling );
 			}
-			if ( boStelling.getAanZet() == WIT )
-			{
-				matStellingenMetWit.add( boStelling );
-			}
-			else
-			{
-				matStellingenMetZwart.add( boStelling );
-			}
+//			if ( boStelling.getAanZet() == WIT )
+//			{
+//				matStellingenMetWit.add( boStelling );
+//			}
+//			else
+//			{
+//				matStellingenMetZwart.add( boStelling );
+//			}
 			dbs.put( boStelling );
 		}
 	}
