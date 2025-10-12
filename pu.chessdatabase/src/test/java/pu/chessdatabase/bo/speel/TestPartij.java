@@ -75,9 +75,9 @@ public void testInzPartij()
 	//assertThat( partij.curPartij, isNotNull() );
 	assertThat( partij.curPartij, is( notNullValue() ) );
 	assertNotNull( partij.curPartij );
-	for ( PlyRecord plyRecord : partij.plies )
+	for ( Ply ply : partij.plies )
 	{
-		assertThat( plyRecord, is( PlyRecord.getNullPlyRecord() ) );
+		assertThat( ply, is( Ply.NULL_PLY ) );
 	}
 }
 @Test
@@ -163,13 +163,13 @@ public void testNewGame()
 		.build();
 	BoStelling newBoStelling = partij.newGame( startStelling );
 	assertThat( newBoStelling.isSchaak(), is( false ) );
-	PlyRecord plyRecord = PlyRecord.builder()
+	Ply ply = Ply.builder()
 		.boStelling( newBoStelling )
 		.einde( NOG_NIET )
 		.zetNr( 1 )
 		.vanNaar( VanNaar.ILLEGAL_VAN_NAAR )
 		.build();
-	assertThat( partij.plies[0], is( plyRecord ) );
+	assertThat( partij.plies[0], is( ply ) );
 	
 	final BoStelling illegaleStartStelling = BoStelling.builder()
 		.wk( 0x35 )
@@ -307,7 +307,7 @@ Plies[1]     Ke3Dh1Kf6Ta8 waz     2          e3 e4
 Plies[2]     Ke4Dh1Kf6Ta8 zaz     2          f6 g6
 Plies[3]     Ke3Dh1Kg6Ta8 waz     3           ...
 
-Met andere woorden, in een plyrecord zit de stelling waaruit zetten
+Met andere woorden, in een Ply zit de stelling waaruit zetten
 gegenereerd worden, plus de zet die uiteindelijk gedaan is. Het zetnummer
 is gewoon het nummer dat afgedrukt moet worden.
 
@@ -538,17 +538,17 @@ public void testZetMetClearPliesVoorZet()
 	partij.zetNaarBegin();
 	for ( int x = 0; x <= 5; x++ )
 	{
-		assertThat( partij.plies[x], is( not( PlyRecord.getNullPlyRecord() ) ) );
+		assertThat( partij.plies[x], is( not( Ply.NULL_PLY ) ) );
 	}
-	assertThat( partij.plies[6], is( PlyRecord.getNullPlyRecord() ) );
+	assertThat( partij.plies[6], is( Ply.NULL_PLY ) );
 	partij.zet( "Db2-c3" );
 	for ( int x = 0; x <= 1; x++ )
 	{
-		assertThat( partij.plies[x], is( not( PlyRecord.getNullPlyRecord() ) ) );
+		assertThat( partij.plies[x], is( not( Ply.NULL_PLY ) ) );
 	}
 	for ( int x = 2; x <= 10; x++ )
 	{
-		assertThat( partij.plies[x], is( PlyRecord.getNullPlyRecord() ) );
+		assertThat( partij.plies[x], is( Ply.NULL_PLY ) );
 	}
 	assertThat( partij.curPartij.getCurrentPly(), is( 1 ) );
 	assertThat( partij.curPartij.getLastPly(), is( 1 ) );
@@ -705,14 +705,14 @@ public void testPlyToString()
 		.aanZet( WIT )
 		.build();
 	VanNaar vanNaar = new VanNaar( 0x11, 0x22 );
-	PlyRecord plyRecord = PlyRecord.builder()
+	Ply ply = Ply.builder()
 		.boStelling( boStelling )
 		.einde( NOG_NIET )
 		.vanNaar( vanNaar )
 		.zetNr( 1 )
 		.schaak( false )
 		.build();
-	assertThat( partij.plyToString( plyRecord ), is( "Db2-c3 " ) );
+	assertThat( partij.plyToString( ply ), is( "Db2-c3 " ) );
 
 	boStelling = BoStelling.builder()
 		.wk( 0x00 )
@@ -722,14 +722,14 @@ public void testPlyToString()
 		.aanZet( WIT )
 		.build();
 	vanNaar = new VanNaar( 0x11, 0x66 );
-	plyRecord = PlyRecord.builder()
+	ply = Ply.builder()
 		.boStelling( boStelling )
 		.einde( NOG_NIET )
 		.vanNaar( vanNaar )
 		.zetNr( 1 )
 		.schaak( true )
 		.build();
-	assertThat( partij.plyToString( plyRecord ), is( "Db2xg7+" ) );
+	assertThat( partij.plyToString( ply ), is( "Db2xg7+" ) );
 
 	boStelling = BoStelling.builder()
 		.wk( 0x00 )
@@ -740,14 +740,14 @@ public void testPlyToString()
 		.aanZet( WIT )
 		.build();
 	vanNaar = new VanNaar( 0x11, 0x17 );
-	plyRecord = PlyRecord.builder()
+	ply = Ply.builder()
 		.boStelling( boStelling )
 		.einde( NOG_NIET )
 		.vanNaar( vanNaar )
 		.zetNr( 1 )
 		.schaak( true )
 		.build();
-	assertThat( partij.plyToString( plyRecord ), is( "Db2-h2+" ) );
+	assertThat( partij.plyToString( ply ), is( "Db2-h2+" ) );
 }
 @Test
 public void testCurPlyToString()
@@ -1121,7 +1121,7 @@ public void testGegenereerdeZetDocument()
 		.aanZet( WIT )
 		.build();
 	VanNaar vanNaar = new VanNaar( 0x11, 0x22 );
-	PlyRecord plyRecord = PlyRecord.builder()
+	Ply ply = Ply.builder()
 		.boStelling( boStellingVan )
 		.einde( NOG_NIET )
 		.vanNaar( vanNaar )
@@ -1134,8 +1134,8 @@ public void testGegenereerdeZetDocument()
 		.resultaat( "Gewonnen" )
 		.matInHoeveel( "Mat in 30" )
 		.build();
-	BoStelling boStellingNaar= partij.vanNaarToStelling( plyRecord, vanNaar );
-	assertThat( partij.getGegenereerdeZetDocument( plyRecord, boStellingNaar ), is( gegenereerdeZetDocument ) );
+	BoStelling boStellingNaar= partij.vanNaarToStelling( ply, vanNaar );
+	assertThat( partij.getGegenereerdeZetDocument( ply, boStellingNaar ), is( gegenereerdeZetDocument ) );
 
 	boStellingVan = BoStelling.builder()
 		.wk( 0x00 )
@@ -1145,7 +1145,7 @@ public void testGegenereerdeZetDocument()
 		.aanZet( WIT )
 		.build();
 	vanNaar = new VanNaar( 0x11, 0x66 );
-	plyRecord = PlyRecord.builder()
+	ply = Ply.builder()
 		.boStelling( boStellingVan )
 		.einde( NOG_NIET )
 		.vanNaar( vanNaar )
@@ -1158,8 +1158,8 @@ public void testGegenereerdeZetDocument()
 		.resultaat( "Remise" )
 		.matInHoeveel( "Onbekend" )
 		.build();
-	boStellingNaar= partij.vanNaarToStelling( plyRecord, vanNaar );
-	assertThat( partij.getGegenereerdeZetDocument( plyRecord, boStellingNaar ), is( gegenereerdeZetDocument ) );
+	boStellingNaar= partij.vanNaarToStelling( ply, vanNaar );
+	assertThat( partij.getGegenereerdeZetDocument( ply, boStellingNaar ), is( gegenereerdeZetDocument ) );
 }
 @Test
 public void testGeGegenereerdeZetten()
