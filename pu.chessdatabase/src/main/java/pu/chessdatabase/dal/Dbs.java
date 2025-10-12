@@ -348,6 +348,7 @@ public VMStelling cardinaliseer( BoStelling aStelling )
 {
 	int oktant = OKTANTEN_TABEL[aStelling.getWk()];
 	int trfWk = transformatieTabel[oktant][aStelling.getWk()];
+	@SuppressWarnings( "unused" )
 	int trftrfWk = TRANSFORM_WK[trfWk];
 	
 	VMStelling vmStelling = spiegelEnRoteer( aStelling );
