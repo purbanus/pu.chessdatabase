@@ -22,16 +22,17 @@ public class ChessDatabaseServiceImpl implements ChessDatabaseService
 public PartijDocument newGame( NewGameResponse aNewGameResponse )
 {
 	BoStelling stelling = createBoStelling( aNewGameResponse.getBoStellingKey() );
-	partij.newGame( stelling );
+	getPartij().newGame( stelling );
 	return getPartijDocument( aNewGameResponse.getBoStellingKey() );
 }
 @Override
 public PartijDocument getPartijDocument( BoStellingKey aStellingKey )
 {
 	BoStelling boStelling = createBoStelling( aStellingKey );
-	if ( ! partij.isBegonnen() && partij.isLegaleStelling( boStelling ) )
+	// @@NOG Dit moet je in Partij doen!
+	if ( ! getPartij().isBegonnen() && getPartij().isLegaleStelling( boStelling ) )
 	{
-		partij.newGame( boStelling );
+		getPartij().newGame( boStelling );
 	}
 	return PartijDocument.builder()
 		.wk( Partij.veldToHexGetal( aStellingKey.getWk() ) )
@@ -40,9 +41,9 @@ public PartijDocument getPartijDocument( BoStellingKey aStellingKey )
 		.s4( Partij.veldToHexGetal( aStellingKey.getS4() ) )
 		.aanZet( aStellingKey.getAanZet().getNormaleSpelling() )
 		.stelling( boStelling )
-		.resultaat( partij.getResultaatRecord() )
-		.zetten( partij.getPartijReport().getZetten() )
-		.gegenereerdeZetten( partij.getGegenereerdeZetten() )
+		.resultaat( getPartij().getResultaatRecord() )
+		.zetten( getPartij().getPartijReport().getZetten() )
+		.gegenereerdeZetten( getPartij().getGegenereerdeZetten() )
 		.build();
 }
 PartijDocument getPartijDocument( BoStelling aBoStelling )
@@ -64,12 +65,37 @@ BoStelling createBoStelling( BoStellingKey aBoStellingKey )
 public PartijDocument zet( ZetResponse aZetResponse )
 {
 	BoStelling boStelling = createBoStelling( aZetResponse.getBoStellingKey() );
-	if ( ! partij.isBegonnen() && partij.isLegaleStelling( boStelling ) )
+	// @@NOG Dit moet je in Partij doen!
+	if ( ! getPartij().isBegonnen() && getPartij().isLegaleStelling( boStelling ) )
 	{
-		partij.newGame( boStelling );
+		getPartij().newGame( boStelling );
 	}
 
 	getPartij().zet( aZetResponse.getNieuweZet() );
-	return getPartijDocument( partij.getStand() );
+	return getPartijDocument( getPartij().getStand() );
+}
+@Override
+public PartijDocument zetNaarBegin()
+{
+	BoStelling boStelling = getPartij().zetNaarBegin();
+	return getPartijDocument( boStelling );
+}
+@Override
+public PartijDocument zetTerug()
+{
+	BoStelling boStelling = getPartij().zetTerug();
+	return getPartijDocument( boStelling );
+}
+@Override
+public PartijDocument zetVooruit()
+{
+	BoStelling boStelling = getPartij().zetVooruit();
+	return getPartijDocument( boStelling );
+}
+@Override
+public PartijDocument zetNaarEinde()
+{
+	BoStelling boStelling = getPartij().zetNaarEinde();
+	return getPartijDocument( boStelling );
 }
 }

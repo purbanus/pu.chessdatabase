@@ -97,5 +97,65 @@ public RedirectView doZet( @ModelAttribute ZetResponse aZetResponse, Model aMode
 		+ "&aanZet=" + partijDocument.getAanZet()
 	);
 }
+@GetMapping(value = { "/zet-naar-begin" } )
+public RedirectView zetNaarBegin( Model aModel ) 
+{
+	LOG.info( "Zet-naar-begin response gestart" );
+	LOG.debug( "Model=" + aModel.asMap() );
+
+	PartijDocument partijDocument = getChessDatabaseService().zetNaarBegin();
+	return new RedirectView( "/game.html"
+		+ "?wk=" + partijDocument.getWk()
+		+ "&zk=" + partijDocument.getZk()
+		+ "&s3=" + partijDocument.getS3()
+		+ "&s4=" + partijDocument.getS4()
+		+ "&aanZet=" + partijDocument.getAanZet()
+	);
+}
+@GetMapping(value = { "/zet-terug" } )
+public RedirectView zetTerug( Model aModel ) 
+{
+	LOG.info( "Zet-terug response gestart" );
+	LOG.debug( "Model=" + aModel.asMap() );
+
+	PartijDocument partijDocument = getChessDatabaseService().zetTerug();
+	return new RedirectView( "/game.html"
+		+ "?wk=" + partijDocument.getWk()
+		+ "&zk=" + partijDocument.getZk()
+		+ "&s3=" + partijDocument.getS3()
+		+ "&s4=" + partijDocument.getS4()
+		+ "&aanZet=" + partijDocument.getAanZet()
+	);
+}
+@GetMapping(value = { "/zet-vooruit" } )
+public RedirectView zetVooruit( Model aModel ) 
+{
+	LOG.info( "Zet-vooruit response gestart" );
+	LOG.debug( "Model=" + aModel.asMap() );
+
+	PartijDocument partijDocument = getChessDatabaseService().zetVooruit();
+	return new RedirectView( "/game.html"
+		+ "?wk=" + partijDocument.getWk()
+		+ "&zk=" + partijDocument.getZk()
+		+ "&s3=" + partijDocument.getS3()
+		+ "&s4=" + partijDocument.getS4()
+		+ "&aanZet=" + partijDocument.getAanZet()
+	);
+}
+@GetMapping(value = { "/zet-naar-einde" } )
+public RedirectView zetNaarEinde( Model aModel ) 
+{
+	LOG.info( "Zet-naar-einde response gestart" );
+	LOG.debug( "Model=" + aModel.asMap() );
+
+	PartijDocument partijDocument = getChessDatabaseService().zetNaarEinde();
+	return new RedirectView( "/game.html"
+		+ "?wk=" + partijDocument.getWk()
+		+ "&zk=" + partijDocument.getZk()
+		+ "&s3=" + partijDocument.getS3()
+		+ "&s4=" + partijDocument.getS4()
+		+ "&aanZet=" + partijDocument.getAanZet()
+	);
+}
 
 }
