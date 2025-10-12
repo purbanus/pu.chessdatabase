@@ -29,6 +29,17 @@ WK=a1 ZK=c1 S3=b2 S4=d3 AanZet=W Resultaat=null AantalZetten=0 Schaak=false
 .. WD .. .. .. .. .. ..\s
 WK .. ZK .. .. .. .. ..\s
 """;
+public static final String BO_TO_STRING_EXTRA = """
+WK=a1 ZK=c1 S3=b2 S4=d3 AanZet=W Resultaat=GEWONNEN AantalZetten=19 Schaak=true
+.. .. .. .. .. .. .. ..\s
+.. .. .. .. .. .. .. ..\s
+.. .. .. .. .. .. .. ..\s
+.. .. .. .. .. .. .. ..\s
+.. .. .. .. .. .. .. ..\s
+.. .. .. ZT .. .. .. ..\s
+.. WD .. .. .. .. .. ..\s
+WK .. ZK .. .. .. .. ..\s
+""";
 @Test
 public void testToString()
 {
@@ -70,6 +81,20 @@ public void testAlfaBuilder()
 		.build();
 	assertThat( boStelling.toString().length(), is( BO_TO_STRING.length() ) );
 	assertThat( boStelling.toString(), is( BO_TO_STRING) );
+	
+	boStelling  = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "c1" )
+		.s3( "b2" )
+		.s4( "d3" )
+		.aanZet( WIT )
+		.resultaat( ResultaatType.GEWONNEN )
+		.aantalZetten( 19 )
+		.schaak( true )
+		.build();
+	assertThat( boStelling.toString().length(), is( BO_TO_STRING_EXTRA.length() ) );
+	assertThat( boStelling.toString(), is( BO_TO_STRING_EXTRA ) );
+
 
 }
 }
