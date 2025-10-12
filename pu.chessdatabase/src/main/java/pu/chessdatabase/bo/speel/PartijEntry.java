@@ -7,10 +7,8 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
-@EqualsAndHashCode
-@ToString
-@AllArgsConstructor
 @Builder
+@AllArgsConstructor
 public class PartijEntry
 {
 public PartijEntry()
