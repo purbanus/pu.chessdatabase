@@ -7,7 +7,6 @@ import static pu.chessdatabase.dal.ResultaatType.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -391,27 +390,6 @@ boolean isLegaal( VanNaar aVanNaar )
 		Deel 4: Zetten
 =====================================================================================
 
-PROCEDURE ZetVooruit(): BOOLEAN;
-BEGIN
-	IF IsBegonnen() AND (CurPartij.CurPly < CurPartij.LastPly) THEN
-		INC(CurPartij.CurPly);
-		RETURN(TRUE);
-	END;
-	RETURN(FALSE);
-END ZetVooruit;
- */
-/**
- * (*------------ VooruitZetten --------------------------*)
- */
-public boolean zetVooruit()
-{
-	if ( isBegonnen() && curPartij.getCurrentPly() < curPartij.getLastPly() )
-	{
-		curPartij.setCurrentPly( curPartij.getCurrentPly() + 1 );
-		return true;
-	}
-	return false;
-}
 /**
 PROCEDURE ZetTerug(): BOOLEAN;
 BEGIN
@@ -425,14 +403,98 @@ END ZetTerug;
 /**
  * ------------ TerugZetten ----------------------------
  */
-public boolean zetTerug()
+public BoStelling zetNaarBegin()
+{
+	if ( isBegonnen() && curPartij.getCurrentPly() > 0 )
+	{
+		curPartij.setCurrentPly( 0 );
+	}
+	return getStand();
+}
+public BoStelling zetTerug()
 {
 	if ( isBegonnen() && curPartij.getCurrentPly() > 0 )
 	{
 		curPartij.setCurrentPly( curPartij.getCurrentPly() - 1 );
-		return true;
 	}
-	return false;
+	return getStand();
+}
+/**
+PROCEDURE ZetVooruit(): BOOLEAN;
+BEGIN
+	IF IsBegonnen() AND (CurPartij.CurPly < CurPartij.LastPly) THEN
+		INC(CurPartij.CurPly);
+		RETURN(TRUE);
+	END;
+	RETURN(FALSE);
+END ZetVooruit;
+ */
+/**
+ * (*------------ VooruitZetten --------------------------*)
+ */
+public BoStelling zetVooruit()
+{
+	if ( isBegonnen() )
+	{
+		if ( curPartij.getCurrentPly() < curPartij.getLastPly() )
+		{
+			curPartij.setCurrentPly( curPartij.getCurrentPly() + 1 );
+		}
+		else
+		{
+			if ( isEindePartij() == NOG_NIET )
+			{
+				bedenk();
+			}
+		}
+	}
+	return getStand();
+}
+public BoStelling zetNaarEinde()
+{
+	if ( isBegonnen() && curPartij.getCurrentPly() < curPartij.getLastPly() )
+	{
+		curPartij.setCurrentPly( curPartij.getLastPly() );
+	}
+	return getStand();
+}
+/**
+PROCEDURE Bedenk(): BOOLEAN;
+VAR VanS: Dbs.Stelling;
+	GZ  : Gen.GenZrec;
+BEGIN
+	IF IsBegonnen() AND (IsEindePartij() = NogNiet) THEN
+		WITH CurPartij DO
+			IF CurPly < MAX(PlyNummer) THEN
+				VanS:=Plies[CurPartij.CurPly].S;
+				GZ:=Gen.GenZsort(VanS);
+				IF GZ.Aantal > 0 THEN
+					RETURN(ZetStelling(GZ.Sptr^));
+				END;
+			END;
+		END;
+	END;
+	RETURN(FALSE);
+END Bedenk;
+ */
+/**
+ * ------------ Bedenk zelf een zet -----------------------
+ */
+public BoStelling bedenk()
+{
+	if ( isBegonnen() && isEindePartij() == NOG_NIET )
+	{
+		if ( curPartij.getCurrentPly() < MAX_PLY_NUMMER )
+		{
+			BoStelling boStellingVan = plies[curPartij.getCurrentPly()].getBoStelling();
+			GegenereerdeZetten gegenereerdeZetten = gen.genereerZettenGesorteerd( boStellingVan );
+			if ( gegenereerdeZetten.getAantal() > 0 )
+			{
+				return zetStelling( gegenereerdeZetten.getStellingen().get( 0 ) );
+			}
+		}
+	}
+	return null;
 }
 /**
 PROCEDURE Zet(VNzet: VanNaarType): BOOLEAN;
@@ -514,47 +576,32 @@ END Zet;
  */
 void clearPliesVoorZet()
 {
-	for ( int x = curPartij.getCurrentPly(); x < curPartij.getLastPly(); x++ )
+	for ( int x = curPartij.getCurrentPly() + 1; x <= curPartij.getLastPly(); x++ )
 	{
 		plies[x] = PlyRecord.getNullPlyRecord();
 	}
 }
-public boolean zet( String aVanNaar )
+public BoStelling zet( String aVanNaar )
 {
-	String vanNaar = aVanNaar.trim().toLowerCase();
-	char first = vanNaar.charAt( 0 );
-	if ( first == 'k' || first == 'd' || first == 't' || first == 'l' || first == 'p' || first == 'o'  )
-	{
-		vanNaar = vanNaar.substring( 1 );
-	}
-	vanNaar = StringUtils.remove( vanNaar, '-' );
-	vanNaar = StringUtils.remove( vanNaar, 'x' );
-	vanNaar = StringUtils.remove( vanNaar, '+' );
-	vanNaar = StringUtils.remove( vanNaar, '=' );
-	vanNaar = StringUtils.remove( vanNaar, '#' );
-	return zet( VanNaar.builder()
-		.van ( alfaToVeld( vanNaar.substring( 0, 2 ) ) )
-		.naar( alfaToVeld( vanNaar.substring( 2, 4 ) ) )
-		.build()
-	);
+	return zet( new VanNaar( aVanNaar ) );
 }
-public boolean zet( VanNaar aVanNaar )
+public BoStelling zet( VanNaar aVanNaar )
 {
 	BoStelling boStellingNaar = vanCurNaarToStelling( aVanNaar );
 	if ( ! isBegonnen() || isEindePartij() != NOG_NIET || boStellingNaar == null )
 	{
-		return false;
+		return null;
 	}
 	if ( curPartij.getCurrentPly() >= MAX_PLY_NUMMER )
 	{
-		return false;
+		return null;
 	}
 	boStellingNaar.setSchaak( gen.isSchaak( boStellingNaar ) );
 	PlyRecord curPlyRecord = plies[curPartij.getCurrentPly()];
 	if ( ! aVanNaar.equals( curPlyRecord.getVanNaar() ) )
 	{
 		clearPliesVoorZet();
-		curPartij.setLastPly( curPartij.getCurrentPly() + 1 ); // @@NOG Waarom hier? Moet dit niet altijd?
+		curPartij.setLastPly( curPartij.getCurrentPly() );
 	}
 	curPlyRecord.setVanNaar( aVanNaar );
 	curPlyRecord.setSchaak( boStellingNaar.isSchaak() );
@@ -574,7 +621,7 @@ public boolean zet( VanNaar aVanNaar )
 		PlyRecord newPlyRecord = plies[curPartij.getCurrentPly()];
 		newPlyRecord.setZetNr( newPlyRecord.getZetNr() + 1 );
 	}
-	return true;
+	return boStellingNaar;
 }
 /**
  * Je zou natuurlijk bij het genereren een extra veld isSlagZet kunnen toevoegen,
@@ -598,48 +645,10 @@ END ZetStelling;
 /**
  * ------------ Voer een zet uit nav een stelling -----------------------
  */
-public boolean zetStelling( BoStelling aBoStelling )
+public BoStelling zetStelling( BoStelling aBoStelling )
 {
 	VanNaar vanNaar = stellingToVanNaar( plies[curPartij.getCurrentPly()].getBoStelling(), aBoStelling );
 	return zet( vanNaar );
-}
-/**
-PROCEDURE Bedenk(): BOOLEAN;
-VAR VanS: Dbs.Stelling;
-	GZ  : Gen.GenZrec;
-BEGIN
-	IF IsBegonnen() AND (IsEindePartij() = NogNiet) THEN
-		WITH CurPartij DO
-			IF CurPly < MAX(PlyNummer) THEN
-				VanS:=Plies[CurPartij.CurPly].S;
-				GZ:=Gen.GenZsort(VanS);
-				IF GZ.Aantal > 0 THEN
-					RETURN(ZetStelling(GZ.Sptr^));
-				END;
-			END;
-		END;
-	END;
-	RETURN(FALSE);
-END Bedenk;
- */
-/**
- * ------------ Bedenk zelf een zet -----------------------
- */
-public boolean bedenk()
-{
-	if ( isBegonnen() && isEindePartij() == NOG_NIET )
-	{
-		if ( curPartij.getCurrentPly() < MAX_PLY_NUMMER )
-		{
-			BoStelling boStellingVan = plies[curPartij.getCurrentPly()].getBoStelling();
-			GegenereerdeZetten gegenereerdeZetten = gen.genereerZettenGesorteerd( boStellingVan );
-			if ( gegenereerdeZetten.getAantal() > 0 )
-			{
-				return zetStelling( gegenereerdeZetten.getStellingen().get( 0 ) );
-			}
-		}
-	}
-	return false;
 }
 /** =====================================================================================
 		Deel 5: Rapportage

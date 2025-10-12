@@ -8,7 +8,6 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static pu.chessdatabase.bo.Kleur.*;
-import static pu.chessdatabase.dal.ResultaatType.*;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import pu.chessdatabase.dal.Dbs;
 import pu.chessdatabase.dal.ResultaatType;
 
+@SuppressWarnings( "unused" ) // Dit gaat over die jupiter.api.Assertions
 @SpringBootTest
 public class TestGenOverProductie
 {

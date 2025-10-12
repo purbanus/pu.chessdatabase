@@ -8,4 +8,8 @@ public interface ChessDatabaseService
 public abstract PartijDocument newGame( NewGameResponse aNewGameResponse );
 public abstract PartijDocument getPartijDocument( BoStellingKey aBoStellingKey );
 public abstract PartijDocument zet( ZetResponse aZetResponse );
+public abstract PartijDocument zetNaarBegin();
+public abstract PartijDocument zetTerug();
+public abstract PartijDocument zetVooruit();
+public abstract PartijDocument zetNaarEinde();
 }

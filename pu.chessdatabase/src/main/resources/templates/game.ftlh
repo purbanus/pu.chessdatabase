@@ -114,7 +114,6 @@
         </tr>
     </tbody>
 </table>
-
 <table class="mogelijkeZetten inlineTable">
 	<thead>
   		<tr>
@@ -147,25 +146,22 @@
 	</#list>
 </table>
 
-<p>${partijDocument.aanZet} aan zet, ${partijDocument.resultaat.res1}, ${partijDocument.resultaat.res2}
-		<form action='<@spring.url "/do-zet" />' method="post">
-			<input hidden id="wk" type="text" name="wk" value="${partijDocument.wk}" />
-			<input hidden id="zk" type="text" name="zk" value="${partijDocument.zk}" />
-			<input hidden id="s3" type="text" name="s3" value="${partijDocument.s3}" />
-			<input hidden id="s4" type="text" name="s4" value="${partijDocument.s4}" />
-			<input hidden id="aanZet" type="text" name="aanZet" value="${partijDocument.aanZet}" />
+<p>
+	${partijDocument.aanZet} aan zet, 
+	<#if partijDocument.resultaat.res1??>${partijDocument.resultaat.res1}</#if>, 
+	<#if partijDocument.resultaat.res2??>${partijDocument.resultaat.res2}</#if>
+	<form action='<@spring.url "/do-zet" />' method="post">
+		<input hidden id="wk" type="text" name="wk" value="${partijDocument.wk}" />
+		<input hidden id="zk" type="text" name="zk" value="${partijDocument.zk}" />
+		<input hidden id="s3" type="text" name="s3" value="${partijDocument.s3}" />
+		<input hidden id="s4" type="text" name="s4" value="${partijDocument.s4}" />
+		<input hidden id="aanZet" type="text" name="aanZet" value="${partijDocument.aanZet}" />
 			
-<!--
-			<div hidden id="wk1">${partijDocument.wk}</div>
-			<div hidden id="zk1">${partijDocument.zk}</div>
-			<div hidden id="s31">${partijDocument.s3}</div>
-			<div hidden id="s41">${partijDocument.s4}</div>
-			<div hidden id="aanZet1">${partijDocument.aanZet}</div>
--->
-			<label for="nieuweZet">Nieuwe zet:</label><Input id="nieuweZet type="text" name="nieuweZet" />
-			<button type="submit" name="submit">Doen!</button>
-		</form>
+		<label for="nieuweZet">Nieuwe zet:</label><Input id="nieuweZet type="text" name="nieuweZet" />
+		<button type="submit" name="submit">Doen!</button>
+	</form>
 </p>
+
 <table class="partij-verloop">
  	<thead>
  		<tr>
@@ -185,6 +181,12 @@
 		</tr>
 	</#list>
 </table>
+<div class="paginator">
+	<a class="left" href='<@spring.url "/zet-naar-begin" />'><span class="prevnext">&lt;&lt;</span></a>
+	<a              href='<@spring.url "/zet-terug" />'><span class="prevnext">&lt;</span></a>
+	<a              href='<@spring.url "/zet-vooruit" />'><span class="prevnext">&gt;</span></a>
+	<a              href='<@spring.url "/zet-naar-einde" />'><span class="prevnext">&gt;&gt;</span></a>
+</div>
 
 
 </body>

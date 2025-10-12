@@ -1,19 +1,25 @@
 package pu.chessdatabase.dal;
 
+//====================================================================================================================
+//BELANGRIJK
+//In Eclipse kan hij de volgende twee imports niet vinden. Deze moet je dus met de hand toevoegen
+//===================================================================================================================== 
+//import static org.hamcrest.MatcherAssert.*;
+//import static org.hamcrest.Matchers.*;
+
 import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.dal.ResultaatType.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
+//import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.BoStelling;
-import pu.chessdatabase.bo.Kleur;
 
 @SpringBootTest
 public class TestDbsOverProductie
