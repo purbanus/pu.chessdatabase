@@ -9,29 +9,23 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
-@EqualsAndHashCode
-@ToString
-@AllArgsConstructor
 @Builder
 /**
- * Als we 'van' en 'naar' hebben, dan bevat een PlyRecord
+ * Als we 'van' en 'naar' hebben, dan bevat een Ply
  * - De BoStelling 'van'
  * - Of de BoStelling ten einde is
  * - Het zetnummer van de opky (een zet is twee ply)
  * - De VanNaar( 'van', 'naar' ) d.w.z. de VanNaar die gespeeld is vanuit de boStelling
  */
-public class PlyRecord
+public class Ply
 {
-public static PlyRecord getNullPlyRecord()
-{
-	PlyRecord plyRecord = PlyRecord.builder()
-		.boStelling( BoStelling.NULL_STELLING )
-		.einde( EindeType.NOG_NIET )
-		.zetNr( Partij.MAX_HELE_ZET_NUMMER )
-		.vanNaar( VanNaar.ILLEGAL_VAN_NAAR )
-		.build();
-	return plyRecord;
-}
+public static final Ply NULL_PLY = Ply.builder()
+	.boStelling( BoStelling.NULL_STELLING )
+	.einde( EindeType.NOG_NIET )
+	.zetNr( Partij.MAX_HELE_ZET_NUMMER )
+	.vanNaar( VanNaar.ILLEGAL_VAN_NAAR )
+	.build();
+
 private BoStelling boStelling;
 private EindeType einde;
 private int zetNr; // Liep in Modula van 1 tot 130!
