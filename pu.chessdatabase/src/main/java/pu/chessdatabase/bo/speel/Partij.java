@@ -17,6 +17,8 @@ import pu.chessdatabase.bo.StukInfo;
 import pu.chessdatabase.dal.Dbs;
 import pu.chessdatabase.dal.ResultaatType;
 
+import lombok.Data;
+
 /**================================================================================
 Het partijrecord.
 	Desc       - Beschrijving (voor de toekomst).
@@ -58,7 +60,7 @@ Plies[1]     Ke3Dh1Kf6Ta8 waz     2          e3 e4
 Plies[2]     Ke4Dh1Kf6Ta8 zaz     2          f6 g6
 Plies[3]     Ke3Dh1Kg6Ta8 waz     3           ...
 
-Met andere woorden, in een plyrecord zit de stelling waaruit zetten
+Met andere woorden, in een Ply zit de stelling waaruit zetten
 gegenereerd worden, plus de zet die uiteindelijk gedaan is. Het zetnummer
 is gewoon het nummer dat afgedrukt moet worden.
 
@@ -66,6 +68,7 @@ is gewoon het nummer dat afgedrukt moet worden.
 */
 
 @Component
+@Data
 public class Partij
 {
 public static final int MAX_HELE_ZET_NUMMER = 130;
@@ -74,8 +77,8 @@ public static final int MAX_PLY_NUMMER = 255;
 private Dbs dbs;
 @Autowired private Gen gen;
 
-PlyRecord[] plies = new PlyRecord[256];
-PartijEntry curPartij;
+Plies plies = new Plies();
+
 /**
  * BEGIN
 	Dbs.Open();
@@ -151,11 +154,7 @@ END InzPartij;
  */
 void inzPartij()
 {
-	curPartij = new PartijEntry();
-	for ( int x = 0; x <= MAX_PLY_NUMMER; x++ )
-	{
-		plies[x] = PlyRecord.getNullPlyRecord();
-	}
+	setPlies( new Plies() );
 }
 /**
 PROCEDURE IsLegaleStelling(S: Dbs.Stelling): BOOLEAN;
@@ -235,13 +234,14 @@ public BoStelling newGame( BoStelling aStartStelling )
 	inzPartij();
 	BoStelling boStelling = dbs.get( aStartStelling );
 	boStelling.setSchaak( gen.isSchaak( boStelling ) );
-	plies[0] = PlyRecord.builder()
+	getPlies().clear();
+	getPlies().addPly( Ply.builder()
 		.boStelling( boStelling )
 		.einde( isEindStelling( boStelling ) )
 		.zetNr( 1 )
 		.vanNaar( VanNaar.ILLEGAL_VAN_NAAR )
-		.build();
-	curPartij.setBegonnen( true );
+		.build()
+		);
 	return boStelling;
 }
 /**
@@ -259,20 +259,7 @@ END IsBegonnen;
  */
 public boolean isBegonnen()
 {
-	return curPartij.isBegonnen();
-}
-/**
-PROCEDURE IsEindePartij(): EindeType;
-BEGIN
-	RETURN(Plies[CurPartij.CurPly].Einde);
-END IsEindePartij;
- */
-/**
- * ------- Kontrole op het einde van de partij -----
- */
-public EindeType isEindePartij()
-{
-	return plies[curPartij.getCurrentPly()].getEinde();
+	return getPlies().isBegonnen();
 }
 /**
  * =====================================================================================
@@ -350,13 +337,13 @@ END VanNaarToStelling;
  * ----------- Stelling Bepalen uit Van/Naar -------------------
  */
 
-BoStelling vanCurNaarToStelling( VanNaar aVanNaar )
+BoStelling vanCurrentPlyNaarToStelling( VanNaar aVanNaar )
 {
-	return vanNaarToStelling( plies[curPartij.getCurrentPly()], aVanNaar );
+	return vanNaarToStelling( getPlies().getCurrentPly(), aVanNaar );
 }
-BoStelling vanNaarToStelling( PlyRecord aPlyRecord, VanNaar aVanNaar )
+BoStelling vanNaarToStelling( Ply aPly, VanNaar aVanNaar )
 {
-	BoStelling boStellingVan = aPlyRecord.getBoStelling();
+	BoStelling boStellingVan = aPly.getBoStelling();
 	GegenereerdeZetten gegenereerdeZetten = gen.genereerZetten( boStellingVan );
 	if ( gegenereerdeZetten.getAantal() > 0 )
 	{
@@ -381,9 +368,11 @@ END IsLegaal;
 /**
  * -------- Kontrole op legale zet -----------------
  */
-boolean isLegaal( VanNaar aVanNaar )
+boolean isLegalMove( VanNaar aVanNaar )
 {
-	return vanCurNaarToStelling( aVanNaar ) != null;
+	// Dit throws een RuntimeException als er geen stelling gevoinden kon worden
+	vanCurrentPlyNaarToStelling( aVanNaar );
+	return true;
 }
 /**
  * =====================================================================================
@@ -405,18 +394,12 @@ END ZetTerug;
  */
 public BoStelling zetNaarBegin()
 {
-	if ( isBegonnen() && curPartij.getCurrentPly() > 0 )
-	{
-		curPartij.setCurrentPly( 0 );
-	}
+	getPlies().setToBegin();
 	return getStand();
 }
 public BoStelling zetTerug()
 {
-	if ( isBegonnen() && curPartij.getCurrentPly() > 0 )
-	{
-		curPartij.setCurrentPly( curPartij.getCurrentPly() - 1 );
-	}
+	getPlies().setTerug();
 	return getStand();
 }
 /**
@@ -436,13 +419,13 @@ public BoStelling zetVooruit()
 {
 	if ( isBegonnen() )
 	{
-		if ( curPartij.getCurrentPly() < curPartij.getLastPly() )
+		if ( ! getPlies().isAtLastPlyNumber() )
 		{
-			curPartij.setCurrentPly( curPartij.getCurrentPly() + 1 );
+			getPlies().setVooruit();
 		}
 		else
 		{
-			if ( isEindePartij() == NOG_NIET )
+			if ( getPlies().getCurrentEinde() == NOG_NIET )
 			{
 				bedenk();
 			}
@@ -452,10 +435,7 @@ public BoStelling zetVooruit()
 }
 public BoStelling zetNaarEinde()
 {
-	if ( isBegonnen() && curPartij.getCurrentPly() < curPartij.getLastPly() )
-	{
-		curPartij.setCurrentPly( curPartij.getLastPly() );
-	}
+	getPlies().setToEnd();
 	return getStand();
 }
 /**
@@ -482,16 +462,13 @@ END Bedenk;
  */
 public BoStelling bedenk()
 {
-	if ( isBegonnen() && isEindePartij() == NOG_NIET )
+	if ( isBegonnen() && getPlies().getCurrentEinde() == NOG_NIET )
 	{
-		if ( curPartij.getCurrentPly() < MAX_PLY_NUMMER )
+		BoStelling boStellingVan = getPlies().getCurrentPly().getBoStelling();
+		GegenereerdeZetten gegenereerdeZetten = gen.genereerZettenGesorteerd( boStellingVan );
+		if ( gegenereerdeZetten.getAantal() > 0 )
 		{
-			BoStelling boStellingVan = plies[curPartij.getCurrentPly()].getBoStelling();
-			GegenereerdeZetten gegenereerdeZetten = gen.genereerZettenGesorteerd( boStellingVan );
-			if ( gegenereerdeZetten.getAantal() > 0 )
-			{
-				return zetStelling( gegenereerdeZetten.getStellingen().get( 0 ) );
-			}
+			return zetStelling( gegenereerdeZetten.getStellingen().get( 0 ) );
 		}
 	}
 	return null;
@@ -574,53 +551,41 @@ END Zet;
 /**
  * ------------ Voer een zet uit -----------------------
  */
-void clearPliesVoorZet()
-{
-	for ( int x = curPartij.getCurrentPly() + 1; x <= curPartij.getLastPly(); x++ )
-	{
-		plies[x] = PlyRecord.getNullPlyRecord();
-	}
-}
 public BoStelling zet( String aVanNaar )
 {
 	return zet( new VanNaar( aVanNaar ) );
 }
+void checkPartijVoorZet( BoStelling boStellingNaar )
+{
+	if ( ! isBegonnen() )
+	{
+		throw new RuntimeException( "De partij is nog niet begonnen. Je kunt geen zet doen als de partij nog niet begonnen is." );
+	}
+	EindeType einde = getPlies().getCurrentEinde();
+	if ( einde != NOG_NIET )
+	{
+		throw new RuntimeException( "De partij is geeindigd in " + einde.getNormaleSpelling() + ". Je kunt geen zetten meer doen." );
+	}
+	if ( boStellingNaar == null )
+	{
+		throw new RuntimeException( "Er kon geen stelling bepaald worden waarnaartoe de ze leidt" );
+	}
+}
+
 public BoStelling zet( VanNaar aVanNaar )
 {
-	BoStelling boStellingNaar = vanCurNaarToStelling( aVanNaar );
-	if ( ! isBegonnen() || isEindePartij() != NOG_NIET || boStellingNaar == null )
-	{
-		return null;
-	}
-	if ( curPartij.getCurrentPly() >= MAX_PLY_NUMMER )
-	{
-		return null;
-	}
+	BoStelling boStellingNaar = vanCurrentPlyNaarToStelling( aVanNaar );
+	checkPartijVoorZet( boStellingNaar );
+
 	boStellingNaar.setSchaak( gen.isSchaak( boStellingNaar ) );
-	PlyRecord curPlyRecord = plies[curPartij.getCurrentPly()];
-	if ( ! aVanNaar.equals( curPlyRecord.getVanNaar() ) )
+	Ply currentPly = getPlies().getCurrentPly();
+	if ( ! aVanNaar.equals( currentPly.getVanNaar() ) )
 	{
-		clearPliesVoorZet();
-		curPartij.setLastPly( curPartij.getCurrentPly() );
+		getPlies().clearPliesFromNextPly();
 	}
-	curPlyRecord.setVanNaar( aVanNaar );
-	curPlyRecord.setSchaak( boStellingNaar.isSchaak() );
-	curPartij.setCurrentPly( curPartij.getCurrentPly() + 1 );
-	if ( curPartij.getCurrentPly() > curPartij.getLastPly() )
-	{
-		curPartij.setLastPly( curPartij.getCurrentPly() );
-	}
-	plies[curPartij.getCurrentPly()] = PlyRecord.builder()
-		.boStelling( boStellingNaar )
-		.einde( isEindStelling( boStellingNaar ) )
-		.zetNr( plies[curPartij.getCurrentPly() - 1].getZetNr() )
-//		.vanNaar( VanNaar.ILLEGAL_VAN_NAAR ) // Liever null want daar kun je gemakkelijk op testen
-		.build();
-	if ( boStellingNaar.getAanZet() == WIT )
-	{
-		PlyRecord newPlyRecord = plies[curPartij.getCurrentPly()];
-		newPlyRecord.setZetNr( newPlyRecord.getZetNr() + 1 );
-	}
+	currentPly.setVanNaar( aVanNaar );
+	currentPly.setSchaak( boStellingNaar.isSchaak() );
+	getPlies().addPly( boStellingNaar, isEindStelling( boStellingNaar ) );
 	return boStellingNaar;
 }
 /**
@@ -647,7 +612,7 @@ END ZetStelling;
  */
 public BoStelling zetStelling( BoStelling aBoStelling )
 {
-	VanNaar vanNaar = stellingToVanNaar( plies[curPartij.getCurrentPly()].getBoStelling(), aBoStelling );
+	VanNaar vanNaar = stellingToVanNaar( getPlies().getCurrentPly().getBoStelling(), aBoStelling );
 	return zet( vanNaar );
 }
 /** =====================================================================================
@@ -709,20 +674,20 @@ END PlyToStr;
 /**
  * ---------- Ply omzetten in string (Kd1-d2+) --------------
  */
-String plyToString( PlyRecord aPlyRecord )
+String plyToString( Ply aPly )
 {
 	StringBuilder sb = new StringBuilder();
-	if ( aPlyRecord.getVanNaar() == null )
+	if ( aPly.getVanNaar() == null )
 	{
 		return "...";
 	}
-	sb.append( watStaatErOp( aPlyRecord.getBoStelling(), aPlyRecord.getVanNaar().getVan() ) );
-	String van = veldToAlfa( aPlyRecord.getVanNaar().getVan() );
-	sb.append( van ).append( isSlagZet( aPlyRecord.getBoStelling(), aPlyRecord.getVanNaar() ) ? "x" : "-" );
-	String naar = veldToAlfa( aPlyRecord.getVanNaar().getNaar() );
-	sb.append( naar ).append( aPlyRecord.isSchaak() ? "+" : " " );
-	sb.append( aPlyRecord.getEinde() == MAT ? "#" : "" );
-	sb.append( aPlyRecord.getEinde() == PAT ? "=" : "" );
+	sb.append( watStaatErOp( aPly.getBoStelling(), aPly.getVanNaar().getVan() ) );
+	String van = veldToAlfa( aPly.getVanNaar().getVan() );
+	sb.append( van ).append( isSlagZet( aPly.getBoStelling(), aPly.getVanNaar() ) ? "x" : "-" );
+	String naar = veldToAlfa( aPly.getVanNaar().getNaar() );
+	sb.append( naar ).append( aPly.isSchaak() ? "+" : " " );
+	sb.append( aPly.getEinde() == MAT ? "#" : "" );
+	sb.append( aPly.getEinde() == PAT ? "=" : "" );
 	return sb.toString();
 }
 /**
@@ -740,11 +705,13 @@ END CurPlyToStr;
  */
 String currentPlyToString()
 {
-	if ( curPartij.getCurrentPly() == 0 )
+	// Het gaat hier voornamelijk om de VanNaar, en die zit in de VORIGE ply
+	Ply previousPly = getPlies().getPreviousPly();
+	if ( previousPly == null )
 	{
 		return "";
 	}
-	return plyToString( plies[curPartij.getCurrentPly() - 1] );
+	return plyToString( previousPly );
 }
 /**
 PROCEDURE ResToStr(): ResultaatRec;
@@ -780,21 +747,21 @@ public ResultaatRecord getResultaatRecord()
 {
 	ResultaatRecord resultaatRec = new ResultaatRecord();
 	resultaatRec.setRes2( "" );
-	PlyRecord plyRecord = plies[curPartij.getCurrentPly()];
-	if ( plyRecord.getEinde() != NOG_NIET )
+	Ply Ply = getPlies().getCurrentPly();
+	if ( Ply.getEinde() != NOG_NIET )
 	{
-		resultaatRec.setRes1( plyRecord.getEinde().getNormaleSpelling() );
+		resultaatRec.setRes1( Ply.getEinde().getNormaleSpelling() );
 	}
 	else
 	{
-		ResultaatType resultaat = plyRecord.getBoStelling().getResultaat();
+		ResultaatType resultaat = Ply.getBoStelling().getResultaat();
 		if ( resultaat != ResultaatType.ILLEGAAL )
 		{
 			resultaatRec.setRes1( resultaat.getNormaleSpelling() );
 		}
 		if ( resultaat == GEWONNEN || resultaat == VERLOREN )
 		{
-			resultaatRec.setRes2( "Mat in " + plyRecord.getBoStelling().getAantalZetten() );
+			resultaatRec.setRes2( "Mat in " + Ply.getBoStelling().getAantalZetten() );
 		}
 	}
 	return resultaatRec;
@@ -834,7 +801,7 @@ END CurZetNrToStr;
  */
 public String currentZetNummerToString()
 {
-	return zetNummerToString( plies[curPartij.getCurrentPly()].getZetNr() );
+	return zetNummerToString( getPlies().getCurrentPly().getZetNr() );
 }
 /**
 PROCEDURE PartijToStr(): PartijReport;
@@ -946,43 +913,44 @@ END HeleZetToStr;
  */
 ZetDocument createZetDocument( int aPlyNummer )
 {
-	if ( aPlyNummer >= curPartij.getLastPly() )
-	{
-		throw new RuntimeException( "Fout in createZetDocument: Plynummer > laatste zet" );
-	}
-	// Als de eerste zet zwart is maken we puntje puntje puntje plu de  ply hierna
-	if ( plies[aPlyNummer].getBoStelling().getAanZet() == ZWART )
+	// Als de eerste zet zwart is maken we puntje puntje puntje plus de  ply hierna
+	Ply ply = getPlies().getPly( aPlyNummer );
+	if ( ply.getBoStelling().getAanZet() == ZWART )
 	{
 		return ZetDocument.builder()
-			.zetNummer( plies[aPlyNummer].getZetNr() )
+			.zetNummer( ply.getZetNr() )
 			.witZet( "..." )
-			.zwartZet( plyToString( plies[aPlyNummer] ) )
+			.zwartZet( plyToString( ply ) )
 			.build();
 	}
-
+	String zwartZet = "...";
+	if ( getPlies().hasPly( aPlyNummer + 1 ) )
+	{
+		zwartZet = plyToString( getPlies().getPly( aPlyNummer + 1 ) );
+	}
 	return ZetDocument.builder()
-		.zetNummer( plies[aPlyNummer].getZetNr() )
-		.witZet( plyToString( plies[aPlyNummer] ) )
-		.zwartZet( plyToString( plies[aPlyNummer + 1] ) )
+		.zetNummer( ply.getZetNr() )
+		.witZet( plyToString( ply ) )
+		.zwartZet( zwartZet )
 		.build();
 }
-
 List<ZetDocument> createZetten()
 {
 	List<ZetDocument> zetten = new ArrayList<>();
 	int startPly = 0;
 	// Als de eerste zet zwart is maken we puntje puntje puntje plus de  ply hierna
-	if ( plies[0].getBoStelling().getAanZet() == ZWART )
+	Ply firstPly = getPlies().getFirstPly();
+	if ( firstPly.getBoStelling().getAanZet() == ZWART )
 	{
 		zetten.add( ZetDocument.builder()
-			.zetNummer( plies[0].getZetNr() )
+			.zetNummer( firstPly.getZetNr() )
 			.witZet( "..." )
-			.zwartZet( plyToString( plies[0] ) )
+			.zwartZet( plyToString( firstPly ) )
 			.build()
 		);
 		startPly = 1;
 	}
-	for ( int x = startPly; x < curPartij.getLastPly(); x += 2 )
+	for ( int x = startPly; x < getPlies().getLastPlyNumber(); x += 2 )
 	{
 		zetten.add( createZetDocument( x ) );
 	}
@@ -1005,21 +973,22 @@ List<ZetDocument> createZetten()
 VooruitRecord createVooruit()
 {
 	VooruitRecord vooruitRecord = VooruitRecord.getDefaultVooruitRecord();
-	if ( curPartij.getCurrentPly() >= 0 )
+	if ( getPlies().getCurrentPlyNumber() >= 0 )
 	{
 		vooruitRecord.setErIsVooruit( true );
-		if ( plies[0].getBoStelling().getAanZet() == WIT )
+		int currentPlyNumber = getPlies().getCurrentPlyNumber();
+		if ( getPlies().getFirstPly().getBoStelling().getAanZet() == WIT )
 		{
-			vooruitRecord.setStart( ( curPartij.getCurrentPly() - 1 ) / 2 + 1 );
+			vooruitRecord.setStart( ( currentPlyNumber - 1 ) / 2 + 1 );
 		}
 		else
 		{
-			vooruitRecord.setStart( ( curPartij.getCurrentPly()     ) / 2 + 1 );
+			vooruitRecord.setStart( ( currentPlyNumber     ) / 2 + 1 );
 		}
 		/* Zou je dit niet precies anderom moeten doen, dus == ZWART?
 		 * De test is nu of de laatste stelling Wit aan zet heeft, maar wit heeft nog niet gezet!
 		 */
-		vooruitRecord.setHalverwege( plies[curPartij.getCurrentPly()].getBoStelling().getAanZet() == ZWART );
+		vooruitRecord.setHalverwege( getPlies().getCurrentPly().getBoStelling().getAanZet() == ZWART );
 	}
 	return vooruitRecord;
 }
@@ -1057,11 +1026,11 @@ END GenZetToStr;
 /**
  * -------- Gegenereerde zet omzetten naar string ( 55. Ke1-e2+ (+100) -------
  */
-GegenereerdeZetDocument getGegenereerdeZetDocument( PlyRecord aPlyRecord, BoStelling aBoStellingNaar )
+GegenereerdeZetDocument getGegenereerdeZetDocument( Ply aPly, BoStelling aBoStellingNaar )
 {
 	return GegenereerdeZetDocument.builder()
-		.zetNummer( aPlyRecord.getZetNr() + 1 )
-		.zet( plyToString( aPlyRecord ) )
+		.zetNummer( aPly.getZetNr() + 1 )
+		.zet( plyToString( aPly ) )
 		.resultaat( getGegenereerdeZetResultaat( aBoStellingNaar.getResultaat() ).getNormaleSpelling() )
 		.matInHoeveel( aBoStellingNaar.getResultaat() == REMISE ? "Onbekend" : "Mat in " + aBoStellingNaar.getAantalZetten()/* @@NOG Waarom? - 1*/ )
 		.build();
@@ -1116,20 +1085,20 @@ END GenToStr;
  */
 public List<GegenereerdeZetDocument> getGegenereerdeZetten()
 {
-	BoStelling boStellingVan = plies[curPartij.getCurrentPly()].getBoStelling();
+	BoStelling boStellingVan = getPlies().getCurrentPly().getBoStelling();
 	GegenereerdeZetten gegenereerdeZetten = gen.genereerZettenGesorteerd( boStellingVan );
 	List<GegenereerdeZetDocument> zetten = new ArrayList<>();
 	int zetNummer = 0;
 	for ( BoStelling boStellingNaar : gegenereerdeZetten.getStellingen() )
 	{
-		PlyRecord plyRecord = PlyRecord.builder()
+		Ply ply = Ply.builder()
 			.zetNr( zetNummer )
 			.boStelling( boStellingVan )
 			.einde( NOG_NIET ) // @@NOG klopt dit??
 			.vanNaar( stellingToVanNaar( boStellingVan, boStellingNaar ) )
 			.schaak( gen.isSchaak( boStellingNaar ) )
 			.build();
-		zetten.add( getGegenereerdeZetDocument( plyRecord, boStellingNaar ) );
+		zetten.add( getGegenereerdeZetDocument( ply, boStellingNaar ) );
 		zetNummer++;
 	}
 	return zetten;
@@ -1146,7 +1115,7 @@ END GetStand;
  */
 public BoStelling getStand()
 {
-	return plies[curPartij.getCurrentPly()].getBoStelling();
+	return getPlies().getCurrentPly().getBoStelling();
 }
 /**
 PROCEDURE GetStukInfo(S: Dbs.Stelling; StukNr: StukNummer): StukInfoRec;
