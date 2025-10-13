@@ -5,10 +5,11 @@ import pu.chessdatabase.bo.BoStelling;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 /**
  * Als we 'van' en 'naar' hebben, dan bevat een Ply
