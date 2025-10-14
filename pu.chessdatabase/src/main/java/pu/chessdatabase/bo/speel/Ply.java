@@ -23,13 +23,13 @@ public class Ply
 public static final Ply NULL_PLY = Ply.builder()
 	.boStelling( BoStelling.NULL_STELLING )
 	.einde( EindeType.NOG_NIET )
-	.zetNr( Partij.MAX_HELE_ZET_NUMMER )
+	.zetNummer( Partij.MAX_HELE_ZET_NUMMER )
 	.vanNaar( VanNaar.ILLEGAL_VAN_NAAR )
 	.build();
 
 private BoStelling boStelling;
 private EindeType einde;
-private int zetNr; // Liep in Modula van 1 tot 130!
+private int zetNummer; // Liep in Modula van 1 tot 130!
 private VanNaar vanNaar;
 // Dit moet je niet doen, het is het schaak in de VORIGE ply dat geldt
 //public boolean isSchaak()

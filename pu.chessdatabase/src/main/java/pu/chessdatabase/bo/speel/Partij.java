@@ -58,7 +58,7 @@ Het plyarray ziet er als volgt uit:
 Plies[0]     Ke3Dh1Kf6Ta1 zaz     1          a1 a8
 Plies[1]     Ke3Dh1Kf6Ta8 waz     2          e3 e4
 Plies[2]     Ke4Dh1Kf6Ta8 zaz     2          f6 g6
-Plies[3]     Ke3Dh1Kg6Ta8 waz     3           ...
+Plies[3]     Ke4Dh1Kg6Ta8 waz     3           ...
 
 Met andere woorden, in een Ply zit de stelling waaruit zetten
 gegenereerd worden, plus de zet die uiteindelijk gedaan is. Het zetnummer
@@ -238,7 +238,7 @@ public BoStelling newGame( BoStelling aStartStelling )
 	getPlies().addPly( Ply.builder()
 		.boStelling( boStelling )
 		.einde( isEindStelling( boStelling ) )
-		.zetNr( 1 )
+		.zetNummer( 1 )
 		.vanNaar( VanNaar.ILLEGAL_VAN_NAAR )
 		.build()
 		);
@@ -801,7 +801,7 @@ END CurZetNrToStr;
  */
 public String currentZetNummerToString()
 {
-	return zetNummerToString( getPlies().getCurrentPly().getZetNr() );
+	return zetNummerToString( getPlies().getCurrentPly().getZetNummer() );
 }
 /**
 PROCEDURE PartijToStr(): PartijReport;
@@ -918,7 +918,7 @@ ZetDocument createZetDocument( int aPlyNummer )
 	if ( ply.getBoStelling().getAanZet() == ZWART )
 	{
 		return ZetDocument.builder()
-			.zetNummer( ply.getZetNr() )
+			.zetNummer( ply.getZetNummer() )
 			.witZet( "..." )
 			.zwartZet( plyToString( ply ) )
 			.build();
@@ -929,7 +929,7 @@ ZetDocument createZetDocument( int aPlyNummer )
 		zwartZet = plyToString( getPlies().getPly( aPlyNummer + 1 ) );
 	}
 	return ZetDocument.builder()
-		.zetNummer( ply.getZetNr() )
+		.zetNummer( ply.getZetNummer() )
 		.witZet( plyToString( ply ) )
 		.zwartZet( zwartZet )
 		.build();
@@ -943,7 +943,7 @@ List<ZetDocument> createZetten()
 	if ( firstPly.getBoStelling().getAanZet() == ZWART )
 	{
 		zetten.add( ZetDocument.builder()
-			.zetNummer( firstPly.getZetNr() )
+			.zetNummer( firstPly.getZetNummer() )
 			.witZet( "..." )
 			.zwartZet( plyToString( firstPly ) )
 			.build()
@@ -1029,7 +1029,7 @@ END GenZetToStr;
 GegenereerdeZetDocument getGegenereerdeZetDocument( Ply aPly, BoStelling aBoStellingNaar )
 {
 	return GegenereerdeZetDocument.builder()
-		.zetNummer( aPly.getZetNr() + 1 )
+		.zetNummer( aPly.getZetNummer() + 1 )
 		.zet( plyToString( aPly ) )
 		.resultaat( getGegenereerdeZetResultaat( aBoStellingNaar.getResultaat() ).getNormaleSpelling() )
 		.matInHoeveel( aBoStellingNaar.getResultaat() == REMISE ? "Onbekend" : "Mat in " + aBoStellingNaar.getAantalZetten()/* @@NOG Waarom? - 1*/ )
@@ -1092,7 +1092,7 @@ public List<GegenereerdeZetDocument> getGegenereerdeZetten()
 	for ( BoStelling boStellingNaar : gegenereerdeZetten.getStellingen() )
 	{
 		Ply ply = Ply.builder()
-			.zetNr( zetNummer )
+			.zetNummer( zetNummer )
 			.boStelling( boStellingVan )
 			.einde( NOG_NIET ) // @@NOG klopt dit??
 			.vanNaar( stellingToVanNaar( boStellingVan, boStellingNaar ) )

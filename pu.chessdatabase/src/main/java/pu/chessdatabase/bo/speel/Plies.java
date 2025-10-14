@@ -42,7 +42,7 @@ public Ply addPly( BoStelling aBoStelling, EindeType aEindeType )
 	int zetNummer;
 	if ( hasPlies() )
 	{
-		zetNummer = getCurrentPly().getZetNr();
+		zetNummer = getCurrentPly().getZetNummer();
 		if ( aBoStelling.getAanZet() == WIT )
 		{
 			zetNummer++;
@@ -55,7 +55,7 @@ public Ply addPly( BoStelling aBoStelling, EindeType aEindeType )
 	Ply newPly = Ply.builder()
 		.boStelling( aBoStelling )
 		.einde( aEindeType )
-		.zetNr( zetNummer )
+		.zetNummer( zetNummer )
 //		.vanNaar( VanNaar.ILLEGAL_VAN_NAAR ) // Liever null want daar kun je gemakkelijk op testen
 		.build();
 	addPly( newPly );
@@ -63,7 +63,7 @@ public Ply addPly( BoStelling aBoStelling, EindeType aEindeType )
 }
 public boolean hasPly( int aPlyNumber )
 {
-	return aPlyNumber <= getPlies().size() - 1;
+	return aPlyNumber >= 0 && aPlyNumber < getPlies().size();
 }
 public Ply getPly( int aPlyNumber )
 {
@@ -71,47 +71,56 @@ public Ply getPly( int aPlyNumber )
 	{
 		throw new RuntimeException( "Fout in createZetDocument: Plynummer > laatste zet" );
 	}
+	if ( aPlyNumber < 0 )
+	{
+		throw new RuntimeException( "Fout in createZetDocument: Plynummer negatief" );
+	}
 	return getPlies().get(  aPlyNumber );
+}
+public Ply getFirstPly()
+{
+	if ( ! hasPly( 0 ) )
+	{
+		throw new RuntimeException( "Fout in getFirstPly: er zijn geen plies dus ook geen eerste ply" );
+	}
+	return getPlies().get( 0 );
 }
 public Ply getCurrentPly()
 {
 	if ( getCurrentPlyNumber() < 0 )
 	{
-		return null;
+		throw new RuntimeException( "Fout in getCurrentPly: huidige Plynummer negatief" );
 	}
 	return getPlies().get( currentPlyNumber );
 }
 public Ply getPreviousPly()
 {
-	if ( getCurrentPlyNumber() <= 0 )
+	if ( getCurrentPlyNumber() < 0 )
 	{
-		return null;
+		throw new RuntimeException( "Fout in getPreviousPly: huidige plynummer negatief" );
+	}
+	if ( getCurrentPlyNumber() == 0 )
+	{
+		throw new RuntimeException( "Fout in getPreviousPly: er is geen vorige ply" );
 	}
 	return getPlies().get( getCurrentPlyNumber() - 1 );
 }
-public Ply getFirstPly()
-{
-	if ( hasPly( 0 ) )
-	{
-		return getPlies().get( 0 );
-	}
-	return null;
-}
-public Ply getSecondPly()
-{
-	if ( hasPly( 1 ) )
-	{
-		return getPlies().get( 1 );
-	}
-	return null;
-}
 public Ply getLastPly()
 {
-	if ( hasPlies() )
+	if ( ! hasPlies() )
 	{
-		return getPlies().get( getPlies().size() - 1 );
+		throw new RuntimeException( "Fout in getLastPly: er zijn geen plies dus ook geen laatste ply" );
 	}
-	return null;
+	return getPlies().get( getPlies().size() - 1 );
+}
+
+public Ply getSecondPly()
+{
+	if ( ! hasPly( 1 ) )
+	{
+		throw new RuntimeException( "Fout in getSecondPly: er is geen tweede ply" );
+	}
+	return getPlies().get( 1 );
 }
 public boolean hasPlies()
 {
@@ -123,20 +132,26 @@ public boolean isAtLastPlyNumber()
 }
 public void setToBegin()
 {
-	if ( isBegonnen() )
+	if ( ! isBegonnen() )
 	{
-		setCurrentPlyNumber( 0 );
+		throw new RuntimeException( "Fout in setToBegin: er is geen begin want de partij is nog niet begonnen" );
 	}
+	setCurrentPlyNumber( 0 );
 }
 public void setTerug()
 {
-	if ( isBegonnen() )
+	if ( ! isBegonnen() )
 	{
-		currentPlyNumber--;
+		throw new RuntimeException( "Fout in setTerug: er is geen zet terug want de partij is nog niet begonnen" );
 	}
+	currentPlyNumber--;
 }
 public void setVooruit()
 {
+	if ( ! isBegonnen() )
+	{
+		throw new RuntimeException( "Fout in setVooruit: er is geen zet vooruit want de partij is nog niet begonnen" );
+	}
 	if ( isBegonnen() )
 	{
 		currentPlyNumber++;
@@ -144,10 +159,11 @@ public void setVooruit()
 }
 public void setToEnd()	
 {
-	if ( isBegonnen() && ! isAtLastPlyNumber() )
+	if ( ! isBegonnen() )
 	{
-		setCurrentPlyNumber( getLastPlyNumber() );
+		throw new RuntimeException( "Fout in setToEnd: de partij is nog niet begonnen" );
 	}
+	setCurrentPlyNumber( getLastPlyNumber() );
 }
 public void clearPliesFromNextPly()
 {
@@ -160,5 +176,9 @@ public void clearPliesFromNextPly()
 public EindeType getCurrentEinde()
 {
 	return getCurrentPly().getEinde();
+}
+void setCurrentPlyNumberForTestingOnlhy( int aCurrentPlyNumber )
+{
+	currentPlyNumber = aCurrentPlyNumber;
 }
 }
