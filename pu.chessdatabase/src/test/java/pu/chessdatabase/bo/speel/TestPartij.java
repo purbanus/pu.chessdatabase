@@ -161,7 +161,7 @@ public void testNewGame()
 	Ply ply = Ply.builder()
 		.boStelling( newBoStelling )
 		.einde( NOG_NIET )
-		.zetNr( 1 )
+		.zetNummer( 1 )
 		.vanNaar( VanNaar.ILLEGAL_VAN_NAAR )
 		.build();
 	assertThat( partij.getPlies().getFirstPly(), is( ply ) );
@@ -477,7 +477,7 @@ public void testZet()
 	Ply secondPly = partij.getPlies().getPly( 1 );
 	assertThat( secondPly.getBoStelling(), is( boStellingNaar ) );
 	assertThat( secondPly.getEinde(), is( NOG_NIET ) );
-	assertThat( secondPly.getZetNr(), is( 1 ) );
+	assertThat( secondPly.getZetNummer(), is( 1 ) );
 }
 @Test
 public void testZetMetClearPliesVoorZet()
@@ -558,7 +558,7 @@ public void testZetMetZwart()
 	Ply secondPly = partij.getPlies().getPly( 1 );
 	assertThat( secondPly.getBoStelling(), is( boStellingNaar ) );
 	assertThat( secondPly.getEinde(), is( NOG_NIET ) );
-	assertThat( secondPly.getZetNr(), is( 2 ) );
+	assertThat( secondPly.getZetNummer(), is( 2 ) );
 }
 @Test
 public void testIsSlagZet()
@@ -616,7 +616,7 @@ public void testZetStelling()
 	Ply secondPly = partij.getPlies().getPly( 1 );
 	assertThat( secondPly.getBoStelling(), is( boStellingNaar ) );
 	assertThat( secondPly.getEinde(), is( NOG_NIET ) );
-	assertThat( secondPly.getZetNr(), is( 2 ) );
+	assertThat( secondPly.getZetNummer(), is( 2 ) );
 }
 @Test
 public void testBedenk()
@@ -651,7 +651,7 @@ public void testBedenk()
 	Ply secondPly = partij.getPlies().getPly( 1 );
 	assertThat( secondPly.getBoStelling(), is( boStellingNaar ) );
 	assertThat( secondPly.getEinde(), is( NOG_NIET ) );
-	assertThat( secondPly.getZetNr(), is( 1 ) );
+	assertThat( secondPly.getZetNummer(), is( 1 ) );
 }
 @Test
 public void testWatStaatErOp()
@@ -684,7 +684,7 @@ public void testPlyToString()
 		.boStelling( boStelling )
 		.einde( NOG_NIET )
 		.vanNaar( vanNaar )
-		.zetNr( 1 )
+		.zetNummer( 1 )
 		.schaak( false )
 		.build();
 	assertThat( partij.plyToString( ply ), is( "Db2-c3 " ) );
@@ -701,7 +701,7 @@ public void testPlyToString()
 		.boStelling( boStelling )
 		.einde( NOG_NIET )
 		.vanNaar( vanNaar )
-		.zetNr( 1 )
+		.zetNummer( 1 )
 		.schaak( true )
 		.build();
 	assertThat( partij.plyToString( ply ), is( "Db2xg7+" ) );
@@ -719,7 +719,7 @@ public void testPlyToString()
 		.boStelling( boStelling )
 		.einde( NOG_NIET )
 		.vanNaar( vanNaar )
-		.zetNr( 1 )
+		.zetNummer( 1 )
 		.schaak( true )
 		.build();
 	assertThat( partij.plyToString( ply ), is( "Db2-h2+" ) );
@@ -1099,7 +1099,7 @@ public void testGegenereerdeZetDocument()
 		.boStelling( boStellingVan )
 		.einde( NOG_NIET )
 		.vanNaar( vanNaar )
-		.zetNr( 15 )
+		.zetNummer( 15 )
 		.schaak( false )
 		.build();
 	GegenereerdeZetDocument gegenereerdeZetDocument = GegenereerdeZetDocument.builder()
@@ -1123,7 +1123,7 @@ public void testGegenereerdeZetDocument()
 		.boStelling( boStellingVan )
 		.einde( NOG_NIET )
 		.vanNaar( vanNaar )
-		.zetNr( 17 )
+		.zetNummer( 17 )
 		.schaak( true )
 		.build();
 	gegenereerdeZetDocument = GegenereerdeZetDocument.builder()
@@ -1180,6 +1180,236 @@ public void testGetStand()
 public void testGetStukInfo()
 {
 	// Lamaar
+}
+/**
+ * Dit is voorbeeld a) uit modula-2. Zie het commentaar in Partij
+ */
+@Test
+public void testModula2Partij_1()
+{
+	BoStelling boStelling1 = BoStelling.alfaBuilder()
+		.wk( "e2" )
+		.zk( "f6" )
+		.s3( "h1" )
+		.s4( "a1" )
+		.aanZet( WIT )
+		.resultaat( GEWONNEN )
+		.aantalZetten( 10 )
+		.schaak( false )
+		.build();
+	BoStelling boStelling2 = BoStelling.alfaBuilder()
+		.wk( "e3" )
+		.zk( "f6" )
+		.s3( "h1" )
+		.s4( "a1" )
+		.aanZet( ZWART )
+		.resultaat( GEWONNEN )
+		.aantalZetten( 15 )
+		.schaak( false )
+		.build();
+	BoStelling boStelling3 = BoStelling.alfaBuilder()
+		.wk( "e3" )
+		.zk( "f6" )
+		.s3( "h1" )
+		.s4( "a8" )
+		.aanZet( WIT )
+		.resultaat( GEWONNEN )
+		.aantalZetten( 8 )
+		.schaak( false )
+		.build();
+	BoStelling boStelling4 = BoStelling.alfaBuilder()
+		.wk( "e4" )
+		.zk( "f6" )
+		.s3( "h1" )
+		.s4( "a8" )
+		.aanZet( ZWART )
+		.resultaat( VERLOREN )
+		.aantalZetten( 30 )
+		.schaak( false )
+		.build();
+	partij.newGame( boStelling1 );
+	VanNaar vanNaar1 = VanNaar.alfaBuilder()
+		.van( "e2" )
+		.naar( "e3" )
+		.build();
+	partij.zet( vanNaar1 );
+	VanNaar vanNaar2 = VanNaar.alfaBuilder()
+		.van( "a1" )
+		.naar( "a8" )
+		.build();
+	partij.zet( vanNaar2 );
+	VanNaar vanNaar3 = VanNaar.alfaBuilder()
+		.van( "e3" )
+		.naar( "e4" )
+		.build();
+	partij.zet( vanNaar3 );
+	VanNaar vanNaar4 = VanNaar.alfaBuilder()
+		.van( "f6" )
+		.naar( "g6" )
+		.build();
+	partij.zet( vanNaar4 );
+
+	Ply ply1 = Ply.builder()
+		.boStelling( boStelling1 )
+		.vanNaar( vanNaar1 )
+		.zetNummer( 1 )
+		.einde( EindeType.NOG_NIET )
+		.schaak( false )
+		.build();
+	Ply ply2 = Ply.builder()
+		.boStelling( boStelling2 )
+		.vanNaar( vanNaar2 )
+		.zetNummer( 1 )
+		.einde( EindeType.NOG_NIET )
+		.schaak( false )
+		.build();
+	Ply ply3 = Ply.builder()
+		.boStelling( boStelling3 )
+		.vanNaar( vanNaar3 )
+		.zetNummer( 2 )
+		.einde( EindeType.NOG_NIET )
+		.schaak( false )
+		.build();
+	Ply ply4 = Ply.builder()
+		.boStelling( boStelling4 )
+		.vanNaar( vanNaar4 )
+		.zetNummer( 2 )
+		.einde( EindeType.NOG_NIET )
+		.schaak( false )
+		.build();
+	assertThat( partij.getPlies().getPly( 0 ), is( ply1 ) );
+	assertThat( partij.getPlies().getPly( 1 ), is( ply2 ) );
+	assertThat( partij.getPlies().getPly( 2 ), is( ply3 ) );
+	assertThat( partij.getPlies().getPly( 3 ), is( ply4 ) );
+
+	List<ZetDocument> zetten = partij.createZetten();
+	ZetDocument zetDocument1 = ZetDocument.builder()
+		.zetNummer( 1 )
+		.witZet( "Ke2-e3 " )
+		.zwartZet( "Ta1-a8 " )
+		.build();
+	ZetDocument zetDocument2 = ZetDocument.builder()
+		.zetNummer( 2 )
+		.witZet( "Ke3-e4 " )
+		.zwartZet( "Kf6-g6 " )
+		.build();
+
+	assertThat( zetten.size(), is( 2 ) );
+	assertThat( zetten.get( 0 ), is( zetDocument1 ) );
+	assertThat( zetten.get( 1 ), is( zetDocument2 ) );
+}
+/**
+ * Dit is voorbeeld b) uit modula-2. Zie het commentaar in Partij
+ */
+@Test
+public void testModula2Partij_b()
+{
+	BoStelling boStelling1 = BoStelling.alfaBuilder()
+		.wk( "e3" )
+		.zk( "f6" )
+		.s3( "h1" )
+		.s4( "a1" )
+		.aanZet( ZWART )
+		.resultaat( GEWONNEN )
+		.aantalZetten( 15 )
+		.schaak( false )
+		.build();
+	BoStelling boStelling2 = BoStelling.alfaBuilder()
+		.wk( "e3" )
+		.zk( "f6" )
+		.s3( "h1" )
+		.s4( "a8" )
+		.aanZet( WIT )
+		.resultaat( GEWONNEN )
+		.aantalZetten( 8 )
+		.schaak( false )
+		.build();
+	BoStelling boStelling3 = BoStelling.alfaBuilder()
+		.wk( "e4" )
+		.zk( "f6" )
+		.s3( "h1" )
+		.s4( "a8" )
+		.aanZet( ZWART )
+		.resultaat( VERLOREN )
+		.aantalZetten( 30 )
+		.schaak( false )
+		.build();
+	BoStelling boStelling4 = BoStelling.alfaBuilder()
+		.wk( "e4" )
+		.zk( "g6" )
+		.s3( "h1" )
+		.s4( "a8" )
+		.aanZet( WIT )
+		.resultaat( GEWONNEN )
+		.aantalZetten( 18 )
+		.schaak( false )
+		.build();
+	partij.newGame( boStelling1 );
+	VanNaar vanNaar1 = VanNaar.alfaBuilder()
+		.van( "a1" )
+		.naar( "a8" )
+		.build();
+	partij.zet( vanNaar1 );
+	VanNaar vanNaar2 = VanNaar.alfaBuilder()
+		.van( "e3" )
+		.naar( "e4" )
+		.build();
+	partij.zet( vanNaar2 );
+	VanNaar vanNaar3 = VanNaar.alfaBuilder()
+		.van( "f6" )
+		.naar( "g6" )
+		.build();
+	partij.zet( vanNaar3 );
+	VanNaar vanNaar4 = null;
+
+	Ply ply1 = Ply.builder()
+		.boStelling( boStelling1 )
+		.vanNaar( vanNaar1 )
+		.zetNummer( 1 )
+		.einde( EindeType.NOG_NIET )
+		.schaak( false )
+		.build();
+	Ply ply2 = Ply.builder()
+		.boStelling( boStelling2 )
+		.vanNaar( vanNaar2 )
+		.zetNummer( 2 )
+		.einde( EindeType.NOG_NIET )
+		.schaak( false )
+		.build();
+	Ply ply3 = Ply.builder()
+		.boStelling( boStelling3 )
+		.vanNaar( vanNaar3 )
+		.zetNummer( 2 )
+		.einde( EindeType.NOG_NIET )
+		.schaak( false )
+		.build();
+	Ply ply4 = Ply.builder()
+		.boStelling( boStelling4 )
+		.vanNaar( vanNaar4 )
+		.zetNummer( 3 )
+		.einde( EindeType.NOG_NIET )
+		.schaak( false )
+		.build();
+	assertThat( partij.getPlies().getPly( 0 ), is( ply1 ) );
+	assertThat( partij.getPlies().getPly( 1 ), is( ply2 ) );
+	assertThat( partij.getPlies().getPly( 2 ), is( ply3 ) );
+	assertThat( partij.getPlies().getPly( 3 ), is( ply4 ) );
+
+	List<ZetDocument> zetten = partij.createZetten();
+	ZetDocument zetDocument1 = ZetDocument.builder()
+		.zetNummer( 1 )
+		.witZet( "..." )
+		.zwartZet( "Ta1-a8 " )
+		.build();
+	ZetDocument zetDocument2 = ZetDocument.builder()
+		.zetNummer( 2 )
+		.witZet( "Ke3-e4 " )
+		.zwartZet( "Kf6-g6 " )
+		.build();
+
+	assertThat( zetten.size(), is( 2 ) );
+	assertThat( zetten.get( 0 ), is( zetDocument1 ) );
+	assertThat( zetten.get( 1 ), is( zetDocument2 ) );
 }
 
 
