@@ -47,4 +47,14 @@ public void testCtorWithString()
 	assertThat( new VanNaar( "Lb2xd4=  #" ), is( expectedVanNaar ) );
 	assertThat( new VanNaar( "Pb2xd4=  #" ), is( expectedVanNaar ) );
 }
+@Test
+public void testToString()
+{
+	VanNaar expectedVanNaar = VanNaar.alfaBuilder()
+		.van( "b2" )
+		.naar( "d4" )
+		.build();
+	assertThat( new VanNaar( "b2", "d4" ).toString(), is( "b2-d4" ) );
+}
+
 }

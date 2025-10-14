@@ -59,5 +59,9 @@ public VanNaar( String aVanNaar )
 	van  = Partij.alfaToVeld( vanNaar.substring( 0, 2 ) );
 	naar = Partij.alfaToVeld( vanNaar.substring( 2, 4 ) );
 }
-
+@Override
+public String toString()
+{
+	return Partij.veldToAlfa( van ) + "-" + Partij.veldToAlfa( naar );
+}
 }
