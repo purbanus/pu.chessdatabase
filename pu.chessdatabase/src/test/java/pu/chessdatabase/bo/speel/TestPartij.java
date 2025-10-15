@@ -36,7 +36,6 @@ public void setup()
 {
 	dbs.setDbsNaam( dbs.DFT_DBS_NAAM );
 	dbs.open();
-	partij.inzPartij();
 }
 @AfterEach
 public void destroy()
@@ -65,15 +64,6 @@ public void testVeldToHexGetal()
 	assertThat( Partij.veldToHexGetal( 0x70 ), is( 70 ) );
 	assertThat( Partij.veldToHexGetal( 0x77 ), is( 77 ) );
 	assertThat( Partij.veldToHexGetal( 0x78 ), is( 78 ) ); // Maar dit is eigenlijk buiten het bord
-}
-
-@Test
-public void testInzPartij()
-{
-	partij.inzPartij();
-	// Dit werkt niet: om een of and're reden vindt-ie dat isNotNull null is
-	//assertThat( partij.curPartij, isNotNull() );
-	assertThat( partij.getPlies(), is( notNullValue() ) );
 }
 @Test
 public void testIsLegaleStelling()
@@ -162,7 +152,7 @@ public void testNewGame()
 		.boStelling( newBoStelling )
 		.einde( NOG_NIET )
 		.zetNummer( 1 )
-		.vanNaar( VanNaar.ILLEGAL_VAN_NAAR )
+		.vanNaar( null )
 		.build();
 	assertThat( partij.getPlies().getFirstPly(), is( ply ) );
 	
@@ -1411,6 +1401,5 @@ public void testModula2Partij_b()
 	assertThat( zetten.get( 0 ), is( zetDocument1 ) );
 	assertThat( zetten.get( 1 ), is( zetDocument2 ) );
 }
-
 
 }

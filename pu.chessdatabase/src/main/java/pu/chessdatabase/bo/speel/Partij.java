@@ -87,15 +87,14 @@ END Partij
  */
 /**
  * Spring roept de constructor aan voordat hij de @AutoWired velden initialiseert.
- * Gelukkig kun je een construcor maken met als parm het veld dat je wilt initialiseren.
- * Day was in dit geval nodig omdat we dbs.Open() wilden aanroepen.
+ * Gelukkig kun je een constructor maken met als parm het veld dat je wilt initialiseren.
+ * Dat was in dit geval nodig omdat we dbs.Open() wilden aanroepen.
  */
 public Partij( Dbs aDbs )
 {
 	super();
 	dbs = aDbs;
 	dbs.open();
-	inzPartij();
 }
 /**
  * ------- Veld naar ASCII ----------------------------------
@@ -152,10 +151,6 @@ END InzPartij;
 /**
  * (*------------ Initialiseren partij -----------------*)
  */
-void inzPartij()
-{
-	setPlies( new Plies() );
-}
 /**
 PROCEDURE IsLegaleStelling(S: Dbs.Stelling): BOOLEAN;
 BEGIN
@@ -231,7 +226,7 @@ public BoStelling newGame( BoStelling aStartStelling )
 	{
 		throw new RuntimeException( "Je kunt niet met een illegale stelling starten bij newGame()" );
 	}
-	inzPartij();
+	setPlies( new Plies() );
 	BoStelling boStelling = dbs.get( aStartStelling );
 	boStelling.setSchaak( gen.isSchaak( boStelling ) );
 	getPlies().clear();
@@ -239,7 +234,7 @@ public BoStelling newGame( BoStelling aStartStelling )
 		.boStelling( boStelling )
 		.einde( isEindStelling( boStelling ) )
 		.zetNummer( 1 )
-		.vanNaar( VanNaar.ILLEGAL_VAN_NAAR )
+		.vanNaar( null )
 		.build()
 		);
 	return boStelling;

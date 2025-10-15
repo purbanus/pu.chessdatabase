@@ -1,5 +1,6 @@
 package pu.chessdatabase.web;
 
+import java.util.Iterator;
 import java.util.Locale;
 
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import pu.chessdatabase.service.ChessDatabaseService;
 import pu.chessdatabase.service.PartijDocument;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.Data;
 
 @Controller
@@ -30,17 +32,36 @@ private static final Logger LOG = LoggerFactory.getLogger( ChessDatabaseControll
 @Value( "${spring.application.name}" )
 String appName;
 
+void showSession( HttpSession aSession )
+{
+	LOG.info( "SessionId=" + aSession.getId() );
+	Iterator<String> it = aSession.getAttributeNames().asIterator();
+	if ( ! it.hasNext() )
+	{
+		LOG.info( "Session heeft geen attributes" );
+	}
+	else
+	{
+		for ( ; it.hasNext(); )
+		{
+			String attribute = it.next();
+			LOG.info( "Session attribute=" + attribute + " = " + aSession.getAttribute( attribute ) );
+		}
+	}
+}
+
 @GetMapping( "/" )
 public String goHome(Locale locale, Model model)
 {
 	return "redirect:/newgame";
 }
 @GetMapping( { "/newgame", "/newgame.html" } )
-public String newGame( Model aModel /*, HttpSession aHttpSession*/ )
+public String newGame( Model aModel, HttpSession aSession )
 {
 	LOG.info( "NewGame gestart" );
 	LOG.debug( "Model=" + aModel.asMap() );
-
+	showSession( aSession );
+	
 	aModel.addAttribute( "AppName", appName );
 	aModel.addAttribute( "wk", "a1" );
 	aModel.addAttribute( "zk", "h8" );
@@ -68,11 +89,12 @@ public RedirectView doNewGame( @ModelAttribute NewGameResponse aGameResponse, Mo
 	);
 }
 @GetMapping( { "/game", "/game.html" } )
-public String game( @ModelAttribute GameResponse aGameResponse, Model aModel )
+public String game( @ModelAttribute GameResponse aGameResponse, Model aModel, HttpSession aSession )
 {
 	LOG.info( "Game response gestart" );
 	LOG.debug( "Model=" + aModel.asMap() );
 	LOG.debug( "GameResponse=" + aGameResponse );
+	showSession( aSession );
 
 	PartijDocument partijDocument = getChessDatabaseService().getPartijDocument( aGameResponse.getBoStellingKey() );
 	aModel.addAttribute( "partijDocument", partijDocument );
