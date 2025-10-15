@@ -67,7 +67,7 @@ is gewoon het nummer dat afgedrukt moet worden.
 ===================================================================================
 */
 
-@Component(  )
+@Component
 @Data
 public class Partij
 {
