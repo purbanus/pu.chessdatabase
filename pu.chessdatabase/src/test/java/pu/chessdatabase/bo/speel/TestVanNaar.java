@@ -54,7 +54,7 @@ public void testToString()
 		.van( "b2" )
 		.naar( "d4" )
 		.build();
-	assertThat( new VanNaar( "b2", "d4" ).toString(), is( "b2-d4" ) );
+	assertThat( expectedVanNaar.toString(), is( "b2-d4" ) );
 }
 
 }
