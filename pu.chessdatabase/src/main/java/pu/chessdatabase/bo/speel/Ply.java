@@ -24,7 +24,7 @@ public static final Ply NULL_PLY = Ply.builder()
 	.boStelling( BoStelling.NULL_STELLING )
 	.einde( EindeType.NOG_NIET )
 	.zetNummer( Partij.MAX_HELE_ZET_NUMMER )
-	.vanNaar( VanNaar.ILLEGAL_VAN_NAAR )
+	.vanNaar( null )
 	.build();
 
 private BoStelling boStelling;

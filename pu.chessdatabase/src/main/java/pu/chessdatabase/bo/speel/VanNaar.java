@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class VanNaar
 {
-public static final @NonNull VanNaar ILLEGAL_VAN_NAAR = new VanNaar( 0x0f, 0x0f );
 public static class AlfaBuilder
 {
 private VanNaar vanNaar = new VanNaar();
