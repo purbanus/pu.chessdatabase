@@ -756,7 +756,7 @@ public ResultaatRecord getResultaatRecord()
 		}
 		if ( resultaat == GEWONNEN || resultaat == VERLOREN )
 		{
-			resultaatRec.setRes2( "Mat in " + Ply.getBoStelling().getAantalZetten() );
+			resultaatRec.setRes2( "Mat in " + ( Ply.getBoStelling().getAantalZetten() - 1 ) );
 		}
 	}
 	return resultaatRec;
@@ -1027,7 +1027,7 @@ GegenereerdeZetDocument getGegenereerdeZetDocument( Ply aPly, BoStelling aBoStel
 		.zetNummer( aPly.getZetNummer() + 1 )
 		.zet( plyToString( aPly ) )
 		.resultaat( getGegenereerdeZetResultaat( aBoStellingNaar.getResultaat() ).getNormaleSpelling() )
-		.matInHoeveel( aBoStellingNaar.getResultaat() == REMISE ? "Onbekend" : "Mat in " + aBoStellingNaar.getAantalZetten()/* @@NOG Waarom? - 1*/ )
+		.matInHoeveel( aBoStellingNaar.getResultaat() == REMISE ? "Onbekend" : "Mat in " + ( aBoStellingNaar.getAantalZetten() - 1 ) )
 		.build();
 }
 ResultaatType getGegenereerdeZetResultaat( ResultaatType aResultaat )
