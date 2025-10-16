@@ -1,7 +1,6 @@
 package pu.chessdatabase.bo.speel;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
