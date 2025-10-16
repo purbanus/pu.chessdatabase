@@ -44,6 +44,10 @@ public PartijDocument getPartijDocument( BoStellingKey aStellingKey )
 		.resultaat( getPartij().getResultaatRecord() )
 		.zetten( getPartij().getPartijReport().getZetten() )
 		.gegenereerdeZetten( getPartij().getGegenereerdeZetten() )
+		.naarBeginMag( getPartij().getPlies().isNaarBeginMag() )
+		.terugMag( getPartij().getPlies().isTerugMag() )
+		.vooruitMag( getPartij().getPlies().isVooruitMag() )
+		.naarEindeMag( getPartij().getPlies().isNaarEindeMag() )
 		.build();
 }
 PartijDocument getPartijDocument( BoStelling aBoStelling )
