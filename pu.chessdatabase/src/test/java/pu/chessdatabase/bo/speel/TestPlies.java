@@ -241,7 +241,9 @@ public void testIsAtLastPlyNumber()
 public void testSetToBeginAndEnd()
 {
 	assertThrows( RuntimeException.class, () -> plies.setToBegin() );
-	assertThrows( RuntimeException.class, () -> plies.setToEnd() );
+	assertFalse( plies.isNaarBeginMag() );
+	assertThrows( RuntimeException.class, () -> plies.setNaarEinde() );
+	assertFalse( plies.isNaarEindeMag() );
 
 	Triple<Ply, Ply, Ply> threePlies = createThreeDifferentPlies();
 	Ply firstPly = threePlies.getLeft();
@@ -253,16 +255,22 @@ public void testSetToBeginAndEnd()
 	plies.addPly( thirdPly );
 	assertThat( plies.getCurrentPly(), is( thirdPly ) );
 
+	assertTrue( plies.isNaarBeginMag() );
+	assertFalse( plies.isNaarEindeMag() );
 	plies.setToBegin();
+	assertTrue( plies.isNaarEindeMag() );
 	assertThat( plies.getCurrentPly(), is( firstPly ) );
 	
-	plies.setToEnd();
+	assertTrue( plies.isNaarEindeMag() );
+	plies.setNaarEinde();
+	assertFalse( plies.isNaarEindeMag() );
 	assertThat( plies.getCurrentPly(), is( thirdPly ) );
 }
 @Test
 public void testSetTerug()
 {
 	assertThrows( RuntimeException.class, () -> plies.setTerug() );
+	assertFalse( plies.isTerugMag() );
 
 	Triple<Ply, Ply, Ply> threePlies = createThreeDifferentPlies();
 	Ply firstPly = threePlies.getLeft();
@@ -270,9 +278,15 @@ public void testSetTerug()
 	Ply thirdPly = threePlies.getRight();
 
 	plies.addPly( firstPly );
+	plies.setCurrentPlyNumberForTestingOnlhy( -1 );
+	assertFalse( plies.isTerugMag() );
+	plies.setCurrentPlyNumberForTestingOnlhy( 0 );
+	assertFalse( plies.isTerugMag() );
 	plies.addPly( secondPly );
+	assertTrue( plies.isTerugMag() );
 	plies.addPly( thirdPly );
 	assertThat( plies.getCurrentPly(), is( thirdPly ) );
+	assertTrue( plies.isTerugMag() );
 	plies.setTerug();
 	assertThat( plies.getCurrentPly(), is( secondPly ) );
 }
@@ -280,6 +294,7 @@ public void testSetTerug()
 public void testSetVooruit()
 {
 	assertThrows( RuntimeException.class, () -> plies.setVooruit() );
+	assertFalse( plies.isVooruitMag() );
 
 	Triple<Ply, Ply, Ply> threePlies = createThreeDifferentPlies();
 	Ply firstPly = threePlies.getLeft();
@@ -287,12 +302,16 @@ public void testSetVooruit()
 	Ply thirdPly = threePlies.getRight();
 
 	plies.addPly( firstPly );
+	assertTrue( plies.isVooruitMag() );
 	plies.addPly( secondPly );
 	plies.addPly( thirdPly );
+	assertTrue( plies.isVooruitMag() );
 	assertThat( plies.getCurrentPly(), is( thirdPly ) );
 	plies.setTerug();
+	assertTrue( plies.isVooruitMag() );
 	assertThat( plies.getCurrentPly(), is( secondPly ) );
 	plies.setVooruit();
+	assertTrue( plies.isVooruitMag() );
 	assertThat( plies.getCurrentPly(), is( thirdPly ) );
 }
 @Test
