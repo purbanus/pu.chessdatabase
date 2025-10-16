@@ -54,6 +54,16 @@ pre
 {
 	background-color: #ddd;
 }
+span.prevnextdisabled
+{
+  color: #777;
+  padding: 4px 8px;
+  border-top: 1px solid grey;
+  border-bottom: 1px solid grey;
+  border-right: 1px solid grey;
+	font-size: 120%;
+  float: left;
+}
 /************* Waarom werkt die vertical-align nou GVD niet!
 .paginator a .prevnext 
 {

@@ -130,13 +130,25 @@ public boolean isAtLastPlyNumber()
 {
 	return getCurrentPlyNumber() == getPlies().size() - 1;
 }
+public boolean isNaarBeginMag()
+{
+	return isBegonnen() && getCurrentPlyNumber() > 0;
+}
 public void setToBegin()
 {
 	if ( ! isBegonnen() )
 	{
 		throw new RuntimeException( "Fout in setToBegin: er is geen begin want de partij is nog niet begonnen" );
 	}
+	if ( getCurrentPlyNumber() <= 0 )
+	{
+		throw new RuntimeException( "Fout in setToBegin: we zijn al aan het begin" );
+	}
 	setCurrentPlyNumber( 0 );
+}
+public boolean isTerugMag()
+{
+	return isBegonnen() && getCurrentPlyNumber() > 0;
 }
 public void setTerug()
 {
@@ -144,7 +156,15 @@ public void setTerug()
 	{
 		throw new RuntimeException( "Fout in setTerug: er is geen zet terug want de partij is nog niet begonnen" );
 	}
+	if ( getCurrentPlyNumber() <= 0 )
+	{
+		throw new RuntimeException( "Fout in setTerug: er is geen zet terug want de partij is nog aan het begin" );
+	}
 	currentPlyNumber--;
+}
+public boolean isVooruitMag()
+{
+	return isBegonnen();
 }
 public void setVooruit()
 {
@@ -152,16 +172,21 @@ public void setVooruit()
 	{
 		throw new RuntimeException( "Fout in setVooruit: er is geen zet vooruit want de partij is nog niet begonnen" );
 	}
-	if ( isBegonnen() )
-	{
-		currentPlyNumber++;
-	}
+	currentPlyNumber++;
 }
-public void setToEnd()	
+public boolean isNaarEindeMag()
+{
+	return isBegonnen() && getCurrentPlyNumber() < getLastPlyNumber();
+}
+public void setNaarEinde()	
 {
 	if ( ! isBegonnen() )
 	{
 		throw new RuntimeException( "Fout in setToEnd: de partij is nog niet begonnen" );
+	}
+	if ( getCurrentPlyNumber() >= getLastPlyNumber() )
+	{
+		throw new RuntimeException( "Fout in setNaarEinde: we zijn al op de laatst gespeelde zet" );
 	}
 	setCurrentPlyNumber( getLastPlyNumber() );
 }

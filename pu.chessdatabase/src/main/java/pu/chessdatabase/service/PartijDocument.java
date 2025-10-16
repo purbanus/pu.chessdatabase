@@ -22,5 +22,9 @@ private final String aanZet;
 private final BoStelling stelling;
 private final ResultaatRecord resultaat;
 private final List<ZetDocument> zetten;
-private final List<GegenereerdeZetDocument> gegenereerdeZetten;
+private final List<GegenereerdeZetDocument> gegenereerdeZetten; 
+private final boolean naarBeginMag;
+private final boolean terugMag;
+private final boolean vooruitMag;
+private final boolean naarEindeMag;
 }

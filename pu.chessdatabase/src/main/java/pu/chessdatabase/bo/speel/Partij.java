@@ -430,7 +430,7 @@ public BoStelling zetVooruit()
 }
 public BoStelling zetNaarEinde()
 {
-	getPlies().setToEnd();
+	getPlies().setNaarEinde();
 	return getStand();
 }
 /**
