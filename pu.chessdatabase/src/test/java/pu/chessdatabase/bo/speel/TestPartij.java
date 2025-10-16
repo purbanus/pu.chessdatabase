@@ -764,7 +764,7 @@ public void testResultaatRecord()
 		.aanZet( WIT )
 		.build();
 	partij.newGame( boStelling );
-	resultaatRecord = new ResultaatRecord( "Gewonnen", "Mat in 29" );
+	resultaatRecord = new ResultaatRecord( "Gewonnen", "Mat in 28" );
 	assertThat( partij.getResultaatRecord(), is( resultaatRecord ) );
 	boStelling = BoStelling.builder()
 		.wk( 0x00 )
@@ -774,7 +774,7 @@ public void testResultaatRecord()
 		.aanZet( ZWART )
 		.build();
 	partij.newGame( boStelling );
-	resultaatRecord = new ResultaatRecord( "Verloren", "Mat in 30" );
+	resultaatRecord = new ResultaatRecord( "Verloren", "Mat in 29" );
 	assertThat( partij.getResultaatRecord(), is( resultaatRecord ) );
 }
 @Test
@@ -1096,7 +1096,7 @@ public void testGegenereerdeZetDocument()
 		.zetNummer( 16 )
 		.zet( "Db2-c3 " )
 		.resultaat( "Gewonnen" )
-		.matInHoeveel( "Mat in 30" )
+		.matInHoeveel( "Mat in 29" )
 		.build();
 	BoStelling boStellingNaar= partij.vanNaarToStelling( ply, vanNaar );
 	assertThat( partij.getGegenereerdeZetDocument( ply, boStellingNaar ), is( gegenereerdeZetDocument ) );
@@ -1142,14 +1142,14 @@ public void testGeGegenereerdeZetten()
 		.zetNummer( 1 )
 		.zet( "Kh8-g8 " )
 		.resultaat( "Verloren" )
-		.matInHoeveel( "Mat in 30" )
+		.matInHoeveel( "Mat in 29" )
 		.build();
 	assertThat( zetten.get( 0 ), is( gegenereerdeZetDocument ) );
 	gegenereerdeZetDocument = GegenereerdeZetDocument.builder()
 		.zetNummer( 2 )
 		.zet( "Kh8-h7 " )
 		.resultaat( "Verloren" )
-		.matInHoeveel( "Mat in 30" )
+		.matInHoeveel( "Mat in 29" )
 		.build();
 	assertThat( zetten.get( 1 ), is( gegenereerdeZetDocument ) );
 }
