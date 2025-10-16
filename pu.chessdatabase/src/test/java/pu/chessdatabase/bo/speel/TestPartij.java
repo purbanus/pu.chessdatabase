@@ -1120,7 +1120,7 @@ public void testGegenereerdeZetDocument()
 		.zetNummer( 18 )
 		.zet( "Db2xg7+" )
 		.resultaat( "Remise" )
-		.matInHoeveel( "Onbekend" )
+		.matInHoeveel( "..." )
 		.build();
 	boStellingNaar= partij.vanNaarToStelling( ply, vanNaar );
 	assertThat( partij.getGegenereerdeZetDocument( ply, boStellingNaar ), is( gegenereerdeZetDocument ) );

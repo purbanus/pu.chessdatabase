@@ -1023,11 +1023,21 @@ END GenZetToStr;
  */
 GegenereerdeZetDocument getGegenereerdeZetDocument( Ply aPly, BoStelling aBoStellingNaar )
 {
+	int matInHoeveel = aBoStellingNaar.getAantalZetten() - 1;
+	String matInHoeveelString;
+	if ( matInHoeveel == 0 )
+	{
+		matInHoeveelString = "Mat";
+	}
+	else
+	{
+		matInHoeveelString = "Mat in " + matInHoeveel;
+	}
 	return GegenereerdeZetDocument.builder()
 		.zetNummer( aPly.getZetNummer() + 1 )
 		.zet( plyToString( aPly ) )
 		.resultaat( getGegenereerdeZetResultaat( aBoStellingNaar.getResultaat() ).getNormaleSpelling() )
-		.matInHoeveel( aBoStellingNaar.getResultaat() == REMISE ? "Onbekend" : "Mat in " + ( aBoStellingNaar.getAantalZetten() - 1 ) )
+		.matInHoeveel( aBoStellingNaar.getResultaat() == REMISE ? "..." : matInHoeveelString )
 		.build();
 }
 ResultaatType getGegenereerdeZetResultaat( ResultaatType aResultaat )
