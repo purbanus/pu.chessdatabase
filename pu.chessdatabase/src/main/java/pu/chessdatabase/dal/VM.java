@@ -9,7 +9,7 @@ import java.io.RandomAccessFile;
 
 import org.springframework.stereotype.Component;
 
-import pu.chessdatabase.util.Range;
+import pu.services.Range;
 
 //import org.apache.commons.lang3.Range;
 

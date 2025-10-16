@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import pu.chessdatabase.dal.Dbs;
 import pu.chessdatabase.dal.PassType;
 import pu.chessdatabase.dal.ResultaatType;
-import pu.chessdatabase.util.StopWatch;
+import pu.services.StopWatch;
 
 @Component
 public class Bouw

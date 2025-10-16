@@ -17,7 +17,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import pu.chessdatabase.util.MatrixFormatter;
+import pu.services.MatrixFormatter;
 
 public class TestVM
 {
