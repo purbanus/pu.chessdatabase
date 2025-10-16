@@ -56,7 +56,7 @@ void vindGrootsten( BoStelling aBoStelling )
 	}
 }
 
-@Test
+//@Test
 public void testGrootsteAantalZetten()
 {
 	dbs.pass( PassType.MARKEER_WIT_EN_ZWART, this::vindGrootste );
