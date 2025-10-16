@@ -17,7 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Bouw;
 import pu.chessdatabase.bo.Gen;
-import pu.chessdatabase.util.Vector;
+import pu.services.Vector;
 
 
 @SpringBootTest

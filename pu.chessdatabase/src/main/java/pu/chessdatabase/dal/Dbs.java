@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 
 import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.ReportFunction;
-import pu.chessdatabase.util.Matrix;
-import pu.chessdatabase.util.Range;
-import pu.chessdatabase.util.Vector;
+import pu.services.Matrix;
+import pu.services.Range;
+import pu.services.Vector;
 
 @Component
 public class Dbs
