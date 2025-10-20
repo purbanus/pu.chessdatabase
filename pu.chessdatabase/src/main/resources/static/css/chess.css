@@ -45,5 +45,6 @@
 
 .inlineTable {
 	display: inline-block;
+	vertical-align: top;
 	/* border-left: 100px; /* Heeft geen effect */
 }
