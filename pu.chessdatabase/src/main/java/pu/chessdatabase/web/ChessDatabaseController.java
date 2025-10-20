@@ -60,7 +60,7 @@ public String newGame( Model aModel, HttpSession aSession )
 {
 	LOG.info( "NewGame gestart" );
 	LOG.debug( "Model=" + aModel.asMap() );
-	showSession( aSession );
+//	showSession( aSession );
 	
 	aModel.addAttribute( "AppName", appName );
 	aModel.addAttribute( "wk", "a1" );
@@ -94,7 +94,7 @@ public String game( @ModelAttribute GameResponse aGameResponse, Model aModel, Ht
 	LOG.info( "Game response gestart" );
 	LOG.debug( "Model=" + aModel.asMap() );
 	LOG.debug( "GameResponse=" + aGameResponse );
-	showSession( aSession );
+	//showSession( aSession );
 
 	PartijDocument partijDocument = getChessDatabaseService().getPartijDocument( aGameResponse.getBoStellingKey() );
 	aModel.addAttribute( "partijDocument", partijDocument );
@@ -103,7 +103,6 @@ public String game( @ModelAttribute GameResponse aGameResponse, Model aModel, Ht
 	return "game";
 }
 @GetMapping(value = { "/do-zet" } )
-//@PostMapping(value = { "/do-zet" } )
 public RedirectView doZet( @ModelAttribute ZetResponse aZetResponse, Model aModel ) 
 {
 	LOG.info( "Zet response gestart" );

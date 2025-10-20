@@ -2,8 +2,10 @@ package pu.chessdatabase.bo;
 
 import static pu.chessdatabase.bo.Kleur.*;
 
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Comparator;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -367,7 +369,7 @@ BEGIN
 END AddZet;
  */
 // @@NOG geen gegenereerdeZetten als parm maar gewoon de nieuwe stelling retourneren
-void addZet( final BoStelling aBoStelling, int aStukNr, int aNaar, ZetSoort aZetsoort, int aKoningsVeld, int aStukVeld, GegenereerdeZetten aGegenereerdeZetten )
+void addZet( final BoStelling aBoStelling, int aStukNr, int aNaar, ZetSoort aZetsoort, int aKoningsVeld, int aStukVeld, List<BoStelling> aGegenereerdeZetten )
 {
 	BoStelling boStelling = aBoStelling.clone();
 	if ( aZetsoort == ZetSoort.SLAGZET )
@@ -407,7 +409,6 @@ void addZet( final BoStelling aBoStelling, int aStukNr, int aNaar, ZetSoort aZet
 	BoStelling gotBoStelling = dbs.get( boStelling );
 	// Dit moet je niet doen want isSchaak cleart het bord
 	// boStelling.setSchaak( isSchaak( boStelling ) );
-	// @@NOG Goede les: elimineer Bord as globale variabele!!
 	if ( gotBoStelling.getResultaat() != ResultaatType.ILLEGAAL )
 	{
 		aGegenereerdeZetten.add( gotBoStelling );
@@ -442,9 +443,9 @@ BEGIN
 END GenZperStuk;
 (*$O=*) (* Overflow check *)
  */
-GegenereerdeZetten genereerZettenPerStuk( BoStelling aBoStelling, int aStukNummer, int aKoningsVeld, int aStukVeld, Bord aBord )
+List<BoStelling> genereerZettenPerStuk( BoStelling aBoStelling, int aStukNummer, int aKoningsVeld, int aStukVeld, Bord aBord )
 {
-	GegenereerdeZetten gegenereerdeZetten = new GegenereerdeZetten();
+	List<BoStelling> gegenereerdeZetten = new ArrayList<>();
 	Stuk stuk = stukTabel[aStukNummer];
 	for ( int x = 0; x < stuk.getAantalRichtingen(); x++ )
 	{
@@ -509,9 +510,9 @@ END GenZ;
 /**
  * -------- Genereer zetten ----------		
  */
-public GegenereerdeZetten genereerZetten( BoStelling aStelling )
+public List<BoStelling> genereerZetten( BoStelling aStelling )
 {
-	GegenereerdeZetten gegenereerdeZetten = new GegenereerdeZetten();
+	List<BoStelling> gegenereerdeZetten = new ArrayList<>();
 	Bord bord = new Bord( aStelling );
 	int stukVeld;
 	int koningsVeld;
@@ -521,30 +522,26 @@ public GegenereerdeZetten genereerZetten( BoStelling aStelling )
 	{
 		stukVeld = aStelling.getWk();
 		koningsVeld = aStelling.getWk();
-		GegenereerdeZetten gegenereerdeZettenPerStuk = genereerZettenPerStuk( aStelling, 1, koningsVeld, stukVeld, bord );
-		gegenereerdeZetten.addAll( gegenereerdeZettenPerStuk );
+		gegenereerdeZetten.addAll( genereerZettenPerStuk( aStelling, 1, koningsVeld, stukVeld, bord ) );
 	}
 	else
 	{
 		stukVeld = aStelling.getZk();
 		koningsVeld = aStelling.getZk();
-		GegenereerdeZetten gegenereerdeZettenPerStuk = genereerZettenPerStuk( aStelling, 2, koningsVeld, stukVeld, bord );
-		gegenereerdeZetten.addAll( gegenereerdeZettenPerStuk );
+		gegenereerdeZetten.addAll( genereerZettenPerStuk( aStelling, 2, koningsVeld, stukVeld, bord ) );
 	}
 	//--------- Stukzetten ----------
 	if ( ( stukTabel[3].getKleur() == aStelling.getAanZet() ) && ( aStelling.getS3() != koningsVeld ) )
 	{
 		stukVeld = aStelling.getS3();
 		koningsVeld = aStelling.getWk();
-		GegenereerdeZetten gegenereerdeZettenPerStuk = genereerZettenPerStuk( aStelling, 3, koningsVeld, stukVeld, bord );
-		gegenereerdeZetten.addAll( gegenereerdeZettenPerStuk );
+		gegenereerdeZetten.addAll( genereerZettenPerStuk( aStelling, 3, koningsVeld, stukVeld, bord ) );
 	}
 	if ( ( stukTabel[4].getKleur() == aStelling.getAanZet() ) && ( aStelling.getS4() != koningsVeld ) )
 	{
 		stukVeld = aStelling.getS4();
 		koningsVeld = aStelling.getZk();
-		GegenereerdeZetten gegenereerdeZettenPerStuk = genereerZettenPerStuk( aStelling, 4, koningsVeld, stukVeld, bord );
-		gegenereerdeZetten.addAll( gegenereerdeZettenPerStuk );
+		gegenereerdeZetten.addAll( genereerZettenPerStuk( aStelling, 4, koningsVeld, stukVeld, bord ) );
 	}
 	return gegenereerdeZetten;
 }
@@ -607,15 +604,15 @@ Comparator<BoStelling> stellingComparator = new Comparator<>()
 		
 	}
 };
-public GegenereerdeZetten genereerZettenGesorteerd( BoStelling aStelling )
+public List<BoStelling> genereerZettenGesorteerd( BoStelling aStelling )
 {
-	GegenereerdeZetten gegenereerdeZetten = genereerZetten( aStelling );
-	gegenereerdeZetten.getStellingen().sort( stellingComparator );
+	List<BoStelling> gegenereerdeZetten = genereerZetten( aStelling );
+	gegenereerdeZetten.sort( stellingComparator );
 	// @@NOG Met zwart aan zet geeft hij de juiste volgorde, met wit precies de omgekeerde
 	// Dus omdat ik geen zin heb om dat sorteren opnieuw te doen, doen we hier een reverse()
 	if ( aStelling.getAanZet() == WIT )
 	{
-		gegenereerdeZetten.reverse();
+		gegenereerdeZetten = gegenereerdeZetten.reversed();
 	}
 	return gegenereerdeZetten;
 }

@@ -193,23 +193,6 @@ public void initializeCache()
 	}
 }
 /**
-******************************************************************************
-Procedures: IOresult
-            ChkFile
-Doel      : Rapportage omtrent de schijf.
-            IOresult geeft het resultaat van de laatste schijfoperatie. Voorlopig
-            wordt de standaard funktie in FIO aangeroepen.
-            ChkFile kijkt of een bestand bestaat op schijf.
-******************************************************************************
-
-(*----------- Rapporteer eventuele fouten -------------------*)
-PROCEDURE (*$N*) IOresult(): CARDINAL;
-VAR Msg: ARRAY[0..80] OF CHAR;
-BEGIN
-    RETURN(FIO.IOresult());
-*/
-// @@NOG IOResult????
-/**
  * (*--------- Kijk of een bestand bestaat ------------------*)
 PROCEDURE (*$N*) ChkFile(Naam: ARRAY OF CHAR): CARDINAL;
 VAR IOres: CARDINAL;
