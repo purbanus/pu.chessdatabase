@@ -338,8 +338,8 @@ public void isMat( BoStelling aBoStelling )
 //	boStelling.setSchaak( gen.isSchaak( boStelling ) );
 	if ( boStelling.getResultaat() == ResultaatType.REMISE && boStelling.isSchaak() == true )
 	{
-		GegenereerdeZetten gegenereerdeZetten = gen.genereerZetten( boStelling );
-		if ( gegenereerdeZetten.getAantal() == 0 )
+		List<BoStelling> gegenereerdeZetten = gen.genereerZetten( boStelling );
+		if ( gegenereerdeZetten.size() == 0 )
 		{
 			boStelling.setResultaat( ResultaatType.VERLOREN );
 			boStelling.setAantalZetten( 1 );
@@ -548,18 +548,18 @@ List<BoStelling> changes = new ArrayList<>();
 void markeer( BoStelling aBoStelling )
 {
 	BoStelling boStelling = aBoStelling.clone();
-	GegenereerdeZetten gegenereerdeZetten = gen.genereerZetten( boStelling );
-	if ( gegenereerdeZetten.getAantal() == 0 )
+	List<BoStelling> gegenereerdeZetten = gen.genereerZetten( boStelling );
+	if ( gegenereerdeZetten.size() == 0 )
 	{
 		return;
 	}
 	boStelling.setResultaat( ResultaatType.VERLOREN ); 
 	int minGewonnen = Integer.MAX_VALUE;
 	int maxVerloren = Integer.MIN_VALUE;
-	for ( int x = 0; x < gegenereerdeZetten.getAantal(); x++ )
+	for ( int x = 0; x < gegenereerdeZetten.size(); x++ )
 	{
-		int aantal = gegenereerdeZetten.getStellingen().get( x ).getAantalZetten();
-		switch( gegenereerdeZetten.getStellingen().get( x ).getResultaat() )
+		int aantal = gegenereerdeZetten.get( x ).getAantalZetten();
+		switch( gegenereerdeZetten.get( x ).getResultaat() )
 		{
 			case ResultaatType.VERLOREN:
 			{
@@ -591,7 +591,7 @@ void markeer( BoStelling aBoStelling )
 			//$CASES-OMITTED$
 			default:
 			{
-				throw new RuntimeException( "Ongeldige switch case " + gegenereerdeZetten.getStellingen().get( x ).getResultaat() );
+				throw new RuntimeException( "Ongeldige switch case " + gegenereerdeZetten.get( x ).getResultaat() );
 			}
 		}
 	}

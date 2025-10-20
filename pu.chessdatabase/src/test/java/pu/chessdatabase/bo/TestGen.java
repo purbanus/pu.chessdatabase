@@ -10,6 +10,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.dal.ResultaatType.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -327,7 +330,7 @@ public void testAddZet()
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 
 	BoStelling stelling;
-	GegenereerdeZetten genZRec;
+	List<BoStelling> gegenereerdeZetten;
 	BoStelling resultaatStelling;
 	
 	// Gewone zet
@@ -338,10 +341,10 @@ public void testAddZet()
 		.s4( 0x33 )
 		.aanZet( ZWART )
 		.build();
-	genZRec = new GegenereerdeZetten();
-	gen.addZet( stelling, 3, 0x77, ZetSoort.GEWOON, 0x11, 0x76, genZRec );
-	assertThat( genZRec.getAantal(), is( 1 ) );
-	resultaatStelling = genZRec.getStellingen().get( 0 );
+	gegenereerdeZetten = new ArrayList<>();
+	gen.addZet( stelling, 3, 0x77, ZetSoort.GEWOON, 0x11, 0x76, gegenereerdeZetten );
+	assertThat( gegenereerdeZetten.size(), is( 1 ) );
+	resultaatStelling = gegenereerdeZetten.get( 0 );
 	assertThat( resultaatStelling.getWk(), is( 0x11 ) );
 	assertThat( resultaatStelling.getZk(), is( 0x27 ) );
 	assertThat( resultaatStelling.getS3(), is( 0x77 ) );
@@ -356,10 +359,10 @@ public void testAddZet()
 		.s4( 0x33 )
 		.aanZet( WIT )
 		.build();
-	genZRec = new GegenereerdeZetten();
-	gen.addZet( stelling, 4, 0x76, ZetSoort.SLAGZET, 0x11, 0x76, genZRec );
-	assertThat( genZRec.getAantal(), is( 1 ) );
-	resultaatStelling = genZRec.getStellingen().get( 0 );
+	gegenereerdeZetten = new ArrayList<>();
+	gen.addZet( stelling, 4, 0x76, ZetSoort.SLAGZET, 0x11, 0x76, gegenereerdeZetten );
+	assertThat( gegenereerdeZetten.size(), is( 1 ) );
+	resultaatStelling = gegenereerdeZetten.get( 0 );
 	assertThat( resultaatStelling.getWk(), is( 0x11 ) );
 	assertThat( resultaatStelling.getZk(), is( 0x27 ) );
 	assertThat( resultaatStelling.getS3(), is( 0x11 ) );
@@ -374,10 +377,10 @@ public void testAddZet()
 		.s4( 0x33 )
 		.aanZet( WIT )
 		.build();
-	genZRec = new GegenereerdeZetten();
-	gen.addZet( stelling, 1, 0x12, ZetSoort.GEWOON, 0x11, 0x11, genZRec );
-	assertThat( genZRec.getAantal(), is( 1 ) );
-	resultaatStelling = genZRec.getStellingen().get( 0 );
+	gegenereerdeZetten = new ArrayList<>();
+	gen.addZet( stelling, 1, 0x12, ZetSoort.GEWOON, 0x11, 0x11, gegenereerdeZetten );
+	assertThat( gegenereerdeZetten.size(), is( 1 ) );
+	resultaatStelling = gegenereerdeZetten.get( 0 );
 	assertThat( resultaatStelling.getWk(), is( 0x12 ) );
 	assertThat( resultaatStelling.getZk(), is( 0x27 ) );
 	assertThat( resultaatStelling.getS3(), is( 0x12 ) );
@@ -403,36 +406,36 @@ public void testGenZetPerStuk()
 		.aanZet( ZWART )
 		.build();
 	Bord bord = new Bord( boStelling );
-	GegenereerdeZetten genZRec = gen.genereerZettenPerStuk( boStelling, 4, 0x27, 0x33, bord );
-	assertThat( genZRec.getAantal(), is( 14 ) );
-	assertThat( genZRec.getStellingen().get(  0 ).getS4(), is( 0x34 ) );
-	assertThat( genZRec.getStellingen().get(  0 ).getAanZet(), is( WIT ) );
-	assertThat( genZRec.getStellingen().get(  1 ).getS4(), is( 0x35 ) );
-	assertThat( genZRec.getStellingen().get(  1 ).getAanZet(), is( WIT ) );
-	assertThat( genZRec.getStellingen().get(  2 ).getS4(), is( 0x36 ) );
-	assertThat( genZRec.getStellingen().get(  2 ).getAanZet(), is( WIT ) );
-	assertThat( genZRec.getStellingen().get(  3 ).getS4(), is( 0x37 ) );
-	assertThat( genZRec.getStellingen().get(  3 ).getAanZet(), is( WIT ) );
-	assertThat( genZRec.getStellingen().get(  4 ).getS4(), is( 0x43 ) );
-	assertThat( genZRec.getStellingen().get(  4 ).getAanZet(), is( WIT ) );
-	assertThat( genZRec.getStellingen().get(  5 ).getS4(), is( 0x53 ) );
-	assertThat( genZRec.getStellingen().get(  5 ).getAanZet(), is( WIT ) );
-	assertThat( genZRec.getStellingen().get(  6 ).getS4(), is( 0x63 ) );
-	assertThat( genZRec.getStellingen().get(  6 ).getAanZet(), is( WIT ) );
-	assertThat( genZRec.getStellingen().get(  7 ).getS4(), is( 0x73 ) );
-	assertThat( genZRec.getStellingen().get(  7 ).getAanZet(), is( WIT ) );
-	assertThat( genZRec.getStellingen().get(  8 ).getS4(), is( 0x32 ) );
-	assertThat( genZRec.getStellingen().get(  8 ).getAanZet(), is( WIT ) );
-	assertThat( genZRec.getStellingen().get(  9 ).getS4(), is( 0x31 ) );
-	assertThat( genZRec.getStellingen().get(  9 ).getAanZet(), is( WIT ) );
-	assertThat( genZRec.getStellingen().get( 10 ).getS4(), is( 0x30 ) );
-	assertThat( genZRec.getStellingen().get( 10 ).getAanZet(), is( WIT ) );
-	assertThat( genZRec.getStellingen().get( 11 ).getS4(), is( 0x23 ) );
-	assertThat( genZRec.getStellingen().get( 11 ).getAanZet(), is( WIT ) );
-	assertThat( genZRec.getStellingen().get( 12 ).getS4(), is( 0x13 ) );
-	assertThat( genZRec.getStellingen().get( 12 ).getAanZet(), is( WIT ) );
-	assertThat( genZRec.getStellingen().get( 13 ).getS4(), is( 0x03 ) );
-	assertThat( genZRec.getStellingen().get( 13 ).getAanZet(), is( WIT ) );
+	List<BoStelling> gegenereerdeZetten = gen.genereerZettenPerStuk( boStelling, 4, 0x27, 0x33, bord );
+	assertThat( gegenereerdeZetten.size(), is( 14 ) );
+	assertThat( gegenereerdeZetten.get(  0 ).getS4(), is( 0x34 ) );
+	assertThat( gegenereerdeZetten.get(  0 ).getAanZet(), is( WIT ) );
+	assertThat( gegenereerdeZetten.get(  1 ).getS4(), is( 0x35 ) );
+	assertThat( gegenereerdeZetten.get(  1 ).getAanZet(), is( WIT ) );
+	assertThat( gegenereerdeZetten.get(  2 ).getS4(), is( 0x36 ) );
+	assertThat( gegenereerdeZetten.get(  2 ).getAanZet(), is( WIT ) );
+	assertThat( gegenereerdeZetten.get(  3 ).getS4(), is( 0x37 ) );
+	assertThat( gegenereerdeZetten.get(  3 ).getAanZet(), is( WIT ) );
+	assertThat( gegenereerdeZetten.get(  4 ).getS4(), is( 0x43 ) );
+	assertThat( gegenereerdeZetten.get(  4 ).getAanZet(), is( WIT ) );
+	assertThat( gegenereerdeZetten.get(  5 ).getS4(), is( 0x53 ) );
+	assertThat( gegenereerdeZetten.get(  5 ).getAanZet(), is( WIT ) );
+	assertThat( gegenereerdeZetten.get(  6 ).getS4(), is( 0x63 ) );
+	assertThat( gegenereerdeZetten.get(  6 ).getAanZet(), is( WIT ) );
+	assertThat( gegenereerdeZetten.get(  7 ).getS4(), is( 0x73 ) );
+	assertThat( gegenereerdeZetten.get(  7 ).getAanZet(), is( WIT ) );
+	assertThat( gegenereerdeZetten.get(  8 ).getS4(), is( 0x32 ) );
+	assertThat( gegenereerdeZetten.get(  8 ).getAanZet(), is( WIT ) );
+	assertThat( gegenereerdeZetten.get(  9 ).getS4(), is( 0x31 ) );
+	assertThat( gegenereerdeZetten.get(  9 ).getAanZet(), is( WIT ) );
+	assertThat( gegenereerdeZetten.get( 10 ).getS4(), is( 0x30 ) );
+	assertThat( gegenereerdeZetten.get( 10 ).getAanZet(), is( WIT ) );
+	assertThat( gegenereerdeZetten.get( 11 ).getS4(), is( 0x23 ) );
+	assertThat( gegenereerdeZetten.get( 11 ).getAanZet(), is( WIT ) );
+	assertThat( gegenereerdeZetten.get( 12 ).getS4(), is( 0x13 ) );
+	assertThat( gegenereerdeZetten.get( 12 ).getAanZet(), is( WIT ) );
+	assertThat( gegenereerdeZetten.get( 13 ).getS4(), is( 0x03 ) );
+	assertThat( gegenereerdeZetten.get( 13 ).getAanZet(), is( WIT ) );
 	
 	boStelling = BoStelling.builder()
 		.wk( 0x11 )
@@ -442,14 +445,14 @@ public void testGenZetPerStuk()
 		.aanZet( ZWART )
 		.build();
 	bord = new Bord( boStelling );
-	genZRec = gen.genereerZettenPerStuk( boStelling, 4, 0x27, 0x77, bord );
-	assertThat( genZRec.getAantal(), is( 5 ) );
-	assertThat( genZRec.getStellingen().get(  0 ).getS4(), is( 0x76 ) );
-	assertThat( genZRec.getStellingen().get(  0 ).getS3(), is( 0x11 ) );
-	assertThat( genZRec.getStellingen().get(  1 ).getS4(), is( 0x67 ) );
-	assertThat( genZRec.getStellingen().get(  2 ).getS4(), is( 0x57 ) );
-	assertThat( genZRec.getStellingen().get(  3 ).getS4(), is( 0x47 ) );
-	assertThat( genZRec.getStellingen().get(  4 ).getS4(), is( 0x37 ) );
+	gegenereerdeZetten = gen.genereerZettenPerStuk( boStelling, 4, 0x27, 0x77, bord );
+	assertThat( gegenereerdeZetten.size(), is( 5 ) );
+	assertThat( gegenereerdeZetten.get(  0 ).getS4(), is( 0x76 ) );
+	assertThat( gegenereerdeZetten.get(  0 ).getS3(), is( 0x11 ) );
+	assertThat( gegenereerdeZetten.get(  1 ).getS4(), is( 0x67 ) );
+	assertThat( gegenereerdeZetten.get(  2 ).getS4(), is( 0x57 ) );
+	assertThat( gegenereerdeZetten.get(  3 ).getS4(), is( 0x47 ) );
+	assertThat( gegenereerdeZetten.get(  4 ).getS4(), is( 0x37 ) );
 	
 	boStelling = BoStelling.builder()
 		.wk( 0x02 )
@@ -463,8 +466,8 @@ public void testGenZetPerStuk()
 		.build();
 	bord = new Bord( boStelling );
 	//gen.printBord();
-	genZRec = gen.genereerZettenPerStuk( boStelling, 1, 0x02, 0x02, bord );
-	assertThat( genZRec.getAantal(), is( 5 ) );
+	gegenereerdeZetten = gen.genereerZettenPerStuk( boStelling, 1, 0x02, 0x02, bord );
+	assertThat( gegenereerdeZetten.size(), is( 5 ) );
 
 }
 @Test
@@ -474,7 +477,7 @@ public void testGenZet()
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 
 	BoStelling boStelling;
-	GegenereerdeZetten genZRec;
+	List<BoStelling> gegenereerdeZetten;
 	
 	boStelling = BoStelling.builder()
 		.wk( 0x11 )
@@ -483,29 +486,29 @@ public void testGenZet()
 		.s4( 0x33 )
 		.aanZet( ZWART )
 		.build();
-	genZRec = gen.genereerZetten( boStelling );
-	assertThat( genZRec.getAantal(), is( 19 ) );
+	gegenereerdeZetten = gen.genereerZetten( boStelling );
+	assertThat( gegenereerdeZetten.size(), is( 19 ) );
 
-	assertThat( genZRec.getStellingen().get(  0 ).getZk(), is( 0x37 ) );
-	assertThat( genZRec.getStellingen().get(  1 ).getZk(), is( 0x36 ) );
-	assertThat( genZRec.getStellingen().get(  2 ).getZk(), is( 0x26 ) ); //@@NOG Dit is een illegale stelling
-	assertThat( genZRec.getStellingen().get(  3 ).getZk(), is( 0x16 ) );
-	assertThat( genZRec.getStellingen().get(  4 ).getZk(), is( 0x17 ) );
+	assertThat( gegenereerdeZetten.get(  0 ).getZk(), is( 0x37 ) );
+	assertThat( gegenereerdeZetten.get(  1 ).getZk(), is( 0x36 ) );
+	assertThat( gegenereerdeZetten.get(  2 ).getZk(), is( 0x26 ) ); //@@NOG Dit is een illegale stelling
+	assertThat( gegenereerdeZetten.get(  3 ).getZk(), is( 0x16 ) );
+	assertThat( gegenereerdeZetten.get(  4 ).getZk(), is( 0x17 ) );
 
-	assertThat( genZRec.getStellingen().get(  5 ).getS4(), is( 0x34 ) );
-	assertThat( genZRec.getStellingen().get(  6 ).getS4(), is( 0x35 ) );
-	assertThat( genZRec.getStellingen().get(  7 ).getS4(), is( 0x36 ) );
-	assertThat( genZRec.getStellingen().get(  8 ).getS4(), is( 0x37 ) );
-	assertThat( genZRec.getStellingen().get(  9 ).getS4(), is( 0x43 ) );
-	assertThat( genZRec.getStellingen().get( 10 ).getS4(), is( 0x53 ) );
-	assertThat( genZRec.getStellingen().get( 11 ).getS4(), is( 0x63 ) );
-	assertThat( genZRec.getStellingen().get( 12 ).getS4(), is( 0x73 ) );
-	assertThat( genZRec.getStellingen().get( 13 ).getS4(), is( 0x32 ) );
-	assertThat( genZRec.getStellingen().get( 14 ).getS4(), is( 0x31 ) );
-	assertThat( genZRec.getStellingen().get( 15 ).getS4(), is( 0x30 ) );
-	assertThat( genZRec.getStellingen().get( 16 ).getS4(), is( 0x23 ) );
-	assertThat( genZRec.getStellingen().get( 17 ).getS4(), is( 0x13 ) );
-	assertThat( genZRec.getStellingen().get( 18 ).getS4(), is( 0x03 ) );
+	assertThat( gegenereerdeZetten.get(  5 ).getS4(), is( 0x34 ) );
+	assertThat( gegenereerdeZetten.get(  6 ).getS4(), is( 0x35 ) );
+	assertThat( gegenereerdeZetten.get(  7 ).getS4(), is( 0x36 ) );
+	assertThat( gegenereerdeZetten.get(  8 ).getS4(), is( 0x37 ) );
+	assertThat( gegenereerdeZetten.get(  9 ).getS4(), is( 0x43 ) );
+	assertThat( gegenereerdeZetten.get( 10 ).getS4(), is( 0x53 ) );
+	assertThat( gegenereerdeZetten.get( 11 ).getS4(), is( 0x63 ) );
+	assertThat( gegenereerdeZetten.get( 12 ).getS4(), is( 0x73 ) );
+	assertThat( gegenereerdeZetten.get( 13 ).getS4(), is( 0x32 ) );
+	assertThat( gegenereerdeZetten.get( 14 ).getS4(), is( 0x31 ) );
+	assertThat( gegenereerdeZetten.get( 15 ).getS4(), is( 0x30 ) );
+	assertThat( gegenereerdeZetten.get( 16 ).getS4(), is( 0x23 ) );
+	assertThat( gegenereerdeZetten.get( 17 ).getS4(), is( 0x13 ) );
+	assertThat( gegenereerdeZetten.get( 18 ).getS4(), is( 0x03 ) );
 }
 
 @Test
@@ -602,7 +605,7 @@ public void testGenZetSort()
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 
 	BoStelling stelling;
-	GegenereerdeZetten genZRec;
+	List<BoStelling> gegenereerdeZetten;
 	
 	// Zwart aan zet
 	stelling = BoStelling.builder()
@@ -612,44 +615,44 @@ public void testGenZetSort()
 		.s4( 0x33 )
 		.aanZet( ZWART )
 		.build();
-	genZRec = gen.genereerZetten( stelling );
-	assertThat( genZRec.getAantal(), is( 19 ) );
+	gegenereerdeZetten = gen.genereerZetten( stelling );
+	assertThat( gegenereerdeZetten.size(), is( 19 ) );
 
 	// Om een beetje verschil te krijgen
-	genZRec.getStellingen().get( 5 ).setResultaat( ResultaatType.GEWONNEN );
-	genZRec.getStellingen().get( 5 ).setAantalZetten( 11 );
-	genZRec.getStellingen().get( 6 ).setResultaat( ResultaatType.VERLOREN );
-	genZRec.getStellingen().get( 6 ).setAantalZetten( 11 );
-	genZRec.getStellingen().get( 7 ).setResultaat( ResultaatType.GEWONNEN );
-	genZRec.getStellingen().get( 7 ).setAantalZetten( 9 );
-	genZRec.getStellingen().get( 8 ).setResultaat( ResultaatType.VERLOREN );
-	genZRec.getStellingen().get( 8 ).setAantalZetten( 9 );
+	gegenereerdeZetten.get( 5 ).setResultaat( ResultaatType.GEWONNEN );
+	gegenereerdeZetten.get( 5 ).setAantalZetten( 11 );
+	gegenereerdeZetten.get( 6 ).setResultaat( ResultaatType.VERLOREN );
+	gegenereerdeZetten.get( 6 ).setAantalZetten( 11 );
+	gegenereerdeZetten.get( 7 ).setResultaat( ResultaatType.GEWONNEN );
+	gegenereerdeZetten.get( 7 ).setAantalZetten( 9 );
+	gegenereerdeZetten.get( 8 ).setResultaat( ResultaatType.VERLOREN );
+	gegenereerdeZetten.get( 8 ).setAantalZetten( 9 );
 	
-	genZRec.getStellingen().sort( gen.stellingComparator );
+	gegenereerdeZetten.sort( gen.stellingComparator );
 	
-	assertThat( genZRec.getStellingen().get(  0 ).getS4(), is( 0x37 ) );
-	assertThat( genZRec.getStellingen().get(  1 ).getS4(), is( 0x35 ) );
+	assertThat( gegenereerdeZetten.get(  0 ).getS4(), is( 0x37 ) );
+	assertThat( gegenereerdeZetten.get(  1 ).getS4(), is( 0x35 ) );
 
-	assertThat( genZRec.getStellingen().get(  2 ).getZk(), is( 0x37 ) );
-	assertThat( genZRec.getStellingen().get(  3 ).getZk(), is( 0x36 ) );
-	assertThat( genZRec.getStellingen().get(  4 ).getZk(), is( 0x26 ) );
-	assertThat( genZRec.getStellingen().get(  5 ).getZk(), is( 0x16 ) );
-	assertThat( genZRec.getStellingen().get(  6 ).getZk(), is( 0x17 ) );
+	assertThat( gegenereerdeZetten.get(  2 ).getZk(), is( 0x37 ) );
+	assertThat( gegenereerdeZetten.get(  3 ).getZk(), is( 0x36 ) );
+	assertThat( gegenereerdeZetten.get(  4 ).getZk(), is( 0x26 ) );
+	assertThat( gegenereerdeZetten.get(  5 ).getZk(), is( 0x16 ) );
+	assertThat( gegenereerdeZetten.get(  6 ).getZk(), is( 0x17 ) );
 
-	assertThat( genZRec.getStellingen().get(  7 ).getS4(), is( 0x43 ) );
-	assertThat( genZRec.getStellingen().get(  8 ).getS4(), is( 0x53 ) );
-	assertThat( genZRec.getStellingen().get(  9 ).getS4(), is( 0x63 ) );
-	assertThat( genZRec.getStellingen().get( 10 ).getS4(), is( 0x73 ) );
-	assertThat( genZRec.getStellingen().get( 11 ).getS4(), is( 0x32 ) );
-	assertThat( genZRec.getStellingen().get( 12 ).getS4(), is( 0x31 ) );
-	assertThat( genZRec.getStellingen().get( 13 ).getS4(), is( 0x30 ) );
-	assertThat( genZRec.getStellingen().get( 14 ).getS4(), is( 0x23 ) );
-	assertThat( genZRec.getStellingen().get( 15 ).getS4(), is( 0x13 ) );
-	assertThat( genZRec.getStellingen().get( 16 ).getS4(), is( 0x03 ) );
+	assertThat( gegenereerdeZetten.get(  7 ).getS4(), is( 0x43 ) );
+	assertThat( gegenereerdeZetten.get(  8 ).getS4(), is( 0x53 ) );
+	assertThat( gegenereerdeZetten.get(  9 ).getS4(), is( 0x63 ) );
+	assertThat( gegenereerdeZetten.get( 10 ).getS4(), is( 0x73 ) );
+	assertThat( gegenereerdeZetten.get( 11 ).getS4(), is( 0x32 ) );
+	assertThat( gegenereerdeZetten.get( 12 ).getS4(), is( 0x31 ) );
+	assertThat( gegenereerdeZetten.get( 13 ).getS4(), is( 0x30 ) );
+	assertThat( gegenereerdeZetten.get( 14 ).getS4(), is( 0x23 ) );
+	assertThat( gegenereerdeZetten.get( 15 ).getS4(), is( 0x13 ) );
+	assertThat( gegenereerdeZetten.get( 16 ).getS4(), is( 0x03 ) );
 
 	// @@NOG Dit zou moeten
-	assertThat( genZRec.getStellingen().get( 17 ).getS4(), is( 0x34 ) );
-	assertThat( genZRec.getStellingen().get( 18 ).getS4(), is( 0x36 ) );
+	assertThat( gegenereerdeZetten.get( 17 ).getS4(), is( 0x34 ) );
+	assertThat( gegenereerdeZetten.get( 18 ).getS4(), is( 0x36 ) );
 
 	// Wit aan zet
 	stelling = BoStelling.builder()
@@ -659,40 +662,40 @@ public void testGenZetSort()
 		.s4( 0x33 )
 		.aanZet( WIT )
 		.build();
-	genZRec = gen.genereerZetten( stelling );
-	assertThat( genZRec.getAantal(), is( 29 ) );
+	gegenereerdeZetten = gen.genereerZetten( stelling );
+	assertThat( gegenereerdeZetten.size(), is( 29 ) );
 
 	// Om een beetje verschil te krijgen
-	genZRec.getStellingen().get( 5 ).setResultaat( ResultaatType.GEWONNEN );
-	genZRec.getStellingen().get( 5 ).setAantalZetten( 11 );
-	genZRec.getStellingen().get( 6 ).setResultaat( ResultaatType.VERLOREN );
-	genZRec.getStellingen().get( 6 ).setAantalZetten( 11 );
-	genZRec.getStellingen().get( 7 ).setResultaat( ResultaatType.GEWONNEN );
-	genZRec.getStellingen().get( 7 ).setAantalZetten( 9 );
-	genZRec.getStellingen().get( 8 ).setResultaat( ResultaatType.VERLOREN );
-	genZRec.getStellingen().get( 8 ).setAantalZetten( 9 );
+	gegenereerdeZetten.get( 5 ).setResultaat( ResultaatType.GEWONNEN );
+	gegenereerdeZetten.get( 5 ).setAantalZetten( 11 );
+	gegenereerdeZetten.get( 6 ).setResultaat( ResultaatType.VERLOREN );
+	gegenereerdeZetten.get( 6 ).setAantalZetten( 11 );
+	gegenereerdeZetten.get( 7 ).setResultaat( ResultaatType.GEWONNEN );
+	gegenereerdeZetten.get( 7 ).setAantalZetten( 9 );
+	gegenereerdeZetten.get( 8 ).setResultaat( ResultaatType.VERLOREN );
+	gegenereerdeZetten.get( 8 ).setAantalZetten( 9 );
 
 	// Verwijder een groot aantal remisestellingen
-	int size = genZRec.getStellingen().size();
+	int size = gegenereerdeZetten.size();
 	for ( int x = 11; x < size; x++ )
 	{
-		genZRec.getStellingen().remove( 11 );
+		gegenereerdeZetten.remove( 11 );
 	}
-	genZRec.getStellingen().sort( gen.stellingComparator );
+	gegenereerdeZetten.sort( gen.stellingComparator );
 	
-	assertThat( genZRec.getStellingen().get(  0 ).getWk(), is( 0x02 ) );
-	assertThat( genZRec.getStellingen().get(  1 ).getWk(), is( 0x00 ) );
+	assertThat( gegenereerdeZetten.get(  0 ).getWk(), is( 0x02 ) );
+	assertThat( gegenereerdeZetten.get(  1 ).getWk(), is( 0x00 ) );
 
-	assertThat( genZRec.getStellingen().get(  2 ).getWk(), is( 0x12 ) );
-	assertThat( genZRec.getStellingen().get(  3 ).getWk(), is( 0x22 ) );
-	assertThat( genZRec.getStellingen().get(  4 ).getWk(), is( 0x21 ) );
-	assertThat( genZRec.getStellingen().get(  5 ).getWk(), is( 0x20 ) );
-	assertThat( genZRec.getStellingen().get(  6 ).getWk(), is( 0x10 ) );
+	assertThat( gegenereerdeZetten.get(  2 ).getWk(), is( 0x12 ) );
+	assertThat( gegenereerdeZetten.get(  3 ).getWk(), is( 0x22 ) );
+	assertThat( gegenereerdeZetten.get(  4 ).getWk(), is( 0x21 ) );
+	assertThat( gegenereerdeZetten.get(  5 ).getWk(), is( 0x20 ) );
+	assertThat( gegenereerdeZetten.get(  6 ).getWk(), is( 0x10 ) );
 
-	assertThat( genZRec.getStellingen().get(  7 ).getS3(), is( 0x75 ) );
-	assertThat( genZRec.getStellingen().get(  8 ).getS3(), is( 0x74 ) );
-	assertThat( genZRec.getStellingen().get(  9 ).getWk(), is( 0x01 ) );
-	assertThat( genZRec.getStellingen().get( 10 ).getS3(), is( 0x77 ) );
+	assertThat( gegenereerdeZetten.get(  7 ).getS3(), is( 0x75 ) );
+	assertThat( gegenereerdeZetten.get(  8 ).getS3(), is( 0x74 ) );
+	assertThat( gegenereerdeZetten.get(  9 ).getWk(), is( 0x01 ) );
+	assertThat( gegenereerdeZetten.get( 10 ).getS3(), is( 0x77 ) );
 }
 
 @Test

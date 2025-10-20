@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import pu.chessdatabase.bo.BoStelling;
-import pu.chessdatabase.bo.GegenereerdeZetten;
 import pu.chessdatabase.bo.Gen;
 import pu.chessdatabase.bo.StukInfo;
 import pu.chessdatabase.dal.Dbs;
@@ -195,8 +194,8 @@ public EindeType isEindStelling( BoStelling aBoStelling )
 	{
 		return EindeType.ILLEGAAL;
 	}
-	GegenereerdeZetten gegenereerdeZetten = gen.genereerZetten( aBoStelling );
-	if ( gegenereerdeZetten.getAantal() > 0 )
+	List<BoStelling> gegenereerdeZetten = gen.genereerZetten( aBoStelling );
+	if ( gegenereerdeZetten.size() > 0 )
 	{
 		return NOG_NIET;
 	}
@@ -339,10 +338,10 @@ BoStelling vanCurrentPlyNaarToStelling( VanNaar aVanNaar )
 BoStelling vanNaarToStelling( Ply aPly, VanNaar aVanNaar )
 {
 	BoStelling boStellingVan = aPly.getBoStelling();
-	GegenereerdeZetten gegenereerdeZetten = gen.genereerZetten( boStellingVan );
-	if ( gegenereerdeZetten.getAantal() > 0 )
+	List<BoStelling> gegenereerdeZetten = gen.genereerZetten( boStellingVan );
+	if ( gegenereerdeZetten.size() > 0 )
 	{
-		for ( BoStelling boStellingNaar : gegenereerdeZetten.getStellingen() )
+		for ( BoStelling boStellingNaar : gegenereerdeZetten )
 		{
 			VanNaar vanNaar = stellingToVanNaar( boStellingVan, boStellingNaar );
 			if ( vanNaar.equals( aVanNaar ) )
@@ -460,10 +459,10 @@ public BoStelling bedenk()
 	if ( isBegonnen() && getPlies().getCurrentEinde() == NOG_NIET )
 	{
 		BoStelling boStellingVan = getPlies().getCurrentPly().getBoStelling();
-		GegenereerdeZetten gegenereerdeZetten = gen.genereerZettenGesorteerd( boStellingVan );
-		if ( gegenereerdeZetten.getAantal() > 0 )
+		List<BoStelling> gegenereerdeZetten = gen.genereerZettenGesorteerd( boStellingVan );
+		if ( gegenereerdeZetten.size() > 0 )
 		{
-			return zetStelling( gegenereerdeZetten.getStellingen().get( 0 ) );
+			return zetStelling( gegenereerdeZetten.get( 0 ) );
 		}
 	}
 	return null;
@@ -1091,10 +1090,10 @@ END GenToStr;
 public List<GegenereerdeZetDocument> getGegenereerdeZetten()
 {
 	BoStelling boStellingVan = getPlies().getCurrentPly().getBoStelling();
-	GegenereerdeZetten gegenereerdeZetten = gen.genereerZettenGesorteerd( boStellingVan );
+	List<BoStelling> gegenereerdeZetten = gen.genereerZettenGesorteerd( boStellingVan );
 	List<GegenereerdeZetDocument> zetten = new ArrayList<>();
 	int zetNummer = 0;
-	for ( BoStelling boStellingNaar : gegenereerdeZetten.getStellingen() )
+	for ( BoStelling boStellingNaar : gegenereerdeZetten )
 	{
 		Ply ply = Ply.builder()
 			.zetNummer( zetNummer )
