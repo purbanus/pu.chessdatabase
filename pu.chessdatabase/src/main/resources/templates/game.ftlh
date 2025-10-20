@@ -162,6 +162,29 @@
 	</form>
 </p>
 
+<div class="paginator">
+	<#if partijDocument.naarBeginMag>
+		<a class="left" href='<@spring.url "/zet-naar-begin" />'><span>&lt;&lt;</span></a>
+	<#else>
+		<span class="prevnextdisabled">&lt&lt</span
+	</#if>
+	<#if partijDocument.terugMag>
+		<a              href='<@spring.url "/zet-terug" />'><span>a &lt;</span></a>
+	<#else>
+		<span class="prevnextdisabled">b &lt</span
+	</#if>
+	<#if partijDocument.vooruitMag>
+		<a              href='<@spring.url "/zet-vooruit" />'><span>a &gt;</span></a>
+	<#else>
+		<span class="prevnextdisabled">b &gt</span
+	</#if>
+	<#if partijDocument.naarEindeMag>
+		<a              href='<@spring.url "/zet-naar-einde" />'><span>&gt;&gt;</span></a>
+	<#else>
+		<span class="prevnextdisabled">&gt&gt</span
+	</#if>
+</div>
+
 <table class="partij-verloop">
  	<thead>
  		<tr>
@@ -181,28 +204,6 @@
 		</tr>
 	</#list>
 </table>
-<div class="paginator">
-	<#if partijDocument.naarBeginMag>
-		<a class="left" href='<@spring.url "/zet-naar-begin" />'><span>&lt;&lt;</span></a>
-	<#else>
-		<span class="prevnextdisabled">&lt&lt</span
-	</#if>
-	<#if partijDocument.terugMag>
-		<a              href='<@spring.url "/zet-terug" />'><span>&lt;</span></a>
-	<#else>
-		<span class="prevnextdisabled">&lt</span
-	</#if>
-	<#if partijDocument.vooruitMag>
-		<a              href='<@spring.url "/zet-vooruit" />'><span>&gt;</span></a>
-	<#else>
-		<span class="prevnextdisabled">&gt</span
-	</#if>
-	<#if partijDocument.naarEindeMag>
-		<a              href='<@spring.url "/zet-naar-einde" />'><span>&gt;&gt;</span></a>
-	<#else>
-		<span class="prevnextdisabled">&gt&gt</span
-	</#if>
-</div>
 
 
 </body>
