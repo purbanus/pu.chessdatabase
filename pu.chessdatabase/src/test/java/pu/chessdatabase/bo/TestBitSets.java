@@ -46,8 +46,7 @@ public void testBuitenBord()
 	BitSet BuitenBord = bitSetOfInt( 0x88 );
 	BitSet nul = bitSetOfInt( 0x00 );
 	List<Integer> goodVelden= new ArrayList<>();
-	int [] richting = Gen.KRICHTING;
-	for ( int x = 0; x < 8; x++ )
+	for ( int richting : Richtingen.KRICHTING )
 	{
 		int Veld = 0x11;
 		int LastGoodVeld = 0xff;
@@ -55,7 +54,7 @@ public void testBuitenBord()
 		do
 		{
 			LastGoodVeld = Veld;
-			Veld += richting[x];
+			Veld += richting;
 			veldSet = veldToBitSetAndBuitenBord( BuitenBord, Veld );
 		}
 		while ( veldSet.equals( nul ) );
@@ -70,8 +69,7 @@ public void testBuitenBordMetVeld33()
 	BitSet BuitenBord = bitSetOfInt( 0x88 );
 	BitSet nul = bitSetOfInt( 0x00 );
 	List<Integer> goodVelden= new ArrayList<>();
-	int [] richting = Gen.TRICHTING;
-	for ( int x = 0; x < 4; x++ )
+	for ( int richting : Richtingen.TRICHTING )
 	{
 		int Veld = 0x33;
 		int LastGoodVeld = 0xff;
@@ -79,7 +77,7 @@ public void testBuitenBordMetVeld33()
 		do
 		{
 			LastGoodVeld = Veld;
-			Veld += richting[x];
+			Veld += richting;
 			veldSet = veldToBitSetAndBuitenBord( BuitenBord, Veld );
 		}
 		while ( veldSet.equals( nul ) );
