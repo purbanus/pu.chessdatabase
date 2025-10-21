@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.BoStelling;
+import pu.chessdatabase.bo.Config;
 
 @SpringBootTest
 public class TestDbsOverProductie
@@ -29,7 +30,7 @@ public class TestDbsOverProductie
 @BeforeEach
 public void setup()
 {
-	dbs.setDbsNaam( dbs.DFT_DBS_NAAM );
+	dbs.setDatabaseName( Config.DEFAULT_CONFIG.getDatabaseName() );
 	dbs.open();
 }
 @AfterEach
