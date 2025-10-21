@@ -16,7 +16,7 @@ public KDKT()
 	super();
 	stukDefinities.add( new StukDefinitie( DAME,   WIT ) );
 	stukDefinities.add( new StukDefinitie( TOREN,  ZWART ) );
-	databaseName = "KDKT.DBS";
+	databaseName = "dbs/KDKT.DBS";
 }
 
 }

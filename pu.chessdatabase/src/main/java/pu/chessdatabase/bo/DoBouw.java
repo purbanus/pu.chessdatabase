@@ -21,7 +21,7 @@ public static void main( String [] args )
 }
 public void run()
 {
-	dbs.setDatabaseName( "KDKT2.DBS" );
+	dbs.setDatabaseName( "dbs/KDKT2.DBS" );
 	bouw.bouwDatabase();
 }
 

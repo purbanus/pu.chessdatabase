@@ -12,8 +12,8 @@ public static void main( String [] args )
 
 private void run()
 {
-	vm1.setDatabaseName( "KDKT.DBS" );
-	vm2.setDatabaseName( "KDKT2.DBS" );
+	vm1.setDatabaseName( "dbs/KDKT.DBS" );
+	vm2.setDatabaseName( "dbs/KDKT2.DBS" );
 	vm1.open();
 	vm2.open();
 	vm1.runOverAllPageDescriptors( this::compareDeDatabases );

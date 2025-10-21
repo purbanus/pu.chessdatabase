@@ -15,7 +15,7 @@ public class DoBouwApart
 //@Test
 public void buildKDKT2()
 {
-	dbs.setDatabaseName( "KDKT2.DBS" );
+	dbs.setDatabaseName( "dbs/KDKT2.DBS" );
 	bouw.bouwDatabase();
 }
 }
