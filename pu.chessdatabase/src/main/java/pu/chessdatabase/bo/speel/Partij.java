@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Gen;
+import pu.chessdatabase.bo.Stuk;
 import pu.chessdatabase.bo.StukInfo;
 import pu.chessdatabase.dal.Dbs;
 import pu.chessdatabase.dal.ResultaatType;
@@ -631,9 +632,9 @@ END WatStaatErOp;
  */
 String watStaatErOp( BoStelling aBoStelling, int aVeld )
 {
-	for ( int x = gen.MIN_STUKNUMMER; x <= gen.MAX_STUKNUMMER; x++ )
+	for ( Stuk stuk : gen.getStukken().getStukken() )
 	{
-		StukInfo stukInfo = gen.getStukInfo( aBoStelling, x );
+		StukInfo stukInfo = gen.getStukInfo( aBoStelling, stuk );
 		if ( stukInfo.getVeld() == aVeld )
 		{
 			return stukInfo.getAfko();
@@ -1121,21 +1122,6 @@ public BoStelling getStand()
 {
 	return getPlies().getCurrentPly().getBoStelling();
 }
-/**
-PROCEDURE GetStukInfo(S: Dbs.Stelling; StukNr: StukNummer): StukInfoRec;
-BEGIN
-	RETURN(Gen.GetStukInfo(S, StukNr));
-END GetStukInfo;
- */
-/**
- * -------- Geef info over stuk ------------------------
- */
-public StukInfo getStukInfo( BoStelling aBoStelling, int aStukNummer )
-{
-	return gen.getStukInfo( aBoStelling, aStukNummer );
-}
-
-
 
 
 
