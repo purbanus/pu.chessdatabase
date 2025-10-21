@@ -31,7 +31,7 @@ public class TestDbs
 @BeforeEach
 public void setup()
 {
-	dbs.setDbsNaam( "Pipo" );
+	dbs.setDatabaseName( "Pipo" );
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 }
 @AfterEach
@@ -658,10 +658,10 @@ public void testFreeRecord()
 	// Dit is verder in TestVM al getest
 }
 @Test
-public void testName()
+public void testSetDatabaseName()
 {
-	dbs.setDbsNaam( "Mamaloe" );
-	assertThat( dbs.getDbsNaam(), is( "Mamaloe" ) );
+	dbs.setDatabaseName( "Mamaloe" );
+	assertThat( dbs.getDatabaseName(), is( "Mamaloe" ) );
 }
 @Test
 public void testCreate()
