@@ -264,7 +264,7 @@ END Schaakjes;
 /**
  *------------- Kontroleer schaakjes ---------------------------
  */
-// @@!NOG Ik begrijp niet hoe dit werkt
+// @@NOG Ik begrijp niet hoe dit werkt
 public void schaakjes( BoStelling aBoStellingMetWitAanZet )
 {
 	/*
@@ -335,7 +335,6 @@ END IsMat;
 public void isMat( BoStelling aBoStelling )
 {
 	BoStelling boStelling = aBoStelling.clone();
-//	boStelling.setSchaak( gen.isSchaak( boStelling ) );
 	if ( boStelling.getResultaat() == ResultaatType.REMISE && boStelling.isSchaak() == true )
 	{
 		List<BoStelling> gegenereerdeZetten = gen.genereerZetten( boStelling );
@@ -653,7 +652,7 @@ END BouwDataBase;
  */
 public void bouwDatabase()
 {
-	System.out.println( "We bouwen op: " + dbs.getDbsNaam() );
+	System.out.println( "We bouwen op: " + dbs.getDatabaseName() );
 	StopWatch overallTimer = new StopWatch();
 	passNr = 0;
 	pass_0();
