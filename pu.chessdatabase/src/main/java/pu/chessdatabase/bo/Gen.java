@@ -344,14 +344,29 @@ void addZet( final BoStelling aBoStelling, Stuk aStuk, int aNaar, ZetSoort aZets
 	if ( aZetsoort == ZetSoort.SLAGZET )
 	{
 		//---- Stop het geslagen stuk "onder" de koning ----
-		// @@NOG Je gaat er hier van uit dat s3 wit is en s4 zwart
 		if ( boStelling.getS3() == aNaar )
 		{
-			boStelling.setS3( boStelling.getWk() );
+			Stuk geslagenStuk = getStukken().getS3();
+			if ( geslagenStuk.getKoningsNummer() == 0 )
+			{
+				boStelling.setS3( boStelling.getWk() );
+			}
+			else
+			{
+				boStelling.setS3( boStelling.getZk() );
+			}
 		}
 		else if ( boStelling.getS4() == aNaar )
 		{
-			boStelling.setS4( boStelling.getZk() );
+			Stuk geslagenStuk = getStukken().getS4();
+			if ( geslagenStuk.getKoningsNummer() == 0 )
+			{
+				boStelling.setS4( boStelling.getWk() );
+			}
+			else
+			{
+				boStelling.setS4( boStelling.getZk() );
+			}
 		}
 	}
 	//------- Sjouw geslagen stukken mee bij koningszetten -----------
@@ -376,7 +391,7 @@ void addZet( final BoStelling aBoStelling, Stuk aStuk, int aNaar, ZetSoort aZets
 	}
 	boStelling.setAanZet( boStelling.getAanZet() == WIT ? ZWART : WIT );
 	BoStelling gotBoStelling = dbs.get( boStelling );
-	// Dit moet je niet doen want isSchaak cleart het bord
+	// Dit moet je niet doen want isSchaak cleart het bord ==> Dat is niet meer zo, maar hebben we dit nog nodig???
 	// boStelling.setSchaak( isSchaak( boStelling ) );
 	if ( gotBoStelling.getResultaat() != ResultaatType.ILLEGAAL )
 	{
