@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import pu.chessdatabase.bo.Config;
 import pu.chessdatabase.bo.Kleur;
 import pu.services.Range;
-import pu.services.StopWatch;
 
 //import org.apache.commons.lang3.Range;
 
@@ -126,12 +125,6 @@ public String getDatabaseName()
 	return databaseName;
 }
 /**
-*PROCEDURE Name(Naam: ARRAY OF CHAR);
-BEGIN
-	Str.Copy(DbsNaam, Naam);
-END Name;
- */
-/**
  * ------- Naam geven -------------------
  */
 public void setDatabaseName( String aNaam )
@@ -162,7 +155,7 @@ void setPageDescriptor( VMStelling aVmStelling, PageDescriptor aPageDescriptor )
 {
 	pageDescriptorTabel[aVmStelling.getWk()][aVmStelling.getZk()][aVmStelling.getAanZet().ordinal()] = aPageDescriptor; 
 }
-void runOverAllPageDescriptors( VMStellingFunction aPageDescriptorsFunction )
+void iterateOverAllPageDescriptors( VMStellingFunction aPageDescriptorsFunction )
 {
 	for ( int wk = 0; wk < 10; wk++ )
 	{
@@ -230,9 +223,9 @@ long address; // @@NOG Dit is een multithread probleem(pje)
 void initializePageDescriptorTabel()
 {
 	address = 0L;
-	runOverAllPageDescriptors( this::initializePageDescriptorPage );
+	iterateOverAllPageDescriptors( this::initializePageDescriptor );
 }
-void initializePageDescriptorPage( VMStelling aVmStelling )
+void initializePageDescriptor( VMStelling aVmStelling )
 {
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( Lokatie.OP_SCHIJF )
@@ -855,7 +848,7 @@ public void create()
 }
 void initializeDatabase()
 {
-	runOverAllPageDescriptors( this::initializeDatabasePage );
+	iterateOverAllPageDescriptors( this::initializeDatabasePage );
 }
 void initializeDatabasePage( VMStelling aVmStelling )
 {
