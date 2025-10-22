@@ -5,8 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@EnableJpaRepositories( "pu.chessdatabase.dal" ) 
-@EntityScan("pu.chessdatabase.bo")
+//@EnableJpaRepositories( "pu.chessdatabase.dal" ) 
+//@EntityScan("pu.chessdatabase")
 @SpringBootApplication 
 public class Application {
 

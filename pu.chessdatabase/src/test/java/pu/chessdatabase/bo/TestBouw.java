@@ -23,6 +23,7 @@ import pu.chessdatabase.dal.ResultaatType;
 @SpringBootTest
 public class TestBouw
 {
+private static final String DATABASE_NAME = "dbs/Pipo";
 @Autowired private Bouw bouw;
 @Autowired private Dbs dbs;
 @Autowired private Gen gen;
@@ -30,7 +31,7 @@ public class TestBouw
 @BeforeEach
 public void setup()
 {
-	dbs.setDbsNaam( "Pipo" );
+	dbs.setDatabaseName( DATABASE_NAME );
 	dbs.create();
 }
 @AfterEach

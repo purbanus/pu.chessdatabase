@@ -23,6 +23,7 @@ import pu.chessdatabase.dal.ResultaatType;
 @SpringBootTest
 public class TestGen
 {
+private static final String DATABASE_NAME = "dbs/Pipo";
 @Autowired private Gen gen;
 @Autowired private Dbs dbs;
 
@@ -70,47 +71,6 @@ public void testAlfaToVeld()
 	assertThrows( RuntimeException.class, () -> { Gen.alfaToVeld( "abc" ); } );
 }
 
-@Test
-public void testVulStukTabel()
-{
-	gen.vulStukTabel();
-	Stuk stuk = gen.stukTabel[1];
-	assertThat( stuk.getSoort(), is( StukType.KONING ) );
-	assertThat( stuk.getKleur(), is( WIT ) );
-	assertThat( stuk.getKoningsNummer(), is( 1 ) );
-	assertThat( stuk.getRichtingen(), is( gen.KRICHTING ) );
-	assertThat( stuk.getAantalRichtingen(), is( 8 ) );
-	assertThat( stuk.isMeer(), is( false ) );
-	assertThat( stuk.getAfko(), is( "K" ) );
-	
-	stuk = gen.stukTabel[2];
-	assertThat( stuk.getSoort(), is( StukType.KONING ) );
-	assertThat( stuk.getKleur(), is( ZWART ) );
-	assertThat( stuk.getKoningsNummer(), is( 2 ) );
-	assertThat( stuk.getRichtingen(), is( gen.KRICHTING ) );
-	assertThat( stuk.getAantalRichtingen(), is( 8 ) );
-	assertThat( stuk.isMeer(), is( false ) );
-	assertThat( stuk.getAfko(), is( "K" ) );
-
-	stuk = gen.stukTabel[3];
-	assertThat( stuk.getSoort(), is( StukType.DAME ) );
-	assertThat( stuk.getKleur(), is( WIT ) );
-	assertThat( stuk.getKoningsNummer(), is( 1 ) );
-	assertThat( stuk.getRichtingen(), is( gen.KRICHTING ) );
-	assertThat( stuk.getAantalRichtingen(), is( 8 ) );
-	assertThat( stuk.isMeer(), is( true ) );
-	assertThat( stuk.getAfko(), is( "D" ) );
-	
-	stuk = gen.stukTabel[4];
-	assertThat( stuk.getSoort(), is( StukType.TOREN ) );
-	assertThat( stuk.getKleur(), is( ZWART ) );
-	assertThat( stuk.getKoningsNummer(), is( 2 ) );
-	assertThat( stuk.getRichtingen(), is( gen.TRICHTING ) );
-	assertThat( stuk.getAantalRichtingen(), is( 4 ) );
-	assertThat( stuk.isMeer(), is( true ) );
-	assertThat( stuk.getAfko(), is( "T" ) );
-
-}
 @Test
 public void testIsGeomIllegaal()
 {
@@ -187,7 +147,7 @@ public void testIsSchaakDoorStuk()
 		.aanZet( ZWART )
 		.build();
 	Bord bord = new Bord( stelling );
-	assertThat( gen.isSchaakDoorStuk( gen.stukTabel[4], 0x11, 0x33, bord ), is( false ) );
+	assertThat( gen.isSchaakDoorStuk( gen.getStukken().getS4(), 0x11, 0x33, bord ), is( false ) );
 
 	// T links
 	stelling = BoStelling.builder()
@@ -198,7 +158,7 @@ public void testIsSchaakDoorStuk()
 		.aanZet( ZWART )
 		.build();
 	bord = new Bord( stelling );
-	assertThat( gen.isSchaakDoorStuk( gen.stukTabel[4], 0x11, 0x10, bord ), is( true ) );
+	assertThat( gen.isSchaakDoorStuk( gen.getStukken().getS4(), 0x11, 0x10, bord ), is( true ) );
 
 	// T uiterst rechts
 	stelling = BoStelling.builder()
@@ -209,7 +169,7 @@ public void testIsSchaakDoorStuk()
 		.aanZet( ZWART )
 		.build();
 	bord = new Bord( stelling );
-	assertThat( gen.isSchaakDoorStuk( gen.stukTabel[4], 0x11, 0x17, bord ), is( true ) );
+	assertThat( gen.isSchaakDoorStuk( gen.getStukken().getS4(), 0x11, 0x17, bord ), is( true ) );
 
 	// T nog steeds uiterst rechts, maar D ertussen
 	stelling = BoStelling.builder()
@@ -220,7 +180,7 @@ public void testIsSchaakDoorStuk()
 		.aanZet( ZWART )
 		.build();
 	bord = new Bord( stelling );
-	assertThat( gen.isSchaakDoorStuk( gen.stukTabel[4], 0x11, 0x17, bord ), is( false ) );
+	assertThat( gen.isSchaakDoorStuk( gen.getStukken().getS4(), 0x11, 0x17, bord ), is( false ) );
 
 	// Check of Z schaak staat
 	stelling = BoStelling.builder()
@@ -231,7 +191,7 @@ public void testIsSchaakDoorStuk()
 		.aanZet( WIT )
 		.build();
 	bord = new Bord( stelling );
-	assertThat( gen.isSchaakDoorStuk( gen.stukTabel[3], 0x27, 0x20, bord ), is( true ) );
+	assertThat( gen.isSchaakDoorStuk( gen.getStukken().getS3(), 0x27, 0x20, bord ), is( true ) );
 }
 @Test
 public void testCheckSchaakDoorStuk()
@@ -245,7 +205,7 @@ public void testCheckSchaakDoorStuk()
 		.aanZet( ZWART )
 		.build();
 	Bord bord = new Bord( stelling );
-	assertThat( gen.checkSchaakDoorStuk( stelling, gen.stukTabel[3], 0x11, 0x11, bord ), is( false ) );
+	assertThat( gen.checkSchaakDoorStuk( stelling, gen.getStukken().getS3(), 0x11, 0x11, bord ), is( false ) );
 
 	// Check aStukVeld == aStelling.getZK(), d.w.z. het zwarte stuk is geslagen
 	stelling = BoStelling.builder()
@@ -256,7 +216,7 @@ public void testCheckSchaakDoorStuk()
 		.aanZet( ZWART )
 		.build();
 	bord = new Bord( stelling );
-	assertThat( gen.checkSchaakDoorStuk( stelling, gen.stukTabel[4], 0x27, 0x27, bord ), is( false ) );
+	assertThat( gen.checkSchaakDoorStuk( stelling, gen.getStukken().getS4(), 0x27, 0x27, bord ), is( false ) );
 
 	// Check dat het stuk aan zet is
 	stelling = BoStelling.builder()
@@ -267,7 +227,7 @@ public void testCheckSchaakDoorStuk()
 		.aanZet( ZWART )
 		.build();
 	bord = new Bord( stelling );
-	assertThat( gen.checkSchaakDoorStuk( stelling, gen.stukTabel[4], 0x11, 0x33, bord ), is( false ) );
+	assertThat( gen.checkSchaakDoorStuk( stelling, gen.getStukken().getS4(), 0x11, 0x33, bord ), is( false ) );
 
 	// T links
 	stelling = BoStelling.builder()
@@ -278,7 +238,7 @@ public void testCheckSchaakDoorStuk()
 		.aanZet( WIT )
 		.build();
 	bord = new Bord( stelling );
-	assertThat( gen.checkSchaakDoorStuk( stelling, gen.stukTabel[4], 0x11, 0x10, bord ), is( true ) );
+	assertThat( gen.checkSchaakDoorStuk( stelling, gen.getStukken().getS4(), 0x11, 0x10, bord ), is( true ) );
 }
 @Test
 public void testIsSchaak()
@@ -326,7 +286,7 @@ public void testIsSchaak()
 @Test
 public void testAddZet()
 {
-	dbs.setDbsNaam( "Pipo" );
+	dbs.setDatabaseName( DATABASE_NAME );
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 
 	BoStelling stelling;
@@ -342,7 +302,7 @@ public void testAddZet()
 		.aanZet( ZWART )
 		.build();
 	gegenereerdeZetten = new ArrayList<>();
-	gen.addZet( stelling, 3, 0x77, ZetSoort.GEWOON, 0x11, 0x76, gegenereerdeZetten );
+	gen.addZet( stelling, gen.getStukken().getS3(), 0x77, ZetSoort.GEWOON, 0x11, 0x76, gegenereerdeZetten );
 	assertThat( gegenereerdeZetten.size(), is( 1 ) );
 	resultaatStelling = gegenereerdeZetten.get( 0 );
 	assertThat( resultaatStelling.getWk(), is( 0x11 ) );
@@ -360,7 +320,7 @@ public void testAddZet()
 		.aanZet( WIT )
 		.build();
 	gegenereerdeZetten = new ArrayList<>();
-	gen.addZet( stelling, 4, 0x76, ZetSoort.SLAGZET, 0x11, 0x76, gegenereerdeZetten );
+	gen.addZet( stelling, gen.getStukken().getS4(), 0x76, ZetSoort.SLAGZET, 0x11, 0x76, gegenereerdeZetten );
 	assertThat( gegenereerdeZetten.size(), is( 1 ) );
 	resultaatStelling = gegenereerdeZetten.get( 0 );
 	assertThat( resultaatStelling.getWk(), is( 0x11 ) );
@@ -378,7 +338,7 @@ public void testAddZet()
 		.aanZet( WIT )
 		.build();
 	gegenereerdeZetten = new ArrayList<>();
-	gen.addZet( stelling, 1, 0x12, ZetSoort.GEWOON, 0x11, 0x11, gegenereerdeZetten );
+	gen.addZet( stelling, gen.getStukken().getWk(), 0x12, ZetSoort.GEWOON, 0x11, 0x11, gegenereerdeZetten );
 	assertThat( gegenereerdeZetten.size(), is( 1 ) );
 	resultaatStelling = gegenereerdeZetten.get( 0 );
 	assertThat( resultaatStelling.getWk(), is( 0x12 ) );
@@ -393,7 +353,7 @@ public void testAddZet()
 @Test
 public void testGenZetPerStuk()
 {
-	dbs.setDbsNaam( "Pipo" );
+	dbs.setDatabaseName( DATABASE_NAME );
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 
 	BoStelling boStelling;
@@ -406,7 +366,7 @@ public void testGenZetPerStuk()
 		.aanZet( ZWART )
 		.build();
 	Bord bord = new Bord( boStelling );
-	List<BoStelling> gegenereerdeZetten = gen.genereerZettenPerStuk( boStelling, 4, 0x27, 0x33, bord );
+	List<BoStelling> gegenereerdeZetten = gen.genereerZettenPerStuk( boStelling, gen.getStukken().getS4(), 0x27, 0x33, bord );
 	assertThat( gegenereerdeZetten.size(), is( 14 ) );
 	assertThat( gegenereerdeZetten.get(  0 ).getS4(), is( 0x34 ) );
 	assertThat( gegenereerdeZetten.get(  0 ).getAanZet(), is( WIT ) );
@@ -445,7 +405,7 @@ public void testGenZetPerStuk()
 		.aanZet( ZWART )
 		.build();
 	bord = new Bord( boStelling );
-	gegenereerdeZetten = gen.genereerZettenPerStuk( boStelling, 4, 0x27, 0x77, bord );
+	gegenereerdeZetten = gen.genereerZettenPerStuk( boStelling, gen.getStukken().getS4(), 0x27, 0x77, bord );
 	assertThat( gegenereerdeZetten.size(), is( 5 ) );
 	assertThat( gegenereerdeZetten.get(  0 ).getS4(), is( 0x76 ) );
 	assertThat( gegenereerdeZetten.get(  0 ).getS3(), is( 0x11 ) );
@@ -466,14 +426,14 @@ public void testGenZetPerStuk()
 		.build();
 	bord = new Bord( boStelling );
 	//gen.printBord();
-	gegenereerdeZetten = gen.genereerZettenPerStuk( boStelling, 1, 0x02, 0x02, bord );
+	gegenereerdeZetten = gen.genereerZettenPerStuk( boStelling, gen.getStukken().getWk(), 0x02, 0x02, bord );
 	assertThat( gegenereerdeZetten.size(), is( 5 ) );
 
 }
 @Test
 public void testGenZet()
 {
-	dbs.setDbsNaam( "Pipo" );
+	dbs.setDatabaseName( DATABASE_NAME );
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 
 	BoStelling boStelling;
@@ -601,7 +561,7 @@ public void testStellingComparator()
 @Test
 public void testGenZetSort()
 {
-	dbs.setDbsNaam( "Pipo" );
+	dbs.setDatabaseName( DATABASE_NAME );
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 
 	BoStelling stelling;
@@ -713,29 +673,29 @@ public void testGetStukInfo()
 		.s4( 0x33 )
 		.aanZet( ZWART )
 		.build();
-	assertThat( gen.getStukInfo( stelling, 1 ).getVeld(), is( 0x11 ) );
-	assertThat( gen.getStukInfo( stelling, 1 ).getX(), is( 2 ) );
-	assertThat( gen.getStukInfo( stelling, 1 ).getY(), is( 2 ) );
-	assertThat( gen.getStukInfo( stelling, 1 ).getKleur(), is( WIT ) );
-	assertThat( gen.getStukInfo( stelling, 1 ).getAfko(), is( "K" ) );
+	assertThat( gen.getStukInfo( stelling, gen.getStukken().getWk() ).getVeld(), is( 0x11 ) );
+	assertThat( gen.getStukInfo( stelling, gen.getStukken().getWk() ).getX(), is( 2 ) );
+	assertThat( gen.getStukInfo( stelling, gen.getStukken().getWk() ).getY(), is( 2 ) );
+	assertThat( gen.getStukInfo( stelling, gen.getStukken().getWk() ).getKleur(), is( WIT ) );
+	assertThat( gen.getStukInfo( stelling, gen.getStukken().getWk() ).getAfko(), is( "K" ) );
 
-	assertThat( gen.getStukInfo( stelling, 2 ).getVeld(), is( 0x27 ) );
-	assertThat( gen.getStukInfo( stelling, 2 ).getX(), is( 8 ) );
-	assertThat( gen.getStukInfo( stelling, 2 ).getY(), is( 3 ) );
-	assertThat( gen.getStukInfo( stelling, 2 ).getKleur(), is( ZWART ) );
-	assertThat( gen.getStukInfo( stelling, 2 ).getAfko(), is( "K" ) );
+	assertThat( gen.getStukInfo( stelling, gen.getStukken().getZk() ).getVeld(), is( 0x27 ) );
+	assertThat( gen.getStukInfo( stelling, gen.getStukken().getZk() ).getX(), is( 8 ) );
+	assertThat( gen.getStukInfo( stelling, gen.getStukken().getZk() ).getY(), is( 3 ) );
+	assertThat( gen.getStukInfo( stelling, gen.getStukken().getZk() ).getKleur(), is( ZWART ) );
+	assertThat( gen.getStukInfo( stelling, gen.getStukken().getZk() ).getAfko(), is( "K" ) );
 
-	assertThat( gen.getStukInfo( stelling, 3 ).getVeld(), is( 0x76 ) );
-	assertThat( gen.getStukInfo( stelling, 3 ).getX(), is( 7 ) );
-	assertThat( gen.getStukInfo( stelling, 3 ).getY(), is( 8 ) );
-	assertThat( gen.getStukInfo( stelling, 3 ).getKleur(), is( WIT ) );
-	assertThat( gen.getStukInfo( stelling, 3 ).getAfko(), is( "D" ) );
+	assertThat( gen.getStukInfo( stelling, gen.getStukken().getS3() ).getVeld(), is( 0x76 ) );
+	assertThat( gen.getStukInfo( stelling, gen.getStukken().getS3() ).getX(), is( 7 ) );
+	assertThat( gen.getStukInfo( stelling, gen.getStukken().getS3() ).getY(), is( 8 ) );
+	assertThat( gen.getStukInfo( stelling, gen.getStukken().getS3() ).getKleur(), is( WIT ) );
+	assertThat( gen.getStukInfo( stelling, gen.getStukken().getS3() ).getAfko(), is( "D" ) );
 
-	assertThat( gen.getStukInfo( stelling, 4 ).getVeld(), is( 0x33 ) );
-	assertThat( gen.getStukInfo( stelling, 4 ).getX(), is( 4 ) );
-	assertThat( gen.getStukInfo( stelling, 4 ).getY(), is( 4 ) );
-	assertThat( gen.getStukInfo( stelling, 4 ).getKleur(), is( ZWART ) );
-	assertThat( gen.getStukInfo( stelling, 4 ).getAfko(), is( "T" ) );
+	assertThat( gen.getStukInfo( stelling, gen.getStukken().getS4() ).getVeld(), is( 0x33 ) );
+	assertThat( gen.getStukInfo( stelling, gen.getStukken().getS4() ).getX(), is( 4 ) );
+	assertThat( gen.getStukInfo( stelling, gen.getStukken().getS4() ).getY(), is( 4 ) );
+	assertThat( gen.getStukInfo( stelling, gen.getStukken().getS4() ).getKleur(), is( ZWART ) );
+	assertThat( gen.getStukInfo( stelling, gen.getStukken().getS4() ).getAfko(), is( "T" ) );
 }
 
 }

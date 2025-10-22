@@ -1,5 +1,9 @@
 package pu.chessdatabase.bo;
 
+import static pu.chessdatabase.bo.Kleur.*;
+
+import java.util.List;
+
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,14 +15,24 @@ import lombok.ToString;
 @ToString
 public class Stuk
 {
-private StukType soort;
+private int stukNummer;
+private StukType stukType;
 private Kleur kleur;
-private int koningsNummer;
-private int aantalRichtingen;
-private boolean meer;
-private int [] richtingen;
 public String getAfko()
 {
-	return soort.getAfko();
+	return stukType.getAfko();
 }
+public int getKoningsNummer()
+{
+	return kleur == WIT ? 0 : 1;
+}
+public boolean isMeer()
+{
+	return stukType.isMeer();
+}
+public List<Integer> getRichtingen()
+{
+	return stukType.getRichtingen();
+}
+
 }

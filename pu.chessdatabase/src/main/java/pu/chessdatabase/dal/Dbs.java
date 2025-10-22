@@ -17,7 +17,6 @@ public class Dbs
 public static final int MAX_RESULTAAT_TYPE = 4;
 public static final int OKTANTEN = 8;
 
-public static final String DFT_DBS_NAAM = "KDKT.DBS";
 public static final int DFT_RPT_FREQ = 4096;
 
 /**==============================================================================================================
@@ -134,7 +133,6 @@ Range oktant_0_Range = new Range( 0, OKTANTEN );
 Range resultaatRange = new Range( 0, 3 );
 
 int[][] transformatieTabel = new int [OKTANTEN + 1][veldRange.getMaximum() + 1];
-private String dbsNaam = null;
 public long [] report = new long [4];
 long [] reportArray = new long [4];
 int reportTeller;
@@ -148,26 +146,16 @@ public Dbs()
 	reportProc = null;
 	clearTellers();
 }
-public String getDbsNaam()
-{
-	if ( dbsNaam == null )
-	{
-		dbsNaam = DFT_DBS_NAAM;
-	}
-	return dbsNaam;
-}
-/**
-*PROCEDURE Name(Naam: ARRAY OF CHAR);
-BEGIN
-	Str.Copy(DbsNaam, Naam);
-END Name;
- */
 /**
  * ------- Naam geven -------------------
  */
-public void setDbsNaam( String aNaam )
+public String getDatabaseName()
 {
-	dbsNaam = aNaam;
+	return vm.getDatabaseName();
+}
+public void setDatabaseName( String aDatabaseName )
+{
+	vm.setDatabaseName( aDatabaseName );
 }
 
 //void setRpt( long [] aReportArray )
@@ -552,18 +540,6 @@ public void freeRecord( BoStelling aBoStelling )
 		Deel 4: Bewerkingen op de gehele database
 ==========================================================================
 
-PROCEDURE Name(Naam: ARRAY OF CHAR);
-BEGIN
-	Str.Copy(DbsNaam, Naam);
-END Name;
- */
-/**
- * ------- Naam geven -------------------
- */
-public void name( String aNaam )
-{
-	dbsNaam = aNaam;
-}
 /**
 PROCEDURE Create();
 VAR c: CHAR;
@@ -581,11 +557,7 @@ END Create;
  */
 public void create()
 {
-	if ( getDbsNaam() == null || getDbsNaam().length() == 0 )
-	{
-		throw new RuntimeException( "Geen naam opgegeven voor de database" );
-	}
-	vm.create( getDbsNaam() );
+	vm.create();
 }
 /**
 PROCEDURE Open();
@@ -604,11 +576,7 @@ END Open;
  */
 public void open()
 {
-	if ( getDbsNaam() == null || getDbsNaam().length() == 0 )
-	{
-		throw new RuntimeException( "Geen naam opgegeven voor de database" );
-	}
-	vm.open( getDbsNaam() );
+	vm.open();
 }
 public void flush()
 {

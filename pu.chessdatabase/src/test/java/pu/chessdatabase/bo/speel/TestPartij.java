@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.BoStelling;
+import pu.chessdatabase.bo.Config;
 import pu.chessdatabase.dal.Dbs;
 import pu.chessdatabase.dal.ResultaatType;
 
@@ -34,7 +35,7 @@ public class TestPartij
 @BeforeEach
 public void setup()
 {
-	dbs.setDbsNaam( dbs.DFT_DBS_NAAM );
+	dbs.setDatabaseName( Config.DEFAULT_CONFIG.getDatabaseName() );
 	dbs.open();
 }
 @AfterEach

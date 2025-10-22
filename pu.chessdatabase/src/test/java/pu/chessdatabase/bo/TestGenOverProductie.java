@@ -28,7 +28,7 @@ public class TestGenOverProductie
 @BeforeEach
 public void setup()
 {
-	dbs.setDbsNaam( dbs.DFT_DBS_NAAM );
+	dbs.setDatabaseName( Config.DEFAULT_CONFIG.getDatabaseName() );
 	dbs.open();
 }
 @AfterEach

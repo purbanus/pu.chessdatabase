@@ -59,10 +59,10 @@ END ZetBordOp;
 public void zetBordOp( BoStelling aStelling )
 {
 	// eerst de stukken, dan kunnen ze eventueel uitgeveegd worden door de koningen 
-	bord[aStelling.getS3()] = 3;
-	bord[aStelling.getS4()] = 4;
-	bord[aStelling.getWk()] = 1;
-	bord[aStelling.getZk()] = 2;
+	bord[aStelling.getS3()] = 2;
+	bord[aStelling.getS4()] = 3;
+	bord[aStelling.getWk()] = 0;
+	bord[aStelling.getZk()] = 1;
 }
 /**
 PROCEDURE ClrBord(S: Dbs.Stelling);
@@ -103,10 +103,10 @@ public String toString()
 			int index = 16 * rij + kol;
 			int veld = bord[index];
 			String veldString;
-			if ( veld == 1 ) veldString = "WK";
-			else if ( veld == 2 ) veldString = "ZK";
-			else if ( veld == 3 ) veldString = "WD";
-			else if ( veld == 4 ) veldString = "ZT";
+			if ( veld == 0 ) veldString = "WK";
+			else if ( veld == 1 ) veldString = "ZK";
+			else if ( veld == 2 ) veldString = "WD";
+			else if ( veld == 3 ) veldString = "ZT";
 			else veldString = ( veld < 16 ? "0":"" ) + Integer.toHexString( veld  );
 			sb.append( veldString ).append( " " );
 		}

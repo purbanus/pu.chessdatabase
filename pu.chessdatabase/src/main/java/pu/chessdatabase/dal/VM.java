@@ -1,7 +1,5 @@
 package pu.chessdatabase.dal;
 
-import static pu.chessdatabase.bo.Kleur.*;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -9,6 +7,8 @@ import java.io.RandomAccessFile;
 
 import org.springframework.stereotype.Component;
 
+import pu.chessdatabase.bo.Config;
+import pu.chessdatabase.bo.Kleur;
 import pu.services.Range;
 
 //import org.apache.commons.lang3.Range;
@@ -29,16 +29,8 @@ public class VM
 static final int CACHE_SIZE     = 30;                 // Aantal pagina"s
 @SuppressWarnings( "unused" )
 private static final int CACHE_SIZE_DIV_2 = CACHE_SIZE / 2;      // Voor rapportagescherm
-static final int PAGE_SIZE      = 4096;               // Bytes per page
-
-Range wkveldRange = new Range( 0, 9 );
-Range veldRange = new Range( 0, 63 );
-
-PageDescriptor[][][] pageDescriptorTabel = new PageDescriptor[10][64][2];
-CacheEntry [] Cache = new CacheEntry[CACHE_SIZE];
-private File databaseFile;
-private RandomAccessFile Database = null;
-long GeneratieTeller;
+static final int PAGE_SIZE = 4096;               // Bytes per page
+static final int VELD_MAX = 64;
 public static final int VERLIES_OFFSET   = 0x80;
 public static final int VM_SCHAAK        = 0x80;
 public static final int VM_REMISE        = 0x00;
@@ -53,6 +45,36 @@ public static final String [] NOTATIE = new String [] {
 	"a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7",
 	"a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"
 };
+/*------ Witte koning ------------*/
+@SuppressWarnings( "unused" )
+private static final String [] RepWK = {"a1", "b1", "c1", "d1", "b2", "c2", "d2", "c3", "d3", "d4" };
+
+/*------ Andere stukken -----------*/
+@SuppressWarnings( "unused" )
+private static final String [] RepZK = {
+		"a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1",
+		"a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2",
+		"a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3",
+		"a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4",
+		"a5", "b5", "c5", "d5", "e5", "f5", "g5", "h5",
+		"a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6",
+		"a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7",
+		"a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"
+	};
+
+/*------ Aan zet -----------------*/
+@SuppressWarnings( "unused" )
+private static final String [] RepAZ = { "W", "Z" };
+
+Range wkVeldRange = new Range( 0, 9 );
+Range veldRange = new Range( 0, 63 );
+
+PageDescriptor[][][] pageDescriptorTabel = new PageDescriptor[10][64][2];
+CacheEntry [] Cache = new CacheEntry[CACHE_SIZE];
+private String databaseName = null;
+private File databaseFile;
+private RandomAccessFile Database = null;
+long GeneratieTeller;
 /**
  * ------- Veld naar alfa ----------------------------------
  */
@@ -91,25 +113,65 @@ public VM()
 {
     //FIO.IOcheck:=FALSE;
     GeneratieTeller = 1L;
-    createCache();
     setDatabase( null );
     setDatabaseFile( null );
 }
-public File getDatabaseFile()
+public String getDatabaseName()
+{
+	if ( databaseName == null )
+	{
+		databaseName = Config.DEFAULT_CONFIG.getDatabaseName();
+	}
+	return databaseName;
+}
+/**
+ * ------- Naam geven -------------------
+ */
+public void setDatabaseName( String aNaam )
+{
+	databaseName = aNaam;
+}
+File getDatabaseFile()
 {
 	return databaseFile;
 }
-public void setDatabaseFile( File aDatabaseFile )
+void setDatabaseFile( File aDatabaseFile )
 {
 	databaseFile = aDatabaseFile;
 }
-public RandomAccessFile getDatabase()
+RandomAccessFile getDatabase()
 {
 	return Database;
 }
-public void setDatabase( RandomAccessFile aDatabase )
+void setDatabase( RandomAccessFile aDatabase )
 {
 	Database = aDatabase;
+}
+PageDescriptor getPageDescriptor( VMStelling aStelling )
+{
+	return pageDescriptorTabel[aStelling.getWk()][aStelling.getZk()][aStelling.getAanZet().ordinal()];
+}
+void setPageDescriptor( VMStelling aVmStelling, PageDescriptor aPageDescriptor )
+{
+	pageDescriptorTabel[aVmStelling.getWk()][aVmStelling.getZk()][aVmStelling.getAanZet().ordinal()] = aPageDescriptor; 
+}
+void iterateOverAllPageDescriptors( VMStellingFunction aPageDescriptorsFunction )
+{
+	for ( int wk = 0; wk < 10; wk++ )
+	{
+		for ( int zk = 0; zk < 64; zk++ )
+		{
+			for ( Kleur aanZet : Kleur.values() )
+			{
+            	VMStelling vmStelling = VMStelling.builder()
+            		.wk( wk )
+            		.zk( zk )
+            		.aanZet( aanZet )
+            		.build();
+ 				aPageDescriptorsFunction.doPass( vmStelling );
+			}
+		}
+	}
 }
 /**
  * ********************************************************************************
@@ -132,24 +194,47 @@ Doel      : Initialisatie van de gegevensstrukturen
     END;
 END;
  */
-public void initializePageDescriptorTabel()
+//void initializePageDescriptorTabel()
+//{
+//	long Adres = 0;
+//	for ( int wk = 0; wk < 10; wk++ )
+//	{
+//		for ( int zk = 0; zk < 64; zk++ )
+//		{
+//			for ( Kleur aanZet : Kleur.values() )
+//			{
+//            	VMStelling vmStelling = VMStelling.builder()
+//            		.wk( wk )
+//            		.zk( zk )
+//            		.aanZet( aanZet )
+//            		.build();
+// 				setPageDescriptor( vmStelling, PageDescriptor.builder()
+//					.waar( Lokatie.OP_SCHIJF )
+//					.schijfAdres( Adres )
+//					.cacheNummer( Integer.MAX_VALUE )
+//					.build()
+//				);
+//				Adres += PAGE_SIZE;
+//			}
+//		}
+//	}
+//}
+long address; // @@NOG Dit is een multithread probleem(pje)
+void initializePageDescriptorTabel()
 {
-long Adres = 0;
-for ( int WK = 0; WK < 10; WK++ )
-{
-	for ( int ZK = 0; ZK < 64; ZK++ )
-	{
-		for ( int AanZet = 0; AanZet < 2; AanZet++ )
-		{
-			pageDescriptorTabel[WK][ZK][AanZet] = PageDescriptor.builder()
-				.waar( Lokatie.OP_SCHIJF )
-				.schijfAdres( Adres )
-				.cacheNummer( Integer.MAX_VALUE )
-				.build();
-			Adres += PAGE_SIZE;
-		}
-	}
+	address = 0L;
+	iterateOverAllPageDescriptors( this::initializePageDescriptor );
 }
+void initializePageDescriptor( VMStelling aVmStelling )
+{
+	PageDescriptor pageDescriptor = PageDescriptor.builder()
+		.waar( Lokatie.OP_SCHIJF )
+		.schijfAdres( address )
+		.cacheNummer( Integer.MAX_VALUE )
+		.build();
+	setPageDescriptor( aVmStelling, pageDescriptor );
+	address += PAGE_SIZE;
+
 }
 /**
  * (*------ Initialisatie cache-----------------------------*)
@@ -173,7 +258,7 @@ BEGIN
     END;
 END InzCache;
  */
-public void initializeCache()
+void initializeCache()
 {
 	// Cache is een array van 30 CacheEntry
 	// In een CacheEntry zit een PageDescriptor en een Page, onder meer
@@ -206,26 +291,6 @@ BEGIN
     RETURN(IOres);
 END ChkFile;
  */
-/*------ Witte koning ------------*/
-@SuppressWarnings( "unused" )
-private static final String [] RepWK = {"a1", "b1", "c1", "d1", "b2", "c2", "d2", "c3", "d3", "d4" };
-
-/*------ Zwarte koning -----------*/
-@SuppressWarnings( "unused" )
-private static final String [] RepZK = {
-		"a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1",
-		"a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2",
-		"a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3",
-		"a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4",
-		"a5", "b5", "c5", "d5", "e5", "f5", "g5", "h5",
-		"a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6",
-		"a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7",
-		"a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"
-	};
-
-/*------ Aan zet -----------------*/
-@SuppressWarnings( "unused" )
-private static final String [] RepAZ = { "W", "Z" };
 
 /**
  * ********************************************************************************
@@ -261,7 +326,7 @@ BEGIN
 END Report;
  */
 // @@NOG Report, wat doen we ermee?
-public void report( PageDescriptor aPageDescriptor, VMStelling aStelling )
+void report( PageDescriptor aPageDescriptor, VMStelling aStelling )
 {
 	// @@NOG effe niks
 	/*
@@ -309,7 +374,7 @@ BEGIN
     END;
 END GetFreeCacheEntry;
  */
-public int getFreeCacheEntry()
+int getFreeCacheEntry()
 {
     //---- laagste generatienummers -------
     long LaagsteGeneratie        = Long.MAX_VALUE;
@@ -396,19 +461,6 @@ void pageOut( PageDescriptor aPageDescriptor )
     }
 }
 /**
- * (*------------ Pagina ophalen van schijf ------*)
-PROCEDURE (*$N*) PageOut(PD: PDpointer);
-BEGIN
-    IF (PD # NIL) AND (Cache[PD^.CacheNummer].Vuil) THEN
-        Window.GotoXY(1, 1);
-        FIO.Seek(DataBase, PD^.SchijfAdres);
-        FIO.WrBin(DataBase, Cache[PD^.CacheNummer].PagePtr^, PageSize);
-        Cache[PD^.CacheNummer].Vuil := FALSE;
-    END;
-END PageOut;
-
-
-(*----------- Pagina ophalen van de schijf ---------*)
 PROCEDURE (*$N*) PageIn(PD: PDpointer; S: Stelling);
 VAR Msg      : ARRAY[0..80] OF CHAR;
     DummyOK  : BOOLEAN;
@@ -461,6 +513,9 @@ BEGIN
     END;
 END PageIn;
  */
+/**
+ * ----------- Pagina ophalen van de schijf ---------
+ */
 void pageIn( PageDescriptor aPageDescriptor )
 {
     if ( aPageDescriptor.getWaar() == Lokatie.OP_SCHIJF )
@@ -511,7 +566,7 @@ END GetPage;
 Page getPage( VMStelling aStelling, boolean aMaakVuil )
 {
 	aStelling.checkStelling();
-	PageDescriptor pageDescriptor = pageDescriptorTabel[aStelling.getWk()][aStelling.getZk()][aStelling.getAanZet().ordinal()];
+	PageDescriptor pageDescriptor = getPageDescriptor( aStelling );
 	if ( pageDescriptor.getWaar() == Lokatie.OP_SCHIJF )
 	{
 		report( pageDescriptor, aStelling );
@@ -601,7 +656,7 @@ public void freeRecord( VMStelling aStelling )
 	// En na de clear, page en pageDescriptor leegmaken?
 	// - PD niet, die is permanent
 	aStelling.checkStelling();
-	PageDescriptor PD = pageDescriptorTabel[aStelling.getWk()][aStelling.getZk()][aStelling.getAanZet().ordinal()];
+	PageDescriptor PD = getPageDescriptor( aStelling );
 	if ( PD.getWaar() == Lokatie.IN_RAM )
 	{
 		pageOut( PD ); // Checkt of de page vuil is
@@ -665,7 +720,7 @@ public void close()
 		//databaseFile = null;
 	}
 }
-public void checkDatabaseFile( String aFileNaam )
+void checkDatabaseFile( String aFileNaam )
 {
 	setDatabaseFile( new File( aFileNaam ) );
 	if ( ! getDatabaseFile().exists() )
@@ -703,10 +758,15 @@ END Open;
 /**
  *  ----------- Openen van een database -------------
  */
-public void open( String aNaam )
+public void open()
 {
+	if ( getDatabaseName() == null || getDatabaseName().length() == 0 )
+	{
+		throw new RuntimeException( "Geen naam opgegeven voor de database" );
+	}
+
 	close();
-	checkDatabaseFile( aNaam ); // Throws RuntimeException-als er iets niet goed is
+	checkDatabaseFile( getDatabaseName() ); // Throws RuntimeException-als er iets niet goed is
 	try
 	{
 		/**Zie doc for mode = "rwd" or "rws". "rw" betekent volgens mij dat een update direct naar
@@ -772,35 +832,31 @@ void createFile( String aNaam )
 		}
 	}
 }
-public void create( String aNaam )
+public void create()
 {
-    PageDescriptor pageDescriptor;
+	if ( getDatabaseName() == null || getDatabaseName().length() == 0 )
+	{
+		throw new RuntimeException( "Geen naam opgegeven voor de database" );
+	}
+
     close();
     //Window.PutOnTop(Win.CacheWin);
     //Window.Clear();
-    createFile( aNaam );
-    open( aNaam );
-    for ( int wk = wkveldRange.getMinimum(); wk < wkveldRange.getMaximum() + 1; wk++ )
-    {
-        for ( int zk = veldRange.getMinimum(); zk < veldRange.getMaximum() + 1; zk++ )
-        {
-            for ( int AanZet = 0; AanZet < 2; AanZet++ )
-            {
-            	VMStelling stelling = VMStelling.builder()
-            		.wk( wk )
-            		.zk( zk )
-            		.s3( 0 )
-            		.s4( 0 )
-            		.aanZet( AanZet == 0 ? WIT : ZWART )
-            		.build();
-                pageDescriptor = pageDescriptorTabel[wk][zk][AanZet];
-                pageDescriptor.setCacheNummer( 1 );
-                Cache[1].setVuil( true );
-                report( pageDescriptor, stelling );
-                pageOut( pageDescriptor );
-            }
-        }
-    }
+    createFile( getDatabaseName() );
+    open();
+    initializeDatabase();
+}
+void initializeDatabase()
+{
+	iterateOverAllPageDescriptors( this::initializeDatabasePage );
+}
+void initializeDatabasePage( VMStelling aVmStelling )
+{
+	PageDescriptor pageDescriptor = getPageDescriptor( aVmStelling );
+    pageDescriptor.setCacheNummer( 1 );
+    Cache[1].setVuil( true );
+    report( pageDescriptor, aVmStelling );
+    pageOut( pageDescriptor );
 }
 void delete()
 {
@@ -811,31 +867,6 @@ void delete()
 	}
 	setDatabaseFile( null );
 	setDatabase( null );
-}
-/**
-PROCEDURE (*$N*) CreateCache();
-VAR x: CARDINAL;
-	c: CHAR;
-BEGIN
-    FOR x:=1 TO CacheSize DO
-        WITH Cache[x] DO
-            IF NOT Storage.Available(SIZE(Page)) THEN
-                Win.Message('Niet genoeg ruimte voor de cache!', 'Het programma wordt afgebroken');
-                c:=Key.GetKey();
-                Win.CloseMessage();
-                HALT();
-            END;
-            Storage.ALLOCATE(PagePtr, SIZE(Page));
-        END;
-    END;
-END CreateCache;
- */
-/**
- * ---------- Maken (alloceren) cache -------------*)
- */
-void createCache()
-{
-	// In Java gebeurt dit vanzelf
 }
 
 }

@@ -2,6 +2,7 @@ package pu.chessdatabase.dal;
 
 import org.apache.commons.collections4.map.MultiKeyMap;
 
+import pu.chessdatabase.bo.Kleur;
 import pu.services.StopWatch;
 public class Cache
 {
@@ -15,6 +16,15 @@ public Cache()
 	initializePageDescriptorTabel();
 	initializePageDescriptors();
 }
+PageDescriptor getPageDescriptor( VMStelling aStelling )
+{
+	return pageDescriptorTabel[aStelling.getWk()][aStelling.getZk()][aStelling.getAanZet().ordinal()];
+}
+void setPageDescriptor( VMStelling aVmStelling, PageDescriptor aPageDescriptor )
+{
+	pageDescriptorTabel[aVmStelling.getWk()][aVmStelling.getZk()][aVmStelling.getAanZet().ordinal()] = aPageDescriptor; 
+}
+
 private void initializePageDescriptorTabel()
 {
 	StopWatch timer = new StopWatch();
@@ -23,13 +33,19 @@ private void initializePageDescriptorTabel()
 	{
 		for ( int zk = 0; zk < 64; zk++ )
 		{
-			for ( int aanZet = 0; aanZet < 2; aanZet++ )
+			for ( Kleur aanZet : Kleur.values() )
 			{
-				pageDescriptorTabel[wk][zk][aanZet] = PageDescriptor.builder()
+            	VMStelling vmStelling = VMStelling.builder()
+            		.wk( wk )
+            		.zk( zk )
+            		.aanZet( aanZet )
+            		.build();
+ 				setPageDescriptor( vmStelling, PageDescriptor.builder()
 					.waar( Lokatie.OP_SCHIJF )
 					.schijfAdres( Adres )
 					.cacheNummer( Integer.MAX_VALUE )
-					.build();
+					.build()
+				);
 				Adres += PAGE_SIZE;
 			}
 		}
@@ -59,7 +75,5 @@ private void initializePageDescriptors()
 	}
 	System.out.println( "initializePageDescriptors duurde " + timer.getElapsedNs() + (" = ") + timer.getLapTimeMs() );
 }
-
-
 
 }

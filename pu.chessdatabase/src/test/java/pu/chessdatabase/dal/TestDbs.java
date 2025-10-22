@@ -23,6 +23,7 @@ import pu.services.Vector;
 @SpringBootTest
 public class TestDbs
 {
+private static final String DATABASE_NAME = "dbs/Pipo";
 @Autowired private Dbs dbs;
 @Autowired private Bouw bouw;
 @Autowired private VM vm;
@@ -31,7 +32,7 @@ public class TestDbs
 @BeforeEach
 public void setup()
 {
-	dbs.setDbsNaam( "Pipo" );
+	dbs.setDatabaseName( DATABASE_NAME );
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 }
 @AfterEach
@@ -658,10 +659,10 @@ public void testFreeRecord()
 	// Dit is verder in TestVM al getest
 }
 @Test
-public void testName()
+public void testSetDatabaseName()
 {
-	dbs.setDbsNaam( "Mamaloe" );
-	assertThat( dbs.getDbsNaam(), is( "Mamaloe" ) );
+	dbs.setDatabaseName( "Mamaloe" );
+	assertThat( dbs.getDatabaseName(), is( "Mamaloe" ) );
 }
 @Test
 public void testCreate()

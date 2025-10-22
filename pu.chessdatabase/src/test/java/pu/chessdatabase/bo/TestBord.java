@@ -39,10 +39,10 @@ public void testZetBordOp()
 		.s4( 8 )
 		.build();
 	bord.zetBordOp( stelling );
-	assertThat( bord.getVeld( 5 ), is( 1 ) );
-	assertThat( bord.getVeld( 6 ), is( 2 ) );
-	assertThat( bord.getVeld( 7 ), is( 3 ) );
-	assertThat( bord.getVeld( 8 ), is( 4 ) );
+	assertThat( bord.getVeld( 5 ), is( 0 ) );
+	assertThat( bord.getVeld( 6 ), is( 1 ) );
+	assertThat( bord.getVeld( 7 ), is( 2 ) );
+	assertThat( bord.getVeld( 8 ), is( 3 ) );
 	for ( int x = 0; x < 5; x++ )
 	{
 		assertThat( bord.isVeldLeeg( x ), is( true ) );
@@ -66,10 +66,10 @@ public void testClrBord()
 	{
 		assertThat( bord.getVeld( x ), is( LEEG ) );
 	}
-	assertThat( bord.getVeld( 5 ), is( 1 ) );
-	assertThat( bord.getVeld( 6 ), is( 2 ) );
-	assertThat( bord.getVeld( 7 ), is( 3 ) );
-	assertThat( bord.getVeld( 8 ), is( 4 ) );
+	assertThat( bord.getVeld( 5 ), is( 0 ) );
+	assertThat( bord.getVeld( 6 ), is( 1 ) );
+	assertThat( bord.getVeld( 7 ), is( 2 ) );
+	assertThat( bord.getVeld( 8 ), is( 3 ) );
 	for ( int x = 9; x <= MAX_BORD; x++ )
 	{
 		assertThat( bord.getVeld( x ), is( LEEG ) );

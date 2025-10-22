@@ -25,7 +25,7 @@ public BoStellingKey getBoStellingKey()
 		.zk( Partij.alfaToVeld( zkAlfa ) )
 		.s3( Partij.alfaToVeld( s3Alfa ) )
 		.s4( Partij.alfaToVeld( s4Alfa ) )
-		.aanZet( Kleur.fromString( aanZet ) )
+		.aanZet( Kleur.valueOf( aanZet.toUpperCase() ) )
 		.build();
 }
 }
