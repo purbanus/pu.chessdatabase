@@ -209,6 +209,7 @@ public void testInzPDT()
 	vm.initializePageDescriptorTabel();
 	
 	long Adres = 0;
+	// @@NOG Gebruik iterateOverAllePageDescriptors
 	for ( int WK = 0; WK < 10; WK++ )
 	{
 		for ( int ZK = 0; ZK < 64; ZK++ )
