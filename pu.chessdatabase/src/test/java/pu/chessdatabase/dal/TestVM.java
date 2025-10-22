@@ -21,15 +21,14 @@ import pu.services.MatrixFormatter;
 
 public class TestVM
 {
-public static final String DATABASE_NAME = "Pipo";
+public static final String DATABASE_NAME = "dbs/Pipo";
 public final VM vm = new VM();
 
 @BeforeEach
 public void setup()
 {
-	vm.create( DATABASE_NAME );
-	vm.initializePageDescriptorTabel();
-	vm.initializeCache();
+	vm.setDatabaseName( DATABASE_NAME );
+	vm.create();
 }
 @AfterEach
 public void destroy()
@@ -179,8 +178,8 @@ public static void showCache( VM vm )
 
 private void checkIfAllDatabaseEntriesAreZero() throws IOException
 {
-	// @@NOG Maak hier een functie van in VM met een lambda als parm
-    for ( int WK = vm.wkveldRange.getMinimum(); WK < vm.wkveldRange.getMaximum() + 1; WK++ )
+	// @@NOG Gebruik iterateOverAllPageDescriptors
+    for ( int WK = vm.wkVeldRange.getMinimum(); WK < vm.wkVeldRange.getMaximum() + 1; WK++ )
     {
         for ( int ZK = vm.veldRange.getMinimum(); ZK < vm.veldRange.getMaximum() + 1; ZK++ )
         {
@@ -206,6 +205,7 @@ private void checkIfAllDatabaseEntriesAreZero() throws IOException
 @Test
 public void testInzPDT()
 {
+//	StopWatch timer = new StopWatch();
 	vm.initializePageDescriptorTabel();
 	
 	long Adres = 0;
@@ -223,6 +223,8 @@ public void testInzPDT()
 			}
 		}
 	}
+//	System.out.println( "initializePageDescriptorTabel duurde " + timer.getElapsedNs() + (" = ") + timer.getLapTimeMs() );
+
 }
 @Test
 public void testInzCache()
@@ -505,6 +507,7 @@ public void testFreeRecord()
 public void testFlushWithNothingChanged()
 {
 	vm.flush();
+	// @@>NOG
 }
 @Test
 public void testFlushWithSomePagesPresentButNoneVuil()
@@ -599,7 +602,7 @@ public void testCloseWithDatabaseOpen()
 @Test
 public void testOpen()
 {
-	vm.open( DATABASE_NAME );
+	vm.open();
 	assertThat( vm.getDatabase(), is( notNullValue() ) );
 }
 @Test
