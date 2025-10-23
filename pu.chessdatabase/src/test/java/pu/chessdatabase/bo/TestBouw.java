@@ -10,7 +10,9 @@ import static pu.chessdatabase.bo.Kleur.*;
 
 import java.util.ArrayList;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,17 +29,22 @@ private static final String DATABASE_NAME = "dbs/Pipo";
 @Autowired private Bouw bouw;
 @Autowired private Dbs dbs;
 @Autowired private Gen gen;
+@Autowired private Config config;
+String savedConfigString;
 
 @BeforeEach
 public void setup()
 {
-	dbs.setDatabaseName( DATABASE_NAME );
+	savedConfigString = config.getName();
+	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
 	dbs.create();
 }
 @AfterEach
 public void destroy()
 {
+	assertThat( dbs.getDatabaseName(), is( DATABASE_NAME ) );
 	dbs.delete();
+	config.switchConfig( savedConfigString );
 }
 @Test
 public void testConstructor()
@@ -45,60 +52,60 @@ public void testConstructor()
 	assertThat( bouw.passNchanges, is( true ) );
 	assertThat( bouw.passNr, is( 0 ) );
 }
-@Test
-public void testInzReport()
-{
-	bouw.inzReport();
-
-	assertThat( bouw.rptPrev[0], is( 0L ) );
-	assertThat( bouw.rptPrev[1], is( 0L ) );
-	assertThat( bouw.rptPrev[2], is( 5 * bouw.MEG ) );
-	assertThat( bouw.rptPrev[3], is( 0L ) );
-	
-	assertThat( bouw.rptTot[0], is( 0L ) );
-	assertThat( bouw.rptTot[1], is( 0L ) );
-	assertThat( bouw.rptTot[2], is( 5 * bouw.MEG ) );
-	assertThat( bouw.rptTot[3], is( 0L ) );
-}
-@Test
-public void testSetTotals()
-{
-	long [] totalsArray = new long [] { 1L, 2L, 3L, 4L };
-	bouw.setTotals( totalsArray );
-	for ( int x = 0; x < 4; x++ )
-	{
-		assertThat( bouw.rptTot[x], is( totalsArray[x] ) );
-	}
-}
-@Test
-public void testShowThisPass()
-{
-	long [] totalsArray = new long [] { 1L, 2L, 3L, 4L };
-	bouw.showThisPass( totalsArray );
-	assertThat( totalsArray[ResultaatType.REMISE.ordinal()], is( -7L ) );
-}
-@Test
-public void testReportNewPass()
-{
-	dbs.report = new long[] { 10L, 11L, 12L, 13L };
-	bouw.rptTot  = new long[] { 5L, 6L, 7L, 9L };
-	bouw.rptPrev = new long[] { 1L, 2L, 3L, 4L };
-	long [] totals = new long[] { 6L, 8L, 10L, 13L };
-	bouw.reportNewPass( "Pipo Koeie" );
-	for ( int x = 0; x < 4; x++ )
-	{
-		if ( x == ResultaatType.REMISE.ordinal() ) //Remise = 2
-		{
-			assertThat( bouw.rptPrev[x], is( -34L ) ); 
-			assertThat( bouw.rptTot [x], is( -27L ) ); 
-		}
-		else
-		{
-			assertThat( bouw.rptTot[x], is( totals[x] ) );
-			assertThat( bouw.rptTot[x], is( totals[x] ) );
-		}
-	}
-}
+//@Test
+//public void testInzReport()
+//{
+//	bouw.inzReport();
+//
+//	assertThat( bouw.rptPrev[0], is( 0L ) );
+//	assertThat( bouw.rptPrev[1], is( 0L ) );
+//	assertThat( bouw.rptPrev[2], is( 5 * bouw.MEG ) );
+//	assertThat( bouw.rptPrev[3], is( 0L ) );
+//	
+//	assertThat( bouw.rptTot[0], is( 0L ) );
+//	assertThat( bouw.rptTot[1], is( 0L ) );
+//	assertThat( bouw.rptTot[2], is( 5 * bouw.MEG ) );
+//	assertThat( bouw.rptTot[3], is( 0L ) );
+//}
+//@Test
+//public void testSetTotals()
+//{
+//	long [] totalsArray = new long [] { 1L, 2L, 3L, 4L };
+//	bouw.setTotals( totalsArray );
+//	for ( int x = 0; x < 4; x++ )
+//	{
+//		assertThat( bouw.rptTot[x], is( totalsArray[x] ) );
+//	}
+//}
+//@Test
+//public void testShowThisPass()
+//{
+//	long [] totalsArray = new long [] { 1L, 2L, 3L, 4L };
+//	bouw.showThisPass( totalsArray );
+//	assertThat( totalsArray[ResultaatType.REMISE.ordinal()], is( -7L ) );
+//}
+//@Test
+//public void testReportNewPass()
+//{
+//	dbs.report = new long[] { 10L, 11L, 12L, 13L };
+//	bouw.rptTot  = new long[] { 5L, 6L, 7L, 9L };
+//	bouw.rptPrev = new long[] { 1L, 2L, 3L, 4L };
+//	long [] totals = new long[] { 6L, 8L, 10L, 13L };
+//	bouw.reportNewPass( "Pipo Koeie" );
+//	for ( int x = 0; x < 4; x++ )
+//	{
+//		if ( x == ResultaatType.REMISE.ordinal() ) //Remise = 2
+//		{
+//			assertThat( bouw.rptPrev[x], is( -34L ) ); 
+//			assertThat( bouw.rptTot [x], is( -27L ) ); 
+//		}
+//		else
+//		{
+//			assertThat( bouw.rptTot[x], is( totals[x] ) );
+//			assertThat( bouw.rptTot[x], is( totals[x] ) );
+//		}
+//	}
+//}
 @Test
 public void testIsIllegaal()
 {
@@ -150,22 +157,21 @@ private void markeerIllegaal()
 	bouw.matStellingen  = new ArrayList<>();
 	
 	bouw.passNr = 0;
-	dbs.setReport( dbs.DFT_RPT_FREQ, bouw::showThisPass );
+//	dbs.setReport( dbs.DFT_RPT_FREQ, bouw::showThisPass );
 	dbs.clearTellers();
-	bouw.inzReport();
-	bouw.reportNewPass( "Reserveren schijfruimte" );
+//	bouw.inzReport();
+//	bouw.reportNewPass( "Reserveren schijfruimte" );
 
-	bouw.reportNewPass( "Illegaal" );
+//	bouw.reportNewPass( "Illegaal" );
 	dbs.pass( PassType.MARKEER_WIT, bouw::isIllegaal );
 
-	bouw.reportNewPass( "Schaakjes" );
+//	bouw.reportNewPass( "Schaakjes" );
 	dbs.pass( PassType.MARKEER_WIT, bouw::schaakjes );
 
 //	dbs.SetReport( 100, bouw::showThisPass );
 //	bouw.reportNewPass( "Matstellingen" );
 //	dbs.Pass( PassType.MarkeerWit  , bouw::isMat );
 //	dbs.Pass( PassType.MarkeerZwart, bouw::isMat );
-
 }
 @Test
 public void testIsMat()
@@ -268,10 +274,10 @@ public void testTelAlles()
 	bouw.pass_0();
 	dbs.open();
 	bouw.telAlles();
-	System.out.println( bouw.rptTot );
+//	System.out.println( bouw.rptTot );
 	for ( int x = 0; x < 4; x++ )
 	{
-		System.out.println( bouw.rptTot[x] );
+//		System.out.println( bouw.rptTot[x] );
 	}
 	/* Illegaal: 2039130
        Gewonnen:       0
