@@ -5,13 +5,45 @@ import static org.hamcrest.Matchers.*;
 import static pu.chessdatabase.bo.Kleur.*;
 
 import java.math.BigInteger;
+import java.text.MessageFormat;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.BoStelling;
+import pu.chessdatabase.bo.Config;
 
+@SpringBootTest
 public class TestVmStelling
 {
+public static final String VM_TO_STRING = """
+WK=a1 ZK=c1 S3=b2 S4=d3 AanZet={4}
+.. .. .. .. .. .. .. ..\s
+.. .. .. .. .. .. .. ..\s
+.. .. .. .. .. .. .. ..\s
+.. .. .. .. .. .. .. ..\s
+.. .. .. .. .. .. .. ..\s
+.. .. .. {3} .. .. .. ..\s
+.. {2} .. .. .. .. .. ..\s
+{0} .. {1} .. .. .. .. ..\s
+""";
+
+String savedConfigString;
+@BeforeEach
+public void setup()
+{
+	savedConfigString = config.getName();
+}
+@AfterEach
+public void destroy()
+{
+	config.switchConfig( savedConfigString );
+}
+@Autowired private Config config;
+
 @SuppressWarnings( "null" )
 @Test
 public void testShiftLeft()
@@ -56,17 +88,6 @@ public void testGetBoStelling()
 		.build();
 	assertThat( vmStelling.getBoStelling(), is( boStelling ) );
 }
-public static final String VM_TO_STRING = """
-WK=a1 ZK=c1 S3=b2 S4=d3 AanZet=W
-.. .. .. .. .. .. .. ..\s
-.. .. .. .. .. .. .. ..\s
-.. .. .. .. .. .. .. ..\s
-.. .. .. .. .. .. .. ..\s
-.. .. .. .. .. .. .. ..\s
-.. .. .. ZT .. .. .. ..\s
-.. WD .. .. .. .. .. ..\s
-WK .. ZK .. .. .. .. ..\s
-""";
 
 @Test
 public void testToString()
@@ -78,7 +99,38 @@ public void testToString()
 		.s4( "d3" )
 		.aanZet( WIT )
 		.build();
-	assertThat( vmStelling.toString(), is( VM_TO_STRING ) );
+	config.switchConfig( "KDKT" );
+	String boStringText = MessageFormat.format( VM_TO_STRING, 
+		config.getStukken().getWk().getStukString(),
+		config.getStukken().getZk().getStukString(),
+		config.getStukken().getS3().getStukString(),
+		config.getStukken().getS4().getStukString(),
+		vmStelling.getAanZet().getAfko()
+	);
+	assertThat( vmStelling.toString().length(), is( boStringText.length() ) );
+	assertThat( vmStelling.toString(), is( boStringText ) );
+	
+	config.switchConfig( "KLPK" );
+	boStringText = MessageFormat.format( VM_TO_STRING, 
+		config.getStukken().getWk().getStukString(),
+		config.getStukken().getZk().getStukString(),
+		config.getStukken().getS3().getStukString(),
+		config.getStukken().getS4().getStukString(),
+		vmStelling.getAanZet().getAfko()
+	);
+	assertThat( vmStelling.toString().length(), is( boStringText.length() ) );
+	assertThat( vmStelling.toString(), is( boStringText ) );
+
+	config.switchConfig( "KLLK" );
+	boStringText = MessageFormat.format( VM_TO_STRING, 
+		config.getStukken().getWk().getStukString(),
+		config.getStukken().getZk().getStukString(),
+		config.getStukken().getS3().getStukString(),
+		config.getStukken().getS4().getStukString(),
+		vmStelling.getAanZet().getAfko()
+	);
+	assertThat( vmStelling.toString().length(), is( boStringText.length() ) );
+	assertThat( vmStelling.toString(), is( boStringText ) );
 }
 
 }
