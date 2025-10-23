@@ -1118,6 +1118,7 @@ public void testGegenereerdeZetDocument()
 		.aanZet( WIT )
 		.build();
 	vanNaar = new VanNaar( 0x11, 0x66 );
+	stukDatZet = config.getStukken().getS3();
 	ply = Ply.builder()
 		.boStelling( boStellingVan )
 		.einde( NOG_NIET )
@@ -1127,7 +1128,7 @@ public void testGegenereerdeZetDocument()
 		.build();
 	gegenereerdeZetDocument = GegenereerdeZetDocument.builder()
 		.zetNummer( 18 )
-		.zet( "Db2xg7+" )
+		.zet( stukDatZet.getAfko() + "b2xg7+" )
 		.resultaat( "Remise" )
 		.matInHoeveel( "..." )
 		.build();
