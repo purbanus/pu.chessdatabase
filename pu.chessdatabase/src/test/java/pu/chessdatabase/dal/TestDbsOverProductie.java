@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.BoStelling;
-import pu.chessdatabase.bo.Config;
 
 @SpringBootTest
 public class TestDbsOverProductie
@@ -30,12 +29,12 @@ public class TestDbsOverProductie
 @BeforeEach
 public void setup()
 {
-	dbs.setDatabaseName( Config.DEFAULT_CONFIG.getDatabaseName() );
 	dbs.open();
 }
 @AfterEach
 public void destroy()
 {
+	dbs.close();
 }
 
 List<BoStelling> remiseStellingen;
