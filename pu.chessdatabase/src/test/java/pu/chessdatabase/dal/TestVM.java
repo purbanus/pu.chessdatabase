@@ -112,9 +112,9 @@ public void testShowCache()
 {
 	vm.initializePageDescriptorTabel();
 	vm.initializeCache();
-	showCache( vm );
+	showCache();
 }
-public static void showCache( VM vm )
+public void showCache()
 {
 	MatrixFormatter matrixFormatter = new MatrixFormatter();
 	matrixFormatter.setDefaultAlignment( MatrixFormatter.ALIGN_RIGHT );
@@ -178,57 +178,51 @@ public static void showCache( VM vm )
 
 private void checkIfAllDatabaseEntriesAreZero() throws IOException
 {
-	// @@NOG Gebruik iterateOverAllPageDescriptors
-    for ( int WK = vm.wkVeldRange.getMinimum(); WK < vm.wkVeldRange.getMaximum() + 1; WK++ )
-    {
-        for ( int ZK = vm.veldRange.getMinimum(); ZK < vm.veldRange.getMaximum() + 1; ZK++ )
-        {
-            for ( int aanZet = 0; aanZet < 2; aanZet++ )
-            {
-                PageDescriptor pageDescriptor = vm.pageDescriptorTabel[WK][ZK][aanZet];
-//                pageDescriptor.setCacheNummer( 1 );
-//                vm.Cache[1].setVuil( true );
-        		vm.getDatabase().seek( pageDescriptor.getSchijfAdres() );
-        		Page page = new Page();
-        	    int aantal = vm.getDatabase().read( page.getPage(), 0, vm.PAGE_SIZE );
-        	    assertThat( aantal, is( vm.PAGE_SIZE) );
-        	    assertThat( TestHelper.isAllZero( page.getPage() ), is( true ) );
-            }
-        }
-    }
+	vm.iterateOverAllPageDescriptors( this::checkIfDatabaseEntryIsZero );
+}
+void checkIfDatabaseEntryIsZero( VMStelling aVmStelling )
+{
+	PageDescriptor pageDescriptor = vm.getPageDescriptor( aVmStelling );
+//  pageDescriptor.setCacheNummer( 1 );
+//  vm.Cache[1].setVuil( true );
+	Page page = new Page();
+	try
+	{
+		vm.getDatabase().seek( pageDescriptor.getSchijfAdres() );
+		int aantal = vm.getDatabase().read( page.getPage(), 0, vm.PAGE_SIZE );
+		assertThat( aantal, is( vm.PAGE_SIZE) );
+	}
+	catch ( IOException e )
+	{
+		throw new RuntimeException( e );
+	}
+	assertThat( TestHelper.isAllZero( page.getPage() ), is( true ) );
 }
 
 //=================================================================================================
 //Hier komen de tests
 //=================================================================================================
 
+long address = 0L;
 @Test
-public void testInzPDT()
+public void testInitializePageDescriptorTabel()
 {
 //	StopWatch timer = new StopWatch();
 	vm.initializePageDescriptorTabel();
-	
-	long Adres = 0;
-	// @@NOG Gebruik iterateOverAllePageDescriptors
-	for ( int WK = 0; WK < 10; WK++ )
-	{
-		for ( int ZK = 0; ZK < 64; ZK++ )
-		{
-			for ( int aanZet = 0; aanZet < 2; aanZet++ )
-			{
-				PageDescriptor pageDescriptor = vm.pageDescriptorTabel[WK][ZK][aanZet];
-				assertThat( pageDescriptor.getWaar(), is( Lokatie.OP_SCHIJF ) );
-				assertThat( pageDescriptor.getSchijfAdres(), is( Adres ) );
-				assertThat( pageDescriptor.getCacheNummer(), is( Integer.MAX_VALUE ) );
-				Adres += vm.PAGE_SIZE;
-			}
-		}
-	}
+	vm.iterateOverAllPageDescriptors( this::testPageDescriptor );
 //	System.out.println( "initializePageDescriptorTabel duurde " + timer.getElapsedNs() + (" = ") + timer.getLapTimeMs() );
-
 }
+void testPageDescriptor( VMStelling aVmStelling )
+{
+	PageDescriptor pageDescriptor = vm.getPageDescriptor( aVmStelling );
+	assertThat( pageDescriptor.getWaar(), is( Lokatie.OP_SCHIJF ) );
+	assertThat( pageDescriptor.getSchijfAdres(), is( address ) );
+	assertThat( pageDescriptor.getCacheNummer(), is( Integer.MAX_VALUE ) );
+	address += vm.PAGE_SIZE;
+}
+
 @Test
-public void testInzCache()
+public void testInitializeCache()
 {
 	vm.initializeCache();
 	
@@ -594,17 +588,20 @@ public void testCloseWithNoDatabesePresent()
 {
 	vm.delete();
 	vm.close();
+	// @@NOG
 }
 @Test
 public void testCloseWithDatabaseOpen()
 {
 	vm.close();
+	// @@NOG
 }
 @Test
 public void testOpen()
 {
 	vm.open();
 	assertThat( vm.getDatabase(), is( notNullValue() ) );
+	// @@NOG
 }
 @Test
 public void testCreateFile()
