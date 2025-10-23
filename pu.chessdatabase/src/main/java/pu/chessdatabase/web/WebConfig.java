@@ -11,7 +11,7 @@ import pu.chessdatabase.bo.speel.Partij;
 import pu.chessdatabase.dal.Dbs;
 
 @Configuration
-public class Config
+public class WebConfig
 {
 @Autowired private Dbs dbs;
 @Bean

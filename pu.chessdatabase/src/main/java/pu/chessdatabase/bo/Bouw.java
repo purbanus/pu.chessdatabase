@@ -22,11 +22,11 @@ public static final boolean HOU_STELLINGEN_BIJ = false;
 @Autowired private Gen gen;
 
 int passNr;
-int rptFreq = dbs.DFT_RPT_FREQ;
+private int rptFreq = dbs.DFT_RPT_FREQ;
 boolean passNchanges;
 
-long [] rptPrev = new long[4];
-long [] rptTot  = new long[4];
+private long [] rptPrev = new long[4];
+private long [] rptTot  = new long[4];
 
 public Bouw()
 {
@@ -53,16 +53,16 @@ END InzReport;
 /**
  * (*------------ Initialisatie rapportage ------------------*)
  */
-void inzReport()
-{
-	for ( ResultaatType resultaatType : ResultaatType.values() )
-	{
-		rptPrev[resultaatType.ordinal()] = 0;
-		rptTot [resultaatType.ordinal()] = 0;
-	}
-	rptPrev[ResultaatType.REMISE.ordinal()] = 5 * MEG;
-	rptTot [ResultaatType.REMISE.ordinal()] = 5 * MEG;
-}
+//void inzReport()
+//{
+//	for ( ResultaatType resultaatType : ResultaatType.values() )
+//	{
+//		rptPrev[resultaatType.ordinal()] = 0;
+//		rptTot [resultaatType.ordinal()] = 0;
+//	}
+//	rptPrev[ResultaatType.REMISE.ordinal()] = 5 * MEG;
+//	rptTot [ResultaatType.REMISE.ordinal()] = 5 * MEG;
+//}
 /**
 PROCEDURE SetTotals(RA: Dbs.ReportArray);
 BEGIN
@@ -77,14 +77,14 @@ END SetTotals;
 /**
  * ---------- Geef de eindtotalen een beginwaarde ----------------
  */
-void setTotals( long [] aReportArray )
-{
-	rptTot = aReportArray;
-//	for ( int x = 0; x < 4; x++ )
-//	{
-//		RptTot[x] = aReportArray[x];
-//	}
-}
+//void setTotals( long [] aReportArray )
+//{
+//	rptTot = aReportArray;
+////	for ( int x = 0; x < 4; x++ )
+////	{
+////		RptTot[x] = aReportArray[x];
+////	}
+//}
 /**
 PROCEDURE ShowThisPass(RA: Dbs.ReportArray);
 BEGIN
@@ -99,18 +99,18 @@ END ShowThisPass;
 /**
  * -------- Bijwerken tellers deze pass -----------------------
  */
-void showThisPass( long [] aReportArray )
-{
-	//Window.Use(Win.BouwWin);
-	aReportArray[ResultaatType.REMISE.ordinal()] = 
-		- aReportArray[ResultaatType.ILLEGAAL.ordinal()]
-		- aReportArray[ResultaatType.GEWONNEN.ordinal()]
-		- aReportArray[ResultaatType.VERLOREN.ordinal()];
-//	Window.GotoXY(12, 2); IO.WrLngInt(RA[Illegaal], 10);
-//	Window.GotoXY(12, 3); IO.WrLngInt(RA[Remise  ], 10);
-//	Window.GotoXY(12, 4); IO.WrLngInt(RA[Gewonnen], 10);
-//	Window.GotoXY(12, 5); IO.WrLngInt(RA[Verloren], 10);
-}
+//void showThisPass( long [] aReportArray )
+//{
+//	//Window.Use(Win.BouwWin);
+//	aReportArray[ResultaatType.REMISE.ordinal()] = 
+//		- aReportArray[ResultaatType.ILLEGAAL.ordinal()]
+//		- aReportArray[ResultaatType.GEWONNEN.ordinal()]
+//		- aReportArray[ResultaatType.VERLOREN.ordinal()];
+////	Window.GotoXY(12, 2); IO.WrLngInt(RA[Illegaal], 10);
+////	Window.GotoXY(12, 3); IO.WrLngInt(RA[Remise  ], 10);
+////	Window.GotoXY(12, 4); IO.WrLngInt(RA[Gewonnen], 10);
+////	Window.GotoXY(12, 5); IO.WrLngInt(RA[Verloren], 10);
+//}
 /**
  * (*-------- Totalen laten zien --------------------------------*)
 PROCEDURE ShowTotals(RA: Dbs.ReportArray);
@@ -125,14 +125,14 @@ END ShowTotals;
 /**
  * -------- Totalen laten zien --------------------------------
  */
-void showTotals( long [] aReportArray )
-{
-//	Window.Use(Win.BouwWin);
-//	Window.GotoXY(36, 2); IO.WrLngInt(RA[Illegaal], 12);
-//	Window.GotoXY(36, 3); IO.WrLngInt(RA[Remise  ], 12);
-//	Window.GotoXY(36, 4); IO.WrLngInt(RA[Gewonnen], 12);
-//	Window.GotoXY(36, 5); IO.WrLngInt(RA[Verloren], 12);
-}
+//void showTotals( long [] aReportArray )
+//{
+////	Window.Use(Win.BouwWin);
+////	Window.GotoXY(36, 2); IO.WrLngInt(RA[Illegaal], 12);
+////	Window.GotoXY(36, 3); IO.WrLngInt(RA[Remise  ], 12);
+////	Window.GotoXY(36, 4); IO.WrLngInt(RA[Gewonnen], 12);
+////	Window.GotoXY(36, 5); IO.WrLngInt(RA[Verloren], 12);
+//}
 /**
 PROCEDURE ReportNewPass(PassText: ARRAY OF CHAR);
 VAR x: ResType;
@@ -159,32 +159,32 @@ END ReportNewPass;
 /**
  * ------------ Bijwerken tellers als een nieuwe pass begint --------
  */
-void reportNewPass( String aPassText )
-{
-	for ( ResultaatType resultaatType : ResultaatType.values() )
-	{
-		rptTot[resultaatType.ordinal()] = rptTot[resultaatType.ordinal()] + rptPrev[resultaatType.ordinal()];
-	}
-	rptPrev = dbs.getTellers();
-	rptPrev[ResultaatType.REMISE.ordinal()] = 
-		- rptPrev[ResultaatType.ILLEGAAL.ordinal()]
-		- rptPrev[ResultaatType.GEWONNEN.ordinal()]
-		- rptPrev[ResultaatType.VERLOREN.ordinal()];
-	rptTot[ResultaatType.REMISE.ordinal()] = 
-		- rptTot[ResultaatType.ILLEGAAL.ordinal()]
-		- rptTot[ResultaatType.GEWONNEN.ordinal()]
-		- rptTot[ResultaatType.VERLOREN.ordinal()];
-	dbs.clearTellers(); // @@NOG Op de een of and're manier maakt hij nu de getallen in RptPrev allemaal nul
-//	Window.Use(Win.BouwWin);
-//	Window.Clear();
-//	Window.GotoXY(12, 1); IO.WrStr(' Deze pass');
-//	Window.GotoXY(24, 1); IO.WrStr('    Vorige');
-//	Window.GotoXY(36, 1); IO.WrStr('    Totaal');
-//	Window.GotoXY( 2, 2); IO.WrStr('Illegaal  '); IO.WrStr('         0'); IO.WrLngInt(RptPrev[Illegaal], 12); IO.WrLngInt(RptTot[Illegaal], 12);
-//	Window.GotoXY( 2, 3); IO.WrStr('Remise    '); IO.WrStr('         0'); IO.WrLngInt(RptPrev[Remise  ], 12); IO.WrLngInt(RptTot[Remise  ], 12);
-//	Window.GotoXY( 2, 4); IO.WrStr('Gewonnen  '); IO.WrStr('         0'); IO.WrLngInt(RptPrev[Gewonnen], 12); IO.WrLngInt(RptTot[Gewonnen], 12);
-//	Window.GotoXY( 2, 5); IO.WrStr('Verloren  '); IO.WrStr('         0'); IO.WrLngInt(RptPrev[Verloren], 12); IO.WrLngInt(RptTot[Verloren], 12);
-//	Window.GotoXY( 2, 7); IO.WrStr('Pass '); IO.WrCard(PassNr, 3); IO.WrChar(' '); IO.WrStr(PassText);
+//void reportNewPass( String aPassText )
+//{
+//	for ( ResultaatType resultaatType : ResultaatType.values() )
+//	{
+//		rptTot[resultaatType.ordinal()] = rptTot[resultaatType.ordinal()] + rptPrev[resultaatType.ordinal()];
+//	}
+//	rptPrev = dbs.getTellers();
+//	rptPrev[ResultaatType.REMISE.ordinal()] = 
+//		- rptPrev[ResultaatType.ILLEGAAL.ordinal()]
+//		- rptPrev[ResultaatType.GEWONNEN.ordinal()]
+//		- rptPrev[ResultaatType.VERLOREN.ordinal()];
+//	rptTot[ResultaatType.REMISE.ordinal()] = 
+//		- rptTot[ResultaatType.ILLEGAAL.ordinal()]
+//		- rptTot[ResultaatType.GEWONNEN.ordinal()]
+//		- rptTot[ResultaatType.VERLOREN.ordinal()];
+//	dbs.clearTellers(); // @@NOG Op de een of and're manier maakt hij nu de getallen in RptPrev allemaal nul
+////	Window.Use(Win.BouwWin);
+////	Window.Clear();
+////	Window.GotoXY(12, 1); IO.WrStr(' Deze pass');
+////	Window.GotoXY(24, 1); IO.WrStr('    Vorige');
+////	Window.GotoXY(36, 1); IO.WrStr('    Totaal');
+////	Window.GotoXY( 2, 2); IO.WrStr('Illegaal  '); IO.WrStr('         0'); IO.WrLngInt(RptPrev[Illegaal], 12); IO.WrLngInt(RptTot[Illegaal], 12);
+////	Window.GotoXY( 2, 3); IO.WrStr('Remise    '); IO.WrStr('         0'); IO.WrLngInt(RptPrev[Remise  ], 12); IO.WrLngInt(RptTot[Remise  ], 12);
+////	Window.GotoXY( 2, 4); IO.WrStr('Gewonnen  '); IO.WrStr('         0'); IO.WrLngInt(RptPrev[Gewonnen], 12); IO.WrLngInt(RptTot[Gewonnen], 12);
+////	Window.GotoXY( 2, 5); IO.WrStr('Verloren  '); IO.WrStr('         0'); IO.WrLngInt(RptPrev[Verloren], 12); IO.WrLngInt(RptTot[Verloren], 12);
+////	Window.GotoXY( 2, 7); IO.WrStr('Pass '); IO.WrCard(PassNr, 3); IO.WrChar(' '); IO.WrStr(PassText);
 /**
 PROCEDURE IsIllegaal(S: Dbs.Stelling);
 BEGIN
@@ -200,7 +200,7 @@ END IsIllegaal;
 /**
  * ------------ Kijk of een stelling illegaal is ---------------
  */
-}
+
 List<BoStelling> illegaalStellingen = new ArrayList<>();
 List<BoStelling> stellingenMetSchaak = new ArrayList<>();
 List<BoStelling> matStellingen = new ArrayList<>();
@@ -390,20 +390,20 @@ void pass_0()
 	matStellingen = new ArrayList<>();
 	
 	passNr = 0;
-	dbs.setReport( rptFreq, this::showThisPass );
+//	dbs.setReport( rptFreq, this::showThisPass );
 	dbs.clearTellers();
-	inzReport();
-	reportNewPass( "Reserveren schijfruimte" );
+//	inzReport();
+//	reportNewPass( "Reserveren schijfruimte" );
 	dbs.create();
 
-	reportNewPass( "Illegaal" );
+//	reportNewPass( "Illegaal" );
 	dbs.pass( PassType.MARKEER_WIT, this::isIllegaal );
 
-	reportNewPass( "Schaakjes" );
+//	reportNewPass( "Schaakjes" );
 	dbs.pass( PassType.MARKEER_WIT, this::schaakjes );
 
-	dbs.setReport( 100, this::showThisPass );
-	reportNewPass( "Matstellingen" );
+//	dbs.setReport( 100, this::showThisPass );
+//	reportNewPass( "Matstellingen" );
 	dbs.pass( PassType.MARKEER_WIT  , this::isMat );
 	dbs.pass( PassType.MARKEER_ZWART, this::isMat );
 }
@@ -434,7 +434,7 @@ void tel( BoStelling aBoStelling )
 	resTeller++;
 	if ( resTeller >= rptFreq )
 	{
-		showTotals( rptTot );
+//		showTotals( rptTot );
 		resTeller = 0;
 	}
 }
@@ -456,10 +456,10 @@ END TelAlles;
  */
 void telAlles()
 {
-	inzReport();
+//	inzReport();
 	rptPrev[ResultaatType.REMISE.ordinal()] = 0;
 	rptTot[ResultaatType.REMISE.ordinal()] = 0;
-	reportNewPass( "Tellen van alle stellingen" );
+//	reportNewPass( "Tellen van alle stellingen" );
 	resTeller = 0;
 	dbs.pass( PassType.MARKEER_WIT_EN_ZWART, this::tel );
 }
@@ -471,14 +471,14 @@ void telMetKleur( BoStelling aBoStelling )
 	resTeller++;
 	if ( resTeller >= rptFreq )
 	{
-		showTotals( rptTot );
+//		showTotals( rptTot );
 		resTeller = 0;
 	}
 }
 void telAllesMetKleur()
 {
 	tellersMetKleur = new long[2][4];
-	reportNewPass( "Tellen van alle stellingen" );
+//	reportNewPass( "Tellen van alle stellingen" );
 	resTeller = 0;
 	dbs.pass( PassType.MARKEER_WIT_EN_ZWART, this::telMetKleur );
 }
@@ -628,11 +628,11 @@ END Pass_n;
  */
 void pass_n()
 {
-	dbs.setReport( 100, this::showThisPass );
-	reportNewPass( "Wit aan zet" );
+//	dbs.setReport( 100, this::showThisPass );
+//	reportNewPass( "Wit aan zet" );
 	dbs.pass( PassType.MARKEER_WIT, this::markeer );
 
-	reportNewPass( "Zwart aan zet" );
+//	reportNewPass( "Zwart aan zet" );
 	dbs.pass( PassType.MARKEER_ZWART, this::markeer );
 }
 /**

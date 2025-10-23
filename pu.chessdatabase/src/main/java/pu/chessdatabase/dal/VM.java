@@ -5,11 +5,18 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import pu.chessdatabase.bo.Config;
 import pu.chessdatabase.bo.Kleur;
 import pu.services.Range;
+
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 //import org.apache.commons.lang3.Range;
 
@@ -24,6 +31,7 @@ Doel   : Implementeren van een virtual memory systeem voor de chess
 ******************************************************************************
  */
 @Component
+@Data
 public class VM
 {
 static final int CACHE_SIZE     = 30;                 // Aantal pagina"s
@@ -71,10 +79,21 @@ Range veldRange = new Range( 0, 63 );
 
 PageDescriptor[][][] pageDescriptorTabel = new PageDescriptor[10][64][2];
 CacheEntry [] Cache = new CacheEntry[CACHE_SIZE];
+
+@Autowired private Config config;
+@EqualsAndHashCode.Exclude
 private String databaseName = null;
+@Getter( AccessLevel.PACKAGE ) 
+@Setter( AccessLevel.PRIVATE ) 
 private File databaseFile;
-private RandomAccessFile Database = null;
-long GeneratieTeller;
+@Getter( AccessLevel.PACKAGE ) 
+@Setter( AccessLevel.PRIVATE ) 
+private RandomAccessFile database = null;
+private boolean open = false;
+
+@Getter( AccessLevel.PACKAGE ) 
+@Setter( AccessLevel.PRIVATE ) 
+private long generatieTeller;
 /**
  * ------- Veld naar alfa ----------------------------------
  */
@@ -112,40 +131,23 @@ public static int alfaToVeld( String aAlfaVeld )
 public VM()
 {
     //FIO.IOcheck:=FALSE;
-    GeneratieTeller = 1L;
+    setGeneratieTeller( 1L );
     setDatabase( null );
     setDatabaseFile( null );
+}
+
+public void switchConfig()
+{
+	setDatabaseName( null );
+	open();
 }
 public String getDatabaseName()
 {
 	if ( databaseName == null )
 	{
-		databaseName = Config.DEFAULT_CONFIG.getDatabaseName();
+		databaseName = getConfig().getDatabaseName();
 	}
 	return databaseName;
-}
-/**
- * ------- Naam geven -------------------
- */
-public void setDatabaseName( String aNaam )
-{
-	databaseName = aNaam;
-}
-File getDatabaseFile()
-{
-	return databaseFile;
-}
-void setDatabaseFile( File aDatabaseFile )
-{
-	databaseFile = aDatabaseFile;
-}
-RandomAccessFile getDatabase()
-{
-	return Database;
-}
-void setDatabase( RandomAccessFile aDatabase )
-{
-	Database = aDatabase;
 }
 PageDescriptor getPageDescriptor( VMStelling aStelling )
 {
@@ -277,70 +279,6 @@ void initializeCache()
 		Cache[x].getPage().clearPage();
 	}
 }
-/**
- * (*--------- Kijk of een bestand bestaat ------------------*)
-PROCEDURE (*$N*) ChkFile(Naam: ARRAY OF CHAR): CARDINAL;
-VAR IOres: CARDINAL;
-    F : FIO.File;
-BEGIN
-    F:=FIO.Open(Naam);
-    IOres:=IOresult();
-    IF IOres = 0 THEN
-        FIO.Close(F);
-    END;
-    RETURN(IOres);
-END ChkFile;
- */
-
-/**
- * ********************************************************************************
-Procecdures: Report
-			 GetFreeCacheEntry
-             PageOut
-             PageIn
-Doel       : Deze routines onderhouden de Page Descriptor Table en de cache
-			 - Report print info over de cache
-             - GetFreeCacheEntry kijkt welke pagina het eerst in aanmerking komt om
-               herbruikt te worden
-             - PageOut schrijft een eventuele vuile pagina naar de schijf
-             - PageIn haalt een nieuwe pagina op naar de cache, en zorgt eventueel
-               dat een vuile pagina eerst weg wordt geschreven.
-
-N.B.         PageIn en PageOut kunnen vrijelijk worden aangeroepen door andere
-             routines binnen het moduul.
-             Van de datastrukturen mogen alleen Vuil en Generatie door de andere
-             routines gebruikt worden en eventueel veranderd.
-***********************************************************************************
-
- * PROCEDURE (*$N*) Report(PD: PDpointer; S: Stelling);
-VAR CacheNr: CARDINAL;
-BEGIN
-	CacheNr:=PD^.CacheNummer;
-	Window.Use(Win.CacheWin);
-	Window.GotoXY(2 + 10 * ((CacheNr-1) DIV CacheSizeDiv2), 2 + (CacheNr-1) MOD CacheSizeDiv2);
-	IO.WrCard(CacheNr, 2);
-	IO.WrStr (' ');
-	IO.WrStr (RepWK[S.WK]);
-	IO.WrStr (RepZK[S.ZK]);
-	IO.WrChar(RepAZ[S.AanZet]);
-END Report;
- */
-// @@NOG Report, wat doen we ermee?
-void report( PageDescriptor aPageDescriptor, VMStelling aStelling )
-{
-	// @@NOG effe niks
-	/*
-	CacheNr:=PD^.CacheNummer;
-	Window.Use(Win.CacheWin);
-	Window.GotoXY(2 + 10 * ((CacheNr-1) DIV CacheSizeDiv2), 2 + (CacheNr-1) MOD CacheSizeDiv2);
-	IO.WrCard(CacheNr, 2);
-	IO.WrStr (' ');
-	IO.WrStr (RepWK[S.WK]);
-	IO.WrStr (RepZK[S.ZK]);
-	IO.WrChar(RepAZ[S.AanZet]);
-	 */
-}
-
 /**
  * (*------- Haal een vrij cachenummer ------------------*)
 PROCEDURE (*$N*) GetFreeCacheEntry(): CARDINAL;
@@ -539,8 +477,7 @@ void pageIn( PageDescriptor aPageDescriptor )
     //-------- Update cache ----------------------
     cacheEntry.setPageDescriptor( aPageDescriptor );
     cacheEntry.setVuil( false );
-    cacheEntry.setGeneratie( GeneratieTeller );
-    GeneratieTeller++;
+    cacheEntry.setGeneratie( generatieTeller++ );
 
     //-------- Update Page descriptor ------------
     aPageDescriptor.setWaar( Lokatie.IN_RAM );
@@ -569,7 +506,6 @@ Page getPage( VMStelling aStelling, boolean aMaakVuil )
 	PageDescriptor pageDescriptor = getPageDescriptor( aStelling );
 	if ( pageDescriptor.getWaar() == Lokatie.OP_SCHIJF )
 	{
-		report( pageDescriptor, aStelling );
 		pageIn( pageDescriptor );
 	}
 	if ( aMaakVuil )
@@ -689,7 +625,7 @@ public void flush()
 			Cache[x].setGeneratie( 0 );
 		}
 	}
-	GeneratieTeller = 1;
+	setGeneratieTeller( 1 );
 }
 /**
 PROCEDURE (*$N*) Close();
@@ -705,6 +641,7 @@ END Close;
  */
 public void close()
 {
+	setOpen( false );
 	if ( getDatabase() != null )
 	{
 		flush();
@@ -778,7 +715,8 @@ public void open()
 	{
 		throw new RuntimeException( e );
 	}
-    initializePageDescriptorTabel(); //@@@@@ later frequentie hiervan verlagen 
+	setOpen( true );
+    initializePageDescriptorTabel(); 
     initializeCache();
 }
 /**
@@ -855,7 +793,6 @@ void initializeDatabasePage( VMStelling aVmStelling )
 	PageDescriptor pageDescriptor = getPageDescriptor( aVmStelling );
     pageDescriptor.setCacheNummer( 1 );
     Cache[1].setVuil( true );
-    report( pageDescriptor, aVmStelling );
     pageOut( pageDescriptor );
 }
 void delete()

@@ -13,6 +13,8 @@ import static pu.chessdatabase.dal.ResultaatType.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,6 +28,22 @@ public class TestGen
 private static final String DATABASE_NAME = "dbs/Pipo";
 @Autowired private Gen gen;
 @Autowired private Dbs dbs;
+@Autowired private Config config;
+String savedConfigString;
+@BeforeEach
+public void setup()
+{
+	savedConfigString = config.getName();
+	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
+	dbs.create();
+}
+@AfterEach
+public void destroy()
+{
+	assertThat( dbs.getDatabaseName(), is( DATABASE_NAME ) );
+	dbs.delete();
+	config.switchConfig( savedConfigString );
+}
 
 @Test
 public void testVeldToBitSetAndBuitenBord()

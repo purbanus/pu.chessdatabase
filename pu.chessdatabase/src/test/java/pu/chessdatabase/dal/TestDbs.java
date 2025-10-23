@@ -19,8 +19,11 @@ import pu.chessdatabase.bo.Bouw;
 import pu.chessdatabase.bo.Gen;
 import pu.services.Vector;
 
+import lombok.Data;
+
 
 @SpringBootTest
+@Data
 public class TestDbs
 {
 private static final String DATABASE_NAME = "dbs/Pipo";
@@ -698,7 +701,7 @@ public void testPass34()
 		.schaak( false )
 		.build();
 	VMStelling vmStelling = dbs.cardinaliseer( boStelling );
-	dbs.pass34( boStelling, vmStelling, bouw::isIllegaal );
+	dbs.pass34( boStelling, vmStelling, getBouw()::isIllegaal );
 	dbs.flush();
 	vmStelling.setAanZet( WIT );
 	Page page = vm.getPage( vmStelling, false );

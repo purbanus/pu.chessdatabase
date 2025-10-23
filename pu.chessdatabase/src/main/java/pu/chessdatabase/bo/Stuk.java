@@ -34,5 +34,8 @@ public List<Integer> getRichtingen()
 {
 	return stukType.getRichtingen();
 }
-
+public String getStukString()
+{
+	return getKleur().getAfko() + getAfko();
+}
 }

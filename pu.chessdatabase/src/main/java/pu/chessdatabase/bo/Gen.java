@@ -29,17 +29,9 @@ public static final String [] NOTATIE = new String [] {
 	"a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7", "??", "??", "??", "??", "??", "??", "??", "??",
 	"a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"
 };
+@Autowired private Config config;
 @Autowired private Dbs dbs;
 
-/**
- * Bord
- * 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F
- * 10 11 12 13 14 15 16 17 18 19 1A 1B 1C 1D 1E 1F
- * 20 21 22 23 24 25 26 27 28 29 2A 2B 2C 2D 2E 2F
- * etc
- */
-
-private Stukken stukken = new Stukken();
 static BitSet bitSetOfInt( int aInt )
 {
 	return bitSetOfByte( (byte) aInt );
@@ -112,7 +104,7 @@ public Gen()
 }
 public Stukken getStukken()
 {
-	return stukken;
+	return config.getStukken();
 }
 
 /**
@@ -157,6 +149,7 @@ END IsGeomIllegaal;
  */
 public boolean isGeomIllegaal( BoStelling S )
 {
+	// @@NOG Bij twee lopers, moeten ze op een verschillende kleur veld staan
 	if ( ( S.getWk() == S.getZk() ) || ( S.getS3() == S.getS4()     ) ) return true;
 	if ( ( S.getWk() == S.getS3() ) && ( getStukken().getS3().getKleur() != WIT   ) ) return true;
 	if ( ( S.getWk() == S.getS4() ) && ( getStukken().getS4().getKleur() != WIT   ) ) return true;

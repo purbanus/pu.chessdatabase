@@ -1,6 +1,7 @@
 package pu.chessdatabase.dal;
 
 import pu.chessdatabase.bo.BoStelling;
+import pu.chessdatabase.bo.Config;
 //import pu.chessdatabase.bo.Gen;
 import pu.chessdatabase.bo.Kleur;
 
@@ -78,8 +79,23 @@ public BoStelling getBoStelling()
 		.aanZet( getAanZet() )
 		.build();
 }
+public String getWkString()
+{
+	return Config.getStaticStukken().getWk().getStukString();
+}
+public String getZkString()
+{
+	return Config.getStaticStukken().getZk().getStukString();
+}
+public String getS3String()
+{
+	return Config.getStaticStukken().getS3().getStukString();
+}
+public String getS4String()
+{
+	return Config.getStaticStukken().getS4().getStukString();
+}
 @Override
-
 public String toString()
 {
 	StringBuilder sb = new StringBuilder();
@@ -95,10 +111,10 @@ public String toString()
 		{
 			int veld = 8 * rij + kol;
 			String veldString;
-			if ( veld == wk ) veldString = "WK";
-			else if ( veld == zk ) veldString = "ZK";
-			else if ( veld == s3 ) veldString = "WD";
-			else if ( veld == s4 ) veldString = "ZT";
+			if ( veld == wk ) veldString = getWkString();
+			else if ( veld == zk ) veldString = getZkString();
+			else if ( veld == s3 ) veldString = getS3String();
+			else if ( veld == s4 ) veldString = getS4String();
 			else veldString = "..";
 			sb.append( veldString ).append( " " );
 		}

@@ -32,12 +32,12 @@ public class TestBouwOverProductie
 @BeforeEach
 public void setup()
 {
-	dbs.setDatabaseName( Config.DEFAULT_CONFIG.getDatabaseName() );
 	dbs.open();
 }
 @AfterEach
 public void destroy()
 {
+	dbs.close();
 }
 int grootste = Integer.MIN_VALUE;
 List<BoStelling> grootsten = new ArrayList<>();

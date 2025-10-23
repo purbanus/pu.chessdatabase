@@ -10,15 +10,11 @@ public class Stukken
 {
 
 private List<Stuk> stukken = new ArrayList<>();
-private Config config;
-public Stukken()
-{
-	this( Config.DEFAULT_CONFIG );
-}
-public Stukken( Config aConfig )
+private ConfigImpl configImpl;
+public Stukken( ConfigImpl aConfigImpl )
 {
 	super();
-	config = aConfig;
+	configImpl = aConfigImpl;
 	vulStukTabel();
 }
 public List<Stuk> getStukken()
@@ -28,35 +24,35 @@ public List<Stuk> getStukken()
 public void vulStukTabel()
 {
 	int index = 0;
-	for ( StukDefinitie stukDefinitie : config.getStukDefinities() )
+	for ( StukDefinitie stukDefinitie : getConfigImpl().getStukDefinities() )
 	{
 		Stuk stuk = Stuk.builder()
 			.stukNummer( index++ )
 			.stukType( stukDefinitie.getStukType() )
 			.kleur( stukDefinitie.getKleur() )
 			.build();
-		stukken.add( stuk );
+		getStukken().add( stuk );
 	}
 }
 
 public Stuk getWk()
 {
-	return stukken.get( 0 );
+	return getStukken().get( 0 );
 }
 public Stuk getZk()
 {
-	return stukken.get( 1 );
+	return getStukken().get( 1 );
 }
 public Stuk getS3()
 {
-	return stukken.get( 2 );
+	return getStukken().get( 2 );
 }
 public Stuk getS4()
 {
-	return stukken.get( 3 );
+	return getStukken().get( 3 );
 }
 public Stuk getStukAtIndex( int aStukNummer)
 {
-	return stukken.get( aStukNummer );
+	return getStukken().get( aStukNummer );
 }
 }

@@ -23,6 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Config;
+import pu.chessdatabase.bo.Stuk;
 import pu.chessdatabase.dal.Dbs;
 import pu.chessdatabase.dal.ResultaatType;
 
@@ -31,17 +32,20 @@ public class TestPartij
 {
 @Autowired private Partij partij;
 @Autowired private Dbs dbs;
+@Autowired private Config config;
 
+String savedConfigString;
 @BeforeEach
 public void setup()
 {
-	dbs.setDatabaseName( Config.DEFAULT_CONFIG.getDatabaseName() );
-	dbs.open();
+	savedConfigString = config.getName();
+	config.switchConfig( "KDKT" ); // Dit opent de database
 }
 @AfterEach
 public void destroy()
 {
 	dbs.close();
+	config.switchConfig( savedConfigString );
 }
 @Test
 public void testHexGetalToVeld()
@@ -226,21 +230,24 @@ public void testVanCurrentPlyNaarToStelling()
 @Test
 public void testIsLegalMove()
 {
-	BoStelling boStelling = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x12 )
-		.s3( 0x00 )
-		.s4( 0x21 )
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "b3" ) //0x12
+		.s3( "a1" )
+		.s4( "c2" ) //0x21
 		.aanZet( ZWART )
 		.build();
+	// @@NOG klopt niet, bij het paard komt hier 0x3f uit!!!
+	//int naar = 0x21 + config.getStukken().getS4().getRichtingen().get( 3 );
+	int naar = 0x20;
 	boStelling = partij.newGame( boStelling );
-	assertThat( partij.isLegalMove( new VanNaar( 0x21, 0x20 ) ), is( true ) );
+	assertThat( partij.isLegalMove( new VanNaar( 0x21, naar ) ), is( true ) );
 	
 	boStelling.setAanZet( WIT );
 	assertThrows( RuntimeException.class, () -> partij.isLegalMove( new VanNaar( 0x21, 0x20 ) ) );
 
 }
-/** @@NOG Deze tests ook inbouwen
+/**
  * De belangrijkste struktuur is Plies. Een aantal voorbeelden:
 
 Voorbeeld a):  Wit begint
@@ -1078,14 +1085,15 @@ public void testGetGegenereerdeZetResultaat()
 @Test
 public void testGegenereerdeZetDocument()
 {
-	BoStelling boStellingVan = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x77 )
-		.s3( 0x11 )
-		.s4( 0x66 )
+	BoStelling boStellingVan = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "b2" )
+		.s4( "g7" )
 		.aanZet( WIT )
 		.build();
-	VanNaar vanNaar = new VanNaar( 0x11, 0x22 );
+	VanNaar vanNaar = new VanNaar( "b2", "c3" );
+	Stuk stukDatZet = config.getStukken().getS3();
 	Ply ply = Ply.builder()
 		.boStelling( boStellingVan )
 		.einde( NOG_NIET )
@@ -1095,9 +1103,9 @@ public void testGegenereerdeZetDocument()
 		.build();
 	GegenereerdeZetDocument gegenereerdeZetDocument = GegenereerdeZetDocument.builder()
 		.zetNummer( 16 )
-		.zet( "Db2-c3 " )
+		.zet( stukDatZet.getAfko() + "b2-c3 " )
 		.resultaat( "Gewonnen" )
-		.matInHoeveel( "Mat in 29" )
+		.matInHoeveel( "Mat in 29" ) // @@NOG Dit was 28 en dat werkte denk ik
 		.build();
 	BoStelling boStellingNaar= partij.vanNaarToStelling( ply, vanNaar );
 	assertThat( partij.getGegenereerdeZetDocument( ply, boStellingNaar ), is( gegenereerdeZetDocument ) );
@@ -1110,6 +1118,7 @@ public void testGegenereerdeZetDocument()
 		.aanZet( WIT )
 		.build();
 	vanNaar = new VanNaar( 0x11, 0x66 );
+	stukDatZet = config.getStukken().getS3();
 	ply = Ply.builder()
 		.boStelling( boStellingVan )
 		.einde( NOG_NIET )
@@ -1119,7 +1128,7 @@ public void testGegenereerdeZetDocument()
 		.build();
 	gegenereerdeZetDocument = GegenereerdeZetDocument.builder()
 		.zetNummer( 18 )
-		.zet( "Db2xg7+" )
+		.zet( stukDatZet.getAfko() + "b2xg7+" )
 		.resultaat( "Remise" )
 		.matInHoeveel( "..." )
 		.build();

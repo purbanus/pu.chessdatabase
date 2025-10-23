@@ -8,22 +8,21 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode( callSuper=false )
-public class KDKT extends ConfigImpl
+public class KLLK extends ConfigImpl
 {
 private final String databaseName;
-public KDKT()
+public KLLK()
 {
 	super();
-	getStukDefinities().add( new StukDefinitie( DAME,   WIT ) );
-	getStukDefinities().add( new StukDefinitie( TOREN,  ZWART ) );
-	databaseName = "dbs/KDKT.DBS";
+	getStukDefinities().add( new StukDefinitie( LOPER,   WIT ) );
+	getStukDefinities().add( new StukDefinitie( LOPER,  WIT ) );
+	databaseName = "dbs/KLLK.DBS";
 	setStukken( new Stukken( this ) );
-
 }
 @Override
 public String getName()
 {
-	return "KDKT";
+	return "KLLK";
 }
 
 }
