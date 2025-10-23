@@ -24,16 +24,20 @@ public class TestGenOverProductie
 {
 @Autowired private Gen gen;
 @Autowired private Dbs dbs;
+@Autowired private Config config;
+String savedConfigString;
 
 @BeforeEach
 public void setup()
 {
-	dbs.setDatabaseName( Config.DEFAULT_CONFIG.getDatabaseName() );
-	dbs.open();
+	savedConfigString = config.getName();
+	config.switchConfig( "KDKT" ); // Dit opent de database
 }
 @AfterEach
 public void destroy()
 {
+	dbs.close();
+	config.switchConfig( savedConfigString );
 }
 
 @Test
