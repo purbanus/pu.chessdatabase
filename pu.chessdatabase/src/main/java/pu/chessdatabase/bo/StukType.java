@@ -5,26 +5,33 @@ import java.util.List;
 public enum StukType
 {
 
-KONING( "K", Richtingen.KRICHTING, false ), 
-DAME( "D", Richtingen.KRICHTING, true ), 
-TOREN( "T", Richtingen.TRICHTING, true ), 
-LOPER( "L", Richtingen.LRICHTING, true ), 
-PAARD( "P", Richtingen.PRICHTING, false );
+KONING( "K", "Koning", Richtingen.KRICHTING, false ), 
+DAME( "D", "Dame", Richtingen.KRICHTING, true ), 
+TOREN( "T", "Toren", Richtingen.TRICHTING, true ), 
+LOPER( "L", "Loper", Richtingen.LRICHTING, true ), 
+PAARD( "P",  "Paard", Richtingen.PRICHTING, false );
 // geen pion!
 
 private String afko;
+private String label;
 private List<Integer> richtingen;
 private boolean meer;
-StukType( String aAfko, List<Integer> aRichtingen, boolean aMeer )
+
+StukType( String aAfko, String aLabel, List<Integer> aRichtingen, boolean aMeer )
 {
 	//Richtingen richtingenVoorStukTypes = new Richtingen();
 	afko = aAfko;
+	label = aLabel;
 	richtingen = aRichtingen;
 	meer = aMeer;
 }
 public String getAfko()
 {
 	return afko;
+}
+public String getLabel()
+{
+	return label;
 }
 public List<Integer> getRichtingen()
 {
