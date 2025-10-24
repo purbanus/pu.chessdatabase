@@ -364,8 +364,6 @@ public void testAddZet()
 	assertThat( resultaatStelling.getS3(), is( 0x12 ) );
 	assertThat( resultaatStelling.getS4(), is( 0x33 ) );
 	assertThat( resultaatStelling.getAanZet(), is( ZWART ) );
-
-	dbs.delete();
 }
 
 @Test
