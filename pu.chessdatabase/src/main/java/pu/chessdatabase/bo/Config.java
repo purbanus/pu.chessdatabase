@@ -79,12 +79,12 @@ void switchConfig( ConfigImpl aNewConfig, boolean aSwitchVM )
 }
 public void switchConfig( String aConfigString, boolean aSwitchVM )
 {
-	ConfigImpl switxhToConfigImpl = getConfigImplRegistry().get( aConfigString.toUpperCase() );
-	if ( switxhToConfigImpl == null )
+	ConfigImpl switchToConfigImpl = getConfigImplRegistry().get( aConfigString.toUpperCase() );
+	if ( switchToConfigImpl == null )
 	{
 		throw new RuntimeException( "Ongeldige configString: " + aConfigString );
 	}
-	switchConfig( switxhToConfigImpl, aSwitchVM );
+	switchConfig( switchToConfigImpl, aSwitchVM );
 }
 public void switchConfig( String aConfigString )
 {
