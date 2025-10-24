@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.view.RedirectView;
 
 import pu.chessdatabase.service.ChessDatabaseService;
+import pu.chessdatabase.service.NewGameDocument;
 import pu.chessdatabase.service.PartijDocument;
 
 import jakarta.servlet.http.HttpSession;
@@ -27,7 +28,7 @@ public class ChessDatabaseController
 {
 private static final Logger LOG = LoggerFactory.getLogger( ChessDatabaseController.class);
 
-@Autowired private ChessDatabaseService chessDatabaseService;
+@Autowired private ChessDatabaseService service;
 
 @Value( "${spring.application.name}" )
 String appName;
@@ -62,12 +63,9 @@ public String newGame( Model aModel, HttpSession aSession )
 	LOG.debug( "Model=" + aModel.asMap() );
 //	showSession( aSession );
 	
+	NewGameDocument newGameDocument = getService().newGame();
 	aModel.addAttribute( "AppName", appName );
-	aModel.addAttribute( "wk", "a1" );
-	aModel.addAttribute( "zk", "h8" );
-	aModel.addAttribute( "s3", "b2" );
-	aModel.addAttribute( "s4", "g7" );
-	aModel.addAttribute( "aanZet", "Wit" );
+	aModel.addAttribute( "doc", newGameDocument );
 	LOG.debug( "Model na vullen=" + aModel.asMap() );
 
 	return "newgame";
@@ -79,7 +77,7 @@ public RedirectView doNewGame( @ModelAttribute NewGameResponse aGameResponse, Mo
 	LOG.debug( "Model=" + aModel.asMap() );
 	LOG.debug( "NewGameResponse=" + aGameResponse );
 
-	PartijDocument partijDocument = getChessDatabaseService().newGame( aGameResponse );
+	PartijDocument partijDocument = getService().doNewGame( aGameResponse );
 	return new RedirectView( "/game.html"
 		+ "?wk=" + partijDocument.getWk()
 		+ "&zk=" + partijDocument.getZk()
@@ -96,8 +94,8 @@ public String game( @ModelAttribute GameResponse aGameResponse, Model aModel, Ht
 	LOG.debug( "GameResponse=" + aGameResponse );
 	//showSession( aSession );
 
-	PartijDocument partijDocument = getChessDatabaseService().getPartijDocument( aGameResponse.getBoStellingKey() );
-	aModel.addAttribute( "partijDocument", partijDocument );
+	PartijDocument partijDocument = getService().getPartijDocument( aGameResponse.getBoStellingKey() );
+	aModel.addAttribute( "doc", partijDocument );
 	LOG.info( "NewGame response klaar. Model=" + aModel.asMap() );
 
 	return "game";
@@ -109,7 +107,7 @@ public RedirectView doZet( @ModelAttribute ZetResponse aZetResponse, Model aMode
 	LOG.debug( "Model=" + aModel.asMap() );
 	LOG.debug( "ZetResponse=" + aZetResponse );
 
-	PartijDocument partijDocument = getChessDatabaseService().zet( aZetResponse );
+	PartijDocument partijDocument = getService().zet( aZetResponse );
 	return new RedirectView( "/game.html"
 		+ "?wk=" + partijDocument.getWk()
 		+ "&zk=" + partijDocument.getZk()
@@ -124,7 +122,7 @@ public RedirectView zetNaarBegin( Model aModel )
 	LOG.info( "Zet-naar-begin response gestart" );
 	LOG.debug( "Model=" + aModel.asMap() );
 
-	PartijDocument partijDocument = getChessDatabaseService().zetNaarBegin();
+	PartijDocument partijDocument = getService().zetNaarBegin();
 	return new RedirectView( "/game.html"
 		+ "?wk=" + partijDocument.getWk()
 		+ "&zk=" + partijDocument.getZk()
@@ -139,7 +137,7 @@ public RedirectView zetTerug( Model aModel )
 	LOG.info( "Zet-terug response gestart" );
 	LOG.debug( "Model=" + aModel.asMap() );
 
-	PartijDocument partijDocument = getChessDatabaseService().zetTerug();
+	PartijDocument partijDocument = getService().zetTerug();
 	return new RedirectView( "/game.html"
 		+ "?wk=" + partijDocument.getWk()
 		+ "&zk=" + partijDocument.getZk()
@@ -154,7 +152,7 @@ public RedirectView zetVooruit( Model aModel )
 	LOG.info( "Zet-vooruit response gestart" );
 	LOG.debug( "Model=" + aModel.asMap() );
 
-	PartijDocument partijDocument = getChessDatabaseService().zetVooruit();
+	PartijDocument partijDocument = getService().zetVooruit();
 	return new RedirectView( "/game.html"
 		+ "?wk=" + partijDocument.getWk()
 		+ "&zk=" + partijDocument.getZk()
@@ -169,7 +167,7 @@ public RedirectView zetNaarEinde( Model aModel )
 	LOG.info( "Zet-naar-einde response gestart" );
 	LOG.debug( "Model=" + aModel.asMap() );
 
-	PartijDocument partijDocument = getChessDatabaseService().zetNaarEinde();
+	PartijDocument partijDocument = getService().zetNaarEinde();
 	return new RedirectView( "/game.html"
 		+ "?wk=" + partijDocument.getWk()
 		+ "&zk=" + partijDocument.getZk()
