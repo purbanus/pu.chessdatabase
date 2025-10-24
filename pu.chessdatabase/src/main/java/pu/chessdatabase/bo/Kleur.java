@@ -2,14 +2,18 @@ package pu.chessdatabase.bo;
 
 public enum Kleur
 {
-WIT( "W", "Wit" ), ZWART( "Z", "Zwart" );
+WIT( "W", "Wit", "Witte" ), 
+ZWART( "Z", "Zwart", "Zwarte" );
 
 private String afko;
 private String normaleSpelling;
-Kleur( String aAfko, String aNormaleSpelling )
+private String label;
+
+Kleur( String aAfko, String aNormaleSpelling, String aLabel )
 {
 	afko = aAfko;
 	normaleSpelling = aNormaleSpelling;
+	label = aLabel;
 }
 public String getAfko()
 {
@@ -18,5 +22,9 @@ public String getAfko()
 public String getNormaleSpelling()
 {
 	return normaleSpelling;
+}
+public String getLabel()
+{
+	return label;
 }
 }
