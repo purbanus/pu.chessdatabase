@@ -16,24 +16,34 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
+import pu.chessdatabase.bo.Config;
 import pu.services.MatrixFormatter;
 
+@SpringBootTest
 public class TestVM
 {
 public static final String DATABASE_NAME = "dbs/Pipo";
-public final VM vm = new VM();
+@Autowired private VM vm;
+@Autowired private Config config;
 
+String savedConfigString;
 @BeforeEach
 public void setup()
 {
-	vm.setDatabaseName( DATABASE_NAME );
-	vm.create();
+	savedConfigString = config.getName();
+	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
+	vm.create(); // Doet ook Open, dus initialiseert de tabellen
 }
 @AfterEach
 public void destroy()
 {
+	assertThat( vm.getDatabaseName(), is( DATABASE_NAME ) );
 	vm.delete();
+	config.switchConfig( savedConfigString );
+
 }
 
 @Test
@@ -586,6 +596,7 @@ public void testFlushWithSomePagesPresentAndVuil()
 @Test
 public void testCloseWithNoDatabesePresent()
 {
+	assertThat( vm.getDatabaseName(), is( DATABASE_NAME ) );
 	vm.delete();
 	vm.close();
 	// @@NOG
@@ -606,6 +617,7 @@ public void testOpen()
 @Test
 public void testCreateFile()
 {
+	assertThat( vm.getDatabaseName(), is( DATABASE_NAME ) );
 	vm.delete();
 	vm.createFile( DATABASE_NAME );
 	File file = new File( DATABASE_NAME );
@@ -624,6 +636,7 @@ public void testDelete()
 {
 	File file = new File( DATABASE_NAME );
 	assertThat( file.exists(), is( true ) );
+	assertThat( vm.getDatabaseName(), is( DATABASE_NAME ) );
 	vm.delete();
 
 	file = new File( DATABASE_NAME );
