@@ -20,22 +20,26 @@ private StukType stukType;
 private Kleur kleur;
 public String getAfko()
 {
-	return stukType.getAfko();
+	return getStukType().getAfko();
 }
 public int getKoningsNummer()
 {
-	return kleur == WIT ? 0 : 1;
+	return getKleur() == WIT ? 0 : 1;
 }
 public boolean isMeer()
 {
-	return stukType.isMeer();
+	return getStukType().isMeer();
 }
 public List<Integer> getRichtingen()
 {
-	return stukType.getRichtingen();
+	return getStukType().getRichtingen();
 }
 public String getStukString()
 {
 	return getKleur().getAfko() + getAfko();
+}
+public String getLabel()
+{
+	return getKleur().getLabel() + " " + getStukType().getLabel();
 }
 }

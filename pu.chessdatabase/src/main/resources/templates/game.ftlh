@@ -126,17 +126,17 @@
 			<th class="string">Mat in hoeveel</th>
 		</tr>
 	</thead>
-	<#list partijDocument.gegenereerdeZetten as zet>
+	<#list doc.gegenereerdeZetten as zet>
 		<tr class=${zet?itemParity}>
 			<td class="number">${zet.zetNummer}</td>
 			<td class="string">
 				<a href='<@spring.url "/do-zet
 					?nieuweZet=${zet.zet}
-					&wk=${partijDocument.wk}
-					&zk=${partijDocument.zk}
-					&s3=${partijDocument.s3}
-					&s4=${partijDocument.s4}
-					&aanZet=${partijDocument.aanZet}" />'>
+					&wk=${doc.wk}
+					&zk=${doc.zk}
+					&s3=${doc.s3}
+					&s4=${doc.s4}
+					&aanZet=${doc.aanZet}" />'>
 					${zet.zet}
 				</a>
 			</td>
@@ -147,38 +147,42 @@
 </table>
 
 <p>
-	${partijDocument.aanZet} aan zet, 
-	<#if partijDocument.resultaat.res1??>${partijDocument.resultaat.res1}</#if>, 
-	<#if partijDocument.resultaat.res2??>${partijDocument.resultaat.res2}</#if>
+	${doc.aanZet} aan zet, 
+	<#if doc.resultaat.res1??>${doc.resultaat.res1}</#if>, 
+	<#if doc.resultaat.res2??>${doc.resultaat.res2}</#if>
+	<input hidden id="wkStuk" type="text" name="s3Stuk" value="${doc.wkStuk}" />
+	<input hidden id="zkStuk" type="text" name="s3Stuk" value="${doc.zkStuk}" />
+	<input hidden id="s3Stuk" type="text" name="s3Stuk" value="${doc.s3Stuk}" />
+	<input hidden id="s4Stuk" type="text" name="s4Stuk" value="${doc.s4Stuk}" />
 	<form action='<@spring.url "/do-zet" />' method="post">
-		<input hidden id="wk" type="text" name="wk" value="${partijDocument.wk}" />
-		<input hidden id="zk" type="text" name="zk" value="${partijDocument.zk}" />
-		<input hidden id="s3" type="text" name="s3" value="${partijDocument.s3}" />
-		<input hidden id="s4" type="text" name="s4" value="${partijDocument.s4}" />
-		<input hidden id="aanZet" type="text" name="aanZet" value="${partijDocument.aanZet}" />
-			
+		<input hidden id="wk" type="text" name="wk" value="${doc.wk}" />
+		<input hidden id="zk" type="text" name="zk" value="${doc.zk}" />
+		<input hidden id="s3" type="text" name="s3" value="${doc.s3}" />
+		<input hidden id="s4" type="text" name="s4" value="${doc.s4}" />
+		<input hidden id="aanZet" type="text" name="aanZet" value="${doc.aanZet}" />
+		
 		<label for="nieuweZet">Nieuwe zet:</label><Input id="nieuweZet type="text" name="nieuweZet" />
 		<button type="submit" name="submit">Doen!</button>
 	</form>
 </p>
 
 <div class="paginator">
-	<#if partijDocument.naarBeginMag>
+	<#if doc.naarBeginMag>
 		<a class="left" href='<@spring.url "/zet-naar-begin" />'><span>&lt;&lt;</span></a>
 	<#else>
 		<span class="prevnextdisabled">&lt&lt</span
 	</#if>
-	<#if partijDocument.terugMag>
+	<#if doc.terugMag>
 		<a              href='<@spring.url "/zet-terug" />'><span>a &lt;</span></a>
 	<#else>
 		<span class="prevnextdisabled">b &lt</span
 	</#if>
-	<#if partijDocument.vooruitMag>
+	<#if doc.vooruitMag>
 		<a              href='<@spring.url "/zet-vooruit" />'><span>a &gt;</span></a>
 	<#else>
 		<span class="prevnextdisabled">b &gt</span
 	</#if>
-	<#if partijDocument.naarEindeMag>
+	<#if doc.naarEindeMag>
 		<a              href='<@spring.url "/zet-naar-einde" />'><span>&gt;&gt;</span></a>
 	<#else>
 		<span class="prevnextdisabled">&gt&gt</span
@@ -196,7 +200,7 @@
 			<th class="String">Zwart</th>
 		</tr>
 	</thead>
-	<#list partijDocument.zetten as zet>
+	<#list doc.zetten as zet>
 		<tr class=${zet?itemParity}>
 			<td class="number">${zet.zetNummer}</td>
 			<td class="string">${zet.witZet}</td>

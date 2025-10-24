@@ -5,7 +5,8 @@ import pu.chessdatabase.web.ZetResponse;
 
 public interface ChessDatabaseService
 {
-public abstract PartijDocument newGame( NewGameResponse aNewGameResponse );
+public abstract NewGameDocument newGame();
+public abstract PartijDocument doNewGame( NewGameResponse aNewGameResponse );
 public abstract PartijDocument getPartijDocument( BoStellingKey aBoStellingKey );
 public abstract PartijDocument zet( ZetResponse aZetResponse );
 public abstract PartijDocument zetNaarBegin();

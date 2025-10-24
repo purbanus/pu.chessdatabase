@@ -1,12 +1,17 @@
 package pu.chessdatabase.service.impl;
 
+import static pu.chessdatabase.bo.Kleur.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pu.chessdatabase.bo.BoStelling;
+import pu.chessdatabase.bo.Config;
+import pu.chessdatabase.bo.Stukken;
 import pu.chessdatabase.bo.speel.Partij;
 import pu.chessdatabase.service.BoStellingKey;
 import pu.chessdatabase.service.ChessDatabaseService;
+import pu.chessdatabase.service.NewGameDocument;
 import pu.chessdatabase.service.PartijDocument;
 import pu.chessdatabase.web.NewGameResponse;
 import pu.chessdatabase.web.ZetResponse;
@@ -18,8 +23,26 @@ import lombok.Data;
 public class ChessDatabaseServiceImpl implements ChessDatabaseService
 {
 @Autowired private Partij partij;
+@Autowired private Config config;
+
 @Override
-public PartijDocument newGame( NewGameResponse aNewGameResponse )
+public NewGameDocument newGame()
+{
+	Stukken stukken = config.getStukken();
+	return NewGameDocument.builder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "b2" )
+		.s4( "g7" )
+		.aanZet( WIT.getNormaleSpelling() )
+		.wkLabel( stukken.getWk().getLabel() )
+		.zkLabel( stukken.getZk().getLabel() )
+		.s3Label( stukken.getS3().getLabel() )
+		.s4Label( stukken.getS4().getLabel() )
+		.build();
+}
+@Override
+public PartijDocument doNewGame( NewGameResponse aNewGameResponse )
 {
 	BoStelling stelling = createBoStelling( aNewGameResponse.getBoStellingKey() );
 	getPartij().newGame( stelling );
@@ -40,7 +63,11 @@ public PartijDocument getPartijDocument( BoStellingKey aStellingKey )
 		.s3( Partij.veldToHexGetal( aStellingKey.getS3() ) )
 		.s4( Partij.veldToHexGetal( aStellingKey.getS4() ) )
 		.aanZet( aStellingKey.getAanZet().getNormaleSpelling() )
-		.stelling( boStelling )
+		.wkStuk( config.getStukken().getWk().getLabel() )
+		.zkStuk( config.getStukken().getZk().getLabel() )
+		.s3Stuk( config.getStukken().getS3().getLabel() )
+		.s4Stuk( config.getStukken().getS4().getLabel() )
+//		.stelling( boStelling )
 		.resultaat( getPartij().getResultaatRecord() )
 		.zetten( getPartij().getPartijReport().getZetten() )
 		.gegenereerdeZetten( getPartij().getGegenereerdeZetten() )

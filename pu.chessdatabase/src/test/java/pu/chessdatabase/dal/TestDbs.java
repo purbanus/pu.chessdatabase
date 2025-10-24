@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Bouw;
+import pu.chessdatabase.bo.Config;
 import pu.chessdatabase.bo.Gen;
 import pu.services.Vector;
 
@@ -31,17 +32,22 @@ private static final String DATABASE_NAME = "dbs/Pipo";
 @Autowired private Bouw bouw;
 @Autowired private VM vm;
 @Autowired private Gen gen;
+@Autowired private Config config;
 
+String savedConfigString;
 @BeforeEach
 public void setup()
 {
-	dbs.setDatabaseName( DATABASE_NAME );
+	savedConfigString = config.getName();
+	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 }
 @AfterEach
 public void destroy()
 {
+	assertThat( dbs.getDatabaseName(), is( DATABASE_NAME ) );
 	dbs.delete();
+	config.switchConfig( savedConfigString );
 }
 @Test
 public void testResultaatRange()
@@ -666,6 +672,7 @@ public void testSetDatabaseName()
 {
 	dbs.setDatabaseName( "Mamaloe" );
 	assertThat( dbs.getDatabaseName(), is( "Mamaloe" ) );
+	dbs.setDatabaseName( DATABASE_NAME );
 }
 @Test
 public void testCreate()

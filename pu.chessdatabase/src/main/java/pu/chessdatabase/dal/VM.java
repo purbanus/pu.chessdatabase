@@ -130,10 +130,9 @@ public static int alfaToVeld( String aAlfaVeld )
 
 public VM()
 {
-    //FIO.IOcheck:=FALSE;
-    setGeneratieTeller( 1L );
-    setDatabase( null );
-    setDatabaseFile( null );
+	setGeneratieTeller( 1L );
+	setDatabase( null );
+	setDatabaseFile( null );
 }
 
 public void switchConfig()
