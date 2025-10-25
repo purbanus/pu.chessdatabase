@@ -16,7 +16,7 @@ private void run()
 	vm2.setDatabaseName( "dbs/KDKT2.DBS" );
 	vm1.open();
 	vm2.open();
-	vm1.iterateOverAllPageDescriptors( this::compareDeDatabases );
+	vm1.getPageDescriptorTable().iterateOverAllPageDescriptors( this::compareDeDatabases );
 	System.out.println( "CompareKDKT klaar" );
 }
 void compareDeDatabases( VMStelling aVmStelling )
