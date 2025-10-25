@@ -3,8 +3,6 @@ package pu.chessdatabase.bo;
 import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.bo.StukType.*;
 
-import org.springframework.stereotype.Component;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

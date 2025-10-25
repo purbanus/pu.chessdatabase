@@ -11,7 +11,6 @@ import lombok.Data;
 import lombok.ToString;
 
 @Data
-@ToString
 public class Paginator
 {
 public static final int PAGES_IN_PAGINATOR = 20;

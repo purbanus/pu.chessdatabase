@@ -7,8 +7,8 @@ package pu.chessdatabase.bo;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static pu.chessdatabase.bo.StukType.*;
 import static pu.chessdatabase.bo.Kleur.*;
+import static pu.chessdatabase.bo.StukType.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +18,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import pu.chessdatabase.bo.speel.VanNaar;
 
 import lombok.Data;
 
