@@ -9,16 +9,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Page
 {
-byte [] page = new byte [VM.PAGE_SIZE];
+byte [] data = new byte [Cache.PAGE_SIZE];
 public void clearPage()
 {
 //	for ( byte b : page )
 //	{
 //		b = 0;
 //	}
-	for ( int x = 0; x < page.length; x++ )
+	for ( int x = 0; x < data.length; x++ )
 	{
-		page[x] = (byte)0;
+		data[x] = (byte)0;
 	}
 }
 }
