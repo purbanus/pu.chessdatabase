@@ -102,11 +102,10 @@ private void writePage0WithAllOnes()
 private void writePageWithAll( long aPageNumber, int aCacheNumber, byte aValue )
 {
 	Page page = TestHelper.createPageWithAll( aValue );
-	long schijfAdres = aPageNumber * vm.PAGE_SIZE;
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( Lokatie.IN_RAM )
 		.cacheNummer( aCacheNumber )
-		.schijfAdres( schijfAdres )
+		.schijfAdres( aPageNumber * Cache.PAGE_SIZE )
 		.build();
 	CacheEntry cacheEntry = CacheEntry.builder()
 		.generatie( 15 )
@@ -114,14 +113,13 @@ private void writePageWithAll( long aPageNumber, int aCacheNumber, byte aValue )
 		.pageDescriptor( pageDescriptor )
 		.vuil( true )
 		.build();
-	vm.Cache[aCacheNumber] = cacheEntry;
-	vm.pageOut( pageDescriptor );
+	vm.getCache().setCacheEntry( pageDescriptor, cacheEntry );
+	vm.getCache().pageOut( pageDescriptor );
 }
 //@Test
 public void testShowCache()
 {
-	vm.initializePageDescriptorTabel();
-	vm.initializeCache();
+	vm.getCache().initializeCache();
 	showCache();
 }
 public void showCache()
@@ -131,13 +129,14 @@ public void showCache()
 	matrixFormatter.addHeader( StringUtils.repeat( '-', 50 ) );
 	matrixFormatter.addDetail( new String [] { "Number", "PD.Lokatie", "PD.cachenummer", "PD.Schijfadres", "Page, eerste 10", "Vuil", "Generatie" } );
 	matrixFormatter.addHeader( StringUtils.repeat( '-', 50 ) );
-	for ( int x = 0; x < vm.CACHE_SIZE; x++ )
+	int index = -1;
+	for ( CacheEntry cacheEntry : vm.getCache().getCache() )
 	{
-		CacheEntry cacheEntry = vm.Cache[x];
+		index++;
 		if ( cacheEntry == null )
 		{
 			matrixFormatter.addDetail( new String []{ 
-				String.valueOf( x  ), 
+				String.valueOf( index ), 
 				"null", 
 				"null", 
 				"null", 
@@ -152,7 +151,7 @@ public void showCache()
 			if ( pageDescriptor == null )
 			{
 				matrixFormatter.addDetail( new String []{
-					String.valueOf( x  ), 
+					String.valueOf( index ), 
 					"null", 
 					"null", 
 					"null", 
@@ -163,15 +162,15 @@ public void showCache()
 			}
 			else
 			{
-				byte [] page = cacheEntry.getPage().getPage();
+				byte [] page = cacheEntry.getPage().getData();
 				StringBuilder sb = new StringBuilder();
 				for ( int y = 0; y < 10; y++ )
 				{
-					sb.append( page[y] ).append(  " " );
+					sb.append( page[y] ).append( " " );
 				}
 					
 				matrixFormatter.addDetail( new String []{ 
-					String.valueOf( x  ), 
+					String.valueOf( index ), 
 					String.valueOf( pageDescriptor.getWaar() ), 
 					String.valueOf( pageDescriptor.getCacheNummer() ), 
 					String.valueOf( pageDescriptor.getSchijfAdres() ), 
@@ -188,7 +187,8 @@ public void showCache()
 
 private void checkIfAllDatabaseEntriesAreZero() throws IOException
 {
-	vm.iterateOverAllPageDescriptors( this::checkIfDatabaseEntryIsZero );
+	PageDescriptorTable pageDescriptorTable = new PageDescriptorTable();
+	pageDescriptorTable.iterateOverAllPageDescriptors( this::checkIfDatabaseEntryIsZero );
 }
 void checkIfDatabaseEntryIsZero( VMStelling aVmStelling )
 {
@@ -199,182 +199,32 @@ void checkIfDatabaseEntryIsZero( VMStelling aVmStelling )
 	try
 	{
 		vm.getDatabase().seek( pageDescriptor.getSchijfAdres() );
-		int aantal = vm.getDatabase().read( page.getPage(), 0, vm.PAGE_SIZE );
-		assertThat( aantal, is( vm.PAGE_SIZE) );
+		int aantal = vm.getDatabase().read( page.getData(), 0, Cache.PAGE_SIZE );
+		assertThat( aantal, is( Cache.PAGE_SIZE) );
 	}
 	catch ( IOException e )
 	{
 		throw new RuntimeException( e );
 	}
-	assertThat( TestHelper.isAllZero( page.getPage() ), is( true ) );
+	assertThat( TestHelper.isAllZero( page.getData() ), is( true ) );
 }
 
 //=================================================================================================
 //Hier komen de tests
 //=================================================================================================
 
-long address = 0L;
-@Test
-public void testInitializePageDescriptorTabel()
-{
-//	StopWatch timer = new StopWatch();
-	vm.initializePageDescriptorTabel();
-	vm.iterateOverAllPageDescriptors( this::testPageDescriptor );
-//	System.out.println( "initializePageDescriptorTabel duurde " + timer.getElapsedNs() + (" = ") + timer.getLapTimeMs() );
-}
-void testPageDescriptor( VMStelling aVmStelling )
-{
-	PageDescriptor pageDescriptor = vm.getPageDescriptor( aVmStelling );
-	assertThat( pageDescriptor.getWaar(), is( Lokatie.OP_SCHIJF ) );
-	assertThat( pageDescriptor.getSchijfAdres(), is( address ) );
-	assertThat( pageDescriptor.getCacheNummer(), is( Integer.MAX_VALUE ) );
-	address += vm.PAGE_SIZE;
-}
-
-@Test
-public void testInitializeCache()
-{
-	vm.initializeCache();
-	
-	for ( int x = 1; x < vm.CACHE_SIZE; x++ )
-	{
-		CacheEntry cacheEntry = vm.Cache[x];
-		assertThat( cacheEntry.getPageDescriptor(), is( nullValue() ) );
-		assertThat( cacheEntry.getPage().page[0], is( (byte)0 ) );
-		assertThat( TestHelper.isAllZero( cacheEntry.getPage().page ), is( true ) );
-		assertThat( cacheEntry.getGeneratie(), is( 0L ) );
-		assertThat( cacheEntry.isVuil(), is( false ) );
-	}
-}
-@Test
-public void testReport()
-{
-	// Hier gebeurt nog niks in VM
-}
-@Test
-public void testGetFreeCacheEntry()
-{
-	for ( int x = 1; x < vm.CACHE_SIZE; x++ )
-	{
-		CacheEntry cacheEntry = vm.Cache[x];
-		cacheEntry.setVuil( true );
-		cacheEntry.setGeneratie( x + 100 );
-	}
-	CacheEntry cacheEntry = vm.Cache[1];
-	cacheEntry.setVuil( false );
-	cacheEntry.setGeneratie( 10 );
-	assertThat( vm.getFreeCacheEntry(), is( 1 ) );
-
-	cacheEntry = vm.Cache[10];
-	cacheEntry.setVuil( false );
-	cacheEntry.setGeneratie( 5 );
-	assertThat( vm.getFreeCacheEntry(), is( 10 ) );
-
-	cacheEntry = vm.Cache[1];
-	cacheEntry.setVuil( true );
-	cacheEntry = vm.Cache[10];
-	cacheEntry.setVuil( true );
-	assertThat( vm.getFreeCacheEntry(), is( 10 ) );
-
-	cacheEntry = vm.Cache[20];
-	cacheEntry.setVuil( true );
-	cacheEntry.setGeneratie( 3 );
-	cacheEntry = vm.Cache[25];
-	cacheEntry.setVuil( true );
-	cacheEntry.setGeneratie( 15 );
-	
-	assertThat( vm.getFreeCacheEntry(), is( 20 ) );
-}
-@Test
-public void testGetRawPageData()
-{
-	long pageNumber = 5L;
-	int cacheNumber = 15;
-	byte value = (byte)0x80;
-
-	writePageWithAll( pageNumber, cacheNumber, value );
-
-	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.OP_SCHIJF )
-		.cacheNummer( cacheNumber )
-		.schijfAdres( 5L * vm.PAGE_SIZE )
-		.build();
-	vm.getRawPageData( pageDescriptor );
-	assertThat( TestHelper.isAll( vm.Cache[cacheNumber].getPage().getPage(), value ), is( true ) );
-}
-@Test
-public void testPutRawPageData()
-{
-	long pageNumber = 3L;
-	int cacheNumber = 15;
-	byte value = (byte)0x70;
-
-	Page page = TestHelper.createPageWithAll( value );
-	vm.Cache[cacheNumber].setPage( page );
-	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.OP_SCHIJF )
-		.cacheNummer( cacheNumber )
-		.schijfAdres( pageNumber * vm.PAGE_SIZE )
-		.build();
-	vm.putRawPageData( pageDescriptor );
-	
-	vm.getRawPageData( pageDescriptor );
-	assertThat( TestHelper.isAll( vm.Cache[cacheNumber].getPage().getPage(), value ), is( true ) );
-
-}
-@Test
-public void testPageOut()
-{
-	long pageNumber = 15L;
-	int cacheNumber = 15;
-	byte value = (byte)0x60;
-
-	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.IN_RAM )
-		.cacheNummer( cacheNumber )
-		.schijfAdres( pageNumber * vm.PAGE_SIZE )
-		.build();
-	Page page = TestHelper.createPageWithAll( value );
-	vm.Cache[cacheNumber].setPage( page );
-	vm.Cache[cacheNumber].setPageDescriptor( pageDescriptor );
-	vm.Cache[cacheNumber].setVuil( true );
-	
-	//showCache( vm );
-	vm.pageOut( pageDescriptor );
-	vm.Cache[cacheNumber].setPage( new Page() );
-	vm.getRawPageData( pageDescriptor );
-	assertThat( TestHelper.isAll( vm.Cache[cacheNumber].getPage().getPage(), value ), is( true ) );
-}
-@Test
-public void testPageIn() throws IOException
-{
-	long pageNumber = 10L;
-	int cacheNumber = 17;
-	byte value = (byte)0x40;
-
-	writePageWithAll( pageNumber, cacheNumber, value );
-	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.IN_RAM )
-		.cacheNummer( cacheNumber )
-		.schijfAdres( pageNumber * vm.PAGE_SIZE )
-		.build();
-	//showCache( vm );
-	vm.pageIn( pageDescriptor );
-	assertThat( TestHelper.isAll( vm.Cache[cacheNumber].getPage().getPage(), value ), is( true ) );
-}
 @Test
 public void testGetPage()
 {
-	long pageNumber = 12L;
-	int cacheNumber = 29;
-	byte value = (byte)0x30;
+	long pageNumber = 27L;
+	int cacheNumber = 27;
+	byte value = (byte)0xf0;
 
 	writePageWithAll( pageNumber, cacheNumber, value );
-	
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( Lokatie.OP_SCHIJF )
 		.cacheNummer( cacheNumber )
-		.schijfAdres( pageNumber * vm.PAGE_SIZE )
+		.schijfAdres( pageNumber * Cache.PAGE_SIZE )
 		.build();
 	VMStelling vmStelling = VMStelling.builder()
 		.wk( 0x04 )
@@ -383,42 +233,22 @@ public void testGetPage()
 		.s4( 0x07 )
 		.aanZet( WIT )
 		.build();
-	vm.pageDescriptorTabel[vmStelling.getWk()][vmStelling.getZk()][vmStelling.getAanZet().ordinal()] = pageDescriptor;
+	vm.getPageDescriptorTable().setPageDescriptor( vmStelling, pageDescriptor );
 
-	Page page = vm.getPage( vmStelling, true );
-	assertThat( TestHelper.isAll( page.getPage(), value ), is( true ) );
-	// De pageDescriptor is veranderd, hij wijst nu naar cachenummer 2
-	assertThat( pageDescriptor.getCacheNummer(), is( 1 ) );
-	assertThat( vm.Cache[pageDescriptor.getCacheNummer()].isVuil(), is( true ) );
-}
-@Test
-public void testGetPageNotDirtyAndInRam()
-{
-	long pageNumber = 7L;
-	int cacheNumber = 20;
-	byte value = (byte)0x2f;
+	Page page = vm.getPage( vmStelling );
+	assertThat( TestHelper.isAll( page.getData(), value ), is( true ) );
 
-	writePageWithAll( pageNumber, cacheNumber, value );
-	
-	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.IN_RAM )
-		.cacheNummer( cacheNumber )
-		.schijfAdres( pageNumber * vm.PAGE_SIZE )
+	// Test met Integer.MAX_VALUE
+	pageDescriptor = PageDescriptor.builder()
+		.waar( Lokatie.OP_SCHIJF )
+		.cacheNummer( Integer.MAX_VALUE )
+		.schijfAdres( pageNumber * Cache.PAGE_SIZE )
 		.build();
-	VMStelling vmStelling = VMStelling.builder()
-		.wk( 0x04 )
-		.zk( 0x31 )
-		.s3( 0x00 )
-		.s4( 0x07 )
-		.aanZet( WIT )
-		.build();
-	vm.pageDescriptorTabel[vmStelling.getWk()][vmStelling.getZk()][vmStelling.getAanZet().ordinal()] = pageDescriptor;
+	vm.getPageDescriptorTable().setPageDescriptor( vmStelling, pageDescriptor );
 
-	Page page = vm.getPage( vmStelling, false );
-	assertThat( TestHelper.isAll( page.getPage(), value ), is( true ) );
-	// De pageDescriptor is NIET veranderd
-	assertThat( pageDescriptor.getCacheNummer(), is( cacheNumber ) );
-	assertThat( vm.Cache[pageDescriptor.getCacheNummer()].isVuil(), is( false ) );
+	page = vm.getPage( vmStelling );
+	assertThat( TestHelper.isAll( page.getData(), value ), is( true ) );
+
 }
 @Test
 public void testGet()
@@ -428,11 +258,10 @@ public void testGet()
 	byte value = (byte)0xff;
 
 	writePageWithAll( pageNumber, cacheNumber, value );
-	
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( Lokatie.OP_SCHIJF )
 		.cacheNummer( cacheNumber )
-		.schijfAdres( pageNumber * vm.PAGE_SIZE )
+		.schijfAdres( pageNumber * Cache.PAGE_SIZE )
 		.build();
 	VMStelling vmStelling = VMStelling.builder()
 		.wk( 0x04 )
@@ -441,7 +270,7 @@ public void testGet()
 		.s4( 0x07 )
 		.aanZet( WIT )
 		.build();
-	vm.pageDescriptorTabel[vmStelling.getWk()][vmStelling.getZk()][vmStelling.getAanZet().ordinal()] = pageDescriptor;
+	vm.getPageDescriptorTable().setPageDescriptor( vmStelling, pageDescriptor );
 
 	int dbsRec = vm.get( vmStelling );
 	assertThat( value, is( (byte)( dbsRec & 0xff ) ) );
@@ -458,7 +287,7 @@ public void testPut()
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( Lokatie.OP_SCHIJF )
 		.cacheNummer( cacheNumber )
-		.schijfAdres( pageNumber * vm.PAGE_SIZE )
+		.schijfAdres( pageNumber * Cache.PAGE_SIZE )
 		.build();
 	VMStelling vmStelling = VMStelling.builder()
 		.wk( 0x04 )
@@ -467,12 +296,24 @@ public void testPut()
 		.s4( 0x07 )
 		.aanZet( WIT )
 		.build();
-	vm.pageDescriptorTabel[vmStelling.getWk()][vmStelling.getZk()][vmStelling.getAanZet().ordinal()] = pageDescriptor;
+	vm.getPageDescriptorTable().setPageDescriptor( vmStelling, pageDescriptor );
 
 	int dbsRec = 0x55;
 	vm.put( vmStelling, dbsRec );
-	Page page = vm.Cache[pageDescriptor.getCacheNummer()].getPage();
-	assertThat( page.getPage()[vmStelling.getPositionWithinPage()], is( (byte)( dbsRec & 0xff ) ) );
+	Page page = vm.getCache().getPage( pageDescriptor );
+	assertThat( page.getData()[vmStelling.getPositionWithinPage()], is( (byte)( dbsRec & 0xff ) ) );
+	
+	// Test met Integer.MAX_VALUE
+	pageDescriptor = PageDescriptor.builder()
+		.waar( Lokatie.OP_SCHIJF )
+		.cacheNummer( Integer.MAX_VALUE )
+		.schijfAdres( pageNumber * Cache.PAGE_SIZE )
+		.build();
+	vm.getPageDescriptorTable().setPageDescriptor( vmStelling, pageDescriptor );
+
+	vm.put( vmStelling, dbsRec );
+	page = vm.getCache().getPage( pageDescriptor );
+	assertThat( page.getData()[vmStelling.getPositionWithinPage()], is( (byte)( dbsRec & 0xff ) ) );
 }
 @Test
 public void testFreeRecord()
@@ -481,12 +322,11 @@ public void testFreeRecord()
 	int cacheNumber = 21;
 	byte value = (byte)0xe0;
 
-	//writePageWithAll( pageNumber, cacheNumber, value );
 	Page page = TestHelper.createPageWithAll( value );
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( Lokatie.IN_RAM )
 		.cacheNummer( cacheNumber )
-		.schijfAdres( pageNumber * vm.PAGE_SIZE )
+		.schijfAdres( pageNumber * Cache.PAGE_SIZE )
 		.build();
 	VMStelling vmStelling = VMStelling.builder()
 		.wk( 0x03 )
@@ -501,97 +341,12 @@ public void testFreeRecord()
 		.pageDescriptor( pageDescriptor )
 		.vuil( true )
 		.build();
-	vm.Cache[pageDescriptor.getCacheNummer()] = cacheEntry;
-	vm.pageDescriptorTabel[vmStelling.getWk()][vmStelling.getZk()][vmStelling.getAanZet().ordinal()] = pageDescriptor;
+	vm.getCache().setCacheEntry( pageDescriptor,  cacheEntry );
+	vm.getPageDescriptorTable().setPageDescriptor( vmStelling, pageDescriptor );
 
 	vm.freeRecord( vmStelling );
 	assertThat( cacheEntry.getGeneratie(), is( 0L ) );
 	assertThat( cacheEntry.isVuil(), is( false ) );
-}
-@Test
-public void testFlushWithNothingChanged()
-{
-	vm.flush();
-	// @@>NOG
-}
-@Test
-public void testFlushWithSomePagesPresentButNoneVuil()
-{
-	Page page = TestHelper.createPageWithAllOnes();
-	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.IN_RAM )
-		.cacheNummer( 1 )
-		.schijfAdres( 0L )
-		.build();
-	CacheEntry cacheEntry = CacheEntry.builder()
-		.generatie( 2156 )
-		.pageDescriptor( pageDescriptor )
-		.page( page )
-		.vuil( false )
-		.build();
-	vm.Cache[1] = cacheEntry;
-	
-	pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.IN_RAM )
-		.cacheNummer( 15 )
-		.schijfAdres( 4096L )
-		.build();
-	cacheEntry = CacheEntry.builder()
-		.generatie( 9500 )
-		.pageDescriptor( pageDescriptor )
-		.page( page )
-		.vuil( false )
-		.build();
-	vm.Cache[15] = cacheEntry;
-	
-	vm.flush();
-}
-@Test
-public void testFlushWithSomePagesPresentAndVuil()
-{
-	Page page = TestHelper.createPageWithAllOnes();
-	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.IN_RAM )
-		.cacheNummer( 1 )
-		.schijfAdres( 0L )
-		.build();
-	CacheEntry cacheEntry = CacheEntry.builder()
-		.generatie( 2156 )
-		.pageDescriptor( pageDescriptor )
-		.page( page )
-		.vuil( true )
-		.build();
-	vm.Cache[1] = cacheEntry;
-	
-	pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.IN_RAM )
-		.cacheNummer( 15 )
-		.schijfAdres( 4096L )
-		.build();
-	cacheEntry = CacheEntry.builder()
-		.generatie( 9500 )
-		.pageDescriptor( pageDescriptor )
-		.page( page )
-		.vuil( true )
-		.build();
-	vm.Cache[15] = cacheEntry;
-	
-	vm.flush();
-
-	// @@NOG Lees de eerste twee paginas en check of die allemaal 1 zijn
-	VMStelling vmStelling = VMStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x00 )
-		.s3( 0x01 )
-		.s4( 0x17 )
-		.aanZet( WIT )
-		.build();
-	Page newPage = vm.getPage( vmStelling, false );
-	assertThat( TestHelper.isAllOne( newPage.getPage() ), is( true ) );
-	
-	vmStelling.setAanZet( WIT );
-	newPage = vm.getPage( vmStelling, false );
-	assertThat( TestHelper.isAllOne( newPage.getPage() ), is( true ) );
 }
 @Test
 public void testCloseWithNoDatabesePresent()

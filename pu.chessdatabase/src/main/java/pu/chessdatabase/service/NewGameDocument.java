@@ -1,12 +1,5 @@
 package pu.chessdatabase.service;
 
-import java.util.List;
-
-import pu.chessdatabase.bo.BoStelling;
-import pu.chessdatabase.bo.speel.GegenereerdeZetDocument;
-import pu.chessdatabase.bo.speel.ResultaatRecord;
-import pu.chessdatabase.bo.speel.ZetDocument;
-
 import lombok.Builder;
 import lombok.Value;
 

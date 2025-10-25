@@ -6,13 +6,9 @@ import java.util.List;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 @Data
 @Builder
-@EqualsAndHashCode
-@ToString
 public class Stuk
 {
 private int stukNummer;

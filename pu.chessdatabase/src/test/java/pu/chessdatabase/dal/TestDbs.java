@@ -711,12 +711,12 @@ public void testPass34()
 	dbs.pass34( boStelling, vmStelling, getBouw()::isIllegaal );
 	dbs.flush();
 	vmStelling.setAanZet( WIT );
-	Page page = vm.getPage( vmStelling, false );
-	assertThat( TestHelper.isAll( page.getPage(), (byte)0xff ), is( true ) );
+	Page page = vm.getPage( vmStelling );
+	assertThat( TestHelper.isAll( page.getData(), (byte)0xff ), is( true ) );
 	
 	vmStelling.setAanZet( ZWART );
-	page = vm.getPage( vmStelling, false );
-	assertThat( TestHelper.isAll( page.getPage(), (byte)0xff ), is( true ) );
+	page = vm.getPage( vmStelling );
+	assertThat( TestHelper.isAll( page.getData(), (byte)0xff ), is( true ) );
 }
 void set0x0b( BoStelling aBoStelling )
 {
@@ -746,11 +746,11 @@ public void testMarkeerWitPassMet0x0b()
 		{
 			vmStelling.setZk( zk );
 			vmStelling.setAanZet( WIT );
-			page = vm.getPage( vmStelling, false );
-			assertThat( TestHelper.isAll( page.getPage(), (byte)0x0b ), is( true ) );
+			page = vm.getPage( vmStelling );
+			assertThat( TestHelper.isAll( page.getData(), (byte)0x0b ), is( true ) );
 			vmStelling.setAanZet( ZWART );
-			page = vm.getPage( vmStelling, false );
-			assertThat( TestHelper.isAll( page.getPage(), (byte)0x00 ), is( true ) );
+			page = vm.getPage( vmStelling );
+			assertThat( TestHelper.isAll( page.getData(), (byte)0x00 ), is( true ) );
 		}
 	}
 }
@@ -770,11 +770,11 @@ public void testMarkeerWitPassMet0x8b()
 		{
 			vmStelling.setZk( zk );
 			vmStelling.setAanZet( WIT );
-			page = vm.getPage( vmStelling, false );
-			assertThat( TestHelper.isAll( page.getPage(), (byte)0x8b ), is( true ) );
+			page = vm.getPage( vmStelling );
+			assertThat( TestHelper.isAll( page.getData(), (byte)0x8b ), is( true ) );
 			vmStelling.setAanZet( ZWART );
-			page = vm.getPage( vmStelling, false );
-			assertThat( TestHelper.isAll( page.getPage(), (byte)0x00 ), is( true ) );
+			page = vm.getPage( vmStelling );
+			assertThat( TestHelper.isAll( page.getData(), (byte)0x00 ), is( true ) );
 		}
 	}
 }
@@ -801,11 +801,11 @@ public void testMarkeerZwartPass()
 		{
 			vmStelling.setZk( zk );
 			vmStelling.setAanZet( WIT );
-			page = vm.getPage( vmStelling, false );
-			assertThat( TestHelper.isAll( page.getPage(), (byte)0x00 ), is( true ) );
+			page = vm.getPage( vmStelling );
+			assertThat( TestHelper.isAll( page.getData(), (byte)0x00 ), is( true ) );
 			vmStelling.setAanZet( ZWART );
-			page = vm.getPage( vmStelling, false );
-			assertThat( TestHelper.isAll( page.getPage(), (byte)0x11 ), is( true ) );
+			page = vm.getPage( vmStelling );
+			assertThat( TestHelper.isAll( page.getData(), (byte)0x11 ), is( true ) );
 		}
 	}
 }
@@ -832,11 +832,11 @@ public void testMarkeerWitEnZwartPass()
 		{
 			vmStelling.setZk( zk );
 			vmStelling.setAanZet( WIT );
-			page = vm.getPage( vmStelling, false );
-			assertThat( TestHelper.isAll( page.getPage(), (byte)0x34 ), is( true ) );
+			page = vm.getPage( vmStelling );
+			assertThat( TestHelper.isAll( page.getData(), (byte)0x34 ), is( true ) );
 			vmStelling.setAanZet( ZWART );
-			page = vm.getPage( vmStelling, false );
-			assertThat( TestHelper.isAll( page.getPage(), (byte)0x34 ), is( true ) );
+			page = vm.getPage( vmStelling );
+			assertThat( TestHelper.isAll( page.getData(), (byte)0x34 ), is( true ) );
 		}
 	}
 }

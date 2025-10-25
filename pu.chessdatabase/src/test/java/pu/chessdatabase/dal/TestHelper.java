@@ -14,6 +14,10 @@ public static boolean isAllOne( byte [] aPage )
 {
 	return isAll( aPage, (byte)1 );
 }
+public static boolean isAll( Page aPage, byte aValue )
+{
+	return isAll( aPage.getData(), aValue );
+}
 public static boolean isAll( byte [] aPage, byte aValue )
 //public static Boolean isAll( byte [] aPage, byte aValue )
 {
@@ -32,13 +36,12 @@ public static Page createPageWithAllOnes()
 }
 public static Page createPageWithAll( byte aValue )
 {
-	byte [] entries = new byte [VM.PAGE_SIZE];
-	for ( int x = 0; x < VM.PAGE_SIZE; x++ )
+	byte [] entries = new byte [Cache.PAGE_SIZE];
+	for ( int x = 0; x < entries.length; x++ )
 	{
-		
 		entries[x] = aValue;
 	}
-	return new Page( entries);
+	return new Page( entries );
 }
 
 }

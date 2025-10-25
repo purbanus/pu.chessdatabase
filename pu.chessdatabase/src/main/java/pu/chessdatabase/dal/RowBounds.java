@@ -2,8 +2,6 @@ package pu.chessdatabase.dal;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 /**
  * Copyright 2009-2015 the original author or authors.
@@ -22,8 +20,6 @@ import lombok.ToString;
  * @author Clinton Begin
  */
 @Data
-@EqualsAndHashCode
-@ToString
 @AllArgsConstructor
 public class RowBounds
 {

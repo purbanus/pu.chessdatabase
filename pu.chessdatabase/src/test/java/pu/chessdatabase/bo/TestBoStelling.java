@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.dal.ResultaatType;
-import static org.hamcrest.MatcherAssert.*;
 @SuppressWarnings( "unused" )
 @SpringBootTest
 public class TestBoStelling

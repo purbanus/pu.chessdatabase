@@ -1,79 +1,218 @@
 package pu.chessdatabase.dal;
 
-import org.apache.commons.collections4.map.MultiKeyMap;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.ArrayList;
+import java.util.List;
 
-import pu.chessdatabase.bo.Kleur;
-import pu.services.StopWatch;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
+@Data
+
 public class Cache
 {
 public static final int PAGE_SIZE = 4096;               // Bytes per page
+static final int CACHE_SIZE     = 30;                 // Aantal pagina"s
 
-PageDescriptor[][][] pageDescriptorTabel = new PageDescriptor[10][64][2];
-@SuppressWarnings( "rawtypes" )
-MultiKeyMap pageDescriptors = new MultiKeyMap<>();
+private RandomAccessFile database = null;
+private List<CacheEntry> cache = new ArrayList<>();
+@Getter( AccessLevel.PACKAGE ) 
+@Setter( AccessLevel.PRIVATE ) 
+private long generatieTeller;
+
 public Cache()
 {
-	initializePageDescriptorTabel();
-	initializePageDescriptors();
+	super();
+	initializeCache();
+	setGeneratieTeller( 1L );
 }
-PageDescriptor getPageDescriptor( VMStelling aStelling )
+public Cache( RandomAccessFile aDatabase )
 {
-	return pageDescriptorTabel[aStelling.getWk()][aStelling.getZk()][aStelling.getAanZet().ordinal()];
+	this();
+	database = aDatabase;
 }
-void setPageDescriptor( VMStelling aVmStelling, PageDescriptor aPageDescriptor )
+void initializeCache()
 {
-	pageDescriptorTabel[aVmStelling.getWk()][aVmStelling.getZk()][aVmStelling.getAanZet().ordinal()] = aPageDescriptor; 
+	for ( int x = 0; x < CACHE_SIZE; x++ )
+	{
+		CacheEntry cacheEntry = CacheEntry.builder()
+			.pageDescriptor( null )
+			.page( new Page() )
+			.vuil( false )
+			.generatie( 0 )
+			.build();
+		getCache().add( cacheEntry );
+		cacheEntry.getPage().clearPage();
+	}
+}
+int getFreeCacheEntry()
+{
+    //---- laagste generatienummers -------
+    long LaagsteGeneratie        = Long.MAX_VALUE;
+    long LaagsteSchoneGeneratie  = Long.MAX_VALUE;
+    int LaagsteGeneratieNr      = Integer.MAX_VALUE;
+    int LaagsteSchoneGeneratieNr= Integer.MAX_VALUE;
+    int index = -1;
+    for ( CacheEntry cacheEntry : cache ) 
+    {
+    	index++;
+        if ( cacheEntry.getGeneratie() < LaagsteGeneratie )
+        {
+            LaagsteGeneratie  = cacheEntry.getGeneratie();
+            LaagsteGeneratieNr = index;
+        }
+        if ( ! cacheEntry.isVuil() && ( cacheEntry.getGeneratie() < LaagsteSchoneGeneratie ) )
+        {
+            LaagsteSchoneGeneratie  = cacheEntry.getGeneratie();
+            LaagsteSchoneGeneratieNr = index;
+        }
+    }
+    //----- bij voorkeur schone cache entry nemen ------
+    if ( LaagsteSchoneGeneratieNr != Integer.MAX_VALUE )
+    {
+        return LaagsteSchoneGeneratieNr;
+    }
+    else
+    {
+    	return LaagsteGeneratieNr;
+    }
+}
+public Page getPage( PageDescriptor aPageDescriptor )
+{
+	if ( aPageDescriptor.getCacheNummer() > 30 )
+	{
+		System.out.println( "Got him! Hij is " + aPageDescriptor.getCacheNummer() );
+	}
+	return getCache().get( aPageDescriptor.getCacheNummer() ).getPage();
+}
+public byte [] getPageData( PageDescriptor aPageDescriptor )
+{
+	return getPage( aPageDescriptor ).getData();
+}
+public void setPage( PageDescriptor aPageDescriptor, Page aPage )
+{
+	getCache().get( aPageDescriptor.getCacheNummer() ).setPage( aPage );
+}
+public boolean isVuil( PageDescriptor aPageDescriptor )
+{
+	return getCache().get( aPageDescriptor.getCacheNummer() ).isVuil();
+}
+public void setVuil( PageDescriptor aPageDescriptor, boolean aVuil )
+{
+	getCache().get( aPageDescriptor.getCacheNummer() ).setVuil( aVuil );
+}
+public CacheEntry getCacheEntry( PageDescriptor aPageDescriptor )
+{
+	return getCache().get( aPageDescriptor.getCacheNummer() );
+}
+public void setCacheEntry( PageDescriptor aPageDescriptor, CacheEntry aCacheEntry )
+{
+	getCache().set( aPageDescriptor.getCacheNummer(), aCacheEntry );
 }
 
-private void initializePageDescriptorTabel()
+void getRawPageData( PageDescriptor aPageDescriptor )
 {
-	StopWatch timer = new StopWatch();
-	long Adres = 0;
-	for ( int wk = 0; wk < 10; wk++ )
+    try
 	{
-		for ( int zk = 0; zk < 64; zk++ )
+		getDatabase().seek( aPageDescriptor.getSchijfAdres() );
+		int Aantal = getDatabase().read( getPageData( aPageDescriptor ), 0, Cache.PAGE_SIZE );
+		if ( Aantal != Cache.PAGE_SIZE )
 		{
-			for ( Kleur aanZet : Kleur.values() )
-			{
-            	VMStelling vmStelling = VMStelling.builder()
-            		.wk( wk )
-            		.zk( zk )
-            		.aanZet( aanZet )
-            		.build();
- 				setPageDescriptor( vmStelling, PageDescriptor.builder()
-					.waar( Lokatie.OP_SCHIJF )
-					.schijfAdres( Adres )
-					.cacheNummer( Integer.MAX_VALUE )
-					.build()
-				);
-				Adres += PAGE_SIZE;
-			}
+			throw new RuntimeException( "Ernstig: VM.GetPage heeft " + Aantal + " records gelezen. Dat zouden er " + Cache.PAGE_SIZE + " moeten zijn" );
 		}
 	}
-	System.out.println( "initializePageDescriptorTabel duurde " + timer.getElapsedNs() + (" = ") + timer.getLapTimeMs() );
+	catch ( IOException e )
+	{
+		throw new RuntimeException( e );
+	}
 }
-@SuppressWarnings( "unchecked" )
-private void initializePageDescriptors()
+void putRawPageData( PageDescriptor aPageDescriptor )
 {
-	StopWatch timer = new StopWatch();
-	long Adres = 0;
-	for ( int wk = 0; wk < 10; wk++ )
+	try
 	{
-		for ( int zk = 0; zk < 64; zk++ )
+		getDatabase().seek( aPageDescriptor.getSchijfAdres() );
+	    //getDatabase().write( Cache[aPageDescriptor.getCacheNummer()].getPage().getPage(), 0, PAGE_SIZE );
+	    getDatabase().write( getPageData( aPageDescriptor ), 0, Cache.PAGE_SIZE );
+	    // @@NOG moet hier niet vuil=false gedaan worden?
+	}
+	catch ( IOException e )
+	{
+		throw new RuntimeException( e );
+	}
+}
+/**
+ *------------ Pagina schrijven naar de schijf ------
+ */
+void pageOut( PageDescriptor aPageDescriptor )
+{
+    if ( aPageDescriptor != null && isVuil( aPageDescriptor ) )
+    {
+        putRawPageData( aPageDescriptor );
+        setVuil( aPageDescriptor, false );
+    }
+}
+/**
+ * ----------- Pagina ophalen van de schijf ---------
+ */
+void pageIn( PageDescriptor aPageDescriptor )
+{
+    if ( aPageDescriptor.getWaar() == Lokatie.OP_SCHIJF )
+    {
+    	aPageDescriptor.setCacheNummer( getFreeCacheEntry() );
+    }
+    CacheEntry cacheEntry = getCacheEntry( aPageDescriptor );
+    
+    //-------- Update oude page descriptor -------
+    PageDescriptor oudePageDescriptor = cacheEntry.getPageDescriptor();
+    if ( oudePageDescriptor != null )
+    {
+        pageOut( oudePageDescriptor );
+        oudePageDescriptor.setWaar( Lokatie.OP_SCHIJF );
+        oudePageDescriptor.setCacheNummer( Integer.MAX_VALUE );
+    }
+
+    //-------- Ophalen nieuwe pagina -------------
+ 	getRawPageData( aPageDescriptor );
+
+    //-------- Update cache ----------------------
+    cacheEntry.setPageDescriptor( aPageDescriptor );
+    cacheEntry.setVuil( false );
+    cacheEntry.setGeneratie( generatieTeller++ );
+
+    //-------- Update Page descriptor ------------
+    aPageDescriptor.setWaar( Lokatie.IN_RAM );
+}
+/**
+ *  ------- Haal pagina op uit de cache ---------
+ */
+Page getPageFromDatabase( PageDescriptor aPageDescriptor )
+{
+	if ( aPageDescriptor.getWaar() == Lokatie.OP_SCHIJF )
+	{
+		pageIn( aPageDescriptor );
+	}
+	Page page = getPage( aPageDescriptor );
+	return page;
+}
+void setData( PageDescriptor aPageDescriptor, int aPositionWithinPage, byte aData )
+{
+    getPageData( aPageDescriptor )[aPositionWithinPage] = aData;
+	setVuil( aPageDescriptor, true );
+}
+public void flush()
+{
+	for ( CacheEntry cacheEntry : getCache() )
+	{
+		if ( cacheEntry.getPageDescriptor() != null && cacheEntry.getPageDescriptor().getCacheNummer() != Integer.MAX_VALUE )
 		{
-			for ( int aanZet = 0; aanZet < 2; aanZet++ )
-			{
-				pageDescriptors.put( wk, zk, aanZet, PageDescriptor.builder()
-					.waar( Lokatie.OP_SCHIJF )
-					.schijfAdres( Adres )
-					.cacheNummer( Integer.MAX_VALUE )
-					.build() 
-				);
-				Adres += PAGE_SIZE;
-			}
+			pageOut( cacheEntry.getPageDescriptor() );
+			cacheEntry.setGeneratie( 0 );
 		}
 	}
-	System.out.println( "initializePageDescriptors duurde " + timer.getElapsedNs() + (" = ") + timer.getLapTimeMs() );
+	setGeneratieTeller( 1 );
 }
 
 }

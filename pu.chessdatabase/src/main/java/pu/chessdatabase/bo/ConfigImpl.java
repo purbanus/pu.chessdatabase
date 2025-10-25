@@ -29,10 +29,6 @@ public ConfigImpl()
 	stukDefinities.add( new StukDefinitie( KONING, WIT ) );
 	stukDefinities.add( new StukDefinitie( KONING, ZWART ) );
 }
-List<StukDefinitie> getStukDefinities()
-{
-	return stukDefinities;
-}
 public abstract String getDatabaseName();
 public abstract String getName();
 }

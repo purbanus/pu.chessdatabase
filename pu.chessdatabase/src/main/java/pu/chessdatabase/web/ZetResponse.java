@@ -6,10 +6,8 @@ import pu.chessdatabase.service.BoStellingKey;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.ToString;
 
 @Data
-@ToString
 @AllArgsConstructor
 public class ZetResponse
 {

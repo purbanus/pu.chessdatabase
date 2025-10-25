@@ -7,20 +7,17 @@ package pu.chessdatabase.bo;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static pu.chessdatabase.bo.Kleur.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.dal.Dbs;
 import pu.chessdatabase.dal.PassType;
-import pu.chessdatabase.dal.ResultaatType;
 
 @SuppressWarnings( "unused" ) // Dit gaat over die jupiter.api.Assertions
 @SpringBootTest
