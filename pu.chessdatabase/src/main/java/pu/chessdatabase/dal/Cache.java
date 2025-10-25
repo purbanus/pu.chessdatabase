@@ -12,9 +12,9 @@ import lombok.Setter;
 
 @Data
 
-public class Cache
+class Cache
 {
-public static final int PAGE_SIZE = 4096;               // Bytes per page
+static final int PAGE_SIZE = 4096;               // Bytes per page
 static final int CACHE_SIZE     = 30;                 // Aantal pagina"s
 
 private RandomAccessFile database = null;
@@ -23,18 +23,18 @@ private List<CacheEntry> cache = new ArrayList<>();
 @Setter( AccessLevel.PRIVATE ) 
 private long generatieTeller;
 
-public Cache()
+Cache()
 {
 	super();
 	initializeCache();
 	setGeneratieTeller( 1L );
 }
-public Cache( RandomAccessFile aDatabase )
+Cache( RandomAccessFile aDatabase )
 {
 	this();
 	database = aDatabase;
 }
-void initializeCache()
+private void initializeCache()
 {
 	for ( int x = 0; x < CACHE_SIZE; x++ )
 	{
@@ -48,7 +48,7 @@ void initializeCache()
 		cacheEntry.getPage().clearPage();
 	}
 }
-int getFreeCacheEntry()
+private int getFreeCacheEntry()
 {
     //---- laagste generatienummers -------
     long LaagsteGeneratie        = Long.MAX_VALUE;
@@ -80,7 +80,8 @@ int getFreeCacheEntry()
     	return LaagsteGeneratieNr;
     }
 }
-public Page getPage( PageDescriptor aPageDescriptor )
+// @@NOG private maken want wordt alleen in tests gebruikt. Helaas ook in TestVN, dus nog ff niet
+Page getPage( PageDescriptor aPageDescriptor )
 {
 	if ( aPageDescriptor.getCacheNummer() > 30 )
 	{
@@ -88,32 +89,33 @@ public Page getPage( PageDescriptor aPageDescriptor )
 	}
 	return getCache().get( aPageDescriptor.getCacheNummer() ).getPage();
 }
-public byte [] getPageData( PageDescriptor aPageDescriptor )
+private byte [] getPageData( PageDescriptor aPageDescriptor )
 {
 	return getPage( aPageDescriptor ).getData();
 }
-public void setPage( PageDescriptor aPageDescriptor, Page aPage )
+@SuppressWarnings( "unused" )
+private void setPage( PageDescriptor aPageDescriptor, Page aPage )
 {
 	getCache().get( aPageDescriptor.getCacheNummer() ).setPage( aPage );
 }
-public boolean isVuil( PageDescriptor aPageDescriptor )
+private boolean isVuil( PageDescriptor aPageDescriptor )
 {
 	return getCache().get( aPageDescriptor.getCacheNummer() ).isVuil();
 }
-public void setVuil( PageDescriptor aPageDescriptor, boolean aVuil )
+void setVuil( PageDescriptor aPageDescriptor, boolean aVuil )
 {
 	getCache().get( aPageDescriptor.getCacheNummer() ).setVuil( aVuil );
 }
-public CacheEntry getCacheEntry( PageDescriptor aPageDescriptor )
+CacheEntry getCacheEntry( PageDescriptor aPageDescriptor )
 {
 	return getCache().get( aPageDescriptor.getCacheNummer() );
 }
-public void setCacheEntry( PageDescriptor aPageDescriptor, CacheEntry aCacheEntry )
+void setCacheEntry( PageDescriptor aPageDescriptor, CacheEntry aCacheEntry )
 {
 	getCache().set( aPageDescriptor.getCacheNummer(), aCacheEntry );
 }
 
-void getRawPageData( PageDescriptor aPageDescriptor )
+private void getRawPageData( PageDescriptor aPageDescriptor )
 {
     try
 	{
@@ -129,7 +131,7 @@ void getRawPageData( PageDescriptor aPageDescriptor )
 		throw new RuntimeException( e );
 	}
 }
-void putRawPageData( PageDescriptor aPageDescriptor )
+private void putRawPageData( PageDescriptor aPageDescriptor )
 {
 	try
 	{
@@ -157,7 +159,7 @@ void pageOut( PageDescriptor aPageDescriptor )
 /**
  * ----------- Pagina ophalen van de schijf ---------
  */
-void pageIn( PageDescriptor aPageDescriptor )
+private void pageIn( PageDescriptor aPageDescriptor )
 {
     if ( aPageDescriptor.getWaar() == Lokatie.OP_SCHIJF )
     {
@@ -202,7 +204,7 @@ void setData( PageDescriptor aPageDescriptor, int aPositionWithinPage, byte aDat
     getPageData( aPageDescriptor )[aPositionWithinPage] = aData;
 	setVuil( aPageDescriptor, true );
 }
-public void flush()
+void flush()
 {
 	for ( CacheEntry cacheEntry : getCache() )
 	{
