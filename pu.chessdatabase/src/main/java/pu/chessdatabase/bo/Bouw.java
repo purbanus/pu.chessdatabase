@@ -264,7 +264,7 @@ END Schaakjes;
 /**
  *------------- Kontroleer schaakjes ---------------------------
  */
-// @@NOG Ik begrijp niet hoe dit werkt
+	// @@HIGH Ik begrijp niet hoe dit werkt
 public void schaakjes( BoStelling aBoStellingMetWitAanZet )
 {
 	/*
