@@ -38,7 +38,7 @@ String savedConfigString;
 @BeforeEach
 public void setup()
 {
-	savedConfigString = config.getName();
+	savedConfigString = config.getConfig();
 	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 }
@@ -172,7 +172,7 @@ public void testCreateTrfTabel()
 //@Test
 public void printTrfTabel()
 {
-	for ( int oktant = 1; oktant < dbs.OKTANTEN; oktant++ ) // @@NOG CHECK is die grens goed of moet het <= zijn
+	for ( int oktant = 1; oktant <= dbs.OKTANTEN; oktant++ )
 	{
 		for ( int x = dbs.veldRange.getMinimum(); x < dbs.veldRange.getMaximum(); x++ )
 		{

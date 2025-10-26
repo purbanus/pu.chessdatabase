@@ -18,7 +18,7 @@ String savedConfigString;
 @BeforeEach
 public void setup()
 {
-	savedConfigString = config.getName();
+	savedConfigString = config.getConfig();
 }
 @AfterEach
 public void destroy()

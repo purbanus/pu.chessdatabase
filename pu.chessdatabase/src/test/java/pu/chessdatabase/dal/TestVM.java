@@ -31,7 +31,7 @@ String savedConfigString;
 @BeforeEach
 public void setup()
 {
-	savedConfigString = config.getName();
+	savedConfigString = config.getConfig();
 	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
 	vm.create(); // Doet ook Open, dus initialiseert de tabellen
 }
@@ -283,20 +283,20 @@ public void testCloseWithNoDatabesePresent()
 	assertThat( vm.getDatabaseName(), is( DATABASE_NAME ) );
 	vm.delete();
 	vm.close();
-	// @@NOG
+	// @@NOG Tests maken
 }
 @Test
 public void testCloseWithDatabaseOpen()
 {
 	vm.close();
-	// @@NOG
+	// @@NOG Tests maken
 }
 @Test
 public void testOpen()
 {
 	vm.open();
 	assertThat( vm.getDatabase(), is( notNullValue() ) );
-	// @@NOG
+	// @@NOG Tests maken
 }
 @Test
 public void testCreateFile()
