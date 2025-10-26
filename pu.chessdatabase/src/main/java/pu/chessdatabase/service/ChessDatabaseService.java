@@ -1,11 +1,13 @@
 package pu.chessdatabase.service;
 
 import pu.chessdatabase.web.NewGameResponse;
+import pu.chessdatabase.web.SwitchConfigResponse;
 import pu.chessdatabase.web.ZetResponse;
 
 public interface ChessDatabaseService
 {
 public abstract NewGameDocument newGame();
+public abstract void doSwitchConfig( SwitchConfigResponse aSwitchConfigResponse );
 public abstract PartijDocument doNewGame( NewGameResponse aNewGameResponse );
 public abstract PartijDocument getPartijDocument( BoStellingKey aBoStellingKey );
 public abstract PartijDocument zet( ZetResponse aZetResponse );

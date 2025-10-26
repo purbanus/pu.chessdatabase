@@ -2,11 +2,17 @@ package pu.chessdatabase.service.impl;
 
 import static pu.chessdatabase.bo.Kleur.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Config;
+import pu.chessdatabase.bo.Stuk;
 import pu.chessdatabase.bo.Stukken;
 import pu.chessdatabase.bo.speel.Partij;
 import pu.chessdatabase.service.BoStellingKey;
@@ -14,6 +20,7 @@ import pu.chessdatabase.service.ChessDatabaseService;
 import pu.chessdatabase.service.NewGameDocument;
 import pu.chessdatabase.service.PartijDocument;
 import pu.chessdatabase.web.NewGameResponse;
+import pu.chessdatabase.web.SwitchConfigResponse;
 import pu.chessdatabase.web.ZetResponse;
 
 import lombok.Data;
@@ -28,19 +35,81 @@ public class ChessDatabaseServiceImpl implements ChessDatabaseService
 @Override
 public NewGameDocument newGame()
 {
-	Stukken stukken = config.getStukken();
+	List<Stuk> stukken = config.getStukList();
+	stukken = sorteerStukken( stukken );
+
+	Map<String, String> stukVelden = new HashMap<>();
+	if ( config.getConfig().equals( "KDKT" ) )
+	{
+		stukVelden.put( "wk", "a1" );
+		stukVelden.put( "zk", "h8" );
+		stukVelden.put( "s3", "b2" );
+		stukVelden.put( "s4", "g7" );
+	}
+	else if ( config.getConfig().equals( "KLPK" ) )
+	{
+		stukVelden.put( "wk", "a1" );
+		stukVelden.put( "zk", "h8" );
+		stukVelden.put( "s3", "b2" );
+		stukVelden.put( "s4", "g7" );
+	}
+	else if ( config.getConfig().equals( "KLLK" ) )
+	{
+		stukVelden.put( "wk", "a1" );
+		stukVelden.put( "zk", "h8" );
+		stukVelden.put( "s3", "a2" );
+		stukVelden.put( "s4", "a3" );
+	}
+	else
+	{
+		throw new RuntimeException( "Ongeldige configuratie in newGame()" );
+	}
+
+	List<NewGameDocument.Stuk> docStukken = new ArrayList<>();
+	for ( Stuk stuk : stukken )
+	{
+		docStukken.add( NewGameDocument.Stuk.builder()
+			.name( stuk.getId() + "Alfa" )
+			.label( stuk.getLabel() )
+			.veld( stukVelden.get( stuk.getId() ) )
+			.build()
+		);
+	}
 	return NewGameDocument.builder()
-		.wk( "a1" )
-		.zk( "h8" )
-		.s3( "b2" )
-		.s4( "g7" )
+		.configList( getConfig().getAvailableConfigs() )
+		.config( getConfig().getConfig() )
+		.stukken( docStukken )
+//		.wk( "a1" )
+//		.zk( "h8" )
+//		.s3( "b2" )
+//		.s4( "g7" )
 		.aanZet( WIT.getNormaleSpelling() )
-		.wkLabel( stukken.getWk().getLabel() )
-		.zkLabel( stukken.getZk().getLabel() )
-		.s3Label( stukken.getS3().getLabel() )
-		.s4Label( stukken.getS4().getLabel() )
 		.build();
 }
+private List<Stuk> sorteerStukken( List<Stuk> aStukken )
+{
+	List<Stuk> newStukken = new ArrayList<>();
+	for ( Stuk stuk : aStukken )
+	{
+		if ( stuk.getKleur() == WIT )
+		{
+			newStukken.add( stuk );
+		}
+	}
+	for ( Stuk stuk : aStukken )
+	{
+		if ( stuk.getKleur() == ZWART )
+		{
+			newStukken.add( stuk );
+		}
+	}
+	return newStukken;
+}
+@Override
+public void doSwitchConfig( SwitchConfigResponse aSwitchConfigResponse )
+{
+	getConfig().switchConfig( aSwitchConfigResponse.getConfig() );
+  }
 @Override
 public PartijDocument doNewGame( NewGameResponse aNewGameResponse )
 {
@@ -52,7 +121,7 @@ public PartijDocument doNewGame( NewGameResponse aNewGameResponse )
 public PartijDocument getPartijDocument( BoStellingKey aStellingKey )
 {
 	BoStelling boStelling = createBoStelling( aStellingKey );
-	// @@NOG Dit moet je in Partij doen!
+	// @@HIGH Dit moet je in Partij doen!
 	if ( ! getPartij().isBegonnen() && getPartij().isLegaleStelling( boStelling ) )
 	{
 		getPartij().newGame( boStelling );
@@ -96,7 +165,7 @@ BoStelling createBoStelling( BoStellingKey aBoStellingKey )
 public PartijDocument zet( ZetResponse aZetResponse )
 {
 	BoStelling boStelling = createBoStelling( aZetResponse.getBoStellingKey() );
-	// @@NOG Dit moet je in Partij doen!
+	// @@HIGH Dit moet je in Partij doen!
 	if ( ! getPartij().isBegonnen() && getPartij().isLegaleStelling( boStelling ) )
 	{
 		getPartij().newGame( boStelling );
