@@ -12,7 +12,6 @@ import static pu.chessdatabase.bo.Kleur.*;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.Config;
-import pu.services.MatrixFormatter;
 
 @SpringBootTest
 public class TestVM
@@ -116,75 +114,6 @@ private void writePageWithAll( long aPageNumber, int aCacheNumber, byte aValue )
 	vm.getCache().setCacheEntry( pageDescriptor, cacheEntry );
 	vm.getCache().pageOut( pageDescriptor );
 }
-//@Test
-public void testShowCache()
-{
-	vm.getCache().initializeCache();
-	showCache();
-}
-public void showCache()
-{
-	MatrixFormatter matrixFormatter = new MatrixFormatter();
-	matrixFormatter.setDefaultAlignment( MatrixFormatter.ALIGN_RIGHT );
-	matrixFormatter.addHeader( StringUtils.repeat( '-', 50 ) );
-	matrixFormatter.addDetail( new String [] { "Number", "PD.Lokatie", "PD.cachenummer", "PD.Schijfadres", "Page, eerste 10", "Vuil", "Generatie" } );
-	matrixFormatter.addHeader( StringUtils.repeat( '-', 50 ) );
-	int index = -1;
-	for ( CacheEntry cacheEntry : vm.getCache().getCache() )
-	{
-		index++;
-		if ( cacheEntry == null )
-		{
-			matrixFormatter.addDetail( new String []{ 
-				String.valueOf( index ), 
-				"null", 
-				"null", 
-				"null", 
-				"null", 
-				"null", 
-				"null", 
-			} );
-		}
-		else
-		{
-			PageDescriptor pageDescriptor = cacheEntry.getPageDescriptor();
-			if ( pageDescriptor == null )
-			{
-				matrixFormatter.addDetail( new String []{
-					String.valueOf( index ), 
-					"null", 
-					"null", 
-					"null", 
-					"null", 
-					String.valueOf( cacheEntry.isVuil() ), 
-					String.valueOf( cacheEntry.getGeneratie() ) 
-				} );
-			}
-			else
-			{
-				byte [] page = cacheEntry.getPage().getData();
-				StringBuilder sb = new StringBuilder();
-				for ( int y = 0; y < 10; y++ )
-				{
-					sb.append( page[y] ).append( " " );
-				}
-					
-				matrixFormatter.addDetail( new String []{ 
-					String.valueOf( index ), 
-					String.valueOf( pageDescriptor.getWaar() ), 
-					String.valueOf( pageDescriptor.getCacheNummer() ), 
-					String.valueOf( pageDescriptor.getSchijfAdres() ), 
-					sb.toString(),
-					String.valueOf( cacheEntry.isVuil() ), 
-					String.valueOf( cacheEntry.getGeneratie() ) 
-				} );
-			}
-		}
-	}
-	matrixFormatter.addHeader( StringUtils.repeat( '-', 50 ) );
-	System.out.println( matrixFormatter.getOutput() );
-}
-
 private void checkIfAllDatabaseEntriesAreZero() throws IOException
 {
 	PageDescriptorTable pageDescriptorTable = new PageDescriptorTable();
