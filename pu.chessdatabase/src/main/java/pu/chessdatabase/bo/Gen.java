@@ -149,7 +149,7 @@ END IsGeomIllegaal;
  */
 public boolean isGeomIllegaal( BoStelling S )
 {
-	// @@NOG Bij twee lopers, moeten ze op een verschillende kleur veld staan
+	// @@HIGH Bij twee lopers, moeten ze op een verschillende kleur veld staan
 	if ( ( S.getWk() == S.getZk() ) || ( S.getS3() == S.getS4()     ) ) return true;
 	if ( ( S.getWk() == S.getS3() ) && ( getStukken().getS3().getKleur() != WIT   ) ) return true;
 	if ( ( S.getWk() == S.getS4() ) && ( getStukken().getS4().getKleur() != WIT   ) ) return true;
@@ -282,8 +282,8 @@ public boolean checkSchaakDoorStuk( BoStelling aStelling, Stuk aStuk, int aKonin
  * -------- Kijk of degene die aan zet is, schaak staat ----------		
  */
 /**
- * Dat hele schaakjes gedoe is volgens mij om illegale stellingen te ontdekken
- * @@NOG maar dat moet nog bewezen worden; die java code is er nog niet.
+ * @@HIGH Check isSchaak
+ *  Dat hele schaakjes gedoe is volgens mij om illegale stellingen te ontdekken
  */
 public boolean isSchaak( BoStelling aStelling )
 {
@@ -330,7 +330,7 @@ BEGIN
 	END;
 END AddZet;
  */
-// @@NOG geen gegenereerdeZetten als parm maar gewoon de nieuwe stelling retourneren
+// @@HIGH geen gegenereerdeZetten als parm maar gewoon de nieuwe stelling retourneren
 void addZet( final BoStelling aBoStelling, Stuk aStuk, int aNaar, ZetSoort aZetsoort, int aKoningsVeld, int aStukVeld, List<BoStelling> aGegenereerdeZetten )
 {
 	BoStelling boStelling = aBoStelling.clone();
