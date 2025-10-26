@@ -8,11 +8,9 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static pu.chessdatabase.bo.Kleur.*;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.Config;
+import pu.services.MatrixFormatter;
 
 import lombok.Data;
 
@@ -32,7 +31,8 @@ public class TestCache
 
 private static final String DATABASE_NAME = "dbs/Pipo";
 
-private Cache cache;
+private MockCache cache;
+
 String savedConfigString;
 @BeforeEach
 public void setup()
@@ -40,7 +40,7 @@ public void setup()
 	savedConfigString = config.getName();
 	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
 	vm.create();
-	cache = vm.getCache();
+	cache = new MockCache( vm.getCache() );
 }
 @AfterEach
 public void destroy()
@@ -67,9 +67,74 @@ private void writePageWithAll( long aPageNumber, int aCacheNumber, byte aValue )
 	getCache().setCacheEntry( pageDescriptor, cacheEntry );
 	getCache().pageOut( pageDescriptor );
 }
+//@Test
+public void testShowCache()
+{
+	MatrixFormatter matrixFormatter = new MatrixFormatter();
+	matrixFormatter.setDefaultAlignment( MatrixFormatter.ALIGN_RIGHT );
+	matrixFormatter.addHeader( StringUtils.repeat( '-', 90 ) );
+	matrixFormatter.addDetail( new String [] { "Number", "PD.Lokatie", "PD.cachenummer", "PD.Schijfadres", "Page, eerste 10", "Vuil", "Generatie" } );
+	matrixFormatter.addHeader( StringUtils.repeat( '-', 90 ) );
+	int index = -1;
+	for ( CacheEntry cacheEntry : getCache().getCache() )
+	{
+		index++;
+		if ( cacheEntry == null )
+		{
+			matrixFormatter.addDetail( new String []{ 
+				String.valueOf( index ), 
+				"null", 
+				"null", 
+				"null", 
+				"null", 
+				"null", 
+				"null", 
+			} );
+		}
+		else
+		{
+			PageDescriptor pageDescriptor = cacheEntry.getPageDescriptor();
+			byte [] page = cacheEntry.getPage().getData();
+			StringBuilder sb = new StringBuilder();
+			for ( int y = 0; y < 10; y++ )
+			{
+				sb.append( page[y] ).append( " " );
+			}
+			if ( pageDescriptor == null )
+			{
+				matrixFormatter.addDetail( new String []{
+					String.valueOf( index ), 
+					"null", 
+					"null", 
+					"null", 
+					sb.toString(), 
+					String.valueOf( cacheEntry.isVuil() ), 
+					String.valueOf( cacheEntry.getGeneratie() ) 
+				} );
+			}
+			else
+			{
+					
+				matrixFormatter.addDetail( new String []{ 
+					String.valueOf( index ), 
+					String.valueOf( pageDescriptor.getWaar() ), 
+					String.valueOf( pageDescriptor.getCacheNummer() ), 
+					String.valueOf( pageDescriptor.getSchijfAdres() ), 
+					sb.toString(),
+					String.valueOf( cacheEntry.isVuil() ), 
+					String.valueOf( cacheEntry.getGeneratie() ) 
+				} );
+			}
+		}
+	}
+	matrixFormatter.addHeader( StringUtils.repeat( '-', 90 ) );
+	System.out.println( matrixFormatter.getOutput() );
+}
+
 @Test
 public void testInitializeCache()
 {
+	getCache().initializeCache();
 	for ( CacheEntry cacheEntry : getCache().getCache() )
 	{
 		assertThat( cacheEntry.getPageDescriptor(), is( nullValue() ) );
@@ -199,10 +264,10 @@ public void testGetSetCacheEntry()
 		.build();
 	getCache().setCacheEntry( pageDescriptor, cacheEntry );
 	CacheEntry gotCacheEntry = getCache().getCacheEntry( pageDescriptor );
-	assertThat( cacheEntry.isVuil(), is( true ) );
-	assertThat( TestHelper.isAll( cacheEntry.getPage(), value ), is( true ) );
-	assertThat( cacheEntry.getGeneratie(), is( generatie ) );
-	assertThat( cacheEntry.isVuil(), is( true ) );
+	assertThat( gotCacheEntry.isVuil(), is( true ) );
+	assertThat( TestHelper.isAll( gotCacheEntry.getPage(), value ), is( true ) );
+	assertThat( gotCacheEntry.getGeneratie(), is( generatie ) );
+	assertThat( gotCacheEntry.isVuil(), is( true ) );
 }
 @Test
 public void testGetRawPageData()
@@ -219,7 +284,7 @@ public void testGetRawPageData()
 		.schijfAdres( pageNumber * Cache.PAGE_SIZE )
 		.build();
 	getCache().getRawPageData( pageDescriptor );
-	assertThat( TestHelper.isAll( vm.getCache().getPageData( pageDescriptor ), value ), is( true ) );
+	assertThat( TestHelper.isAll( getCache().getPageData( pageDescriptor ), value ), is( true ) );
 }
 @Test
 public void testPutRawPageData()
@@ -238,7 +303,7 @@ public void testPutRawPageData()
 	getCache().putRawPageData( pageDescriptor );
 	
 	getCache().getRawPageData( pageDescriptor );
-	assertThat( TestHelper.isAll( vm.getCache().getPageData( pageDescriptor ), value ), is( true ) );
+	assertThat( TestHelper.isAll( getCache().getPageData( pageDescriptor ), value ), is( true ) );
 }
 @Test
 public void testPageOut()
@@ -259,13 +324,13 @@ public void testPageOut()
 		.vuil( true )
 		.generatie( 1 )
 		.build();
-	vm.getCache().setCacheEntry( pageDescriptor, cacheEntry );
+	getCache().setCacheEntry( pageDescriptor, cacheEntry );
 	
 	//showCache( vm );
 	getCache().pageOut( pageDescriptor );
 	getCache().getCacheEntry( pageDescriptor ).setPage( new Page() );
 	getCache().getRawPageData( pageDescriptor );
-	assertThat( TestHelper.isAll( vm.getCache().getPageData( pageDescriptor ), value ), is( true ) );
+	assertThat( TestHelper.isAll( getCache().getPageData( pageDescriptor ), value ), is( true ) );
 }
 @Test
 public void testPageIn() throws IOException
@@ -282,7 +347,7 @@ public void testPageIn() throws IOException
 		.build();
 	//showCache( vm );
 	getCache().pageIn( pageDescriptor );
-	assertThat( TestHelper.isAll( vm.getCache().getPageData( pageDescriptor ), value ), is( true ) );
+	assertThat( TestHelper.isAll( getCache().getPageData( pageDescriptor ), value ), is( true ) );
 }
 @Test
 public void testGetPageFromDatabase()
@@ -290,7 +355,7 @@ public void testGetPageFromDatabase()
 	long pageNumber = 12L;
 	int cacheNumber = 29;
 	byte value = (byte)0x30;
-	vm.setCache( getCache() );
+	setCache( getCache() );
 	
 	writePageWithAll( pageNumber, cacheNumber, value );
 	
@@ -341,7 +406,7 @@ public void testGetPageNotDirtyAndInRam()
 	assertThat( TestHelper.isAll( page.getData(), value ), is( true ) );
 	// De pageDescriptor is NIET veranderd
 	assertThat( pageDescriptor.getCacheNummer(), is( cacheNumber ) );
-	assertThat( vm.getCache().isVuil( pageDescriptor ), is( false ) );
+	assertThat( getCache().isVuil( pageDescriptor ), is( false ) );
 }@
 Test
 public void testSetData()
@@ -374,7 +439,7 @@ public void testSetData()
 @Test
 public void testFlushWithNothingChanged()
 {
-	vm.flush();
+	getCache().flush();
 	// @@>NOG
 }
 @Test
@@ -392,7 +457,7 @@ public void testFlushWithSomePagesPresentButNoneVuil()
 		.page( page )
 		.vuil( false )
 		.build();
-	vm.getCache().setCacheEntry( pageDescriptor, cacheEntry );
+	getCache().setCacheEntry( pageDescriptor, cacheEntry );
 	
 	pageDescriptor = PageDescriptor.builder()
 		.waar( Lokatie.IN_RAM )
@@ -405,9 +470,9 @@ public void testFlushWithSomePagesPresentButNoneVuil()
 		.page( page )
 		.vuil( false )
 		.build();
-	vm.getCache().setCacheEntry( pageDescriptor, cacheEntry );
+	getCache().setCacheEntry( pageDescriptor, cacheEntry );
 	
-	vm.flush();
+	getCache().flush();
 	// @@NOG testjes??
 }
 @Test
@@ -425,7 +490,7 @@ public void testFlushWithSomePagesPresentAndVuil()
 		.page( page )
 		.vuil( true )
 		.build();
-	vm.getCache().setCacheEntry( pageDescriptor, cacheEntry );
+	getCache().setCacheEntry( pageDescriptor, cacheEntry );
 	
 	pageDescriptor = PageDescriptor.builder()
 		.waar( Lokatie.IN_RAM )
@@ -438,11 +503,11 @@ public void testFlushWithSomePagesPresentAndVuil()
 		.page( page )
 		.vuil( true )
 		.build();
-	vm.getCache().setCacheEntry( pageDescriptor, cacheEntry );
+	getCache().setCacheEntry( pageDescriptor, cacheEntry );
 	
-	vm.flush();
+	getCache().flush();
 
-	// @@NOG Lees de eerste twee paginas en check of die allemaal 1 zijn
+	// Lees de eerste twee paginas en check of die allemaal 1 zijn
 	VMStelling vmStelling = VMStelling.builder()
 		.wk( 0x00 )
 		.zk( 0x00 )
@@ -451,11 +516,11 @@ public void testFlushWithSomePagesPresentAndVuil()
 		.aanZet( WIT )
 		.build();
 	PageDescriptor newPageDescriptor = vm.getPageDescriptor( vmStelling );
-	Page newPage = getCache().getPage( pageDescriptor );
+	Page newPage = getCache().getPage( newPageDescriptor );
 	assertThat( TestHelper.isAllOne( newPage.getData() ), is( true ) );
 	
-	vmStelling.setAanZet( WIT );
-	newPage = getCache().getPage( pageDescriptor );
+	vmStelling.setAanZet( ZWART );
+	newPage = getCache().getPage( newPageDescriptor );
 	assertThat( TestHelper.isAllOne( newPage.getData() ), is( true ) );
 }
 
