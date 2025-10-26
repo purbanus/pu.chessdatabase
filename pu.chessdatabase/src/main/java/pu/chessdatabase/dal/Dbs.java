@@ -289,7 +289,7 @@ END CreateTrfTabel;
 public void createTransformatieTabel()
 {
 	Vector Vres;
-	for ( int oktant = oktantRange.getMinimum(); oktant <= oktantRange.getMaximum(); oktant++ ) // @@NOG CHECK is die grens goed of moet het <= zijn
+	for ( int oktant = oktantRange.getMinimum(); oktant <= oktantRange.getMaximum(); oktant++ )
 	{
 		for ( int rij = 0; rij < 8; rij++ )
 		{
@@ -475,13 +475,13 @@ END GetDirect;
 /**
  * ----------- Lezen zonder cardinaliseren -------
  */
-// @@NOG Die parm aBoStelling elimineren en gewoon een verse BoStelling retourneren
+// @@HIGH Die parm aBoStelling elimineren en gewoon een verse BoStelling retourneren
 //       Bijv vmStelling.getBoStelling();
 BoStelling getDirect( VMStelling aVMStelling, BoStelling aBoStelling )
 {
 	BoStelling boStelling = aBoStelling.clone();
 	int VMrec = vm.get( aVMStelling );
-	// @@NOG Erg onhandig! Je kunt hier niet Gen gebruiken want dan krijg je een circulaire 
+	// @@HIGH Erg onhandig! Je kunt hier niet Gen gebruiken want dan krijg je een circulaire 
 	//       referentie: Gen gebruikt Dbs en Dbs gebruikt dan ook Gen. Er zijn twee oplossingen:
 	//       - De isSchaak uit Gen tillen en in een aparte class stoppen (ik weet trouwens niet of
 	//         dat gaat werken, of je dan geen circulaire referentie hebt.
@@ -642,9 +642,9 @@ public void pass34( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction
 		{
 			boStelling.setS4( CVT_STUK[vmStelling.getS4()] ); // Nu wel
 
-			// @@NOG CHECK is aBoStelling veranderd of moet je boStelling gebruiken? 
+			// @@HIGH CHECK is aBoStelling veranderd of moet je boStelling gebruiken? 
 			BoStelling gotBoStelling = getDirect( vmStelling, boStelling ); //1 aBoStelling.s4 maakt nog niet uit
-			// @@NOG Je kunt hier niet Gen.isSchaak() aanroependus moet het in de proc
+			// @@NOG Je kunt hier niet Gen.isSchaak() aanroepen dus moet het in de proc
 			if ( gotBoStelling.getResultaat() == ResultaatType.REMISE )
 			{
 				aPassProc.doPass( gotBoStelling.clone() );

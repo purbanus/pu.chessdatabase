@@ -37,7 +37,7 @@ String savedConfigString;
 @BeforeEach
 public void setup()
 {
-	savedConfigString = config.getName();
+	savedConfigString = config.getConfig();
 	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
 	vm.create();
 	cache = new MockCache( vm.getCache() );

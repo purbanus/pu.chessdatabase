@@ -30,7 +30,7 @@ String savedConfigString;
 @BeforeEach
 public void setup()
 {
-	savedConfigString = config.getName();
+	savedConfigString = config.getConfig();
 	config.switchConfig( "KDKT" ); // Dit opent de database
 }
 @AfterEach

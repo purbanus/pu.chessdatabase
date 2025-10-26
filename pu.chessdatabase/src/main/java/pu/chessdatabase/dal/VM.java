@@ -155,8 +155,6 @@ public Page getPage( VMStelling aVmStelling )
 	return getCache().getPageFromDatabase( getPageDescriptor( aVmStelling ) );
 }
 /**
- //@@NOG idee: Page retourneren
-/**
  *  ------------ Ophalen database record --------------
  */
 public int get( VMStelling aVmStelling )

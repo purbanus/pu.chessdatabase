@@ -33,7 +33,7 @@ String savedConfigString;
 @BeforeEach
 public void setup()
 {
-	savedConfigString = config.getName();
+	savedConfigString = config.getConfig();
 	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
 	dbs.create();
 }
@@ -467,7 +467,7 @@ public void testGenZet()
 
 	assertThat( gegenereerdeZetten.get(  0 ).getZk(), is( 0x37 ) );
 	assertThat( gegenereerdeZetten.get(  1 ).getZk(), is( 0x36 ) );
-	assertThat( gegenereerdeZetten.get(  2 ).getZk(), is( 0x26 ) ); //@@NOG Dit is een illegale stelling
+	assertThat( gegenereerdeZetten.get(  2 ).getZk(), is( 0x26 ) ); //@@HIGH Dit is een illegale stelling
 	assertThat( gegenereerdeZetten.get(  3 ).getZk(), is( 0x16 ) );
 	assertThat( gegenereerdeZetten.get(  4 ).getZk(), is( 0x17 ) );
 
@@ -626,7 +626,6 @@ public void testGenZetSort()
 	assertThat( gegenereerdeZetten.get( 15 ).getS4(), is( 0x13 ) );
 	assertThat( gegenereerdeZetten.get( 16 ).getS4(), is( 0x03 ) );
 
-	// @@NOG Dit zou moeten
 	assertThat( gegenereerdeZetten.get( 17 ).getS4(), is( 0x34 ) );
 	assertThat( gegenereerdeZetten.get( 18 ).getS4(), is( 0x36 ) );
 

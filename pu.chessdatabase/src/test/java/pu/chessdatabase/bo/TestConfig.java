@@ -30,7 +30,7 @@ String savedConfigName;
 @BeforeEach
 public void setup()
 {
-	savedConfigName = getConfig().getName();
+	savedConfigName = getConfig().getConfig();
 }
 @AfterEach
 public void destroy()
@@ -40,16 +40,16 @@ public void destroy()
 @Test
 public void testCurrentConfig()
 {
-	assertThat( getConfig().getName(), is( "KLPK" ) );
+	assertThat( getConfig().getConfig(), is( "KLPK" ) );
 
 	getConfig().switchConfig( "kdkt" );
-	assertThat( getConfig().getName(), is( "KDKT" ) );
+	assertThat( getConfig().getConfig(), is( "KDKT" ) );
 }
 @Test
 public void testSwitchConfig()
 {
 	assertThrows( RuntimeException.class, () -> config.switchConfig( "PipoKoeie" ) );
-	//@@NOG de rest
+	//@@HIGH de rest
 }
 @Test
 public void testGetStukken()

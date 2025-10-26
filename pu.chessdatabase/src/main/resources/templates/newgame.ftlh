@@ -9,13 +9,44 @@
 
 <body>
 	<h1>Welcome to ${AppName}</h1>
-	<form action='<@spring.url "/do-newgame" />' method="post">
-		<p>Zet een nieuwe stelling op</p>
-		<table id="detabel" class="newGame" border="0">
+	
+	<h4>Choose a configuration</h4>
+	<form action='<@spring.url "/do-switch-config" />' method="post">
+		<table id="nogeentabel" class="newGame" border="0">
+<#-- 
 			<tr>
-				<td><label for="wkAlfa">${doc.wkLabel}</label></td>	
-				<td><input id="wkAlfa" type="text" name="wkAlfa" value="${doc.wk}" /></td>
+				<td>Aantal Stukken</td>
+				<td
+					<#list doc.aantalStukkenList as aantalStukken>
+						<label>
+							<input type="radio" id="${aantalStukken}Stukken" name="aantalStukken" value="${aantalStukken}" <#if doc.aantalStukken == aantalStukken>checked</#if> >${aantalStukken}Stukken</input>
+						</label>
+					</#list>
+				</td>
 			</tr>
+ -->
+			<tr>
+				<td><label for="config">Configuratie</label></td>	
+				<td><select name="config" size="1">
+					<#list doc.configList as config>
+						<option <#if doc.config == config>selected</#if> >${config}</option>
+					</#list>
+				</td>
+			</tr>
+		</table>
+		<button type="submit" name="submit">Switch configuration</button>
+	</form>
+
+	<h4>Zet een nieuwe stelling op</h4>
+	<form action='<@spring.url "/do-newgame" />' method="post">
+		<table id="detabel" class="newGame" border="0">
+			<#list doc.stukken as stuk>
+				<tr>
+					<td><label for="${stuk.name}">${stuk.label}</label></td>	
+					<td><input id="${stuk.name}" type="text" name="${stuk.name}" value="${stuk.veld}" /></td>
+				</tr>
+			</#list>
+<#--  
 			<tr>
 				<td><label for="s3Alfa">${doc.s3Label}</label></td>
 				<td><input id="s3Alfa" type="text" name="s3Alfa" value="${doc.s3}" /></td>
@@ -28,6 +59,7 @@
 				<td><label for="s4Alfa">${doc.s4Label}</label></td>
 				<td><input id="s4Alfa" type="text" name="s4Alfa" value="${doc.s4}" /></td>
 			</tr>
+-->
 			<tr>
 				<td>Wie is er aan zet</td>
 				<td
@@ -47,7 +79,7 @@
 
 		</table>
 		
-		<button type="submit" name="submit">Doen</button>
+		<button type="submit" name="submit">DoIt</button>
 	</form>
 	
 </body>

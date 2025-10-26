@@ -86,6 +86,16 @@ public RedirectView doNewGame( @ModelAttribute NewGameResponse aGameResponse, Mo
 		+ "&aanZet=" + partijDocument.getAanZet()
 	);
 }
+@PostMapping(value = { "/do-switch-config" } )
+public RedirectView doSwitchConfig( @ModelAttribute SwitchConfigResponse aSwitchConfigResponse, Model aModel ) 
+{
+	LOG.info( "SwitchConfig response gestart" );
+	LOG.debug( "Model=" + aModel.asMap() );
+	LOG.debug( "SwitchConfigResponse=" + aSwitchConfigResponse );
+
+	getService().doSwitchConfig( aSwitchConfigResponse );
+	return new RedirectView( "/newgame.html" );
+}
 @GetMapping( { "/game", "/game.html" } )
 public String game( @ModelAttribute GameResponse aGameResponse, Model aModel, HttpSession aSession )
 {
