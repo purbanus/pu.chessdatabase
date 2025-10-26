@@ -1,5 +1,6 @@
 package pu.chessdatabase.bo;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -106,13 +107,26 @@ public String getDatabaseName()
 {
 	return getConfigImpl().getDatabaseName();
 }
-public String getName()
+//public int getAantalStukken()
+//{
+//	return getStukList().size();
+//}
+//public List<Integer> getAvailableAantalStukken()
+//{
+//	return Arrays.asList( new Integer [] { 4 } );
+//}
+public String getConfig()
 {
 	return getConfigImpl().getName();
+}
+public List<String> getAvailableConfigs()
+{
+	return Arrays.asList( new String [] { "KDKT", "KLPK", "KLLK" } );
 }
 @Override
 public String toString()
 {
-	return getName() + " databaseName=" + getDatabaseName();
+	// @@HIGH Ik zie haakjes in de toString()
+	return getConfig() + " databaseName=" + getDatabaseName();
 }
 }
