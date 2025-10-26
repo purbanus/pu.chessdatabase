@@ -1,7 +1,9 @@
 package pu.chessdatabase.bo;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import lombok.Data;
 
@@ -23,10 +25,16 @@ public List<Stuk> getStukken()
 }
 public void vulStukTabel()
 {
+	Map<Integer, String> stukIdLookup = new HashMap<>();
+	stukIdLookup.put( 0, "wk" );
+	stukIdLookup.put( 1, "zk" );
+	stukIdLookup.put( 2, "s3" );
+	stukIdLookup.put( 3, "s4" );
 	int index = 0;
 	for ( StukDefinitie stukDefinitie : getConfigImpl().getStukDefinities() )
 	{
 		Stuk stuk = Stuk.builder()
+			.id( stukIdLookup.get( index ) )
 			.stukNummer( index++ )
 			.stukType( stukDefinitie.getStukType() )
 			.kleur( stukDefinitie.getKleur() )
