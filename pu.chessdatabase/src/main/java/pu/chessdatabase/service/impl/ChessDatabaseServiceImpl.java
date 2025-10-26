@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Config;
 import pu.chessdatabase.bo.Stuk;
-import pu.chessdatabase.bo.Stukken;
 import pu.chessdatabase.bo.speel.Partij;
 import pu.chessdatabase.service.BoStellingKey;
 import pu.chessdatabase.service.ChessDatabaseService;
