@@ -120,6 +120,21 @@ public static int hexGetalToVeld( int aHexGetal )
 }
 public static int veldToHexGetal( int aDecimaalGetal )
 {
+	// Check het getal. Getallen in die ranges kunnen niet naar een hexgetal vertaald worden
+	// Bijvoorbeeld 0x01 (10) wordt als hexString "a" en dat snapt Integer.parseInt niet.
+	if ( 
+		   ( aDecimaalGetal >= 0x08 && aDecimaalGetal <=0x0f )
+		|| ( aDecimaalGetal >= 0x18 && aDecimaalGetal <=0x1f )
+		|| ( aDecimaalGetal >= 0x28 && aDecimaalGetal <=0x2f )
+		|| ( aDecimaalGetal >= 0x38 && aDecimaalGetal <=0x3f )
+		|| ( aDecimaalGetal >= 0x48 && aDecimaalGetal <=0x4f )
+		|| ( aDecimaalGetal >= 0x58 && aDecimaalGetal <=0x5f )
+		|| ( aDecimaalGetal >= 0x68 && aDecimaalGetal <=0x6f )
+		|| ( aDecimaalGetal >= 0x78 )
+	)
+	{
+		throw new RuntimeException( "getal buiten range in veldToHexGetal(): " + aDecimaalGetal );
+	}
 	String hexString = Integer.toHexString( aDecimaalGetal );
 	return Integer.parseInt( hexString );
 }
@@ -574,13 +589,17 @@ public BoStelling zet( VanNaar aVanNaar )
 
 	boStellingNaar.setSchaak( gen.isSchaak( boStellingNaar ) );
 	Ply currentPly = getPlies().getCurrentPly();
-	if ( ! aVanNaar.equals( currentPly.getVanNaar() ) )
+	if ( aVanNaar.equals( currentPly.getVanNaar() ) )
+	{
+		getPlies().setVooruit();
+	}
+	else
 	{
 		getPlies().clearPliesFromNextPly();
+		currentPly.setVanNaar( aVanNaar );
+		currentPly.setSchaak( boStellingNaar.isSchaak() );
+		getPlies().addPly( boStellingNaar, isEindStelling( boStellingNaar ) );
 	}
-	currentPly.setVanNaar( aVanNaar );
-	currentPly.setSchaak( boStellingNaar.isSchaak() );
-	getPlies().addPly( boStellingNaar, isEindStelling( boStellingNaar ) );
 	return boStellingNaar;
 }
 /**
@@ -910,7 +929,7 @@ ZetDocument createZetDocument( int aPlyNummer )
 {
 	// Als de eerste zet zwart is maken we puntje puntje puntje plus de  ply hierna
 	Ply ply = getPlies().getPly( aPlyNummer );
-	if ( ply.getBoStelling().getAanZet() == ZWART )
+	if ( ply.getBoStelling().getAanZet() == ZWART ) // @@HIGH Dit geldt toch alleen bij plynummer 0?
 	{
 		return ZetDocument.builder()
 			.zetNummer( ply.getZetNummer() )
