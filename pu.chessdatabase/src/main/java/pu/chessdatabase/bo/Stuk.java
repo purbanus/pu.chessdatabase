@@ -11,6 +11,7 @@ import lombok.Data;
 @Builder
 public class Stuk
 {
+private String id;
 private int stukNummer;
 private StukType stukType;
 private Kleur kleur;
