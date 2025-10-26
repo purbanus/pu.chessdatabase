@@ -38,7 +38,7 @@ String savedConfigString;
 @BeforeEach
 public void setup()
 {
-	savedConfigString = config.getName();
+	savedConfigString = config.getConfig();
 	config.switchConfig( "KDKT" ); // Dit opent de database
 }
 @AfterEach
@@ -63,12 +63,12 @@ public void testVeldToHexGetal()
 {
 	assertThat( Partij.veldToHexGetal( 0x00 ), is(  0 ) );
 	assertThat( Partij.veldToHexGetal( 0x07 ), is(  7 ) );
-// @@NOG	assertThat( Partij.veldToHexGetal( 0x0a ), is( 0x0a ) );
+	assertThrows( RuntimeException.class, () -> Partij.veldToHexGetal( 0x0a ) );
 	assertThat( Partij.veldToHexGetal( 0x10 ), is( 10 ) );
 	assertThat( Partij.veldToHexGetal( 0x17 ), is( 17 ) );
 	assertThat( Partij.veldToHexGetal( 0x70 ), is( 70 ) );
 	assertThat( Partij.veldToHexGetal( 0x77 ), is( 77 ) );
-	assertThat( Partij.veldToHexGetal( 0x78 ), is( 78 ) ); // Maar dit is eigenlijk buiten het bord
+	assertThrows( RuntimeException.class, () -> Partij.veldToHexGetal( 0x78 ) );
 }
 @Test
 public void testIsLegaleStelling()
@@ -1105,7 +1105,7 @@ public void testGegenereerdeZetDocument()
 		.zetNummer( 16 )
 		.zet( stukDatZet.getAfko() + "b2-c3 " )
 		.resultaat( "Gewonnen" )
-		.matInHoeveel( "Mat in 29" ) // @@NOG Dit was 28 en dat werkte denk ik
+		.matInHoeveel( "Mat in 29" ) // @@HIGH Dit was 28 en dat werkte denk ik
 		.build();
 	BoStelling boStellingNaar= partij.vanNaarToStelling( ply, vanNaar );
 	assertThat( partij.getGegenereerdeZetDocument( ply, boStellingNaar ), is( gegenereerdeZetDocument ) );
