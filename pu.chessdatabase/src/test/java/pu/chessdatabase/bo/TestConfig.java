@@ -57,24 +57,28 @@ public void testGetStukken()
 	getConfig().switchConfig( "klpk" );
 	List<Stuk> expectedStukken = new ArrayList<>();
 	expectedStukken.add( Stuk.builder()
+		.id( "wk" )
 		.stukNummer( 0 )
 		.stukType( KONING )
 		.kleur( WIT )
 		.build()
 	);
 	expectedStukken.add( Stuk.builder()
+		.id( "zk" )
 		.stukNummer( 1 )
 		.stukType( KONING )
 		.kleur( ZWART )
 		.build()
 	);
 	expectedStukken.add( Stuk.builder()
+		.id( "s3" )
 		.stukNummer( 2 )
 		.stukType( LOPER )
 		.kleur( WIT )
 		.build()
 	);
 	expectedStukken.add( Stuk.builder()
+		.id( "s4" )
 		.stukNummer( 3 )
 		.stukType( PAARD )
 		.kleur( WIT )
