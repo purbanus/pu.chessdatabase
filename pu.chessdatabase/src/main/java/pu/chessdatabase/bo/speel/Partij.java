@@ -215,7 +215,6 @@ public EindeType isEindStelling( BoStelling aBoStelling )
 	{
 		return NOG_NIET;
 	}
-	// return gen.isSchaak( aBoStelling ) ? MAT : PAT;
 	return boStelling.isSchaak() ? MAT : PAT;
 }
 /**
@@ -929,7 +928,9 @@ ZetDocument createZetDocument( int aPlyNummer )
 {
 	// Als de eerste zet zwart is maken we puntje puntje puntje plus de  ply hierna
 	Ply ply = getPlies().getPly( aPlyNummer );
-	if ( ply.getBoStelling().getAanZet() == ZWART ) // @@HIGH Dit geldt toch alleen bij plynummer 0?
+	// Dit geldt toch alleen bij plynummer 0? Ja, maar alleen bij ply 0 kunnen we aangeroepen worden 
+	// met zwart aan zet. Bij alle andere aanropjes is altijd wit aan zet.
+	if ( ply.getBoStelling().getAanZet() == ZWART )
 	{
 		return ZetDocument.builder()
 			.zetNummer( ply.getZetNummer() )
