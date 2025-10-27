@@ -40,6 +40,7 @@ public void setup()
 @AfterEach
 public void destroy()
 {
+	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
 	assertThat( dbs.getDatabaseName(), is( DATABASE_NAME ) );
 	dbs.delete();
 	config.switchConfig( savedConfigString );
@@ -127,6 +128,22 @@ public void testIsGeomIllegaal()
 		.s4( 5 )
 		.build();
 	assertThat( gen.isGeomIllegaal( stelling ), is( true ) );
+	
+	config.switchConfig( "KLLK" );
+	stelling = BoStelling.builder()
+		.wk( 5 )
+		.zk( 6 )
+		.s3( 7 )
+		.s4( 0x10 )
+		.build();
+	assertThat( gen.isGeomIllegaal( stelling ), is( true ) );
+	stelling = BoStelling.builder()
+		.wk( 5 )
+		.zk( 6 )
+		.s3( 7 )
+		.s4( 0x11 )
+		.build();
+	assertThat( gen.isGeomIllegaal( stelling ), is( false ) );
 }
 @Test
 public void testIsKKSchaak()
@@ -261,42 +278,32 @@ public void testCheckSchaakDoorStuk()
 @Test
 public void testIsSchaak()
 {
-	// Check aStukVeld == aStelling.getWK(), d.w.z. het stuk is geslagen door wit
-	BoStelling stelling = BoStelling.builder()
-		.wk( 0x11 )
-		.zk( 0x27 )
-		.s3( 0x76 )
-		.s4( 0x11 )
-		.aanZet( ZWART )
-		.build();
-	assertThat( gen.isSchaak( stelling ), is( false ) );
-
-	// Check aStukVeld == aStelling.getZK(), d.w.z. het stuk is geslagen door zwart
-	stelling = BoStelling.builder()
-		.wk( 0x11 )
-		.zk( 0x27 )
-		.s3( 0x76 )
-		.s4( 0x27 )
+	// Check aStukVeld == aStelling.getZK(), d.w.z. s4 is geslagen door wit
+	BoStelling stelling = BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "h3" )
+		.s3( "g8" )
+		.s4( "h3" )
 		.aanZet( ZWART )
 		.build();
 	assertThat( gen.isSchaak( stelling ), is( false ) );
 
 	// Check dat het stuk aan zet is
-	stelling = BoStelling.builder()
-		.wk( 0x11 )
-		.zk( 0x27 )
-		.s3( 0x76 )
-		.s4( 0x33 )
+	stelling = BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "h3" )
+		.s3( "g8" )
+		.s4( "d4" )
 		.aanZet( ZWART )
 		.build();
 	assertThat( gen.isSchaak( stelling ), is( false ) );
 
 	// T links geeft schaak
-	stelling = BoStelling.builder()
-		.wk( 0x11 )
-		.zk( 0x27 )
-		.s3( 0x76 )
-		.s4( 0x10 )
+	stelling = BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "h3" )
+		.s3( "g8" )
+		.s4( "a2" )
 		.aanZet( WIT )
 		.build();
 	assertThat( gen.isSchaak( stelling ), is( true ) );
