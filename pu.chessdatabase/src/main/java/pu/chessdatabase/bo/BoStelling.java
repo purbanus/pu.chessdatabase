@@ -60,6 +60,12 @@ public static final BoStelling NULL_STELLING = BoStelling.builder()
 	.aantalZetten( 0 )
 	.schaak( false )
 	.build();
+public static Kleur getVeldKleur( int aVeld )
+{
+	int rij = aVeld / 16;
+	int kol = aVeld % 16;
+	return ( rij + kol ) % 2 == 0 ? ZWART : WIT;
+}
 
 /**
  * CASE : BOOLEAN OF

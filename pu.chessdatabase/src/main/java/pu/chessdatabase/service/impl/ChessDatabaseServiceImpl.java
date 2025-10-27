@@ -120,7 +120,7 @@ public PartijDocument doNewGame( NewGameResponse aNewGameResponse )
 public PartijDocument getPartijDocument( BoStellingKey aStellingKey )
 {
 	BoStelling boStelling = createBoStelling( aStellingKey );
-	// @@HIGH Dit moet je in Partij doen!
+	// @@LOW Dit moet je in Partij doen!
 	if ( ! getPartij().isBegonnen() && getPartij().isLegaleStelling( boStelling ) )
 	{
 		getPartij().newGame( boStelling );
@@ -164,7 +164,7 @@ BoStelling createBoStelling( BoStellingKey aBoStellingKey )
 public PartijDocument zet( ZetResponse aZetResponse )
 {
 	BoStelling boStelling = createBoStelling( aZetResponse.getBoStellingKey() );
-	// @@HIGH Dit moet je in Partij doen!
+	// @@LOW Dit moet je in Partij doen!
 	if ( ! getPartij().isBegonnen() && getPartij().isLegaleStelling( boStelling ) )
 	{
 		getPartij().newGame( boStelling );

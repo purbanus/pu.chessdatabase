@@ -7,8 +7,10 @@ package pu.chessdatabase.bo;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static pu.chessdatabase.bo.Kleur.*;
+import static pu.chessdatabase.dal.ResultaatType.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +20,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.dal.Dbs;
 import pu.chessdatabase.dal.PassType;
-import pu.chessdatabase.dal.ResultaatType;
 
 @SpringBootTest
 public class TestBouw
@@ -40,6 +41,7 @@ public void setup()
 @AfterEach
 public void destroy()
 {
+	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
 	assertThat( dbs.getDatabaseName(), is( DATABASE_NAME ) );
 	dbs.delete();
 	config.switchConfig( savedConfigString );
@@ -80,7 +82,7 @@ public void testConstructor()
 //{
 //	long [] totalsArray = new long [] { 1L, 2L, 3L, 4L };
 //	bouw.showThisPass( totalsArray );
-//	assertThat( totalsArray[ResultaatType.REMISE.ordinal()], is( -7L ) );
+//	assertThat( totalsArray[REMISE.ordinal()], is( -7L ) );
 //}
 //@Test
 //public void testReportNewPass()
@@ -92,7 +94,7 @@ public void testConstructor()
 //	bouw.reportNewPass( "Pipo Koeie" );
 //	for ( int x = 0; x < 4; x++ )
 //	{
-//		if ( x == ResultaatType.REMISE.ordinal() ) //Remise = 2
+//		if ( x == REMISE.ordinal() ) //Remise = 2
 //		{
 //			assertThat( bouw.rptPrev[x], is( -34L ) ); 
 //			assertThat( bouw.rptTot [x], is( -27L ) ); 
@@ -120,7 +122,7 @@ public void testIsIllegaal()
 	
 	// Dit is VMStelling(WK=2, ZK=2, s3=10, s4=9, AanZet=false)
 	BoStelling gotBoStelling = dbs.get( boStelling );
-	assertThat( gotBoStelling.getResultaat(), is( ResultaatType.ILLEGAAL ) );
+	assertThat( gotBoStelling.getResultaat(), is( ILLEGAAL ) );
 }
 @Test
 public void testSchaakjes()
@@ -134,19 +136,19 @@ public void testSchaakjes()
 		.s3( 0x76 )
 		.s4( 0x10 )
 		.aanZet( WIT )
-		.resultaat( ResultaatType.REMISE )
+		.resultaat( REMISE )
 		.build();
 	bouw.schaakjes( boStelling );
 	BoStelling gotBoStelling = dbs.get( boStelling );
 	gotBoStelling.setSchaak( gen.isSchaak( boStelling ) );
 	assertThat( gotBoStelling.isSchaak(), is( true ) );
-	assertThat( gotBoStelling.getResultaat(), is( ResultaatType.REMISE ) );
+	assertThat( gotBoStelling.getResultaat(), is( REMISE ) );
 	
 	gotBoStelling.setAanZet( ZWART );
 	gotBoStelling = dbs.get( gotBoStelling );
 	gotBoStelling.setSchaak( gen.isSchaak( gotBoStelling ) );
 	assertThat( gotBoStelling.isSchaak(), is( false ) );
-	assertThat( gotBoStelling.getResultaat(), is( ResultaatType.ILLEGAAL ) );
+	assertThat( gotBoStelling.getResultaat(), is( ILLEGAAL ) );
 }
 private void markeerIllegaal()
 {
@@ -187,14 +189,14 @@ public void testIsMat()
 		.s4( 0x10 )
 		.aanZet( ZWART )
 		.schaak( true )
-		.resultaat( ResultaatType.REMISE )
+		.resultaat( REMISE )
 		.aantalZetten( 0 )
 		.build();
 	bouw.isMat( boStelling );
 	BoStelling gotBoStelling = dbs.get( boStelling );
 	gotBoStelling.setSchaak( gen.isSchaak( gotBoStelling ) );
 	assertThat( gotBoStelling.isSchaak(), is( true ) );
-	assertThat( gotBoStelling.getResultaat(), is( ResultaatType.VERLOREN ) );
+	assertThat( gotBoStelling.getResultaat(), is( VERLOREN ) );
 	assertThat( gotBoStelling.getAantalZetten(), is( 1 ) );
 
 	//WK=2 ZK=0 S3=6 S4=4 AanZet=W
@@ -205,13 +207,13 @@ public void testIsMat()
 		.s4( 0x04 )
 		.aanZet( WIT)
 		.schaak( true )
-		.resultaat( ResultaatType.REMISE )
+		.resultaat( REMISE )
 		.aantalZetten( 0 )
 		.build();
 	bouw.isMat( boStelling );
 	gotBoStelling = dbs.get( boStelling );
 	assertThat( gotBoStelling.isSchaak(), is( true ) );
-	assertThat( gotBoStelling.getResultaat(), is( ResultaatType.REMISE ) );
+	assertThat( gotBoStelling.getResultaat(), is( REMISE ) );
 	assertThat( gotBoStelling.getAantalZetten(), is( 0 ) );
 	
 	/*WK=2 ZK=0 S3=52 S4=1 AanZet=W
@@ -231,13 +233,13 @@ ZK ZT WK .. .. .. .. ..
 		.s4( 0x01 )
 		.aanZet( WIT)
 		.schaak( true )
-		.resultaat( ResultaatType.REMISE )
+		.resultaat( REMISE )
 		.aantalZetten( 0 )
 		.build();
 	bouw.isMat( boStelling );
 	gotBoStelling = dbs.get( boStelling );
 	assertThat( gotBoStelling.isSchaak(), is( true ) );
-	assertThat( gotBoStelling.getResultaat(), is( ResultaatType.REMISE ) );
+	assertThat( gotBoStelling.getResultaat(), is( REMISE ) );
 	assertThat( gotBoStelling.getAantalZetten(), is( 0 ) );
 
 	boStelling = BoStelling.builder()
@@ -247,13 +249,13 @@ ZK ZT WK .. .. .. .. ..
 		.s4( 0x01 )
 		.aanZet( ZWART )
 		.schaak( true )
-		.resultaat( ResultaatType.REMISE )
+		.resultaat( REMISE )
 		.aantalZetten( 0 )
 		.build();
 	bouw.isMat( boStelling );
 	gotBoStelling = dbs.get( boStelling );
 	assertThat( gotBoStelling.isSchaak(), is( false ) );
-	assertThat( gotBoStelling.getResultaat(), is( ResultaatType.VERLOREN ) );
+	assertThat( gotBoStelling.getResultaat(), is( VERLOREN ) );
 	assertThat( gotBoStelling.getAantalZetten(), is( 1 ) );
 }
 //@Test
@@ -289,41 +291,106 @@ public void testMarkeer()
 {
 	bouw.pass_0();
 	dbs.open();
-	BoStelling boStelling;
+	BoStelling boStellingVan;
+	BoStelling gotBoStelling;
 	
 	// Matstelling: WK=0 ZK=2 S3=0 S4=20 AanZet=W, de ZT geeft schaak & mat
-	boStelling = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x12 )
-		.s3( 0x00 )
-		.s4( 0x21 )
+	boStellingVan = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "c2" )
+		.s3( "a1" )
+		.s4( "b3" )
 		.aanZet( ZWART )
 		.schaak( false )
-		.resultaat( ResultaatType.REMISE )
+		.resultaat( REMISE )
 		.aantalZetten( 0 )
 		.build();
-	bouw.markeer( boStelling );
-	BoStelling gotBoStelling = dbs.get( boStelling );
+	bouw.markeer( boStellingVan );
+	gotBoStelling = dbs.get( boStellingVan );
 	gotBoStelling.setSchaak( gen.isSchaak( gotBoStelling ) );
 	assertThat( gotBoStelling.isSchaak(), is( false ) );
-	assertThat( gotBoStelling.getResultaat(), is( ResultaatType.GEWONNEN ) );
+	assertThat( gotBoStelling.getResultaat(), is( GEWONNEN ) );
 	assertThat( gotBoStelling.getAantalZetten(), is( 2 ) );
 	
-	boStelling = BoStelling.builder()
-		.wk( 0x10 )
-		.zk( 0x12 )
-		.s3( 0x10 )
-		.s4( 0x21 )
+	boStellingVan = BoStelling.alfaBuilder()
+		.wk( "a2" )
+		.zk( "c2" )
+		.s3( "a2" )
+		.s4( "b3" )
 		.aanZet( WIT )
 		.schaak( false )
-		.resultaat( ResultaatType.REMISE )
+		.resultaat( REMISE )
 		.aantalZetten( 0 )
 		.build();
-	bouw.markeer( boStelling );
-	gotBoStelling = dbs.get( boStelling );
+	bouw.markeer( boStellingVan );
+	gotBoStelling = dbs.get( boStellingVan );
 	assertThat( gotBoStelling.isSchaak(), is( false ) );
-	assertThat( gotBoStelling.getResultaat(), is( ResultaatType.VERLOREN ) );
+	assertThat( gotBoStelling.getResultaat(), is( VERLOREN ) );
 	assertThat( gotBoStelling.getAantalZetten(), is( 2 ) );
+
+	boStellingVan = BoStelling.alfaBuilder()
+		.wk( "c3" )
+		.zk( "c1" )
+		.s3( "c4" )
+		.s4( "c1" )
+		.aanZet( WIT )
+		.schaak( false )
+		.resultaat( REMISE )
+		.aantalZetten( 0 )
+		.build();
+	// Ze zijn allemaal remise, behalve de laatste, die is Verloren
+	List<BoStelling> gegenereerdeZetten = gen.genereerZetten( boStellingVan );
+	for ( BoStelling boStellingNaar : gegenereerdeZetten )
+	{
+		boStellingNaar.setResultaat( REMISE );
+		boStellingNaar.setAantalZetten( 0 );
+		dbs.put( boStellingNaar );
+	}
+	gegenereerdeZetten.get(  3 ).setResultaat( GEWONNEN );
+	gegenereerdeZetten.get(  3 ).setAantalZetten( 2 );
+	dbs.put( gegenereerdeZetten.get( 3 ) );
+	
+	bouw.markeer( boStellingVan );
+	gotBoStelling = dbs.get( boStellingVan );
+	assertThat( gotBoStelling.isSchaak(), is( false ) );
+	assertThat( gotBoStelling.getResultaat(), is( REMISE ) );
+	assertThat( gotBoStelling.getAantalZetten(), is( 0 ) );
+
+	boStellingVan = BoStelling.alfaBuilder()
+	.wk( "c3" )
+	.zk( "c1" )
+	.s3( "c4" )
+	.s4( "c1" )
+	.aanZet( WIT )
+	.schaak( false )
+	.resultaat( REMISE )
+	.aantalZetten( 0 )
+	.build();
+	// Ze zijn allemaal remise, behalve de laatste, die is Verloren
+	gegenereerdeZetten = gen.genereerZetten( boStellingVan );
+	for ( BoStelling boStellingNaar : gegenereerdeZetten )
+	{
+		boStellingNaar.setResultaat( REMISE );
+		boStellingNaar.setAantalZetten( 0 );
+		dbs.put( boStellingNaar );
+	}
+	gegenereerdeZetten.get(  3 ).setResultaat( GEWONNEN );
+	gegenereerdeZetten.get(  3 ).setAantalZetten( 2 );
+	dbs.put( gegenereerdeZetten.get( 3 ) );
+	
+	gegenereerdeZetten.get(  5 ).setResultaat( VERLOREN );
+	gegenereerdeZetten.get(  5 ).setAantalZetten( 5 );
+	dbs.put( gegenereerdeZetten.get( 5 ) );
+	
+	gegenereerdeZetten.get(  7 ).setResultaat( GEWONNEN );
+	gegenereerdeZetten.get(  7 ).setAantalZetten( 3 );
+	dbs.put( gegenereerdeZetten.get( 3 ) );
+	
+	bouw.markeer( boStellingVan );
+	gotBoStelling = dbs.get( boStellingVan );
+	assertThat( gotBoStelling.isSchaak(), is( false ) );
+	assertThat( gotBoStelling.getResultaat(), is( GEWONNEN ) );
+	assertThat( gotBoStelling.getAantalZetten(), is( 6 ) );
 }
 //@Test
 public void buildDeDatabase()

@@ -145,6 +145,15 @@ public String getDatabaseName()
 	}
 	return databaseName;
 }
+public void setDatabaseName( String aDatabaseName )
+{
+	databaseName = aDatabaseName;
+	databaseFile = null;
+	if ( getCache() != null )
+	{
+		getCache().setDatabase( null );
+	}
+}
 PageDescriptor getPageDescriptor( VMStelling aStelling )
 {
 	return getPageDescriptorTable().getPageDescriptor( aStelling );
@@ -306,6 +315,10 @@ void initializeDatabasePage( VMStelling aVmStelling )
 void delete()
 {
 	close();
+	if ( ! ( getDatabaseFile() == null ) && ! ( getDatabaseFile().getName().equals( "Pipo" ) ) )
+	{
+		throw new RuntimeException( "Poging om een database te verwijderen <> Pipo" );
+	}
 	if ( getDatabaseFile() != null )
 	{
 		getDatabaseFile().delete();

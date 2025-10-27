@@ -1,6 +1,8 @@
 package pu.chessdatabase.bo;
 
 import static pu.chessdatabase.bo.Kleur.*;
+import static pu.chessdatabase.dal.ResultaatType.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import pu.chessdatabase.dal.Dbs;
 import pu.chessdatabase.dal.PassType;
-import pu.chessdatabase.dal.ResultaatType;
 import pu.services.StopWatch;
 
 @Component
@@ -60,8 +61,8 @@ END InzReport;
 //		rptPrev[resultaatType.ordinal()] = 0;
 //		rptTot [resultaatType.ordinal()] = 0;
 //	}
-//	rptPrev[ResultaatType.REMISE.ordinal()] = 5 * MEG;
-//	rptTot [ResultaatType.REMISE.ordinal()] = 5 * MEG;
+//	rptPrev[REMISE.ordinal()] = 5 * MEG;
+//	rptTot [REMISE.ordinal()] = 5 * MEG;
 //}
 /**
 PROCEDURE SetTotals(RA: Dbs.ReportArray);
@@ -102,10 +103,10 @@ END ShowThisPass;
 //void showThisPass( long [] aReportArray )
 //{
 //	//Window.Use(Win.BouwWin);
-//	aReportArray[ResultaatType.REMISE.ordinal()] = 
-//		- aReportArray[ResultaatType.ILLEGAAL.ordinal()]
-//		- aReportArray[ResultaatType.GEWONNEN.ordinal()]
-//		- aReportArray[ResultaatType.VERLOREN.ordinal()];
+//	aReportArray[REMISE.ordinal()] = 
+//		- aReportArray[ILLEGAAL.ordinal()]
+//		- aReportArray[GEWONNEN.ordinal()]
+//		- aReportArray[VERLOREN.ordinal()];
 ////	Window.GotoXY(12, 2); IO.WrLngInt(RA[Illegaal], 10);
 ////	Window.GotoXY(12, 3); IO.WrLngInt(RA[Remise  ], 10);
 ////	Window.GotoXY(12, 4); IO.WrLngInt(RA[Gewonnen], 10);
@@ -166,14 +167,14 @@ END ReportNewPass;
 //		rptTot[resultaatType.ordinal()] = rptTot[resultaatType.ordinal()] + rptPrev[resultaatType.ordinal()];
 //	}
 //	rptPrev = dbs.getTellers();
-//	rptPrev[ResultaatType.REMISE.ordinal()] = 
-//		- rptPrev[ResultaatType.ILLEGAAL.ordinal()]
-//		- rptPrev[ResultaatType.GEWONNEN.ordinal()]
-//		- rptPrev[ResultaatType.VERLOREN.ordinal()];
-//	rptTot[ResultaatType.REMISE.ordinal()] = 
-//		- rptTot[ResultaatType.ILLEGAAL.ordinal()]
-//		- rptTot[ResultaatType.GEWONNEN.ordinal()]
-//		- rptTot[ResultaatType.VERLOREN.ordinal()];
+//	rptPrev[REMISE.ordinal()] = 
+//		- rptPrev[ILLEGAAL.ordinal()]
+//		- rptPrev[GEWONNEN.ordinal()]
+//		- rptPrev[VERLOREN.ordinal()];
+//	rptTot[REMISE.ordinal()] = 
+//		- rptTot[ILLEGAAL.ordinal()]
+//		- rptTot[GEWONNEN.ordinal()]
+//		- rptTot[VERLOREN.ordinal()];
 //	dbs.clearTellers(); // @@NOG Op de een of and're manier maakt hij nu de getallen in RptPrev allemaal nul
 ////	Window.Use(Win.BouwWin);
 ////	Window.Clear();
@@ -211,7 +212,7 @@ public void isIllegaal( BoStelling aBoStelling )
 	BoStelling boStelling = aBoStelling.clone();
 	if ( gen.isGeomIllegaal( boStelling ) || gen.isKKSchaak( boStelling ) )
 	{
-		boStelling.setResultaat( ResultaatType.ILLEGAAL );
+		boStelling.setResultaat( ILLEGAAL );
 		boStelling.setAanZet( WIT );
 		if ( HOU_STELLINGEN_BIJ )
 		{
@@ -272,7 +273,7 @@ public void schaakjes( BoStelling aBoStellingMetWitAanZet )
      * zowel voor wit als voor zwart remise zijn;                              
      * dat geldt trouwens ook voor illegale stellingen.                        
 	 */
-	if ( aBoStellingMetWitAanZet.getResultaat() == ResultaatType.REMISE )
+	if ( aBoStellingMetWitAanZet.getResultaat() == REMISE )
 	{
 		BoStelling boStellingMetWitAanZet = aBoStellingMetWitAanZet.clone();
 		BoStelling boStellingMetZwartAanZet = aBoStellingMetWitAanZet.clone();
@@ -286,7 +287,7 @@ public void schaakjes( BoStelling aBoStellingMetWitAanZet )
 		{
 			boStellingMetWitAanZet.setSchaak( true );
 			boStellingMetZwartAanZet.setSchaak( true );
-			boStellingMetZwartAanZet.setResultaat( ResultaatType.ILLEGAAL );
+			boStellingMetZwartAanZet.setResultaat( ILLEGAAL );
 		}
 		// Zwart aan zet
 //		if ( boStellingMetZwartAanZet.isSchaak() )
@@ -294,7 +295,7 @@ public void schaakjes( BoStelling aBoStellingMetWitAanZet )
 		{
 			boStellingMetZwartAanZet.setSchaak( true );
 			boStellingMetWitAanZet.setSchaak( true );
-			boStellingMetWitAanZet.setResultaat( ResultaatType.ILLEGAAL );
+			boStellingMetWitAanZet.setResultaat( ILLEGAAL );
 		}
 		if ( boStellingMetWitAanZet.isSchaak() )
 		{
@@ -335,12 +336,12 @@ END IsMat;
 public void isMat( BoStelling aBoStelling )
 {
 	BoStelling boStelling = aBoStelling.clone();
-	if ( boStelling.getResultaat() == ResultaatType.REMISE && boStelling.isSchaak() == true )
+	if ( boStelling.getResultaat() == REMISE && boStelling.isSchaak() == true )
 	{
 		List<BoStelling> gegenereerdeZetten = gen.genereerZetten( boStelling );
 		if ( gegenereerdeZetten.size() == 0 )
 		{
-			boStelling.setResultaat( ResultaatType.VERLOREN );
+			boStelling.setResultaat( VERLOREN );
 			boStelling.setAantalZetten( 1 );
 			if ( HOU_STELLINGEN_BIJ )
 			{
@@ -457,8 +458,8 @@ END TelAlles;
 void telAlles()
 {
 //	inzReport();
-	rptPrev[ResultaatType.REMISE.ordinal()] = 0;
-	rptTot[ResultaatType.REMISE.ordinal()] = 0;
+	rptPrev[REMISE.ordinal()] = 0;
+	rptTot[REMISE.ordinal()] = 0;
 //	reportNewPass( "Tellen van alle stellingen" );
 	resTeller = 0;
 	dbs.pass( PassType.MARKEER_WIT_EN_ZWART, this::tel );
@@ -544,71 +545,101 @@ END Markeer;
  * ------- Markeer een stelling gewonnen/verloren -----------
  */
 List<BoStelling> changes = new ArrayList<>();
+/**
+ * Markeer kan aangeroepen worden met alleen remisestellingen.
+ * Zie het commentaar tussendoor voor meer details.
+ * @param aBoStelling De stelling die we gaan mrkeren
+ */
 void markeer( BoStelling aBoStelling )
 {
-	BoStelling boStelling = aBoStelling.clone();
-	List<BoStelling> gegenereerdeZetten = gen.genereerZetten( boStelling );
+	BoStelling boStellingVan = aBoStelling.clone();
+	List<BoStelling> gegenereerdeZetten = gen.genereerZetten( boStellingVan );
 	if ( gegenereerdeZetten.size() == 0 )
 	{
+		// Je zou zeggen, moet er hier niet mat of pat gegeven worden? Maar
+		// - Alle matstelliongen zijn als zodanig gemarkeerd, namelijk als VERLOREN met aantalzetten = 1
+		// - patstellingen zijn niet als zodanig gemarkeerd in de database. Als mensen willen weten
+		//   of een bepaalde stelling Pat is, moeten ze zetten genereren en als dataantal nul is en het
+		//   en het is geen schaak, is het Pat anders Mat	
+		// Patstellingen blijven hier dus remise en dat klopt. Matstellingen komen hier niet binnen
+		// want alleen remisestellingen komen hier binnen.
 		return;
 	}
-	boStelling.setResultaat( ResultaatType.VERLOREN ); 
+	// We beginnen met VERLOREN omdat dat het meest pessimistische resultaat is
+	boStellingVan.setResultaat( VERLOREN ); 
+
 	int minGewonnen = Integer.MAX_VALUE;
 	int maxVerloren = Integer.MIN_VALUE;
-	for ( int x = 0; x < gegenereerdeZetten.size(); x++ )
+	for ( BoStelling boStellingNaar : gegenereerdeZetten )
 	{
-		int aantal = gegenereerdeZetten.get( x ).getAantalZetten();
-		switch( gegenereerdeZetten.get( x ).getResultaat() )
+		int aantal = boStellingNaar.getAantalZetten();
+		switch( boStellingNaar.getResultaat() )
 		{
-			case ResultaatType.VERLOREN:
+			case VERLOREN:
 			{
-				boStelling.setResultaat( ResultaatType.GEWONNEN );
+				// Als degene die aan zet is: 
+				// - tot nu toe verloren staat, is gewonnen gewoon beter
+				// - tot nu toe remise staat, is gewonnen gewoon beter
+				// - tot nu toe gewonnen staat, kan setgewonnen geen kwaadis gewonnen gewoon beter
+				boStellingVan.setResultaat( GEWONNEN );
 				if ( aantal < minGewonnen )
 				{
 					minGewonnen = aantal;
 				}
 				break;
 			}
-			case ResultaatType.GEWONNEN:
+			case GEWONNEN:
 			{
-				// @@NOG Waarom niet???
-				// boStelling.setResultaat( ResultaatType.Verloren );
+				// Als degene die aan zet is: 
+				// - tot nu toe verloren staat, kan setVerloren geen kwaad 
+				// - tot nu toe remise staat, houden we het op remise
+				// - tot nu toe gewonnen staat, houden we het op gewonnen
+				// Dus niet dit dus:
+				// boStellingVan.setResultaat( VERLOREN );
 				if ( aantal > maxVerloren )
 				{
 					maxVerloren = aantal;
 				}
 				break;
 			}
-			case ResultaatType.REMISE:
+			case REMISE:
 			{
-				if ( boStelling.getResultaat() == ResultaatType.VERLOREN )
+				// Dit hangt er van af wie er aan zet is.
+				// Wit aan zet:
+				// - als hij verloren staat tot nu toe, is remize te prefereren
+				// - als hij gewonnen staat, doet remise er niet toe
+				// zwart aan zet:
+				// - als hij verloren staat tot nu toe, is remize te prefereren
+				// - als hij gewonnen staat, doet remise er niet toe
+				// Dus ik ben het hier nu mee eens
+				if ( boStellingVan.getResultaat() == VERLOREN )
 				{
-					boStelling.setResultaat( ResultaatType.REMISE );
+					boStellingVan.setResultaat( REMISE );
 				}
 				break;
 			}
 			//$CASES-OMITTED$
 			default:
 			{
-				throw new RuntimeException( "Ongeldige switch case " + gegenereerdeZetten.get( x ).getResultaat() );
+				throw new RuntimeException( "Ongeldige switch case " + boStellingNaar.getResultaat() );
 			}
 		}
 	}
-	if ( boStelling.getResultaat() != ResultaatType.REMISE )
+	if ( boStellingVan.getResultaat() != REMISE )
 	{
-		if ( boStelling.getResultaat() == ResultaatType.GEWONNEN )
+		if ( boStellingVan.getResultaat() == GEWONNEN )
 		{
-			boStelling.setAantalZetten( minGewonnen + 1 );
+			boStellingVan.setAantalZetten( minGewonnen + 1 );
 		}
 		else
 		{
-			boStelling.setAantalZetten( maxVerloren );
+			boStellingVan.setAantalZetten( maxVerloren );
 		}
 		if ( HOU_STELLINGEN_BIJ )
 		{
-			changes.add( boStelling );
+			changes.add( boStellingVan );
 		}
-		dbs.put( boStelling );
+		dbs.put( boStellingVan );
 		passNchanges = true;
 	}
 }

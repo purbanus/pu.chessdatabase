@@ -1,6 +1,7 @@
 package pu.chessdatabase.bo;
 
 import static pu.chessdatabase.bo.Kleur.*;
+import static pu.chessdatabase.bo.StukType.*;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -147,14 +148,18 @@ END IsGeomIllegaal;
 /**
  * ------------ Kijk of een stelling geometrisch illegaal is ------------
  */
-public boolean isGeomIllegaal( BoStelling S )
+public boolean isGeomIllegaal( BoStelling aBoStelling )
 {
-	// @@HIGH Bij twee lopers, moeten ze op een verschillende kleur veld staan
-	if ( ( S.getWk() == S.getZk() ) || ( S.getS3() == S.getS4()     ) ) return true;
-	if ( ( S.getWk() == S.getS3() ) && ( getStukken().getS3().getKleur() != WIT   ) ) return true;
-	if ( ( S.getWk() == S.getS4() ) && ( getStukken().getS4().getKleur() != WIT   ) ) return true;
-	if ( ( S.getZk() == S.getS3() ) && ( getStukken().getS3().getKleur() != ZWART ) ) return true;
-	if ( ( S.getZk() == S.getS4() ) && ( getStukken().getS4().getKleur() != ZWART ) ) return true;
+	if ( ( aBoStelling.getWk() == aBoStelling.getZk() ) || ( aBoStelling.getS3() == aBoStelling.getS4()     ) ) return true;
+	if ( ( aBoStelling.getWk() == aBoStelling.getS3() ) && ( getStukken().getS3().getKleur() != WIT   ) ) return true;
+	if ( ( aBoStelling.getWk() == aBoStelling.getS4() ) && ( getStukken().getS4().getKleur() != WIT   ) ) return true;
+	if ( ( aBoStelling.getZk() == aBoStelling.getS3() ) && ( getStukken().getS3().getKleur() != ZWART ) ) return true;
+	if ( ( aBoStelling.getZk() == aBoStelling.getS4() ) && ( getStukken().getS4().getKleur() != ZWART ) ) return true;
+	if ( getStukken().getS3().getStukType() == LOPER && getStukken().getS4().getStukType() == LOPER
+		&& aBoStelling.getVeldKleur( aBoStelling.getS3() ) == aBoStelling.getVeldKleur( aBoStelling.getS4() ) )
+	{
+		return true;
+	}
 	return false;
 }
 /**
@@ -282,7 +287,6 @@ public boolean checkSchaakDoorStuk( BoStelling aStelling, Stuk aStuk, int aKonin
  * -------- Kijk of degene die aan zet is, schaak staat ----------		
  */
 /**
- * @@HIGH Check isSchaak
  *  Dat hele schaakjes gedoe is volgens mij om illegale stellingen te ontdekken
  */
 public boolean isSchaak( BoStelling aStelling )
@@ -339,6 +343,7 @@ void addZet( final BoStelling aBoStelling, Stuk aStuk, int aNaar, ZetSoort aZets
 		//---- Stop het geslagen stuk "onder" de koning ----
 		if ( boStelling.getS3() == aNaar )
 		{
+			// @@HIGH Kun je hier niet boStelling.setS3( aKoningsVeld ) doen?
 			Stuk geslagenStuk = getStukken().getS3();
 			if ( geslagenStuk.getKoningsNummer() == 0 )
 			{
@@ -351,6 +356,7 @@ void addZet( final BoStelling aBoStelling, Stuk aStuk, int aNaar, ZetSoort aZets
 		}
 		else if ( boStelling.getS4() == aNaar )
 		{
+			// @@HIGH En hier mut.mut?
 			Stuk geslagenStuk = getStukken().getS4();
 			if ( geslagenStuk.getKoningsNummer() == 0 )
 			{
@@ -384,8 +390,7 @@ void addZet( final BoStelling aBoStelling, Stuk aStuk, int aNaar, ZetSoort aZets
 	}
 	boStelling.setAanZet( boStelling.getAanZet() == WIT ? ZWART : WIT );
 	BoStelling gotBoStelling = dbs.get( boStelling );
-	// Dit moet je niet doen want isSchaak cleart het bord ==> Dat is niet meer zo, maar hebben we dit nog nodig???
-	// boStelling.setSchaak( isSchaak( boStelling ) );
+	boStelling.setSchaak( isSchaak( boStelling ) );
 	if ( gotBoStelling.getResultaat() != ResultaatType.ILLEGAAL )
 	{
 		aGegenereerdeZetten.add( gotBoStelling );
@@ -584,7 +589,7 @@ public List<BoStelling> genereerZettenGesorteerd( BoStelling aStelling )
 {
 	List<BoStelling> gegenereerdeZetten = genereerZetten( aStelling );
 	gegenereerdeZetten.sort( stellingComparator );
-	// @@NOG Met zwart aan zet geeft hij de juiste volgorde, met wit precies de omgekeerde
+	// @@LOW Met zwart aan zet geeft hij de juiste volgorde, met wit precies de omgekeerde
 	// Dus omdat ik geen zin heb om dat sorteren opnieuw te doen, doen we hier een reverse()
 	if ( aStelling.getAanZet() == WIT )
 	{

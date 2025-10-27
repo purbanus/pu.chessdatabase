@@ -35,6 +35,20 @@ public void destroy()
 
 @Autowired private Config config;
 
+@Test
+public void testGetVeldKleur()
+{
+	assertThat( BoStelling.getVeldKleur( 0x00 ), is( ZWART ) );
+	assertThat( BoStelling.getVeldKleur( 0x01 ), is( WIT ) );
+	assertThat( BoStelling.getVeldKleur( 0x02 ), is( ZWART ) );
+	assertThat( BoStelling.getVeldKleur( 0x07 ), is( WIT ) );
+	assertThat( BoStelling.getVeldKleur( 0x10 ), is( WIT ) );
+	assertThat( BoStelling.getVeldKleur( 0x17 ), is( ZWART ) );
+	assertThat( BoStelling.getVeldKleur( 0x20 ), is( ZWART ) );
+	assertThat( BoStelling.getVeldKleur( 0x27 ), is( WIT ) );
+	assertThat( BoStelling.getVeldKleur( 0x70 ), is( WIT ) );
+	assertThat( BoStelling.getVeldKleur( 0x77 ), is( ZWART ) );
+}
 // Let op: alle trailing spaces worden door de compiler weggehaald.
 // Gelukkig bestaat er een \s waarmee je een niet-verwijderbare space
 // definieert. FYI: alle spaces voor die \s worden evenmin verwijderd
