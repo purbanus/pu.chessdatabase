@@ -1,6 +1,7 @@
 package pu.chessdatabase.dal;
 
 import static pu.chessdatabase.bo.Kleur.*;
+import static pu.chessdatabase.dal.ResultaatType.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -121,6 +122,7 @@ public static final Vector [] TRANSLATIE_TABEL = new Vector [] {
 };
 
 @Autowired private VM vm;
+@Autowired private VMStellingIterator vmStellingIterator;
 
 //Range<Integer> Veld = Range.of( 0, 0x77 );
 //Range<Integer> OKtant = Range.of( 1, OKTANTEN );
@@ -158,25 +160,6 @@ public void setDatabaseName( String aDatabaseName )
 	vm.setDatabaseName( aDatabaseName );
 }
 
-//void setRpt( long [] aReportArray )
-//{
-//	Rpt = aReportArray;
-//}
-
-/**
- * ===========================================================================
-		Deel 1: Rapportage
-===========================================================================
-
-PROCEDURE ClearTellers();
-VAR x: ResType;
-BEGIN
-	FOR x:=MIN(ResType) TO MAX(ResType) DO
-		Rpt[x]:=0;
-	END;
-	RptTeller:=0;
-END ClearTellers;
- */
 /**
  * ------------ Tellers leegmaken -------------------------
  */
@@ -189,45 +172,18 @@ public void clearTellers()
 	reportTeller = 0;
 }
 /**
-PROCEDURE GetTellers(): ReportArray;
-BEGIN
-	RETURN(Rpt);
-END GetTellers;
-*/
-/**
  * ------------- Tellerstand uitlezen ---------------------
  */
 public long [] getTellers()
 {
 	return new long [] { report[0], report[1], report[2], report[3] };
 }
-/**
-PROCEDURE SetReport(Freq: CARDINAL; R: ReportProc);
-BEGIN
-	RptFreq:=Freq;
-	RptTeller:=0;
-	RptProc:=R;
-END SetReport;
- */
 public void setReport( int aFrequency, ReportFunction aReportProc )
 {
 	reportFrequentie = aFrequency;
 	reportTeller = 0;
 	reportProc = aReportProc;
 }
-/**
-PROCEDURE UpdateTellers(R: ResType);
-BEGIN
-	IF RptProc # NULLPROC THEN
-		INC(Rpt[R]);
-		INC(RptTeller);
-		IF RptTeller >= RptFreq THEN
-			RptTeller:=0;
-			RptProc(Rpt);
-		END;
-	END;
-END UpdateTellers;
-*/
 /**
  * -------- Bijwerken tellers ---------------------------------
  */
@@ -244,48 +200,6 @@ public void updateTellers( ResultaatType aResultaatType )
 		}
 	}
 }
-/**
-	PROCEDURE MatrixVerm(M: Matrix; V: Vector): Vector;
-	VAR Vres: Vector;
-	BEGIN
-		Vres[0]:=M[0, 0]*V[0] + M[0, 1]*V[1];
-		Vres[1]:=M[1, 0]*V[0] + M[1, 1]*V[1];
-		RETURN(Vres);
-	END MatrixVerm;
-	PROCEDURE VectorOptel(V1, V2: Vector): Vector;
-	VAR Vres: Vector;
-	BEGIN
-		Vres[0]:=V1[0] + V2[0];
-		Vres[1]:=V1[1] + V2[1];
-		RETURN(Vres);
-	END VectorOptel;
- */
-/**
- * Doen we niet, we hebben  classes Matrix en Vector die dat doen
- */
-/**
- * PROCEDURE CreateTrfTabel();
-VAR O		:	Oktant;
-	x, y	: INTEGER;
-	Vres	: Vector;
-	OudVeld	: Veld;
-	NewVeld	: VM.Veld;
-BEGIN
-	FOR O:=1 TO Oktanten DO
-		FOR y:=0 TO 7 DO
-			FOR x:=0 TO 7 DO
-				Vres[0]:=x;
-				Vres[1]:=y;
-				Vres:=MatrixVerm(MatrixTabel[O], Vres);
-				Vres:=VectorOptel(Vres, TranslatieTabel[O]);
-				OudVeld:=Veld(x + 16*y);
-				NewVeld:=VM.Veld(Vres[0] + 8*Vres[1]);
-				TrfTabel[O, OudVeld]:=NewVeld;
-			END;
-		END;
-	END;
-END CreateTrfTabel;
- */
 public void createTransformatieTabel()
 {
 	Vector Vres;
@@ -306,30 +220,6 @@ public void createTransformatieTabel()
 	}
 }
 /**
- * ===========================================================================
-		Deel 2: Konversie
-===========================================================================
-
-PROCEDURE Cardinaliseer(S: Stelling): VM.Stelling;
-VAR Okt: Oktant_0;
-	VMS: VM.Stelling;
-	c  : CHAR;
-BEGIN
-	Okt:=OktTabel[S.WK];
-	IF Okt=0 THEN
-		Win.Message('Foutief oktant in Dbs.Cardinaliseer', 'Het programma wordt gestopt');
-		c:=Key.GetKey();
-		HALT();
-	END;
-	VMS.WK:=TrfWK[TrfTabel[Okt, S.WK]];
-	VMS.ZK:=TrfTabel[Okt, S.ZK];
-	VMS.s3:=TrfTabel[Okt, S.s3];
-	VMS.s4:=TrfTabel[Okt, S.s4];
-	VMS.AanZet:=S.AanZet;
-	RETURN(VMS);
-END Cardinaliseer;	
- */
-/**
  * -------- Stelling van Dbs-formaat naar VM-formaat ------
  */
 public VMStelling cardinaliseer( BoStelling aStelling )
@@ -342,21 +232,6 @@ public VMStelling cardinaliseer( BoStelling aStelling )
 	VMStelling vmStelling = spiegelEnRoteer( aStelling );
 	vmStelling.setWk( TRANSFORM_WK[ vmStelling.getWk()] );
 	return vmStelling;
-//	int okt = OKTANTEN_TABEL[aStelling.getWk()];
-//	if ( okt == 0 )
-//	{
-//		throw new RuntimeException( "Foutief oktant in Dbs.Cardinaliseer voor WK op " + Integer.toHexString( aStelling.getWk() ) );
-//	}
-//	int trfWk = transformatieTabel[okt][aStelling.getWk()];
-//	int trftrfWk = TRANSFORM_WK[trfWk];
-//	VMStelling vmStelling = VMStelling.builder()
-//		.wk( TRANSFORM_WK[transformatieTabel[okt][aStelling.getWk()]] )
-//		.zk( transformatieTabel[okt][aStelling.getZk()] )
-//		.s3( transformatieTabel[okt][aStelling.getS3()] )
-//		.s4( transformatieTabel[okt][aStelling.getS4()] )
-//		.aanZet( aStelling.getAanZet() )
-//		.build();
-//	return vmStelling;
 }
 public VMStelling spiegelEnRoteer( BoStelling aStelling )
 {
@@ -384,26 +259,6 @@ int getOktant( BoStelling aStelling )
 	return oktant;
 }
 /**
-============================================================================
-		Deel 3: Lezen en schrijven van database records
-============================================================================	
-
-PROCEDURE Put(S: Stelling);
-VAR VMS  : VM.Stelling;
-	VMrec: VM.DbsRec;
-BEGIN
-	VMS:=Cardinaliseer(S);
-	CASE S.Resultaat OF
-	|	Illegaal: VMrec:=VMillegaal;
-	|	Remise	: IF S.Schaak THEN VMrec:=VMschaak; ELSE VMrec:=VMremise; END;
-	|	Gewonnen: VMrec:=S.Aantal;
-	|	Verloren: VMrec:=S.Aantal + VerliesOffset;
-	END;
-	UpdateTellers(S.Resultaat);
-	VM.Put(VMS, VMrec);
-END Put;
- */
-/**
  *----------- Schrijven ----------------- 
  */
 public void put( BoStelling aStelling )
@@ -424,78 +279,38 @@ public void put( BoStelling aStelling )
 	vm.put( vmStelling, VMRec );
 }
 /**
-PROCEDURE Get(VAR S: Stelling);
-VAR VMS  : VM.Stelling;
-	VMrec: VM.DbsRec;
-BEGIN
-	VMS:=Cardinaliseer(S);
-	VMrec:=VM.Get(VMS);
-	S.Schaak:=FALSE;
-	IF VMrec = VMillegaal THEN
-		S.Resultaat:=Illegaal; S.Aantal:=0;
-	ELSIF VMrec = VMremise THEN
-		S.Resultaat:=Remise  ; S.Aantal:=0;
-	ELSIF VMrec = VMschaak THEN
-		S.Resultaat:=Remise  ; S.Aantal:=0; S.Schaak:=TRUE;
-	ELSIF VMrec < VerliesOffset THEN
-		S.Resultaat:=Gewonnen; S.Aantal:=VMrec;
-	ELSE
-		S.Resultaat:=Verloren; S.Aantal:=VMrec - VerliesOffset;
-	END;
-END Get;
- */
-/**
  * ----------- Lezen -----------------
  */
-public BoStelling get( BoStelling aStelling )
+public BoStelling get( BoStelling aBoStelling )
 {
-	VMStelling vmStelling = cardinaliseer( aStelling );
-	return getDirect( vmStelling, aStelling );
+	VMStelling vmStelling = cardinaliseer( aBoStelling );
+	return getDirect( vmStelling, aBoStelling );
 }
-/**
- * (*----------- Lezen zonder cardinaliseren -------*)
-PROCEDURE GetDirect(VMS: VM.Stelling; VAR S: Stelling);
-VAR VMrec: VM.DbsRec;
-BEGIN
-	VMrec:=VM.Get(VMS);
-	S.Schaak:=FALSE;
-	IF VMrec = VMillegaal THEN
-		S.Resultaat:=Illegaal; S.Aantal:=0;
-	ELSIF VMrec = VMremise THEN
-		S.Resultaat:=Remise  ; S.Aantal:=0;
-	ELSIF VMrec = VMschaak THEN
-		S.Resultaat:=Remise  ; S.Aantal:=0; S.Schaak:=TRUE;
-	ELSIF VMrec < VerliesOffset THEN
-		S.Resultaat:=Gewonnen; S.Aantal:=VMrec;
-	ELSE
-		S.Resultaat:=Verloren; S.Aantal:=VMrec - VerliesOffset;
-	END;
-END GetDirect;
- */
 /**
  * ----------- Lezen zonder cardinaliseren -------
  */
-// @@HIGH Die parm aBoStelling elimineren en gewoon een verse BoStelling retourneren
-//       Bijv vmStelling.getBoStelling();
+// Die parm aBoStelling elimineren en gewoon een verse BoStelling retourneren
+// Bijv vmStelling.getBoStelling() ==> Nee dat kanniet wantVmStelling is een heel anderre stelling
+// dan BoStelling ivm spiegelingen en rotaties.
 BoStelling getDirect( VMStelling aVMStelling, BoStelling aBoStelling )
 {
 	BoStelling boStelling = aBoStelling.clone();
 	int VMrec = vm.get( aVMStelling );
-	// @@HIGH Erg onhandig! Je kunt hier niet Gen gebruiken want dan krijg je een circulaire 
+	// @@LOW Erg onhandig! Je kunt hier niet Gen gebruiken want dan krijg je een circulaire 
 	//       referentie: Gen gebruikt Dbs en Dbs gebruikt dan ook Gen. Er zijn twee oplossingen:
 	//       - De isSchaak uit Gen tillen en in een aparte class stoppen (ik weet trouwens niet of
 	//         dat gaat werken, of je dan geen circulaire referentie hebt.
-	//       - Overal waar getDirect gebruikt wordt, isSchaak() aanroepen
+	// @@HIGH- Overal waar getDirect gebruikt wordt, isSchaak() aanroepen
 	//aBoStelling.setSchaak( gen.isSchaak( aBoStelling) );
 	boStelling.setSchaak( false );
 	if ( VMrec == VM.VM_ILLEGAAL )
 	{
-		boStelling.setResultaat( ResultaatType.ILLEGAAL );
+		boStelling.setResultaat( ILLEGAAL );
 		boStelling.setAantalZetten( 0 );
 	}
 	else if ( VMrec == VM.VM_REMISE )
 	{
-		boStelling.setResultaat( ResultaatType.REMISE );
+		boStelling.setResultaat( REMISE );
 		boStelling.setAantalZetten( 0 );
 	}
 	else if ( VMrec == VM.VM_SCHAAK )
@@ -503,30 +318,22 @@ BoStelling getDirect( VMStelling aVMStelling, BoStelling aBoStelling )
 		// Waarom worden schaakjes als remise gezien?
 		// ==> Omdat ze alleen in pass_0 VM_SCHAAK krijgen en dat betekent dat de stelling remise is,
 		//     maar een potentiele matkandidaat
-		boStelling.setResultaat( ResultaatType.REMISE );
+		boStelling.setResultaat( REMISE );
 		boStelling.setAantalZetten( 0 );
 		boStelling.setSchaak( true );
 	}
 	else if ( VMrec < VM.VERLIES_OFFSET )
 	{
-		boStelling.setResultaat( ResultaatType.GEWONNEN );
+		boStelling.setResultaat( GEWONNEN );
 		boStelling.setAantalZetten( VMrec );
 	}
 	else
 	{
-		boStelling.setResultaat( ResultaatType.VERLOREN );
+		boStelling.setResultaat( VERLOREN );
 		boStelling.setAantalZetten( VMrec - VM.VERLIES_OFFSET );
 	}
 	return boStelling;
 }
-/**
-PROCEDURE FreeRecord(S: Stelling);
-VAR VMS: VM.Stelling;
-BEGIN
-	VMS:=Cardinaliseer(S);
-	VM.FreeRecord(VMS);
-END FreeRecord;
- */
 /**
  * ----------- Vrijgeven record ------------
  */
@@ -536,41 +343,12 @@ public void freeRecord( BoStelling aBoStelling )
 	vm.freeRecord( vmStelling );
 }
 /**
-==========================================================================
-		Deel 4: Bewerkingen op de gehele database
-==========================================================================
-
-/**
-PROCEDURE Create();
-VAR c: CHAR;
-BEGIN
-	IF Str.Length(DbsNaam) = 0 THEN
-		Win.Message('Geen naam opgegeven voor database', 'Het programma wordt gestopt');
-		c:=Key.GetKey();
-		HALT();
-	END;
-	VM.Create(DbsNaam);
-END Create;
- */
-/**
  *  ------- Creeren nieuwe database ------
  */
 public void create()
 {
 	vm.create();
 }
-/**
-PROCEDURE Open();
-VAR c: CHAR;
-BEGIN
-	IF Str.Length(DbsNaam) = 0 THEN
-		Win.Message('Geen naam opgegeven voor database', 'Het programma wordt gestopt');
-		c:=Key.GetKey();
-		HALT();
-	END;
-	VM.Open(DbsNaam);
-END Open;
- */
 /**
  * ------- Openen database --------------
  */
@@ -583,12 +361,6 @@ public void flush()
 	vm.flush();
 }
 /**
-PROCEDURE Close();
-BEGIN
-	VM.Close();
-END Close;
- */
-/**
  * ------- Sluiten database -------------
  */
 public void close()
@@ -600,248 +372,66 @@ public void delete()
 	vm.delete();
 }
 /**
-==========================================================================
-		Deel 5: Passes over de gehele database
-==========================================================================
-
-PROCEDURE Pass34(S: Stelling; VMS: VM.Stelling; P:PassProc);
-VAR VMrec: VM.DbsRec;
-BEGIN
-	VMS.s3:=0;
-	WHILE VMS.s3 <= 63 DO
-		S.s3:=CvtStuk[VMS.s3];
-        VMS.s4:=0;
-        WHILE VMS.s4 <= 63 DO
-			GetDirect(VMS, S);         (* S.s4 maakt nog niet uit *)
-			IF S.Resultaat = Remise THEN
-       			S.s4:=CvtStuk[VMS.s4]; (* nu wel *)
-				P(S);
-       		END;
-       		INC(VMS.s4);
-		END;
-		INC(VMS.s3);
-	END;
-	DEC(VMS.s3);
-	DEC(VMS.s4);
-	VM.FreeRecord(VMS);
-END Pass34;
- */
-/**
  * --------- Pass over stukken 3 en 4 ----------------------------------
  */
-public void pass34( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassProc )
+public void pass34( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
 {
-	BoStelling boStelling = aBoStelling.clone();
-	VMStelling vmStelling = aVmStelling.clone();
-	vmStelling.setS3( 0 );
-	while ( vmStelling.getS3() < 64 )
-	{
-		boStelling.setS3( CVT_STUK[vmStelling.getS3()] );
-		vmStelling.setS4( 0 );
-		while ( vmStelling.getS4() < 64 )
-		{
-			boStelling.setS4( CVT_STUK[vmStelling.getS4()] ); // Nu wel
-
-			// @@HIGH CHECK is aBoStelling veranderd of moet je boStelling gebruiken? 
-			BoStelling gotBoStelling = getDirect( vmStelling, boStelling ); //1 aBoStelling.s4 maakt nog niet uit
-			// @@NOG Je kunt hier niet Gen.isSchaak() aanroepen dus moet het in de proc
-			if ( gotBoStelling.getResultaat() == ResultaatType.REMISE )
-			{
-				aPassProc.doPass( gotBoStelling.clone() );
-			}
-			vmStelling.setS4( vmStelling.getS4() + 1 );
-		}
-		vmStelling.setS3( vmStelling.getS3() + 1 );
-	}
-	vmStelling.setS3( vmStelling.getS3() - 1 );
-	vmStelling.setS4( vmStelling.getS4() - 1 );
-	vm.freeRecord( vmStelling );
+	vmStellingIterator.iterateOverS3S4( aBoStelling, aVmStelling, aPassFunction, this::call34 );
 }
-/**
-PROCEDURE Wpass(P: PassProc);
-VAR S  : Stelling;
-	VMS: VM.Stelling;
-	WK : VM.WKveld;
-	ZK : VM.Veld;
-BEGIN
-	VMS.AanZet := Wit;
-	S.AanZet   := Wit;
-	FOR ZK:=0 TO 63 DO
-		VMS.ZK:=ZK;
-		S.ZK:=CvtStuk[ZK];
-		FOR WK:=0 TO 9 DO
-			VMS.WK:=WK;
-			S.WK:=CvtWK[WK];
-			Pass34(S, VMS, P);
-		END;
-	END;
-END Wpass;
-*/
+void call34( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
+{
+	BoStelling gotBoStelling = getDirect( aVmStelling, aBoStelling );
+	// @@NOG Je kunt hier niet Gen.isSchaak() aanroepen dus moet het in de proc
+	if ( gotBoStelling.getResultaat() == ResultaatType.REMISE )
+	{
+		aPassFunction.doPass( gotBoStelling.clone() );
+	}
+}
 /**
  * --------- Pass over de remisestellingen met wit aan zet -------------
  */
-void markeerWitPass( PassFunction aPassProc )
+void markeerWitPass( PassFunction aPassFunction )
 {
-	VMStelling vmStelling = new VMStelling();
-	vmStelling.setAanZet( WIT );
-	BoStelling boStelling = new BoStelling();
-	boStelling.setAanZet( WIT );
-	for ( int ZK = 0; ZK < 64; ZK++ )
-	{
-		vmStelling.setZk( ZK );
-		boStelling.setZk( CVT_STUK[ZK] );
-		for ( int WK = 0; WK < 10; WK++ )
-		{
-			vmStelling.setWk( WK );
-			boStelling.setWk( CVT_WK[WK] );
-			pass34( boStelling, vmStelling, aPassProc );
-		}
-	}
+	vmStellingIterator.iterateOverWkZk( WIT, aPassFunction, this::callPass34 );
 }
-/**
-PROCEDURE Zpass(P: PassProc);
-VAR S  : Stelling;
-	VMS: VM.Stelling;
-	WK : VM.WKveld;
-	ZK : VM.Veld;
-BEGIN
-	VMS.AanZet := Zwart;
-	S.AanZet   := Zwart;
-	FOR WK:=0 TO 9 DO
-		VMS.WK:=WK;
-		S.WK:=CvtWK[WK];
-		FOR ZK:=0 TO 63 DO
-			VMS.ZK:=ZK;
-			S.ZK:=CvtStuk[ZK];
-			Pass34(S, VMS, P);
-		END;
-	END;
-END Zpass;
- */
+void callPass34( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
+{
+	pass34( aBoStelling, aVmStelling, aPassFunction );
+}
 /**
  * --------- Pass over de remisestellingen met zwart aan zet -------------
  */
-void markeerZwartPass( PassFunction aPassProc )
+void markeerZwartPass( PassFunction aPassFunction )
 {
-	VMStelling vmStelling = new VMStelling();
-	vmStelling.setAanZet( ZWART );
-	BoStelling boStelling = new BoStelling();
-	boStelling.setAanZet( ZWART );
-	for ( int WK = 0; WK < 10; WK++ )
-	{
-		vmStelling.setWk( WK );
-		boStelling.setWk( CVT_WK[WK] );
-		for ( int ZK = 0; ZK < 64; ZK++ )
-		{
-			vmStelling.setZk( ZK );
-			boStelling.setZk( CVT_STUK[ZK] );
-			pass34( boStelling, vmStelling, aPassProc );
-		}
-	}
+	vmStellingIterator.iterateOverWkZk( ZWART, aPassFunction, this::callPass34 );
 }
-/**
-PROCEDURE WenZpass(P: PassProc);
-VAR S  : Stelling;
-	VMS: VM.Stelling;
-BEGIN
-	VMS.WK:=0;
-	WHILE VMS.WK <= 9 DO
-		S.WK:=CvtWK[VMS.WK];
-		VMS.ZK:=0;
-		WHILE VMS.ZK <= 63 DO
-			S.ZK:=CvtStuk[VMS.ZK];
-			VMS.s3:=0;
-			WHILE VMS.s3 <= 63 DO
-    			S.s3:=CvtStuk[VMS.s3];
-    			VMS.s4:=0;
-    			WHILE VMS.s4 <= 63 DO
-        			S.s4:=CvtStuk[VMS.s4];
-        			(*wit*)
-					VMS.AanZet:=Wit;
-        			GetDirect(VMS, S);
-					S.AanZet:=Wit;
-       				P(S);
-       				(*zwart*)
-        			VMS.AanZet:=Zwart;
-        			GetDirect(VMS, S);
-					S.AanZet:=Zwart;
-        			P(S);
-	        		INC(VMS.s4);
-				END;
-				INC(VMS.s3);
-			END;
-			INC(VMS.ZK);
-		END;
-		INC(VMS.WK);
-	END;
-END WenZpass;
- */
 /**
  * --------- Pass over alle stellingen -------------
  */
-void markeerWitEnZwartPass( PassFunction aPassProc )
+void markeerWitEnZwartPass( PassFunction aPassFunction )
 {
-	VMStelling vmStelling = new VMStelling();
-	BoStelling boStelling = new BoStelling();
-	vmStelling.setWk( 0 );
-	while ( vmStelling.getWk() < 10 )
-	{
-		boStelling.setWk( CVT_WK[vmStelling.getWk()] );
-		vmStelling.setZk( 0 );
-		while ( vmStelling.getZk() < 64 )
-		{
-			boStelling.setZk( CVT_STUK[vmStelling.getZk()] );
-			vmStelling.setS3( 0 );
-			while ( vmStelling.getS3() < 64 )
-			{
-				boStelling.setS3( CVT_STUK[vmStelling.getS3()] );
-				vmStelling.setS4( 0 );
-				while ( vmStelling.getS4() < 64 )
-				{
-					boStelling.setS4( CVT_STUK[vmStelling.getS4()] );
-
-					// Wit
-					vmStelling.setAanZet( WIT );
-					BoStelling gotBoStelling = getDirect( vmStelling, boStelling ); // @@NOG Is die gotStelling nodig??
-					// @@NOG Je kunt hier niet Gen.isSchaak() aanroepen dus moet het in de proc
-					gotBoStelling.setAanZet( WIT ); // @@NOG Waarom?
-					aPassProc.doPass( gotBoStelling.clone() );
-					
-					// Zwart
-					vmStelling.setAanZet( ZWART );
-					gotBoStelling = getDirect( vmStelling, boStelling ); // @@NOG Is die gotStelling nodig??
-					// @@NOG Je kunt hier niet Gen.isSchaak() aanroepen dus moet het in de proc
-					gotBoStelling.setAanZet( ZWART ); // @@NOG Waarom?
-					aPassProc.doPass( gotBoStelling.clone() );
-		
-					vmStelling.setS4( vmStelling.getS4() + 1 );
-				}
-				vmStelling.setS3( vmStelling.getS3() + 1 );
-			}
-			vmStelling.setZk( vmStelling.getZk() + 1 );
-		}
-		vmStelling.setWk( vmStelling.getWk() + 1 );
-	}
+	vmStellingIterator.iterateOverAllPieces( aPassFunction, this::callWitEnZwart );
 }
-/**
- * PROCEDURE Pass(T: PassType; P: PassProc);
-BEGIN
-	Open();
-	Window.PutOnTop(Win.CacheWin);
-	Window.Clear();
-	CASE T OF
-	|	MarkeerWit  : Wpass(P);
-	|	MarkeerZwart: Zpass(P);
-	|	WitEnZwart  : WenZpass(P);
-	END;
-	Close();
-END Pass;
- */
+
+void callWitEnZwart( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
+{
+	// Wit
+	aVmStelling.setAanZet( WIT );
+	BoStelling gotBoStelling = getDirect( aVmStelling, aBoStelling ); // @@NOG Is die gotStelling nodig??
+	// @@LOW Je kunt hier niet Gen.isSchaak() aanroepen dus moet het in de proc
+	gotBoStelling.setAanZet( WIT ); // @@HIGH Waarom? Dat wordt toch al in getDirect gedaan?
+	aPassFunction.doPass( gotBoStelling.clone() );
+	
+	// Zwart
+	aVmStelling.setAanZet( ZWART );
+	gotBoStelling = getDirect( aVmStelling, aBoStelling ); // @@NOG Is die gotStelling nodig??
+	// @@LOW Je kunt hier niet Gen.isSchaak() aanroepen dus moet het in de proc
+	gotBoStelling.setAanZet( ZWART ); // @@HIGH Waarom? Dat wordt toch al in getDirect gedaan?
+	aPassFunction.doPass( gotBoStelling.clone() );
+}
 public void pass( PassType aPassType, PassFunction aPassProc )
 {
 	open();
-//	Window.PutOnTop(Win.CacheWin);
-//	Window.Clear();
 	switch ( aPassType )
 	{
 		case MARKEER_WIT: markeerWitPass( aPassProc ); break;
