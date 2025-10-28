@@ -426,7 +426,12 @@ void callWitEnZwart( BoStelling aBoStelling, VMStelling aVmStelling, PassFunctio
 	aVmStelling.setAanZet( ZWART );
 	gotBoStelling = getDirect( aVmStelling, aBoStelling ); // @@NOG Is die gotStelling nodig??
 	// @@LOW Je kunt hier niet Gen.isSchaak() aanroepen dus moet het in de proc
-	gotBoStelling.setAanZet( ZWART ); // @@HIGH Waarom? Dat wordt toch al in getDirect gedaan?
+	
+	// @@NOG Waarom? Dat wordt toch al in getDirect gedaan? Nee, want alleen vmStelling heeft een kleur, boStelling niet
+	// Die wordt er pas hier ingezet. Kun je verbeteren door de poasses te verbetere:
+	// - VMStellingIterator.iterateOverAllPieces ook over de kleuren itereren
+	// - In callWitEnZwart (hier dus) maar 1 kleur doen, en die kleur zit al in boStelling en vmStelling
+	gotBoStelling.setAanZet( ZWART );
 	aPassFunction.doPass( gotBoStelling.clone() );
 }
 public void pass( PassType aPassType, PassFunction aPassProc )

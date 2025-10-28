@@ -126,7 +126,6 @@ public List<String> getAvailableConfigs()
 @Override
 public String toString()
 {
-	// @@HIGH Ik zie haakjes in de toString()
 	return getConfig() + " databaseName=" + getDatabaseName();
 }
 }
