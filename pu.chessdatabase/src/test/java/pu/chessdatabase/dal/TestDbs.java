@@ -33,6 +33,7 @@ private static final String DATABASE_NAME = "dbs/Pipo";
 @Autowired private VM vm;
 @Autowired private Gen gen;
 @Autowired private Config config;
+@Autowired private VMStellingIterator vmStellingIterator;
 
 String savedConfigString;
 @BeforeEach
@@ -738,22 +739,17 @@ public void testMarkeerWitPassMet0x0b()
 	dbs.flush();
 	
 	// De even pagina's moeten nu allmaal 0x0b zijn, oftewel alle pagina's met wit aan zet
-	VMStelling vmStelling = new VMStelling();
+	vmStellingIterator.iterateOverWkZk( this::checkMarkeerPassMet0x0b );
+}
+void checkMarkeerPassMet0x0b( VMStelling vmStelling )
+{
 	Page page;
-	for ( int wk = 0; wk < 10; wk++)
-	{
-		vmStelling.setWk( wk );
-		for ( int zk = 0; zk < 64; zk++ )
-		{
-			vmStelling.setZk( zk );
-			vmStelling.setAanZet( WIT );
-			page = vm.getPage( vmStelling );
-			assertThat( TestHelper.isAll( page.getData(), (byte)0x0b ), is( true ) );
-			vmStelling.setAanZet( ZWART );
-			page = vm.getPage( vmStelling );
-			assertThat( TestHelper.isAll( page.getData(), (byte)0x00 ), is( true ) );
-		}
-	}
+	vmStelling.setAanZet( WIT );
+	page = vm.getPage( vmStelling );
+	assertThat( TestHelper.isAll( page.getData(), (byte)0x0b ), is( true ) );
+	vmStelling.setAanZet( ZWART );
+	page = vm.getPage( vmStelling );
+	assertThat( TestHelper.isAll( page.getData(), (byte)0x00 ), is( true ) );
 }
 @Test
 public void testMarkeerWitPassMet0x8b()
@@ -761,23 +757,18 @@ public void testMarkeerWitPassMet0x8b()
 	dbs.markeerWitPass( this::set0x8b );
 	dbs.flush();
 	
-	// De even pagina's moeten nu allmaal 0x0b zijn, oftewel alle pagina's met wit aan zet
-	VMStelling vmStelling = new VMStelling();
+	// De even pagina's moeten nu allmaal 0x8b zijn, oftewel alle pagina's met wit aan zet
+	vmStellingIterator.iterateOverWkZk( this::checkMarkeerPassMet0x8b );
+}
+void checkMarkeerPassMet0x8b( VMStelling vmStelling )
+{
 	Page page;
-	for ( int wk = 0; wk < 10; wk++)
-	{
-		vmStelling.setWk( wk );
-		for ( int zk = 0; zk < 64; zk++ )
-		{
-			vmStelling.setZk( zk );
-			vmStelling.setAanZet( WIT );
-			page = vm.getPage( vmStelling );
-			assertThat( TestHelper.isAll( page.getData(), (byte)0x8b ), is( true ) );
-			vmStelling.setAanZet( ZWART );
-			page = vm.getPage( vmStelling );
-			assertThat( TestHelper.isAll( page.getData(), (byte)0x00 ), is( true ) );
-		}
-	}
+	vmStelling.setAanZet( WIT );
+	page = vm.getPage( vmStelling );
+	assertThat( TestHelper.isAll( page.getData(), (byte)0x8b ), is( true ) );
+	vmStelling.setAanZet( ZWART );
+	page = vm.getPage( vmStelling );
+	assertThat( TestHelper.isAll( page.getData(), (byte)0x00 ), is( true ) );
 }
 
 void set0x11( BoStelling aBoStelling )
@@ -793,22 +784,17 @@ public void testMarkeerZwartPass()
 	dbs.flush();
 	
 	// De even pagina's moeten nu allmaal 0x11 zijn, oftewel alle pagina's met zwart aan zet
-	VMStelling vmStelling = new VMStelling();
+	vmStellingIterator.iterateOverWkZk( this::checkMarkeerPassMet0x11 );
+}
+void checkMarkeerPassMet0x11( VMStelling vmStelling )
+{
 	Page page;
-	for ( int wk = 0; wk < 10; wk++ )
-	{
-		vmStelling.setWk( wk );
-		for ( int zk = 0; zk < 64; zk++ )
-		{
-			vmStelling.setZk( zk );
-			vmStelling.setAanZet( WIT );
-			page = vm.getPage( vmStelling );
-			assertThat( TestHelper.isAll( page.getData(), (byte)0x00 ), is( true ) );
-			vmStelling.setAanZet( ZWART );
-			page = vm.getPage( vmStelling );
-			assertThat( TestHelper.isAll( page.getData(), (byte)0x11 ), is( true ) );
-		}
-	}
+	vmStelling.setAanZet( WIT );
+	page = vm.getPage( vmStelling );
+	assertThat( TestHelper.isAll( page.getData(), (byte)0x00 ), is( true ) );
+	vmStelling.setAanZet( ZWART );
+	page = vm.getPage( vmStelling );
+	assertThat( TestHelper.isAll( page.getData(), (byte)0x11 ), is( true ) );
 }
 void set0x34( BoStelling aBoStelling )
 {
@@ -821,25 +807,20 @@ public void testMarkeerWitEnZwartPass()
 {
 	dbs.markeerWitEnZwartPass( this::set0x34 );
 	dbs.flush();
-	
+
 	// Alle pagina's moeten nu 0x34 zijn
-	VMStelling vmStelling = new VMStelling();
+	vmStellingIterator.iterateOverWkZk( this::checkMarkeerPassMet0x34 );
+
+}
+void checkMarkeerPassMet0x34( VMStelling vmStelling )
+{
 	Page page;
+	vmStelling.setAanZet( WIT );
+	page = vm.getPage( vmStelling );
+	assertThat( TestHelper.isAll( page.getData(), (byte)0x34 ), is( true ) );
 	vmStelling.setAanZet( ZWART );
-	for ( int wk = 0; wk < 10; wk++ )
-	{
-		vmStelling.setWk( wk );
-		for ( int zk = 0; zk < 64; zk++ )
-		{
-			vmStelling.setZk( zk );
-			vmStelling.setAanZet( WIT );
-			page = vm.getPage( vmStelling );
-			assertThat( TestHelper.isAll( page.getData(), (byte)0x34 ), is( true ) );
-			vmStelling.setAanZet( ZWART );
-			page = vm.getPage( vmStelling );
-			assertThat( TestHelper.isAll( page.getData(), (byte)0x34 ), is( true ) );
-		}
-	}
+	page = vm.getPage( vmStelling );
+	assertThat( TestHelper.isAll( page.getData(), (byte)0x34 ), is( true ) );
 }
 @Test
 public void testPass()
@@ -849,11 +830,6 @@ public void testPass()
 	dbs.pass( PassType.MARKEER_WIT_EN_ZWART, this::set0x0b );
 	// Die markeer-methodes zijn hierboven al getest, we checken hier alleen of de aanroepjes goed gaan
 }
-
-
-
-
-
 
 /*
 public static final int [] OktTabel = {
