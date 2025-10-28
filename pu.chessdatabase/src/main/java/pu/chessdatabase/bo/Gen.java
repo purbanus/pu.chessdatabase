@@ -334,7 +334,8 @@ BEGIN
 	END;
 END AddZet;
  */
-// @@HIGH geen gegenereerdeZetten als parm maar gewoon de nieuwe stelling retourneren
+// Geen gegenereerdeZetten als parm maar gewoon de nieuwe stelling retourneren
+// ==> Nee, want dan moet je soms null retourmerem (Of Optional<BoStelling gebruiken, maar dat maakt het alleen maar erger)
 void addZet( final BoStelling aBoStelling, Stuk aStuk, int aNaar, ZetSoort aZetsoort, int aKoningsVeld, int aStukVeld, List<BoStelling> aGegenereerdeZetten )
 {
 	BoStelling boStelling = aBoStelling.clone();
@@ -390,7 +391,9 @@ void addZet( final BoStelling aBoStelling, Stuk aStuk, int aNaar, ZetSoort aZets
 	}
 	boStelling.setAanZet( boStelling.getAanZet() == WIT ? ZWART : WIT );
 	BoStelling gotBoStelling = dbs.get( boStelling );
-	boStelling.setSchaak( isSchaak( boStelling ) );
+	
+	// Niet doen, dit heeft een verschrikkelijke invloed op de performance! van zo'n 70 sec naar 330 sec
+	// boStelling.setSchaak( isSchaak( boStelling ) );
 	if ( gotBoStelling.getResultaat() != ResultaatType.ILLEGAAL )
 	{
 		aGegenereerdeZetten.add( gotBoStelling );

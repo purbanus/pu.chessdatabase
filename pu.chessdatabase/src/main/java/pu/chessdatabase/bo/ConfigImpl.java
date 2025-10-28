@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+// @@LOW Ik zie haakjes in de toString(). Waar komen die vandaan?
 @Data
 public abstract class ConfigImpl
 {
