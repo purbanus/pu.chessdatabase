@@ -15,5 +15,6 @@ private int wk;
 private int zk;
 private int s3;
 private int s4;
+private int s5;
 private Kleur aanZet;
 }
