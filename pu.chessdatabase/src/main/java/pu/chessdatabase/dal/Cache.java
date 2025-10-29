@@ -3,7 +3,9 @@ package pu.chessdatabase.dal;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -14,38 +16,63 @@ import lombok.Setter;
 
 class Cache
 {
-static final int PAGE_SIZE = 4096;               // Bytes per page
+static final int PAGE_SIZE_3_STUKKEN = 64;               // Bytes per page
+static final int PAGE_SIZE_4_STUKKEN = 64*64;            // Bytes per page
+static final int PAGE_SIZE_5_STUKKEN = 64*64*64;         // Bytes per page
 static final int CACHE_SIZE     = 30;                 // Aantal pagina"s
+static final Map<Integer, Integer> PAGE_SIZE_LOOKUP = new HashMap<>();
+static
+{
+	PAGE_SIZE_LOOKUP.put( 3, PAGE_SIZE_3_STUKKEN );
+	PAGE_SIZE_LOOKUP.put( 4, PAGE_SIZE_4_STUKKEN );
+	PAGE_SIZE_LOOKUP.put( 5, PAGE_SIZE_5_STUKKEN );
+}
+private final int aantalStukken;
+private static int staticAantalStukken;
+static int getStaticAantalStukken()
+{
+	return staticAantalStukken;
+}
+static int getStaticPageSize()
+{
+	return PAGE_SIZE_LOOKUP.get( getStaticAantalStukken() );
+}
 
 private RandomAccessFile database = null;
 private List<CacheEntry> cache = new ArrayList<>();
 @Getter( AccessLevel.PACKAGE ) 
 @Setter( AccessLevel.PRIVATE ) 
 private long generatieTeller;
-
-Cache()
+Cache( int aAantalStukken )
 {
 	super();
+	aantalStukken = aAantalStukken;
+	staticAantalStukken = aAantalStukken;
 	initializeCache();
 	setGeneratieTeller( 1L );
 }
-Cache( RandomAccessFile aDatabase )
+Cache( int aAantalStukken, RandomAccessFile aDatabase )
 {
-	this();
+	this( aAantalStukken );
 	database = aDatabase;
 }
+int getPageSize()
+{
+	return PAGE_SIZE_LOOKUP.get( getAantalStukken() );
+}
+
 private void initializeCache()
 {
 	for ( int x = 0; x < CACHE_SIZE; x++ )
 	{
 		CacheEntry cacheEntry = CacheEntry.builder()
 			.pageDescriptor( null )
-			.page( new Page() )
+			.page( new byte[getPageSize()] )
 			.vuil( false )
 			.generatie( 0 )
 			.build();
 		getCache().add( cacheEntry );
-		cacheEntry.getPage().clearPage();
+		cacheEntry.clearPage();
 	}
 }
 private int getFreeCacheEntry()
@@ -81,20 +108,16 @@ private int getFreeCacheEntry()
     }
 }
 // @@NOG private maken want wordt alleen in tests gebruikt. Helaas ook in TestVN, dus nog ff niet
-Page getPage( PageDescriptor aPageDescriptor )
+byte [] getPage( PageDescriptor aPageDescriptor )
 {
-	if ( aPageDescriptor.getCacheNummer() > 30 )
+	if ( aPageDescriptor.getCacheNummer() >= CACHE_SIZE )
 	{
 		System.out.println( "Got him! Hij is " + aPageDescriptor.getCacheNummer() );
 	}
 	return getCache().get( aPageDescriptor.getCacheNummer() ).getPage();
 }
-private byte [] getPageData( PageDescriptor aPageDescriptor )
-{
-	return getPage( aPageDescriptor ).getData();
-}
 @SuppressWarnings( "unused" )
-private void setPage( PageDescriptor aPageDescriptor, Page aPage )
+private void setPage( PageDescriptor aPageDescriptor, byte [] aPage )
 {
 	getCache().get( aPageDescriptor.getCacheNummer() ).setPage( aPage );
 }
@@ -120,10 +143,11 @@ private void getRawPageData( PageDescriptor aPageDescriptor )
     try
 	{
 		getDatabase().seek( aPageDescriptor.getSchijfAdres() );
-		int Aantal = getDatabase().read( getPageData( aPageDescriptor ), 0, Cache.PAGE_SIZE );
-		if ( Aantal != Cache.PAGE_SIZE )
+		int pageSize = getPageSize();
+		int aantal = getDatabase().read( getPage( aPageDescriptor ), 0, pageSize );
+		if ( aantal != pageSize )
 		{
-			throw new RuntimeException( "Ernstig: VM.GetPage heeft " + Aantal + " records gelezen. Dat zouden er " + Cache.PAGE_SIZE + " moeten zijn" );
+			throw new RuntimeException( "Ernstig: VM.GetPage heeft " + aantal + " records gelezen. Dat zouden er " + pageSize + " moeten zijn" );
 		}
 	}
 	catch ( IOException e )
@@ -137,8 +161,8 @@ private void putRawPageData( PageDescriptor aPageDescriptor )
 	{
 		getDatabase().seek( aPageDescriptor.getSchijfAdres() );
 	    //getDatabase().write( Cache[aPageDescriptor.getCacheNummer()].getPage().getPage(), 0, PAGE_SIZE );
-	    getDatabase().write( getPageData( aPageDescriptor ), 0, Cache.PAGE_SIZE );
-	    // @@NOG moet hier niet vuil=false gedaan worden?
+	    getDatabase().write( getPage( aPageDescriptor ), 0, getPageSize() );
+	    // @@HIGH moet hier niet vuil=false gedaan worden?
 	}
 	catch ( IOException e )
 	{
@@ -190,18 +214,45 @@ private void pageIn( PageDescriptor aPageDescriptor )
 /**
  *  ------- Haal pagina op uit de cache ---------
  */
-Page getPageFromDatabase( PageDescriptor aPageDescriptor )
+byte [ ] getPageFromDatabase( PageDescriptor aPageDescriptor )
 {
 	if ( aPageDescriptor.getWaar() == Lokatie.OP_SCHIJF )
 	{
 		pageIn( aPageDescriptor );
 	}
-	Page page = getPage( aPageDescriptor );
-	return page;
+	return getPage( aPageDescriptor );
+}
+private int getPositionWithinPage( VMStelling aVmStelling )
+{
+	if ( getAantalStukken() == 3 )
+	{
+		return aVmStelling.getS3();
+	}
+	else if ( getAantalStukken() == 4 )
+	{
+		return ( aVmStelling.getS3() << 6 ) + aVmStelling.getS4();
+	}
+	else if ( getAantalStukken() == 5 )
+	{
+		return ( aVmStelling.getS3() << 12 ) + ( aVmStelling.getS4() << 6 ) + aVmStelling.getS5();
+	}
+	throw new RuntimeException( "Ongeldig aantal stukken in Cache: " + getAantalStukken() );
+}
+byte getData( PageDescriptor aPageDescriptor, VMStelling aVmStelling )
+{
+    return getData( aPageDescriptor, getPositionWithinPage( aVmStelling ) );
+}
+byte getData( PageDescriptor aPageDescriptor, int aPositionWithinPage )
+{
+    return getPage( aPageDescriptor )[aPositionWithinPage];
+}
+void setData( PageDescriptor aPageDescriptor, VMStelling aVmStelling, byte aData )
+{
+    setData( aPageDescriptor, getPositionWithinPage( aVmStelling ), aData );
 }
 void setData( PageDescriptor aPageDescriptor, int aPositionWithinPage, byte aData )
 {
-    getPageData( aPageDescriptor )[aPositionWithinPage] = aData;
+    getPage( aPageDescriptor )[aPositionWithinPage] = aData;
 	setVuil( aPageDescriptor, true );
 }
 void flush()
