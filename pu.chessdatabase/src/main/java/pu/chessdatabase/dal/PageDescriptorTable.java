@@ -11,10 +11,11 @@ public static final int MAX_WK = 10;
 public static final int MAX_STUK = 64;
 public static final int MAX_AANZET = 2;
 private PageDescriptor[][][] pageDescriptorTable = new PageDescriptor[MAX_WK][MAX_STUK][MAX_AANZET];
-
-public PageDescriptorTable()
+private final int aantalStukken;
+public PageDescriptorTable( int aAantalStukken )
 {
 	super();
+	aantalStukken = aAantalStukken;
 	initializePageDescriptorTable();
 }
 PageDescriptor getPageDescriptor( VMStelling aStelling )
@@ -57,7 +58,7 @@ void initializePageDescriptor( VMStelling aVmStelling )
 		.cacheNummer( Integer.MAX_VALUE )
 		.build();
 	setPageDescriptor( aVmStelling, pageDescriptor );
-	address += Cache.PAGE_SIZE;
+	address += Cache.PAGE_SIZE_LOOKUP.get( aantalStukken );
 }
 
 }
