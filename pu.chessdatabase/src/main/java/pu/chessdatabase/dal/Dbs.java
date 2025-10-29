@@ -131,7 +131,7 @@ public static final Vector [] TRANSLATIE_TABEL = new Vector [] {
 
 Range veldRange = new Range( 0, 0x77 );
 Range oktantRange = new Range( 1, OKTANTEN );
-Range oktant_0_Range = new Range( 0, OKTANTEN );
+//Range oktant_0_Range = new Range( 0, OKTANTEN );
 Range resultaatRange = new Range( 0, 3 );
 
 int[][] transformatieTabel = new int [OKTANTEN + 1][veldRange.getMaximum() + 1];
@@ -290,7 +290,7 @@ public BoStelling get( BoStelling aBoStelling )
  * ----------- Lezen zonder cardinaliseren -------
  */
 // Die parm aBoStelling elimineren en gewoon een verse BoStelling retourneren
-// Bijv vmStelling.getBoStelling() ==> Nee dat kanniet wantVmStelling is een heel anderre stelling
+// Bijv vmStelling.getBoStelling() ==> Nee dat kan niet wantVmStelling is een heel anderre stelling
 // dan BoStelling ivm spiegelingen en rotaties.
 BoStelling getDirect( VMStelling aVMStelling, BoStelling aBoStelling )
 {
@@ -300,8 +300,8 @@ BoStelling getDirect( VMStelling aVMStelling, BoStelling aBoStelling )
 	//       referentie: Gen gebruikt Dbs en Dbs gebruikt dan ook Gen. Er zijn twee oplossingen:
 	//       - De isSchaak uit Gen tillen en in een aparte class stoppen (ik weet trouwens niet of
 	//         dat gaat werken, of je dan geen circulaire referentie hebt.
-	// @@HIGH- Overal waar getDirect gebruikt wordt, isSchaak() aanroepen
-	//aBoStelling.setSchaak( gen.isSchaak( aBoStelling) );
+	// Overal waar getDirect gebruikt wordt, isSchaak() aanroepen ==> Nee want dat is erg slecht voor de performance.
+	// In de hele opbouwbeweging wordt niets met schaakjes gedaan, behalve in de nulde ronde.
 	boStelling.setSchaak( false );
 	if ( VMrec == VM.VM_ILLEGAAL )
 	{
@@ -372,13 +372,13 @@ public void delete()
 	vm.delete();
 }
 /**
- * --------- Pass over stukken 3 en 4 ----------------------------------
+ * --------- Pass over stukken 3, 4 en 5 ----------------------------------
  */
-public void pass34( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
+public void pass345( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
 {
-	vmStellingIterator.iterateOverS3S4( aBoStelling, aVmStelling, aPassFunction, this::call34 );
+	vmStellingIterator.iterateOverStukken( aBoStelling, aVmStelling, aPassFunction, this::call345 );
 }
-void call34( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
+void call345( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
 {
 	BoStelling gotBoStelling = getDirect( aVmStelling, aBoStelling );
 	// @@NOG Je kunt hier niet Gen.isSchaak() aanroepen dus moet het in de proc
@@ -396,7 +396,7 @@ void markeerWitPass( PassFunction aPassFunction )
 }
 void callPass34( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
 {
-	pass34( aBoStelling, aVmStelling, aPassFunction );
+	pass345( aBoStelling, aVmStelling, aPassFunction );
 }
 /**
  * --------- Pass over de remisestellingen met zwart aan zet -------------
@@ -417,18 +417,25 @@ void callWitEnZwart( BoStelling aBoStelling, VMStelling aVmStelling, PassFunctio
 {
 	// Wit
 	aVmStelling.setAanZet( WIT );
-	BoStelling gotBoStelling = getDirect( aVmStelling, aBoStelling ); // @@NOG Is die gotStelling nodig??
-	// @@LOW Je kunt hier niet Gen.isSchaak() aanroepen dus moet het in de proc
-	gotBoStelling.setAanZet( WIT ); // @@HIGH Waarom? Dat wordt toch al in getDirect gedaan?
+	BoStelling gotBoStelling = getDirect( aVmStelling, aBoStelling );
+	// Je kunt hier niet Gen.isSchaak() aanroepen dus moet het in de proc
+	// Je wilt het ook niet aanroepen want in de opbouwbeweging worden schaakjes niet gebruikt behalve in pass 0
+
+	// Waarom? Dat wordt toch al in getDirect gedaan? Nee, want alleen vmStelling heeft een kleur, boStelling niet
+	// Die wordt er pas hier ingezet. Kun je verbeteren door de poasses te verbeteren
+	// - VMStellingIterator.iterateOverAllPieces ook over de kleuren itereren
+	// - In callWitEnZwart (hier dus) maar 1 kleur doen, en die kleur zit al in boStelling en vmStelling
+	gotBoStelling.setAanZet( WIT );
 	aPassFunction.doPass( gotBoStelling.clone() );
 	
 	// Zwart
 	aVmStelling.setAanZet( ZWART );
-	gotBoStelling = getDirect( aVmStelling, aBoStelling ); // @@NOG Is die gotStelling nodig??
-	// @@LOW Je kunt hier niet Gen.isSchaak() aanroepen dus moet het in de proc
+	gotBoStelling = getDirect( aVmStelling, aBoStelling );
+	// Je kunt hier niet Gen.isSchaak() aanroepen dus moet het in de proc
+	// Je wilt het ook niet aanroepen want in de opbouwbeweging worden schaakjes niet gebruikt behalve in pass 0
 	
-	// @@NOG Waarom? Dat wordt toch al in getDirect gedaan? Nee, want alleen vmStelling heeft een kleur, boStelling niet
-	// Die wordt er pas hier ingezet. Kun je verbeteren door de poasses te verbetere:
+	// Waarom? Dat wordt toch al in getDirect gedaan? Nee, want alleen vmStelling heeft een kleur, boStelling niet
+	// Die wordt er pas hier ingezet. Kun je verbeteren door de poasses te verbeteren
 	// - VMStellingIterator.iterateOverAllPieces ook over de kleuren itereren
 	// - In callWitEnZwart (hier dus) maar 1 kleur doen, en die kleur zit al in boStelling en vmStelling
 	gotBoStelling.setAanZet( ZWART );
