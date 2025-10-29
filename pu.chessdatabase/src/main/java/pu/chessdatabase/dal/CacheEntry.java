@@ -10,7 +10,15 @@ public class CacheEntry
 {
 private PageDescriptor pageDescriptor;
 @ToString.Exclude
-private Page page;
+private byte [] page;
 private boolean vuil;
 private long generatie;
+
+public void clearPage()
+{
+	for ( int x = 0; x < page.length; x++ )
+	{
+		page[x] = (byte)0;
+	}
+}
 }
