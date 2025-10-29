@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+// @@HIGH config-afhankelijk maken
 public class BoStelling implements Cloneable
 {
 public static class AlfaBuilder
@@ -37,6 +37,7 @@ public AlfaBuilder wk( String aWk ) { boStelling.setWk( Gen.alfaToVeld( aWk ) );
 public AlfaBuilder zk( String aZk ) { boStelling.setZk( Gen.alfaToVeld( aZk ) ); return this; }
 public AlfaBuilder s3( String aS3 ) { boStelling.setS3( Gen.alfaToVeld( aS3 ) ); return this; }
 public AlfaBuilder s4( String aS4 ) { boStelling.setS4( Gen.alfaToVeld( aS4 ) ); return this; }
+public AlfaBuilder s5( String aS5 ) { boStelling.setS5( Gen.alfaToVeld( aS5 ) ); return this; }
 public AlfaBuilder aanZet( Kleur aAanZet ) { boStelling.setAanZet( aAanZet ); return this; }
 public AlfaBuilder resultaat( ResultaatType aResultaat ) { boStelling.setResultaat( aResultaat ); return this; }
 public AlfaBuilder aantalZetten( int aAantalZetten ) { boStelling.setAantalZetten( aAantalZetten ); return this; }
@@ -55,6 +56,7 @@ public static final BoStelling NULL_STELLING = BoStelling.builder()
 	.zk( 0 )
 	.s3( 0 )
 	.s4( 0 )
+	.s5( 0 )
 	.aanZet( WIT )
 	.resultaat( ResultaatType.ILLEGAAL )
 	.aantalZetten( 0 )
@@ -77,9 +79,10 @@ private int wk;
 private int zk;
 private int s3;
 private int s4;
+private int s5;
 private Kleur aanZet;
 private ResultaatType resultaat;
-private int aantalZetten; // Was SHORTCARD, een 8 bits unsigned int
+private int aantalZetten;
 private boolean schaak;
 
 @Override
@@ -110,6 +113,10 @@ public String getS4String()
 {
 	return Config.getStaticStukken().getS4().getStukString();
 }
+public String getS5String()
+{
+	return Config.getStaticStukken().getS5().getStukString();
+}
 @Override
 public String toString()
 {
@@ -119,6 +126,7 @@ public String toString()
 	.append( " ZK=" ).append( Gen.veldToAlfa( zk ) )
 	.append( " S3=" ).append( Gen.veldToAlfa( s3 ) )
 	.append( " S4=" ).append( Gen.veldToAlfa( s4 ) )
+	.append( " S5=" ).append( Gen.veldToAlfa( s5 ) )
 	.append( " AanZet=" ).append( aanZet.getAfko() )
 	.append( " Resultaat=" ).append( resultaat )
 	.append( " AantalZetten=" ).append( aantalZetten )
@@ -133,6 +141,7 @@ public String toString()
 			else if ( veld == zk ) veldString = getZkString();
 			else if ( veld == s3 ) veldString = getS3String();
 			else if ( veld == s4 ) veldString = getS4String();
+//			else if ( veld == s5 ) veldString = getS5String();
 			else veldString = "..";
 			sb.append( veldString ).append( " " );
 		}
@@ -147,6 +156,7 @@ public BoStellingKey getBoStellingKey()
 		.zk( zk )
 		.s3( s3 )
 		.s4( s4 )
+		.s5( s5 )
 		.aanZet( aanZet )
 		.build();
 }
