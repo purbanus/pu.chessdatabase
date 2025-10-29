@@ -25,6 +25,7 @@ public AlfaBuilder wk( String aWk ) { vmStelling.setWk( VM.alfaToVeld( aWk ) ); 
 public AlfaBuilder zk( String aZk ) { vmStelling.setZk( VM.alfaToVeld( aZk ) ); return this; }
 public AlfaBuilder s3( String aS3 ) { vmStelling.setS3( VM.alfaToVeld( aS3 ) ); return this; }
 public AlfaBuilder s4( String aS4 ) { vmStelling.setS4( VM.alfaToVeld( aS4 ) ); return this; }
+public AlfaBuilder s5( String aS5 ) { vmStelling.setS5( VM.alfaToVeld( aS5 ) ); return this; }
 public AlfaBuilder aanZet( Kleur aAanZet ) { vmStelling.setAanZet( aAanZet ); return this; }
 public VMStelling build()
 {
@@ -40,21 +41,23 @@ private int wk;
 private int zk;
 private int s3;
 private int s4;
+private int s5;
 private Kleur aanZet;
 
 public void checkStelling()
 {
-	if ( wk > 9 || zk > 63 || s3 > 63 || s4 > 63 )
+	if ( wk > 9 || zk > 63 || s3 > 63 || s4 > 63 || s5 > 63 )
 	{
 		throw new RuntimeException( "Dit is geen cardinaalstelling: " + this );
 	}
-	if ( wk < 0 || zk < 0 || s3 < 0 || s4 < 0 )
+	if ( wk < 0 || zk < 0 || s3 < 0 || s4 < 0 || s5 < 0 )
 	{
 		throw new RuntimeException( "Dit is geen geldige stelling: " + this );
 	}
 }
 public int getPositionWithinPage()
 {
+	// @@HIGH Deze moet verhuizen naar Cache of PDT
 	return (getS3() << 6) + getS4();
 }
 @Override
@@ -76,6 +79,7 @@ public BoStelling getBoStelling()
 		.zk( Dbs.CVT_STUK[getZk()] )
 		.s3( Dbs.CVT_STUK[getS3()] )
 		.s4( Dbs.CVT_STUK[getS4()] )
+		.s5( Dbs.CVT_STUK[getS5()] )
 		.aanZet( getAanZet() )
 		.build();
 }
@@ -95,6 +99,10 @@ public String getS4String()
 {
 	return Config.getStaticStukken().getS4().getStukString();
 }
+public String getS5String()
+{
+	return Config.getStaticStukken().getS5().getStukString();
+}
 @Override
 public String toString()
 {
@@ -104,6 +112,7 @@ public String toString()
 	.append( " ZK=" ).append( VM.veldToAlfa( zk ) )
 	.append( " S3=" ).append( VM.veldToAlfa( s3 ) )
 	.append( " S4=" ).append( VM.veldToAlfa( s4 ) )
+	.append( " S5=" ).append( VM.veldToAlfa( s5 ) )
 	.append( " AanZet=" ).append( aanZet.getAfko() ).append( "\n" );
 	for ( int rij = 7; rij >= 0; rij-- )
 	{
@@ -115,6 +124,7 @@ public String toString()
 			else if ( veld == zk ) veldString = getZkString();
 			else if ( veld == s3 ) veldString = getS3String();
 			else if ( veld == s4 ) veldString = getS4String();
+			else if ( veld == s5 ) veldString = getS5String();
 			else veldString = "..";
 			sb.append( veldString ).append( " " );
 		}
