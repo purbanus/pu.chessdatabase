@@ -8,7 +8,6 @@ import pu.chessdatabase.service.BoStellingKey;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 /**
  * public static final String [] Notatie = new String [] {
@@ -141,7 +140,7 @@ public String toString()
 			else if ( veld == zk ) veldString = getZkString();
 			else if ( veld == s3 ) veldString = getS3String();
 			else if ( veld == s4 ) veldString = getS4String();
-//			else if ( veld == s5 ) veldString = getS5String();
+//			else if ( veld == s5 ) veldString = getS5String(); // @@HIGH Nog effe niet
 			else veldString = "..";
 			sb.append( veldString ).append( " " );
 		}
