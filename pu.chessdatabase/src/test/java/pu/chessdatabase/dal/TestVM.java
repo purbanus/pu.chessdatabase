@@ -234,7 +234,7 @@ public void testPut()
 	int dbsRec = 0x55;
 	vm.put( vmStelling, dbsRec );
 	byte [] page = vm.getCache().getPage( pageDescriptor );
-	assertThat( page[vmStelling.getPositionWithinPage()], is( (byte)( dbsRec & 0xff ) ) );
+	assertThat( page[vm.getCache().getPositionWithinPage( vmStelling )], is( (byte)( dbsRec & 0xff ) ) );
 	
 	// Test met Integer.MAX_VALUE
 	pageDescriptor = PageDescriptor.builder()
@@ -246,7 +246,7 @@ public void testPut()
 
 	vm.put( vmStelling, dbsRec );
 	page = vm.getCache().getPage( pageDescriptor );
-	assertThat( page[vmStelling.getPositionWithinPage()], is( (byte)( dbsRec & 0xff ) ) );
+	assertThat( page[vm.getCache().getPositionWithinPage( vmStelling )], is( (byte)( dbsRec & 0xff ) ) );
 }
 @Test
 public void testFreeRecord()
