@@ -222,7 +222,7 @@ byte [ ] getPageFromDatabase( PageDescriptor aPageDescriptor )
 	}
 	return getPage( aPageDescriptor );
 }
-private int getPositionWithinPage( VMStelling aVmStelling )
+int getPositionWithinPage( VMStelling aVmStelling )
 {
 	if ( getAantalStukken() == 3 )
 	{
