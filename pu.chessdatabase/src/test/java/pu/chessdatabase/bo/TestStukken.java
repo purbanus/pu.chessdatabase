@@ -10,6 +10,10 @@ import static pu.chessdatabase.bo.Kleur.*;
 
 import org.junit.jupiter.api.Test;
 
+import pu.chessdatabase.bo.configuraties.KLPK;
+import pu.chessdatabase.bo.configuraties.StukType;
+import pu.chessdatabase.bo.configuraties.TestKDKT;
+
 //@SpringBootTest
 public class TestStukken
 {
