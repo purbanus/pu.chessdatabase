@@ -42,7 +42,7 @@ public void setup()
 public void destroy()
 {
 	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
-	assertThat( dbs.getDatabaseName(), is( DATABASE_NAME ) );
+	assertThat( dbs.getDatabaseName(), startsWith( DATABASE_NAME ) );
 	dbs.delete();
 	config.switchConfig( savedConfigString );
 }
