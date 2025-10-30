@@ -16,7 +16,6 @@ public class MockCache
 
 Cache delegate;
 private Map<String, Method> methodLookup = new HashedMap<>();
-
 public MockCache( Cache aCache )
 {
 	super();
@@ -28,9 +27,43 @@ private void initializeMethods()
 	Method [] methods = getDelegate().getClass().getDeclaredMethods();
 	for ( Method method : methods )
 	{
-		methodLookup.put( method.getName(), method );
+		String methodName = method.getName();
+		if ( method.getName().equals( "setData" ) )
+		{
+			if ( contains( method.getParameterTypes(), "int" ) )
+			{
+				methodName = "setDataWithInt";
+			}
+			else
+			{
+				methodName = "setDataWithVmStelling";
+			}
+		}
+		if ( method.getName().equals( "getData" ) )
+		{
+			if ( contains( method.getParameterTypes(), "int" ) )
+			{
+				methodName = "getDataWithInt";
+			}
+			else
+			{
+				methodName = "getDataWithVmStelling";
+			}
+		}
+		methodLookup.put( methodName, method );
 		method.setAccessible( true );
 	}
+}
+private boolean contains( Class<?> [] aParameters, String aClassName )
+{
+	for ( Class<?> claxx : aParameters )
+	{
+		if ( claxx.getName().equals( aClassName ) )
+		{
+			return true;
+		}
+	}
+	return false;
 }
 Object callMethod( String aMethodName, Object...aParams )
 {
@@ -51,7 +84,12 @@ Object callMethod( String aMethodName, Object...aParams )
 	{
 		throw new RuntimeException( e );
 	}
+	catch ( NullPointerException e )
+	{
+		throw new RuntimeException( e );
+	}
 }
+// @@HIGH test getStaticAantalStukken
 RandomAccessFile getDatabase()
 {
 	return (RandomAccessFile) callMethod( "getDatabase" );
@@ -65,7 +103,10 @@ long getGeneratieTeller()
 {
 	return (long) callMethod( "getGeneratieTeller" );
 }
-
+int getPageSize()
+{
+	return (int) callMethod( "getPageSize" );
+}
 void initializeCache()
 {
 	callMethod( "initializeCache" );
@@ -74,15 +115,11 @@ int getFreeCacheEntry()
 {
 	return (int) callMethod( "getFreeCacheEntry" );
 }
-Page getPage( PageDescriptor aPageDescriptor )
+byte [] getPage( PageDescriptor aPageDescriptor )
 {
-	return (Page) callMethod( "getPage", aPageDescriptor );
+	return (byte []) callMethod( "getPage", aPageDescriptor );
 }
-byte [] getPageData( PageDescriptor aPageDescriptor )
-{
-	return (byte []) callMethod( "getPageData", aPageDescriptor );
-}
-void setPage( PageDescriptor aPageDescriptor, Page aPage )
+void setPage( PageDescriptor aPageDescriptor, byte [] aPage )
 {
 	callMethod( "setPage", aPageDescriptor, aPage );
 }
@@ -118,16 +155,33 @@ void pageIn( PageDescriptor aPageDescriptor )
 {
 	callMethod( "pageIn", aPageDescriptor );
 }
-Page getPageFromDatabase( PageDescriptor aPageDescriptor )
+byte []  getPageFromDatabase( PageDescriptor aPageDescriptor )
 {
-	return (Page) callMethod( "getPageFromDatabase", aPageDescriptor );
+	return (byte []) callMethod( "getPageFromDatabase", aPageDescriptor );
+}
+int getPositionWithinPage( VMStelling aVmStelling )
+{
+	return (int) callMethod( "getPositionWithinPage", aVmStelling );
+}
+byte getData( PageDescriptor aPageDescriptor, VMStelling aVmStelling )
+{
+	return (byte) callMethod( "getDataWithVmStelling", aPageDescriptor, aVmStelling );
+}
+byte getData( PageDescriptor aPageDescriptor, int aPositionWithPage )
+{
+	return (byte) callMethod( "getDataWithInt", aPageDescriptor, aPositionWithPage );
+}
+void setData( PageDescriptor aPageDescriptor, VMStelling aVmStelling, byte aData )
+{
+	callMethod( "setDataWithVmStelling", aPageDescriptor, aVmStelling, aData );
 }
 void setData( PageDescriptor aPageDescriptor, int aPositionWithinPage, byte aData )
 {
-	callMethod( "setData", aPageDescriptor, aPositionWithinPage, aData );
+	callMethod( "setDataWithInt", aPageDescriptor, aPositionWithinPage, aData );
 }
 void flush()
 {
 	callMethod( "flush" );
 }
+
 }
