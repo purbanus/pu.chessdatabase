@@ -8,7 +8,7 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static pu.chessdatabase.bo.Kleur.*;
-import static pu.chessdatabase.bo.StukType.*;
+import static pu.chessdatabase.bo.configuraties.StukType.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +18,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import pu.chessdatabase.bo.configuraties.KDKT;
+import pu.chessdatabase.bo.configuraties.KLLK;
+import pu.chessdatabase.bo.configuraties.KLPK;
+import pu.chessdatabase.bo.configuraties.StukDefinitie;
+import pu.chessdatabase.bo.configuraties.TestKDKT;
 
 import lombok.Data;
 
