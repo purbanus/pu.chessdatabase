@@ -1,6 +1,5 @@
 package pu.chessdatabase.dal;
 
-import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.dal.ResultaatType.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -245,6 +244,7 @@ VMStelling spiegelEnRoteer( BoStelling aStelling, int aOktant )
 		.zk( transformatieTabel[aOktant][aStelling.getZk()] )
 		.s3( transformatieTabel[aOktant][aStelling.getS3()] )
 		.s4( transformatieTabel[aOktant][aStelling.getS4()] )
+		.s5( transformatieTabel[aOktant][aStelling.getS5()] )
 		.aanZet( aStelling.getAanZet() )
 		.build();
 }
@@ -376,7 +376,7 @@ public void delete()
  */
 public void pass345( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
 {
-	vmStellingIterator.iterateOverStukken( aBoStelling, aVmStelling, aPassFunction, this::call345 );
+	vmStellingIterator.iterateOverPieces( aBoStelling, aVmStelling, aPassFunction, this::call345 );
 }
 void call345( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
 {
@@ -392,19 +392,19 @@ void call345( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPass
  */
 void markeerWitPass( PassFunction aPassFunction )
 {
-	vmStellingIterator.iterateOverWkZk( WIT, aPassFunction, this::callPass34 );
+	vmStellingIterator.iterateOverWkZkWit( aPassFunction, this::callPass345 );
 }
-void callPass34( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
+void callPass345( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
 {
 	pass345( aBoStelling, aVmStelling, aPassFunction );
 }
 /**
  * --------- Pass over de remisestellingen met zwart aan zet -------------
  */
-void markeerZwartPass( PassFunction aPassFunction )
-{
-	vmStellingIterator.iterateOverWkZk( ZWART, aPassFunction, this::callPass34 );
-}
+//void markeerZwartPass( PassFunction aPassFunction )
+//{
+//	vmStellingIterator.iterateOverWkZk( ZWART, aPassFunction, this::callPass345 );
+//}
 /**
  * --------- Pass over alle stellingen -------------
  */
@@ -415,30 +415,10 @@ void markeerWitEnZwartPass( PassFunction aPassFunction )
 
 void callWitEnZwart( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
 {
-	// Wit
-	aVmStelling.setAanZet( WIT );
 	BoStelling gotBoStelling = getDirect( aVmStelling, aBoStelling );
 	// Je kunt hier niet Gen.isSchaak() aanroepen dus moet het in de proc
 	// Je wilt het ook niet aanroepen want in de opbouwbeweging worden schaakjes niet gebruikt behalve in pass 0
 
-	// Waarom? Dat wordt toch al in getDirect gedaan? Nee, want alleen vmStelling heeft een kleur, boStelling niet
-	// Die wordt er pas hier ingezet. Kun je verbeteren door de poasses te verbeteren
-	// - VMStellingIterator.iterateOverAllPieces ook over de kleuren itereren
-	// - In callWitEnZwart (hier dus) maar 1 kleur doen, en die kleur zit al in boStelling en vmStelling
-	gotBoStelling.setAanZet( WIT );
-	aPassFunction.doPass( gotBoStelling.clone() );
-	
-	// Zwart
-	aVmStelling.setAanZet( ZWART );
-	gotBoStelling = getDirect( aVmStelling, aBoStelling );
-	// Je kunt hier niet Gen.isSchaak() aanroepen dus moet het in de proc
-	// Je wilt het ook niet aanroepen want in de opbouwbeweging worden schaakjes niet gebruikt behalve in pass 0
-	
-	// Waarom? Dat wordt toch al in getDirect gedaan? Nee, want alleen vmStelling heeft een kleur, boStelling niet
-	// Die wordt er pas hier ingezet. Kun je verbeteren door de poasses te verbeteren
-	// - VMStellingIterator.iterateOverAllPieces ook over de kleuren itereren
-	// - In callWitEnZwart (hier dus) maar 1 kleur doen, en die kleur zit al in boStelling en vmStelling
-	gotBoStelling.setAanZet( ZWART );
 	aPassFunction.doPass( gotBoStelling.clone() );
 }
 public void pass( PassType aPassType, PassFunction aPassProc )
@@ -447,7 +427,7 @@ public void pass( PassType aPassType, PassFunction aPassProc )
 	switch ( aPassType )
 	{
 		case MARKEER_WIT: markeerWitPass( aPassProc ); break;
-		case MARKEER_ZWART: markeerZwartPass( aPassProc ); break;
+//		case MARKEER_ZWART: markeerZwartPass( aPassProc ); break;
 		case MARKEER_WIT_EN_ZWART: markeerWitEnZwartPass( aPassProc ); break;
 	}
 	close();
