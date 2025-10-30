@@ -20,10 +20,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.Config;
 
+import lombok.Data;
+
 @SpringBootTest
+@Data
 public class TestVM
 {
 public static final String DATABASE_NAME = "dbs/Pipo";
+private static final String DATABASE_NAME_4 = DATABASE_NAME + "4";
 @Autowired private VM vm;
 @Autowired private Config config;
 
@@ -39,7 +43,7 @@ public void setup()
 public void destroy()
 {
 	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
-	assertThat( vm.getDatabaseName(), is( DATABASE_NAME ) );
+	assertThat( vm.getDatabaseName(), startsWith( DATABASE_NAME ) );
 	vm.delete();
 	config.switchConfig( savedConfigString );
 }
@@ -99,11 +103,11 @@ private void writePage0WithAllOnes()
 }
 private void writePageWithAll( long aPageNumber, int aCacheNumber, byte aValue )
 {
-	Page page = TestHelper.createPageWithAll( aValue );
+	byte [] page = TestHelper.createPageWithAll( aValue );
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( Lokatie.IN_RAM )
 		.cacheNummer( aCacheNumber )
-		.schijfAdres( aPageNumber * Cache.PAGE_SIZE )
+		.schijfAdres( aPageNumber * vm.getCache().getPageSize() )
 		.build();
 	CacheEntry cacheEntry = CacheEntry.builder()
 		.generatie( 15 )
@@ -116,7 +120,7 @@ private void writePageWithAll( long aPageNumber, int aCacheNumber, byte aValue )
 }
 private void checkIfAllDatabaseEntriesAreZero() throws IOException
 {
-	PageDescriptorTable pageDescriptorTable = new PageDescriptorTable();
+	PageDescriptorTable pageDescriptorTable = new PageDescriptorTable( getConfig().getAantalStukken() );
 	pageDescriptorTable.iterateOverAllPageDescriptors( this::checkIfDatabaseEntryIsZero );
 }
 void checkIfDatabaseEntryIsZero( VMStelling aVmStelling )
@@ -124,18 +128,18 @@ void checkIfDatabaseEntryIsZero( VMStelling aVmStelling )
 	PageDescriptor pageDescriptor = vm.getPageDescriptor( aVmStelling );
 //  pageDescriptor.setCacheNummer( 1 );
 //  vm.Cache[1].setVuil( true );
-	Page page = new Page();
+	byte [] page = new byte[vm.getCache().getPageSize()];
 	try
 	{
 		vm.getDatabase().seek( pageDescriptor.getSchijfAdres() );
-		int aantal = vm.getDatabase().read( page.getData(), 0, Cache.PAGE_SIZE );
-		assertThat( aantal, is( Cache.PAGE_SIZE) );
+		int aantal = vm.getDatabase().read( page, 0, vm.getCache().getPageSize() );
+		assertThat( aantal, is( vm.getCache().getPageSize() ) );
 	}
 	catch ( IOException e )
 	{
 		throw new RuntimeException( e );
 	}
-	assertThat( TestHelper.isAllZero( page.getData() ), is( true ) );
+	assertThat( TestHelper.isAllZero( page ), is( true ) );
 }
 
 //=================================================================================================
@@ -153,7 +157,7 @@ public void testGetPage()
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( Lokatie.OP_SCHIJF )
 		.cacheNummer( cacheNumber )
-		.schijfAdres( pageNumber * Cache.PAGE_SIZE )
+		.schijfAdres( pageNumber * vm.getCache().getPageSize() )
 		.build();
 	VMStelling vmStelling = VMStelling.builder()
 		.wk( 0x04 )
@@ -164,19 +168,19 @@ public void testGetPage()
 		.build();
 	vm.getPageDescriptorTable().setPageDescriptor( vmStelling, pageDescriptor );
 
-	Page page = vm.getPage( vmStelling );
-	assertThat( TestHelper.isAll( page.getData(), value ), is( true ) );
+	byte [] page = vm.getPage( vmStelling );
+	assertThat( TestHelper.isAll( page, value ), is( true ) );
 
 	// Test met Integer.MAX_VALUE
 	pageDescriptor = PageDescriptor.builder()
 		.waar( Lokatie.OP_SCHIJF )
 		.cacheNummer( Integer.MAX_VALUE )
-		.schijfAdres( pageNumber * Cache.PAGE_SIZE )
+		.schijfAdres( pageNumber * vm.getCache().getPageSize() )
 		.build();
 	vm.getPageDescriptorTable().setPageDescriptor( vmStelling, pageDescriptor );
 
 	page = vm.getPage( vmStelling );
-	assertThat( TestHelper.isAll( page.getData(), value ), is( true ) );
+	assertThat( TestHelper.isAll( page, value ), is( true ) );
 
 }
 @Test
@@ -190,7 +194,7 @@ public void testGet()
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( Lokatie.OP_SCHIJF )
 		.cacheNummer( cacheNumber )
-		.schijfAdres( pageNumber * Cache.PAGE_SIZE )
+		.schijfAdres( pageNumber * vm.getCache().getPageSize() )
 		.build();
 	VMStelling vmStelling = VMStelling.builder()
 		.wk( 0x04 )
@@ -216,7 +220,7 @@ public void testPut()
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( Lokatie.OP_SCHIJF )
 		.cacheNummer( cacheNumber )
-		.schijfAdres( pageNumber * Cache.PAGE_SIZE )
+		.schijfAdres( pageNumber * vm.getCache().getPageSize() )
 		.build();
 	VMStelling vmStelling = VMStelling.builder()
 		.wk( 0x04 )
@@ -229,20 +233,20 @@ public void testPut()
 
 	int dbsRec = 0x55;
 	vm.put( vmStelling, dbsRec );
-	Page page = vm.getCache().getPage( pageDescriptor );
-	assertThat( page.getData()[vmStelling.getPositionWithinPage()], is( (byte)( dbsRec & 0xff ) ) );
+	byte [] page = vm.getCache().getPage( pageDescriptor );
+	assertThat( page[vmStelling.getPositionWithinPage()], is( (byte)( dbsRec & 0xff ) ) );
 	
 	// Test met Integer.MAX_VALUE
 	pageDescriptor = PageDescriptor.builder()
 		.waar( Lokatie.OP_SCHIJF )
 		.cacheNummer( Integer.MAX_VALUE )
-		.schijfAdres( pageNumber * Cache.PAGE_SIZE )
+		.schijfAdres( pageNumber * vm.getCache().getPageSize() )
 		.build();
 	vm.getPageDescriptorTable().setPageDescriptor( vmStelling, pageDescriptor );
 
 	vm.put( vmStelling, dbsRec );
 	page = vm.getCache().getPage( pageDescriptor );
-	assertThat( page.getData()[vmStelling.getPositionWithinPage()], is( (byte)( dbsRec & 0xff ) ) );
+	assertThat( page[vmStelling.getPositionWithinPage()], is( (byte)( dbsRec & 0xff ) ) );
 }
 @Test
 public void testFreeRecord()
@@ -251,11 +255,11 @@ public void testFreeRecord()
 	int cacheNumber = 21;
 	byte value = (byte)0xe0;
 
-	Page page = TestHelper.createPageWithAll( value );
+	byte [] page = TestHelper.createPageWithAll( value );
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( Lokatie.IN_RAM )
 		.cacheNummer( cacheNumber )
-		.schijfAdres( pageNumber * Cache.PAGE_SIZE )
+		.schijfAdres( pageNumber * vm.getCache().getPageSize() )
 		.build();
 	VMStelling vmStelling = VMStelling.builder()
 		.wk( 0x03 )
@@ -280,7 +284,7 @@ public void testFreeRecord()
 @Test
 public void testCloseWithNoDatabesePresent()
 {
-	assertThat( vm.getDatabaseName(), is( DATABASE_NAME ) );
+	assertThat( vm.getDatabaseName(), startsWith( DATABASE_NAME ) );
 	vm.delete();
 	vm.close();
 	// @@NOG Tests maken
@@ -301,16 +305,18 @@ public void testOpen()
 @Test
 public void testCreateFile()
 {
-	assertThat( vm.getDatabaseName(), is( DATABASE_NAME ) );
+	// @@HIGH config-afhankelijke tests
+	assertThat( vm.getDatabaseName(), startsWith( DATABASE_NAME ) );
 	vm.delete();
-	vm.createFile( DATABASE_NAME );
-	File file = new File( DATABASE_NAME );
+	vm.createFile( DATABASE_NAME_4 );
+	File file = new File( DATABASE_NAME_4 );
 	assertThat( file.exists(), is( true ) );
 }
 @Test
 public void testCreate() throws IOException
 {
-	File file = new File( DATABASE_NAME );
+	// @@HIGH config-afhankelijke tests
+	File file = new File( DATABASE_NAME_4 );
 	assertThat( file.exists(), is( true ) );
 	assertThat( file.length(), is( 5242880L  ) );
 	checkIfAllDatabaseEntriesAreZero();
@@ -318,12 +324,13 @@ public void testCreate() throws IOException
 @Test
 public void testDelete()
 {
-	File file = new File( DATABASE_NAME );
+	// @@HIGH config-afhankelijke tests
+	File file = new File( DATABASE_NAME_4 );
 	assertThat( file.exists(), is( true ) );
-	assertThat( vm.getDatabaseName(), is( DATABASE_NAME ) );
+	assertThat( vm.getDatabaseName(), is( DATABASE_NAME_4 ) );
 	vm.delete();
 
-	file = new File( DATABASE_NAME );
+	file = new File( DATABASE_NAME_4 );
 	assertThat( file.exists(), is( false ) );
 }
 
