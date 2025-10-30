@@ -184,15 +184,14 @@ public void testAlfaBuilder()
 		boStelling.isSchaak()
 	);
 	assertThat( boStelling.toString().length(), is( boStringText.length() ) );
-	String boStellingToString = boStelling.toString();
-	for ( int x = 0; x < boStringText.length(); x++ )
-	{
-		if ( boStringText.charAt( x ) != boStellingToString.charAt( x ) )
-		{
-			System.out.println( "Op positie " + x + " " + boStringText.charAt( x ) + " " + boStellingToString.charAt( x ) );
-		}
-	}
-
+//	String boStellingToString = boStelling.toString();
+//	for ( int x = 0; x < boStringText.length(); x++ )
+//	{
+//		if ( boStringText.charAt( x ) != boStellingToString.charAt( x ) )
+//		{
+//			System.out.println( "Op positie " + x + " " + boStringText.charAt( x ) + " " + boStellingToString.charAt( x ) );
+//		}
+//	}
 	assertThat( boStelling.toString(), is( boStringText ) );
 }
 }
