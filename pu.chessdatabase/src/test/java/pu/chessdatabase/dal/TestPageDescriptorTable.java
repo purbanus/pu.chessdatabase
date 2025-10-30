@@ -8,15 +8,28 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static pu.chessdatabase.bo.Kleur.*;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import pu.chessdatabase.bo.Config;
 
 import lombok.Data;
 
 @Data
+@SpringBootTest
 public class TestPageDescriptorTable
 {
-PageDescriptorTable pageDescriptorTable = new PageDescriptorTable();
-
+@Autowired private Config config;
+private PageDescriptorTable pageDescriptorTable;
+private Cache cache;
+@BeforeEach
+public void setup()
+{
+	pageDescriptorTable = new PageDescriptorTable( config.getAantalStukken() );
+	cache = new Cache( config.getAantalStukken() );
+}
 @Test
 public void testGetSetPageDescriptor()
 {
@@ -63,7 +76,7 @@ void testPageDescriptor( VMStelling aVmStelling )
 	assertThat( pageDescriptor.getWaar(), is( Lokatie.OP_SCHIJF ) );
 	assertThat( pageDescriptor.getSchijfAdres(), is( address ) );
 	assertThat( pageDescriptor.getCacheNummer(), is( Integer.MAX_VALUE ) );
-	address += Cache.PAGE_SIZE;
+	address += getCache().getPageSize();
 }
 
 }

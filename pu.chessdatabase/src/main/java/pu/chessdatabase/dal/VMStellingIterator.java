@@ -1,4 +1,4 @@
-package pu.chessdatabase.dal;
+	package pu.chessdatabase.dal;
 
 import static pu.chessdatabase.bo.Kleur.*;
 
@@ -15,7 +15,7 @@ import lombok.Data;
 public class VMStellingIterator
 {
 @Autowired private VM vm;
-public void iterateOverS3S4( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassProc, VMIteratorFunction aVmIteratorFunction )
+public void iterateOverStukken( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassProc, VMIteratorFunction aVmIteratorFunction )
 {
 	BoStelling boStelling = aBoStelling.clone();
 	VMStelling vmStelling = aVmStelling.clone();
@@ -26,17 +26,24 @@ public void iterateOverS3S4( BoStelling aBoStelling, VMStelling aVmStelling, Pas
 		vmStelling.setS4( 0 );
 		while ( vmStelling.getS4() < 64 )
 		{
-			boStelling.setS4( Dbs.CVT_STUK[vmStelling.getS4()] ); // Nu wel
+			boStelling.setS4( Dbs.CVT_STUK[vmStelling.getS4()] );
+			vmStelling.setS5( 0 );
+			while ( vmStelling.getS5() < 64 )
+			{
+				boStelling.setS5( Dbs.CVT_STUK[vmStelling.getS4()] );
 
-			aVmIteratorFunction.doPass( boStelling, vmStelling, aPassProc );
+				aVmIteratorFunction.doPass( boStelling, vmStelling, aPassProc );
+				vmStelling.setS5( vmStelling.getS5() + 1 );
+			}
 			vmStelling.setS4( vmStelling.getS4() + 1 );
 		}
 		vmStelling.setS3( vmStelling.getS3() + 1 );
 	}
-	// Waar is dit voor nodig? --> Voor die freeRecord. Beide stukken zijn 0x40 en dat
-	// is niet legaal
+	// Waar is dit voor nodig? --> Voor die freeRecord. Alle drie de stukken zijn 0x40
+	// en dat is niet legaal
 	vmStelling.setS3( vmStelling.getS3() - 1 );
 	vmStelling.setS4( vmStelling.getS4() - 1 );
+	vmStelling.setS5( vmStelling.getS5() - 1 );
 	vm.freeRecord( vmStelling );
 }
 public void iterateOverWkZk( VMSimpleIteratorFunction aVmIteratorFunction )
@@ -48,7 +55,7 @@ public void iterateOverWkZk( VMSimpleIteratorFunction aVmIteratorFunction )
 		for ( int zk = 0; zk < 64; zk++ )
 		{
 			vmStelling.setZk( zk );
-			aVmIteratorFunction.doPass( vmStelling );;
+			aVmIteratorFunction.doPass( vmStelling );
 		}
 	}
 }
@@ -90,7 +97,13 @@ public void iterateOverAllPieces( PassFunction aPassFunction, VMIteratorFunction
 				while ( vmStelling.getS4() < 64 )
 				{
 					boStelling.setS4( Dbs.CVT_STUK[vmStelling.getS4()] );
-					aVmIteratorFunction.doPass( boStelling, vmStelling, aPassFunction );
+					vmStelling.setS5( 0 );
+					while ( vmStelling.getS5() < 64 )
+					{
+						boStelling.setS5( Dbs.CVT_STUK[vmStelling.getS5()] );
+						aVmIteratorFunction.doPass( boStelling, vmStelling, aPassFunction );
+						vmStelling.setS5( vmStelling.getS5() + 1 );
+					}
 					vmStelling.setS4( vmStelling.getS4() + 1 );
 				}
 				vmStelling.setS3( vmStelling.getS3() + 1 );

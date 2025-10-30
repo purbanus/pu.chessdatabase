@@ -1,6 +1,8 @@
-package pu.chessdatabase.bo;
+package pu.chessdatabase.bo.configuraties;
 
 import java.util.List;
+
+import pu.chessdatabase.bo.Richtingen;
 
 public enum StukType
 {

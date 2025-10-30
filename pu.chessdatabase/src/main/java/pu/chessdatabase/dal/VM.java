@@ -70,14 +70,15 @@ private static final String [] RepAZ = { "W", "Z" };
 Range wkVeldRange = new Range( 0, 9 );
 Range veldRange = new Range( 0, 63 );
 
+@Autowired private Config config;
 @Getter( AccessLevel.PACKAGE ) 
 @Setter( AccessLevel.PACKAGE ) 
-private PageDescriptorTable pageDescriptorTable = new PageDescriptorTable();
+private PageDescriptorTable pageDescriptorTable/* = new PageDescriptorTable( config.getAantalStukken() )*/;
 @Getter( AccessLevel.PACKAGE ) 
 @Setter( AccessLevel.PACKAGE ) 
 private Cache cache;
-@Autowired private Config config;
-@EqualsAndHashCode.Exclude
+
+@EqualsAndHashCode.Exclude // @@NOG Waarom??
 private String databaseName = null;
 @Getter( AccessLevel.PACKAGE ) 
 @Setter( AccessLevel.PRIVATE ) 
@@ -158,7 +159,7 @@ PageDescriptor getPageDescriptor( VMStelling aStelling )
 {
 	return getPageDescriptorTable().getPageDescriptor( aStelling );
 }
-public Page getPage( VMStelling aVmStelling )
+public byte [] getPage( VMStelling aVmStelling )
 {
 	aVmStelling.checkStelling();
 	return getCache().getPageFromDatabase( getPageDescriptor( aVmStelling ) );
@@ -168,8 +169,9 @@ public Page getPage( VMStelling aVmStelling )
  */
 public int get( VMStelling aVmStelling )
 {
-    Page page = getPage( aVmStelling );
-    byte vmRec = page.getData()[aVmStelling.getPositionWithinPage()];
+    getPage( aVmStelling );  // Dit is o.a. om de pageDescriptor goed te zetten @@HIGH CHECH
+	PageDescriptor pageDescriptor = getPageDescriptor( aVmStelling );
+    byte vmRec = getCache().getData( pageDescriptor, aVmStelling );
     return Byte.toUnsignedInt( vmRec );
 }
 /**
@@ -177,12 +179,11 @@ public int get( VMStelling aVmStelling )
  */
 public void put( VMStelling aVmStelling, int aDbsRec )
 {
-	// Dit gebeurt al in GetPage
-	// aStelling.checkStelling();
+	// CheckStelling gebeurt al in GetPage
 	getPage( aVmStelling ); // Dit is o.a. om de pageDescriptor goed te zetten
 	PageDescriptor pageDescriptor = getPageDescriptor( aVmStelling );
     byte vmRec = (byte)( aDbsRec & 0xff );
-    getCache().setData( pageDescriptor, aVmStelling.getPositionWithinPage(), vmRec);
+    getCache().setData( pageDescriptor, aVmStelling, vmRec);
 }
 /**
  *  -------- Cache entry vrijmaken --------------------
@@ -267,8 +268,8 @@ public void open()
 	{
 		throw new RuntimeException( e );
 	}
-    cache = new Cache( database );
-	pageDescriptorTable = new PageDescriptorTable();
+    setCache( new Cache( config.getAantalStukken(), database ) );
+	setPageDescriptorTable( new PageDescriptorTable( config.getAantalStukken() ) );
 	setOpen( true );
 }
 /**
@@ -315,7 +316,7 @@ void initializeDatabasePage( VMStelling aVmStelling )
 void delete()
 {
 	close();
-	if ( ! ( getDatabaseFile() == null ) && ! ( getDatabaseFile().getName().equals( "Pipo" ) ) )
+	if ( ! ( getDatabaseFile() == null ) && ! ( getDatabaseFile().getName().startsWith( "Pipo" ) ) )
 	{
 		throw new RuntimeException( "Poging om een database te verwijderen <> Pipo" );
 	}

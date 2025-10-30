@@ -1,9 +1,10 @@
-package pu.chessdatabase.bo;
+package pu.chessdatabase.bewaard;
 
 import static pu.chessdatabase.bo.Kleur.*;
 
 import pu.chessdatabase.dal.ResultaatType;
 import pu.chessdatabase.service.BoStellingKey;
+import pu.chessdatabase.service.BoStellingKey4Stukken;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,22 +28,40 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-// @@HIGH config-afhankelijk maken
-public class BoStelling implements Cloneable
+public class BoStelling4Stukken extends BoStelling implements Cloneable
 {
+public static class Builder
+{
+private BoStelling4Stukken boStelling = new BoStelling4Stukken();
+public Builder wk( int aWk ) { boStelling.setWk( aWk ); return this; }
+public Builder zk( int aZk ) { boStelling.setZk( aZk ); return this; }
+public Builder s3( int aS3 ) { boStelling.setS3( aS3 ); return this; }
+public Builder s4( int aS4 ) { boStelling.setS4( aS4 ); return this; }
+public Builder aanZet( Kleur aAanZet ) { boStelling.setAanZet( aAanZet ); return this; }
+public Builder resultaat( ResultaatType aResultaat ) { boStelling.setResultaat( aResultaat ); return this; }
+public Builder aantalZetten( int aAantalZetten ) { boStelling.setAantalZetten( aAantalZetten ); return this; }
+public Builder schaak( boolean aSchaak ) { boStelling.setSchaak( aSchaak ); return this; }
+public BoStelling4Stukken build()
+{
+	return boStelling;
+}
+}
+public static Builder builder()
+{
+	return new Builder();
+}
 public static class AlfaBuilder
 {
-private BoStelling boStelling = new BoStelling();
+private BoStelling4Stukken boStelling = new BoStelling4Stukken();
 public AlfaBuilder wk( String aWk ) { boStelling.setWk( Gen.alfaToVeld( aWk ) ); return this; }
 public AlfaBuilder zk( String aZk ) { boStelling.setZk( Gen.alfaToVeld( aZk ) ); return this; }
 public AlfaBuilder s3( String aS3 ) { boStelling.setS3( Gen.alfaToVeld( aS3 ) ); return this; }
 public AlfaBuilder s4( String aS4 ) { boStelling.setS4( Gen.alfaToVeld( aS4 ) ); return this; }
-public AlfaBuilder s5( String aS5 ) { boStelling.setS5( Gen.alfaToVeld( aS5 ) ); return this; }
 public AlfaBuilder aanZet( Kleur aAanZet ) { boStelling.setAanZet( aAanZet ); return this; }
 public AlfaBuilder resultaat( ResultaatType aResultaat ) { boStelling.setResultaat( aResultaat ); return this; }
 public AlfaBuilder aantalZetten( int aAantalZetten ) { boStelling.setAantalZetten( aAantalZetten ); return this; }
 public AlfaBuilder schaak( boolean aSchaak ) { boStelling.setSchaak( aSchaak ); return this; }
-public BoStelling build()
+public BoStelling4Stukken build()
 {
 	return boStelling;
 }
@@ -51,60 +70,20 @@ public static AlfaBuilder alfaBuilder()
 {
 	return new AlfaBuilder();
 }
-public static final BoStelling NULL_STELLING = BoStelling.builder()
+public static final BoStelling4Stukken NULL_STELLING = BoStelling4Stukken.builder()
 	.wk( 0 )
 	.zk( 0 )
 	.s3( 0 )
 	.s4( 0 )
-	.s5( 0 )
 	.aanZet( WIT )
 	.resultaat( ResultaatType.ILLEGAAL )
 	.aantalZetten( 0 )
 	.schaak( false )
 	.build();
-public static Kleur getVeldKleur( int aVeld )
-{
-	int rij = aVeld / 16;
-	int kol = aVeld % 16;
-	return ( rij + kol ) % 2 == 0 ? ZWART : WIT;
-}
 
-/**
- * CASE : BOOLEAN OF
-        |	TRUE : WK, ZK, s3, s4: Veld;
-        |	FALSE: Velden        : VeldArr;
- */
-private final boolean StellingType = true;
-private int wk;
-private int zk;
 private int s3;
 private int s4;
-private int s5;
-private Kleur aanZet;
-private ResultaatType resultaat;
-private int aantalZetten;
-private boolean schaak;
 
-@Override
-public BoStelling clone()
-{
-	try
-	{
-		return (BoStelling) super.clone();
-	}
-	catch ( CloneNotSupportedException e )
-	{
-		throw new RuntimeException( e );
-	}
-}
-public String getWkString()
-{
-	return Config.getStaticStukken().getWk().getStukString();
-}
-public String getZkString()
-{
-	return Config.getStaticStukken().getZk().getStukString();
-}
 public String getS3String()
 {
 	return Config.getStaticStukken().getS3().getStukString();
@@ -113,35 +92,27 @@ public String getS4String()
 {
 	return Config.getStaticStukken().getS4().getStukString();
 }
-public String getS5String()
-{
-	return Config.getStaticStukken().getS5().getStukString();
-}
+
 @Override
 public String toString()
 {
 	StringBuilder sb = new StringBuilder();
 	sb
-	.append( "WK="  ).append( Gen.veldToAlfa( wk ) )
-	.append( " ZK=" ).append( Gen.veldToAlfa( zk ) )
-	.append( " S3=" ).append( Gen.veldToAlfa( s3 ) )
-	.append( " S4=" ).append( Gen.veldToAlfa( s4 ) )
-	.append( " S5=" ).append( Gen.veldToAlfa( s5 ) )
-	.append( " AanZet=" ).append( aanZet.getAfko() )
-	.append( " Resultaat=" ).append( resultaat )
-	.append( " AantalZetten=" ).append( aantalZetten )
-	.append( " Schaak=" ).append( schaak ).append( "\n" );
+	.append( "WK="  ).append( Gen.veldToAlfa( getWk() ) )
+	.append( " ZK=" ).append( Gen.veldToAlfa( getZk() ) )
+	.append( " S3=" ).append( Gen.veldToAlfa( getS3() ) )
+	.append( " S4=" ).append( Gen.veldToAlfa( getS4() ) )
+	.append( getToStringDetails() );
 	for ( int rij = 7; rij >= 0; rij-- )
 	{
 		for ( int kol = 0; kol < 8; kol++ )
 		{
 			int veld = 16 * rij + kol;
 			String veldString;
-			if ( veld == wk ) veldString = getWkString();
-			else if ( veld == zk ) veldString = getZkString();
-			else if ( veld == s3 ) veldString = getS3String();
-			else if ( veld == s4 ) veldString = getS4String();
-//			else if ( veld == s5 ) veldString = getS5String();
+			if ( veld == getWk() ) veldString = getWkString();
+			else if ( veld == getZk() ) veldString = getZkString();
+			else if ( veld == getS3() ) veldString = getS3String();
+			else if ( veld == getS4() ) veldString = getS4String();
 			else veldString = "..";
 			sb.append( veldString ).append( " " );
 		}
@@ -149,15 +120,15 @@ public String toString()
 	}
 	return sb.toString();
 }
-public BoStellingKey getBoStellingKey()
+@Override
+public BoStellingKey4Stukken getBoStellingKey()
 {
-	return BoStellingKey.builder()
-		.wk( wk )
-		.zk( zk )
-		.s3( s3 )
-		.s4( s4 )
-		.s5( s5 )
-		.aanZet( aanZet )
+	return BoStellingKey4Stukken.builder()
+		.wk( getWk() )
+		.zk( getZk() )
+		.s3( getS3() )
+		.s4( getS4() )
+		.aanZet( getAanZet() )
 		.build();
 }
 

@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import pu.chessdatabase.bo.configuraties.ConfigImpl;
+import pu.chessdatabase.bo.configuraties.StukDefinitie;
+
 import lombok.Data;
 
 @Data
@@ -30,6 +33,7 @@ public void vulStukTabel()
 	stukIdLookup.put( 1, "zk" );
 	stukIdLookup.put( 2, "s3" );
 	stukIdLookup.put( 3, "s4" );
+	stukIdLookup.put( 4, "s5" );
 	int index = 0;
 	for ( StukDefinitie stukDefinitie : getConfigImpl().getStukDefinities() )
 	{
@@ -58,6 +62,10 @@ public Stuk getS3()
 public Stuk getS4()
 {
 	return getStukken().get( 3 );
+}
+public Stuk getS5()
+{
+	return getStukken().get( 4 );
 }
 public Stuk getStukAtIndex( int aStukNummer)
 {

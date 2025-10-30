@@ -4,6 +4,8 @@ import static pu.chessdatabase.bo.Kleur.*;
 
 import java.util.List;
 
+import pu.chessdatabase.bo.configuraties.StukType;
+
 import lombok.Builder;
 import lombok.Data;
 

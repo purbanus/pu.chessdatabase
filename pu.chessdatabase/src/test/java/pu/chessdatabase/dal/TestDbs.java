@@ -47,7 +47,7 @@ public void setup()
 public void destroy()
 {
 	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
-	assertThat( dbs.getDatabaseName(), is( DATABASE_NAME ) );
+	assertThat( dbs.getDatabaseName(), startsWith( DATABASE_NAME ) );
 	dbs.delete();
 	config.switchConfig( savedConfigString );
 }
@@ -710,15 +710,15 @@ public void testPass34()
 		.schaak( false )
 		.build();
 	VMStelling vmStelling = dbs.cardinaliseer( boStelling );
-	dbs.pass34( boStelling, vmStelling, getBouw()::isIllegaal );
+	dbs.pass345( boStelling, vmStelling, getBouw()::isIllegaal );
 	dbs.flush();
 	vmStelling.setAanZet( WIT );
-	Page page = vm.getPage( vmStelling );
-	assertThat( TestHelper.isAll( page.getData(), (byte)0xff ), is( true ) );
+	byte [] page = vm.getPage( vmStelling );
+	assertThat( TestHelper.isAll( page, (byte)0xff ), is( true ) );
 	
 	vmStelling.setAanZet( ZWART );
 	page = vm.getPage( vmStelling );
-	assertThat( TestHelper.isAll( page.getData(), (byte)0xff ), is( true ) );
+	assertThat( TestHelper.isAll( page, (byte)0xff ), is( true ) );
 }
 void set0x0b( BoStelling aBoStelling )
 {
@@ -743,13 +743,13 @@ public void testMarkeerWitPassMet0x0b()
 }
 void checkMarkeerPassMet0x0b( VMStelling vmStelling )
 {
-	Page page;
+	byte []  page;
 	vmStelling.setAanZet( WIT );
 	page = vm.getPage( vmStelling );
-	assertThat( TestHelper.isAll( page.getData(), (byte)0x0b ), is( true ) );
+	assertThat( TestHelper.isAll( page, (byte)0x0b ), is( true ) );
 	vmStelling.setAanZet( ZWART );
 	page = vm.getPage( vmStelling );
-	assertThat( TestHelper.isAll( page.getData(), (byte)0x00 ), is( true ) );
+	assertThat( TestHelper.isAll( page, (byte)0x00 ), is( true ) );
 }
 @Test
 public void testMarkeerWitPassMet0x8b()
@@ -762,13 +762,13 @@ public void testMarkeerWitPassMet0x8b()
 }
 void checkMarkeerPassMet0x8b( VMStelling vmStelling )
 {
-	Page page;
+	byte [] page;
 	vmStelling.setAanZet( WIT );
 	page = vm.getPage( vmStelling );
-	assertThat( TestHelper.isAll( page.getData(), (byte)0x8b ), is( true ) );
+	assertThat( TestHelper.isAll( page, (byte)0x8b ), is( true ) );
 	vmStelling.setAanZet( ZWART );
 	page = vm.getPage( vmStelling );
-	assertThat( TestHelper.isAll( page.getData(), (byte)0x00 ), is( true ) );
+	assertThat( TestHelper.isAll( page, (byte)0x00 ), is( true ) );
 }
 
 void set0x11( BoStelling aBoStelling )
@@ -788,13 +788,13 @@ public void testMarkeerZwartPass()
 }
 void checkMarkeerPassMet0x11( VMStelling vmStelling )
 {
-	Page page;
+	byte [] page;
 	vmStelling.setAanZet( WIT );
 	page = vm.getPage( vmStelling );
-	assertThat( TestHelper.isAll( page.getData(), (byte)0x00 ), is( true ) );
+	assertThat( TestHelper.isAll( page, (byte)0x00 ), is( true ) );
 	vmStelling.setAanZet( ZWART );
 	page = vm.getPage( vmStelling );
-	assertThat( TestHelper.isAll( page.getData(), (byte)0x11 ), is( true ) );
+	assertThat( TestHelper.isAll( page, (byte)0x11 ), is( true ) );
 }
 void set0x34( BoStelling aBoStelling )
 {
@@ -814,13 +814,13 @@ public void testMarkeerWitEnZwartPass()
 }
 void checkMarkeerPassMet0x34( VMStelling vmStelling )
 {
-	Page page;
+	byte [] page;
 	vmStelling.setAanZet( WIT );
 	page = vm.getPage( vmStelling );
-	assertThat( TestHelper.isAll( page.getData(), (byte)0x34 ), is( true ) );
+	assertThat( TestHelper.isAll( page, (byte)0x34 ), is( true ) );
 	vmStelling.setAanZet( ZWART );
 	page = vm.getPage( vmStelling );
-	assertThat( TestHelper.isAll( page.getData(), (byte)0x34 ), is( true ) );
+	assertThat( TestHelper.isAll( page, (byte)0x34 ), is( true ) );
 }
 @Test
 public void testPass()

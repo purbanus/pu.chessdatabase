@@ -56,6 +56,7 @@ public void testShiftLeft()
 @Test
 public void testGetBoStelling()
 {
+	// @@HIGH Fouten oplossen, en config-afhankelijk maken
 	VMStelling vmStelling  = VMStelling.builder()
 		.wk( 0x00 )
 		.zk( 0x02 )
@@ -92,6 +93,7 @@ public void testGetBoStelling()
 @Test
 public void testToString()
 {
+	// @@HIGH Fouten oplossen, en config-afhankelijk maken
 	VMStelling vmStelling  = VMStelling.alfaBuilder()
 		.wk( "a1" )
 		.zk( "c1" )

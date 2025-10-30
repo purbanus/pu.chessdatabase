@@ -1,10 +1,12 @@
-package pu.chessdatabase.bo;
+package pu.chessdatabase.bo.configuraties;
 
 import static pu.chessdatabase.bo.Kleur.*;
-import static pu.chessdatabase.bo.StukType.*;
+import static pu.chessdatabase.bo.configuraties.StukType.*;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import pu.chessdatabase.bo.Stukken;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -18,7 +20,6 @@ public abstract class ConfigImpl
 public static final int MIN_STUKNUMMER = 0;
 public static final int MAX_STUKNUMMER = 3;
 
-@Getter( AccessLevel.PACKAGE )
 private final List<StukDefinitie> stukDefinities = new ArrayList<>();
 
 @Setter( AccessLevel.PROTECTED )

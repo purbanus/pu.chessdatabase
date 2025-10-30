@@ -8,6 +8,15 @@ import java.util.Map;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import pu.chessdatabase.bo.configuraties.ConfigImpl;
+import pu.chessdatabase.bo.configuraties.KDK;
+import pu.chessdatabase.bo.configuraties.KDKT;
+import pu.chessdatabase.bo.configuraties.KLLK;
+import pu.chessdatabase.bo.configuraties.KLPK;
+import pu.chessdatabase.bo.configuraties.KTK;
+import pu.chessdatabase.bo.configuraties.StukDefinitie;
+import pu.chessdatabase.bo.configuraties.TestKDK;
+import pu.chessdatabase.bo.configuraties.TestKDKT;
 import pu.chessdatabase.dal.VM;
 
 import lombok.AccessLevel;
@@ -56,9 +65,12 @@ Map<String, ConfigImpl> getConfigImplRegistry()
 	if ( configImplRegistry == null )
 	{
 		configImplRegistry = new HashMap<>();
+		configImplRegistry.put( "KDK", new KDK() );
+		configImplRegistry.put( "KTK", new KTK() );
 		configImplRegistry.put( "KDKT", new KDKT() );
 		configImplRegistry.put( "KLPK", new KLPK() );
 		configImplRegistry.put( "KLLK", new KLLK() );
+		configImplRegistry.put( "TESTKDK", new TestKDK() );
 		configImplRegistry.put( "TESTKDKT", new TestKDKT() );
 	}
 	return configImplRegistry;
@@ -107,14 +119,11 @@ public String getDatabaseName()
 {
 	return getConfigImpl().getDatabaseName();
 }
-//public int getAantalStukken()
-//{
-//	return getStukList().size();
-//}
-//public List<Integer> getAvailableAantalStukken()
-//{
-//	return Arrays.asList( new Integer [] { 4 } );
-//}
+public int getAantalStukken()
+{
+	// @@HIGH Het is gevaarlijk om het uit stukList te halen. Het kan best zzijn dat we daar altijd 5 stukken in zetten!
+	return getStukList().size();
+}
 public String getConfig()
 {
 	return getConfigImpl().getName();

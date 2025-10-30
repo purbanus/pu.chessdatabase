@@ -1,7 +1,9 @@
-package pu.chessdatabase.bo;
+package pu.chessdatabase.bo.configuraties;
 
 import static pu.chessdatabase.bo.Kleur.*;
-import static pu.chessdatabase.bo.StukType.*;
+import static pu.chessdatabase.bo.configuraties.StukType.*;
+
+import pu.chessdatabase.bo.Stukken;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,7 +18,7 @@ public TestKDKT()
 	super();
 	getStukDefinities().add( new StukDefinitie( DAME,   WIT ) );
 	getStukDefinities().add( new StukDefinitie( TOREN,  ZWART ) );
-	databaseName = "dbs/Pipo";
+	databaseName = "dbs/Pipo4";
 	setStukken( new Stukken( this ) );
 }
 @Override
