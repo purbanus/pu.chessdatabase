@@ -53,7 +53,7 @@ public void testGetVeldKleur()
 // Gelukkig bestaat er een \s waarmee je een niet-verwijderbare space
 // definieert. FYI: alle spaces voor die \s worden evenmin verwijderd
 public static final String BO_TO_STRING = """
-WK=a1 ZK=c1 S3=b2 S4=d3 AanZet={4} Resultaat=null AantalZetten=0 Schaak=false
+WK=a1 ZK=c1 S3=b2 S4=d3 S5=a1 AanZet={4} Resultaat=null AantalZetten=0 Schaak=false
 .. .. .. .. .. .. .. ..\s
 .. .. .. .. .. .. .. ..\s
 .. .. .. .. .. .. .. ..\s
@@ -64,7 +64,7 @@ WK=a1 ZK=c1 S3=b2 S4=d3 AanZet={4} Resultaat=null AantalZetten=0 Schaak=false
 {0} .. {1} .. .. .. .. ..\s
 """;
 public static final String BO_TO_STRING_EXTRA = """
-WK=a1 ZK=c1 S3=b2 S4=d3 AanZet={4} Resultaat={5} AantalZetten={6} Schaak={7}
+WK=a1 ZK=c1 S3=b2 S4=d3 S5=a1 AanZet={4} Resultaat={5} AantalZetten={6} Schaak={7}
 .. .. .. .. .. .. .. ..\s
 .. .. .. .. .. .. .. ..\s
 .. .. .. .. .. .. .. ..\s
@@ -82,6 +82,7 @@ public void testToString()
 		.zk( "c1" )
 		.s3( "b2" )
 		.s4( "d3" )
+		.s5( "a1" )
 		.aanZet( WIT )
 		.build();
 
@@ -91,6 +92,7 @@ public void testToString()
 		config.getStukken().getZk().getStukString(),
 		config.getStukken().getS3().getStukString(),
 		config.getStukken().getS4().getStukString(),
+//		config.getStukken().getS5().getStukString(), // @@HIGH Nog effe niet
 		boStelling.getAanZet().getAfko()
 	);
 	assertThat( boStelling.toString().length(), is( boStringText.length() ) );
@@ -102,6 +104,7 @@ public void testToString()
 		config.getStukken().getZk().getStukString(),
 		config.getStukken().getS3().getStukString(),
 		config.getStukken().getS4().getStukString(),
+//		config.getStukken().getS5().getStukString(), // @@HIGH Nog effe niet
 		boStelling.getAanZet().getAfko()
 	);
 	assertThat( boStelling.toString().length(), is( boStringText.length() ) );
@@ -113,6 +116,7 @@ public void testToString()
 		config.getStukken().getZk().getStukString(),
 		config.getStukken().getS3().getStukString(),
 		config.getStukken().getS4().getStukString(),
+//		config.getStukken().getS5().getStukString(), // @@HIGH Nog effe niet
 		boStelling.getAanZet().getAfko()
 	);
 	assertThat( boStelling.toString().length(), is( boStringText.length() ) );
@@ -142,6 +146,7 @@ public void testAlfaBuilder()
 		.zk( "c1" )
 		.s3( "b2" )
 		.s4( "d3" )
+		.s5( "a1" )
 		.aanZet( WIT )
 		.build();
 	config.switchConfig( "KDKT" );
@@ -150,6 +155,7 @@ public void testAlfaBuilder()
 		config.getStukken().getZk().getStukString(),
 		config.getStukken().getS3().getStukString(),
 		config.getStukken().getS4().getStukString(),
+//		config.getStukken().getS5().getStukString(), // @@HIGH Nog effe niet
 		boStelling.getAanZet().getAfko()
 	);
 	assertThat( boStelling.toString().length(), is( boStringText.length() ) );
@@ -160,6 +166,7 @@ public void testAlfaBuilder()
 		.zk( "c1" )
 		.s3( "b2" )
 		.s4( "d3" )
+		.s5( "a1" )
 		.aanZet( WIT )
 		.resultaat( ResultaatType.GEWONNEN )
 		.aantalZetten( 19 )
@@ -170,12 +177,21 @@ public void testAlfaBuilder()
 		config.getStukken().getZk().getStukString(),
 		config.getStukken().getS3().getStukString(),
 		config.getStukken().getS4().getStukString(),
+//		config.getStukken().getS5().getStukString(), // @@HIGH Nog effe niet
 		boStelling.getAanZet().getAfko(),
 		boStelling.getResultaat(),
 		boStelling.getAantalZetten(),
 		boStelling.isSchaak()
 	);
 	assertThat( boStelling.toString().length(), is( boStringText.length() ) );
+//	String boStellingToString = boStelling.toString();
+//	for ( int x = 0; x < boStringText.length(); x++ )
+//	{
+//		if ( boStringText.charAt( x ) != boStellingToString.charAt( x ) )
+//		{
+//			System.out.println( "Op positie " + x + " " + boStringText.charAt( x ) + " " + boStellingToString.charAt( x ) );
+//		}
+//	}
 	assertThat( boStelling.toString(), is( boStringText ) );
 }
 }

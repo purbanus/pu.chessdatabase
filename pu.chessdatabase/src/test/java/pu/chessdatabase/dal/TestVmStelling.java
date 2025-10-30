@@ -20,7 +20,7 @@ import pu.chessdatabase.bo.Config;
 public class TestVmStelling
 {
 public static final String VM_TO_STRING = """
-WK=a1 ZK=c1 S3=b2 S4=d3 AanZet={4}
+WK=a1 ZK=c1 S3=b2 S4=d3 S5=a1 AanZet={4}
 .. .. .. .. .. .. .. ..\s
 .. .. .. .. .. .. .. ..\s
 .. .. .. .. .. .. .. ..\s
@@ -56,7 +56,7 @@ public void testShiftLeft()
 @Test
 public void testGetBoStelling()
 {
-	// @@HIGH Fouten oplossen, en config-afhankelijk maken
+	// @@HIGH config-afhankelijk maken
 	VMStelling vmStelling  = VMStelling.builder()
 		.wk( 0x00 )
 		.zk( 0x02 )
@@ -93,46 +93,56 @@ public void testGetBoStelling()
 @Test
 public void testToString()
 {
-	// @@HIGH Fouten oplossen, en config-afhankelijk maken
+	// @@HIGH config-afhankelijk maken
 	VMStelling vmStelling  = VMStelling.alfaBuilder()
 		.wk( "a1" )
 		.zk( "c1" )
 		.s3( "b2" )
 		.s4( "d3" )
+		.s5( "a1" )
 		.aanZet( WIT )
 		.build();
 	config.switchConfig( "KDKT" );
-	String boStringText = MessageFormat.format( VM_TO_STRING, 
+	String vmStringText = MessageFormat.format( VM_TO_STRING, 
 		config.getStukken().getWk().getStukString(),
 		config.getStukken().getZk().getStukString(),
 		config.getStukken().getS3().getStukString(),
 		config.getStukken().getS4().getStukString(),
+		// config.getStukken().getS5().getStukString(), // @@HIGH Nog effe niet
 		vmStelling.getAanZet().getAfko()
 	);
-	assertThat( vmStelling.toString().length(), is( boStringText.length() ) );
-	assertThat( vmStelling.toString(), is( boStringText ) );
+	assertThat( vmStelling.toString().length(), is( vmStringText.length() ) );
+//	String vmStellingToString = vmStelling.toString();
+//	for ( int x = 0; x < vmStringText.length(); x++ )
+//	{
+//		if ( vmStringText.charAt( x ) != vmStellingToString.charAt( x ) )
+//		{
+//			System.out.println( "Op positie " + x + " " + vmStringText.charAt( x ) + " " + vmStellingToString.charAt( x ) );
+//		}
+//	}
+	assertThat( vmStelling.toString(), is( vmStringText ) );
 	
 	config.switchConfig( "KLPK" );
-	boStringText = MessageFormat.format( VM_TO_STRING, 
+	vmStringText = MessageFormat.format( VM_TO_STRING, 
 		config.getStukken().getWk().getStukString(),
 		config.getStukken().getZk().getStukString(),
 		config.getStukken().getS3().getStukString(),
 		config.getStukken().getS4().getStukString(),
 		vmStelling.getAanZet().getAfko()
 	);
-	assertThat( vmStelling.toString().length(), is( boStringText.length() ) );
-	assertThat( vmStelling.toString(), is( boStringText ) );
+	assertThat( vmStelling.toString().length(), is( vmStringText.length() ) );
+	assertThat( vmStelling.toString(), is( vmStringText ) );
 
 	config.switchConfig( "KLLK" );
-	boStringText = MessageFormat.format( VM_TO_STRING, 
+	vmStringText = MessageFormat.format( VM_TO_STRING, 
 		config.getStukken().getWk().getStukString(),
 		config.getStukken().getZk().getStukString(),
 		config.getStukken().getS3().getStukString(),
 		config.getStukken().getS4().getStukString(),
 		vmStelling.getAanZet().getAfko()
 	);
-	assertThat( vmStelling.toString().length(), is( boStringText.length() ) );
-	assertThat( vmStelling.toString(), is( boStringText ) );
+	assertThat( vmStelling.toString().length(), is( vmStringText.length() ) );
+	assertThat( vmStelling.toString(), is( vmStringText ) );
 }
 
 }

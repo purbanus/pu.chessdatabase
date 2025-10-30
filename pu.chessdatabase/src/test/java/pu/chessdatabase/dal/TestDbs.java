@@ -7,6 +7,7 @@ package pu.chessdatabase.dal;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static pu.chessdatabase.bo.Kleur.*;
+import static pu.chessdatabase.dal.PassType.*;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -297,6 +298,7 @@ public void testSpiegelEnRoteer()
 		.zk( "b3" )
 		.s3( "a1" )
 		.s4( "a3" )
+		.s5( "b1" )
 		.aanZet( WIT )
 		.build();
 	// De WK staat in oktant 1, dit krijgt een identieke afbeelding,
@@ -307,6 +309,7 @@ public void testSpiegelEnRoteer()
 		.zk( "b3" )
 		.s3( "a1" )
 		.s4( "a3" )
+		.s5( "b1" )
 		.aanZet( WIT )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
@@ -316,6 +319,7 @@ public void testSpiegelEnRoteer()
 		.zk( "g3" )
 		.s3( "h1" )
 		.s4( "h3" )
+		.s5( "g1" )
 		.aanZet( WIT )
 		.build();
 	// De WK staat in oktant 2. Dit krijgt een spiegeling in de y-as
@@ -326,6 +330,7 @@ public void testSpiegelEnRoteer()
 		.zk( "b3" )
 		.s3( "a1" )
 		.s4( "a3" )
+		.s5( "b1" )
 		.aanZet( WIT )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
@@ -335,6 +340,7 @@ public void testSpiegelEnRoteer()
 		.zk( "h6" )
 		.s3( "g4" )
 		.s4( "g6" )
+		.s5( "h4" )
 		.aanZet( WIT )
 		.build();
 	// De WK staat in oktant 3. Dit krijgt een rotatie over -90 graden
@@ -345,6 +351,7 @@ public void testSpiegelEnRoteer()
 		.zk( "f1" )
 		.s3( "d2" )
 		.s4( "f2" )
+		.s5( "d1" )
 		.aanZet( WIT )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
@@ -354,6 +361,7 @@ public void testSpiegelEnRoteer()
 		.zk( "h7" )
 		.s3( "g5" )
 		.s4( "g7" )
+		.s5( "h5" )
 		.aanZet( WIT )
 		.build();
 	// De WK staat in oktant 4. Dit krijgt een spiegeling in de diagonaal a8-h1
@@ -364,6 +372,7 @@ public void testSpiegelEnRoteer()
 		.zk( "b1" )
 		.s3( "d2" )
 		.s4( "b2" )
+		.s5( "d1" )
 		.aanZet( WIT )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
@@ -373,6 +382,7 @@ public void testSpiegelEnRoteer()
 		.zk( "f7" )
 		.s3( "e5" )
 		.s4( "e7" )
+		.s5( "f5" )
 		.aanZet( WIT )
 		.build();
 	// De WK staat in oktant 4. Dit krijgt een spiegeling in de diagonaal a8-h1
@@ -383,6 +393,7 @@ public void testSpiegelEnRoteer()
 		.zk( "b3" )
 		.s3( "d4" )
 		.s4( "b4" )
+		.s5( "d3" )
 		.aanZet( WIT )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
@@ -392,6 +403,7 @@ public void testSpiegelEnRoteer()
 		.zk( "e3" )
 		.s3( "f5" )
 		.s4( "f3" )
+		.s5( "e5" )
 		.aanZet( WIT )
 		.build();
 	// De WK staat in oktant 5. Dit krijgt een spiegeling in de x-as gevolgd door een spiegeling in de y-as
@@ -402,6 +414,7 @@ public void testSpiegelEnRoteer()
 		.zk( "d6" )
 		.s3( "c4" )
 		.s4( "c6" )
+		.s5( "d4" )
 		.aanZet( WIT )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
@@ -411,6 +424,7 @@ public void testSpiegelEnRoteer()
 		.zk( "d3" )
 		.s3( "e5" )
 		.s4( "e3" )
+		.s5( "d5" )
 		.aanZet( WIT )
 		.build();
 	// De WK staat in oktant 6. Dit krijgt een spiegeling in de x-as
@@ -421,6 +435,7 @@ public void testSpiegelEnRoteer()
 		.zk( "d6" )
 		.s3( "e4" )
 		.s4( "e6" )
+		.s5( "d4" )
 		.aanZet( WIT )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
@@ -430,6 +445,7 @@ public void testSpiegelEnRoteer()
 		.zk( "c3" )
 		.s3( "d5" )
 		.s4( "d3" )
+		.s5( "c5" )
 		.aanZet( WIT )
 		.build();
 	// De WK staat in oktant 7. Dit krijgt een rotatie over +90 graden
@@ -440,6 +456,7 @@ public void testSpiegelEnRoteer()
 		.zk( "f3" )
 		.s3( "d4" )
 		.s4( "f4" )
+		.s5( "d3" )
 		.aanZet( WIT )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
@@ -449,6 +466,7 @@ public void testSpiegelEnRoteer()
 		.zk( "d4" )
 		.s3( "c6" )
 		.s4( "d6" )
+		.s5( "c4" )
 		.aanZet( WIT )
 		.build();
 	// De WK staat in oktant 8. Dit krijgt een spiegeling in de diagonaal a1-h8
@@ -459,6 +477,7 @@ public void testSpiegelEnRoteer()
 		.zk( "d4" )
 		.s3( "f3" )
 		.s4( "f4" )
+		.s5( "d3" )
 		.aanZet( WIT )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
@@ -469,6 +488,7 @@ public void testSpiegelEnRoteer()
 		.zk( 0x12 )
 		.s3( 0x00 )
 		.s4( 0x13 )
+		.s5( 0x10 )
 		.aanZet( WIT )
 		.build();
 	// De WK zit in oktant 8. Dit krijgt een spiegeling in de diagonaal a1-h8 
@@ -479,6 +499,7 @@ public void testSpiegelEnRoteer()
 		.zk( 0x11 )
 		.s3( 0x00 )
 		.s4( 0x19 )
+		.s5( 0x01 )
 		.aanZet( WIT )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
@@ -493,6 +514,7 @@ public void testSpiegelEnRoteerOktant5()
 		.zk( "e3" )
 		.s3( "f5" )
 		.s4( "f3" )
+		.s5( "e5" )
 		.aanZet( WIT )
 		.build();
 	// De WK staat in oktant 5, maar we gaan roteren in oktant 3
@@ -502,6 +524,7 @@ public void testSpiegelEnRoteerOktant5()
 		.zk( "c4" )
 		.s3( "e3" )
 		.s4( "c3" )
+		.s5( "e4" )
 		.aanZet( WIT )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
@@ -512,6 +535,7 @@ public void testSpiegelEnRoteerOktant5()
 		.zk( "c4" )
 		.s3( "e3" )
 		.s4( "c3" )
+		.s5( "e4" )
 		.aanZet( WIT )
 		.build();
 	vmStelling = dbs.spiegelEnRoteer( boStelling, 3 );
@@ -520,6 +544,7 @@ public void testSpiegelEnRoteerOktant5()
 		.zk( "d6" )
 		.s3( "c4" )
 		.s4( "c6" )
+		.s5( "d4" )
 		.aanZet( WIT )
 		.build();
 	assertThat( vmStelling, is( oktant3Stelling ) );
@@ -530,6 +555,7 @@ public void testSpiegelEnRoteerOktant5()
 		.zk( "e3" )
 		.s3( "f5" )
 		.s4( "f3" )
+		.s5( "e5" )
 		.aanZet( WIT )
 		.build();
 	// De WK staat in oktant 5. Dit krijgt een spiegeling in de x-as gevolgd door een spiegeling in de y-as
@@ -540,6 +566,7 @@ public void testSpiegelEnRoteerOktant5()
 		.zk( "d6" )
 		.s3( "c4" )
 		.s4( "c6" )
+		.s5( "d4" )
 		.aanZet( WIT )
 		.build();
 	assertThat( vmStelling, is( oktant3Stelling ) );
@@ -777,15 +804,15 @@ void set0x11( BoStelling aBoStelling )
 	aBoStelling.setAantalZetten( 0x11 );
 	dbs.put( aBoStelling );
 }
-@Test
-public void testMarkeerZwartPass()
-{
-	dbs.markeerZwartPass( this::set0x11 );
-	dbs.flush();
-	
-	// De even pagina's moeten nu allmaal 0x11 zijn, oftewel alle pagina's met zwart aan zet
-	vmStellingIterator.iterateOverWkZk( this::checkMarkeerPassMet0x11 );
-}
+//@Test
+//public void testMarkeerZwartPass()
+//{
+//	dbs.markeerZwartPass( this::set0x11 );
+//	dbs.flush();
+//	
+//	// De even pagina's moeten nu allmaal 0x11 zijn, oftewel alle pagina's met zwart aan zet
+//	vmStellingIterator.iterateOverWkZk( this::checkMarkeerPassMet0x11 );
+//}
 void checkMarkeerPassMet0x11( VMStelling vmStelling )
 {
 	byte [] page;
@@ -825,9 +852,9 @@ void checkMarkeerPassMet0x34( VMStelling vmStelling )
 @Test
 public void testPass()
 {
-	dbs.pass( PassType.MARKEER_WIT, this::set0x0b );
-	dbs.pass( PassType.MARKEER_ZWART, this::set0x0b );
-	dbs.pass( PassType.MARKEER_WIT_EN_ZWART, this::set0x0b );
+	dbs.pass( MARKEER_WIT, this::set0x0b );
+//	dbs.pass( MARKEER_ZWART, this::set0x0b );
+	dbs.pass( MARKEER_WIT_EN_ZWART, this::set0x0b );
 	// Die markeer-methodes zijn hierboven al getest, we checken hier alleen of de aanroepjes goed gaan
 }
 

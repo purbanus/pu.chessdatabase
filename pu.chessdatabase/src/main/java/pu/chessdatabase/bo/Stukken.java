@@ -65,6 +65,8 @@ public Stuk getS4()
 }
 public Stuk getS5()
 {
+	// HIGH Je moet hier altijd 5 stukken hebben. Maar danmoet je onderscheid maken tussen 'echte' stukken en 'geslagen' stukken
+	//      Die geslagen stukken moeten dan altijd onder de bijbehorende koning gezet
 	return getStukken().get( 4 );
 }
 public Stuk getStukAtIndex( int aStukNummer)

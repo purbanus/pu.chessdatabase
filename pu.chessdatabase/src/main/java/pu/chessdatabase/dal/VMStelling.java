@@ -55,11 +55,6 @@ public void checkStelling()
 		throw new RuntimeException( "Dit is geen geldige stelling: " + this );
 	}
 }
-public int getPositionWithinPage()
-{
-	// @@HIGH Deze moet verhuizen naar Cache of PDT
-	return (getS3() << 6) + getS4();
-}
 @Override
 public VMStelling clone()
 {
