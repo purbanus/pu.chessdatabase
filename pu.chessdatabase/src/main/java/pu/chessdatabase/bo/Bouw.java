@@ -405,8 +405,7 @@ void pass_0()
 
 //	dbs.setReport( 100, this::showThisPass );
 //	reportNewPass( "Matstellingen" );
-	dbs.pass( PassType.MARKEER_WIT  , this::isMat );
-	dbs.pass( PassType.MARKEER_ZWART, this::isMat );
+	dbs.pass( PassType.MARKEER_WIT_EN_ZWART  , this::isMat );
 }
 /**
  * ==============================================================================
@@ -661,10 +660,7 @@ void pass_n()
 {
 //	dbs.setReport( 100, this::showThisPass );
 //	reportNewPass( "Wit aan zet" );
-	dbs.pass( PassType.MARKEER_WIT, this::markeer );
-
-//	reportNewPass( "Zwart aan zet" );
-	dbs.pass( PassType.MARKEER_ZWART, this::markeer );
+	dbs.pass( PassType.MARKEER_WIT_EN_ZWART, this::markeer );
 }
 /**
 PROCEDURE BouwDataBase(StartPass: CARDINAL);
