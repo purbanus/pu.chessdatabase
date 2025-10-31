@@ -267,7 +267,8 @@ public void put( BoStelling aStelling )
 	VMStelling vmStelling = cardinaliseer( aStelling );
 	switch ( aStelling.getResultaat() )
 	{
-		case ILLEGAAL: VMRec = VM.VM_ILLEGAAL; break;
+		case ILLEGAAL: 
+			VMRec = VM.VM_ILLEGAAL; break;
 		// Waarom worden schaakjes als remise gezien?
 		// ==> Omdat ze alleen in pass_0 VM_SCHAAK krijgen en dat betekent dat de stelling remise is,
 		//     maar een potentiele matkandidaat
@@ -392,7 +393,7 @@ void call345( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPass
  */
 void markeerWitPass( PassFunction aPassFunction )
 {
-	vmStellingIterator.iterateOverWkZkWit( aPassFunction, this::callPass345 );
+	vmStellingIterator.iterateOverWkZkWit(  aPassFunction, this::callPass345 );
 }
 void callPass345( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
 {
@@ -418,7 +419,7 @@ void callWitEnZwart( BoStelling aBoStelling, VMStelling aVmStelling, PassFunctio
 	BoStelling gotBoStelling = getDirect( aVmStelling, aBoStelling );
 	// Je kunt hier niet Gen.isSchaak() aanroepen dus moet het in de proc
 	// Je wilt het ook niet aanroepen want in de opbouwbeweging worden schaakjes niet gebruikt behalve in pass 0
-
+	
 	aPassFunction.doPass( gotBoStelling.clone() );
 }
 public void pass( PassType aPassType, PassFunction aPassProc )
