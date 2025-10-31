@@ -44,6 +44,7 @@ public NewGameDocument newGame()
 		stukVelden.put( "zk", "h8" );
 		stukVelden.put( "s3", "b2" );
 		stukVelden.put( "s4", "g7" );
+		// @@NOG Wat doen we hier met s5??
 	}
 	else if ( config.getConfig().equals( "KLPK" ) )
 	{
@@ -130,11 +131,13 @@ public PartijDocument getPartijDocument( BoStellingKey aStellingKey )
 		.zk( Partij.veldToHexGetal( aStellingKey.getZk() ) )
 		.s3( Partij.veldToHexGetal( aStellingKey.getS3() ) )
 		.s4( Partij.veldToHexGetal( aStellingKey.getS4() ) )
+		.s5( Partij.veldToHexGetal( aStellingKey.getS5() ) )
 		.aanZet( aStellingKey.getAanZet().getNormaleSpelling() )
 		.wkStuk( config.getStukken().getWk().getLabel() )
 		.zkStuk( config.getStukken().getZk().getLabel() )
 		.s3Stuk( config.getStukken().getS3().getLabel() )
 		.s4Stuk( config.getStukken().getS4().getLabel() )
+		.s5Stuk( config.getStukken().getS5().getLabel() )
 //		.stelling( boStelling )
 		.resultaat( getPartij().getResultaatRecord() )
 		.zetten( getPartij().getPartijReport().getZetten() )
@@ -156,6 +159,7 @@ BoStelling createBoStelling( BoStellingKey aBoStellingKey )
 		.zk( aBoStellingKey.getZk() )
 		.s3( aBoStellingKey.getS3() )
 		.s4( aBoStellingKey.getS4() )
+		.s5( aBoStellingKey.getS5() )
 		.aanZet( aBoStellingKey.getAanZet() )
 		.build();
 	return stelling;
