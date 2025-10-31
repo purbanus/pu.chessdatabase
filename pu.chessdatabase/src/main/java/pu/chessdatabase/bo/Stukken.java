@@ -1,5 +1,7 @@
 package pu.chessdatabase.bo;
 
+import static pu.chessdatabase.bo.configuraties.StukType.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +27,25 @@ public Stukken( ConfigImpl aConfigImpl )
 public List<Stuk> getStukken()
 {
 	return stukken;
+}
+public List<Stuk> getRealStukken()
+{
+//	List<Stuk> realStukken = getStukken().stream()
+//		.filter( Stuk::getStukType == GEEN )
+//		.collect(toList() );
+	List<Stuk> realStukken = new ArrayList<>();
+	for ( Stuk stuk : getStukken() )
+	{
+		if ( stuk.getStukType() != GEEN )
+		{
+			realStukken.add( stuk );
+		}
+	}
+	return realStukken;
+}
+public int getAantalStukken()
+{
+	return getRealStukken().size();
 }
 public void vulStukTabel()
 {
@@ -71,6 +92,13 @@ public Stuk getS5()
 }
 public Stuk getStukAtIndex( int aStukNummer)
 {
-	return getStukken().get( aStukNummer );
+	try
+	{
+		return getStukken().get( aStukNummer );
+	}
+	catch ( Throwable e )
+	{
+		throw new RuntimeException( e );
+	}
 }
 }
