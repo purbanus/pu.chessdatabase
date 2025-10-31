@@ -90,6 +90,13 @@ public void testGetStukken()
 		.kleur( WIT )
 		.build()
 	);
+	expectedStukken.add( Stuk.builder()
+		.id( "s5" )
+		.stukNummer( 4 )
+		.stukType( GEEN )
+		.kleur( WIT )
+		.build()
+	);
 	assertThat( getConfig().getStukList(), is( expectedStukken ) );
 }
 @Test
@@ -117,6 +124,11 @@ public void testgetStukDefinities()
 		.kleur( ZWART )
 		.build()
 	);
+	expectedStukDefinities.add( StukDefinitie.builder()
+		.stukType( GEEN )
+		.kleur( WIT )
+		.build()
+	);
 	assertThat( getConfig().getStukDefinities(), is( expectedStukDefinities ) );
 	
 	getConfig().switchConfig( "klpk" );
@@ -141,7 +153,23 @@ public void testgetStukDefinities()
 		.kleur( WIT )
 		.build()
 	);
+	expectedStukDefinities.add( StukDefinitie.builder()
+		.stukType( GEEN )
+		.kleur( WIT )
+		.build()
+	);
 	assertThat( getConfig().getStukDefinities(), is( expectedStukDefinities ) );
+}
+@Test
+public void testgetAantalStukken()
+{
+	getConfig().switchConfig( "kdk" );
+	assertThat( getConfig().getAantalStukken(), is( 3 ) );
+	getConfig().switchConfig( "kdkt" );
+	assertThat( getConfig().getAantalStukken(), is( 4 ) );
+	getConfig().switchConfig( "kdktt", false );
+	assertThat( getConfig().getAantalStukken(), is( 5 ) );
+
 }
 @SuppressWarnings( "null" )
 @Test
