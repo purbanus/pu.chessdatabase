@@ -51,4 +51,16 @@ public void buildKLLK()
 	config.switchConfig( "KLLK", false );
 	bouw.bouwDatabase();
 }
+//@Test
+public void buildKDK()
+{
+	config.switchConfig( "KDK", false );
+	bouw.bouwDatabase();
+}
+//@Test
+public void buildKTK()
+{
+	config.switchConfig( "KTK", false );
+	bouw.bouwDatabase();
+}
 }

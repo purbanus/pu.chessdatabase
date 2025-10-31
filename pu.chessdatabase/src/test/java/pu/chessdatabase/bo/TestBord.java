@@ -10,15 +10,22 @@ import static pu.chessdatabase.bo.Bord.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
+import lombok.Data;
+
+@SpringBootTest
+@Data
 public class TestBord
 {
+@Autowired private Config config;
 Bord bord;
 
 @BeforeEach
 public void setup()
 {
-	bord = new Bord();
+	bord = new Bord( getConfig().getAantalStukken(), getConfig().getStukken() );
 }
 @Test
 public void testMaakBordLeeg()
@@ -32,22 +39,30 @@ public void testMaakBordLeeg()
 @Test
 public void testZetBordOp()
 {
-	BoStelling stelling = BoStelling.builder()
-		.wk( 5 )
-		.zk( 6 )
-		.s3( 7 )
-		.s4( 8 )
+	BoStelling stelling = BoStelling.alfaBuilder()
+		.wk( "f1" )
+		.zk( "g1" )
+		.s3( "h1" )
+		.s4( "a2" )
+		.s5( "b2" )
 		.build();
 	bord.zetBordOp( stelling );
-	assertThat( bord.getVeld( 5 ), is( 0 ) );
-	assertThat( bord.getVeld( 6 ), is( 1 ) );
-	assertThat( bord.getVeld( 7 ), is( 2 ) );
-	assertThat( bord.getVeld( 8 ), is( 3 ) );
+	assertThat( bord.getAlfaVeld( "f1" ), is( 0 ) );
+	assertThat( bord.getAlfaVeld( "g1" ), is( 1 ) );
+	assertThat( bord.getAlfaVeld( "h1" ), is( 2 ) );
+	if ( getConfig().getAantalStukken() >= 4 )
+	{
+		assertThat( bord.getAlfaVeld( "a2" ), is( 3 ) );
+	}
+	if ( getConfig().getAantalStukken() >= 5 )
+	{
+		assertThat( bord.getAlfaVeld( "b2" ), is( 4 ) );
+	}
 	for ( int x = 0; x < 5; x++ )
 	{
 		assertThat( bord.isVeldLeeg( x ), is( true ) );
 	}
-	for ( int x = 9; x < 0x77; x++ )
+	for ( int x = 0x12; x < 0x77; x++ )
 	{
 		assertThat( bord.isVeldLeeg( x ), is( true ) );
 	}
@@ -55,22 +70,30 @@ public void testZetBordOp()
 @Test
 public void testClrBord()
 {
-	BoStelling stelling = BoStelling.builder()
-		.wk( 5 )
-		.zk( 6 )
-		.s3( 7 )
-		.s4( 8 )
+	BoStelling stelling = BoStelling.alfaBuilder()
+		.wk( "f1" )
+		.zk( "g1" )
+		.s3( "h1" )
+		.s4( "a2" )
+		.s5( "b2" )
 		.build();
 	bord.zetBordOp( stelling );
 	for ( int x = 0; x <= 4; x++ )
 	{
 		assertThat( bord.getVeld( x ), is( LEEG ) );
 	}
-	assertThat( bord.getVeld( 5 ), is( 0 ) );
-	assertThat( bord.getVeld( 6 ), is( 1 ) );
-	assertThat( bord.getVeld( 7 ), is( 2 ) );
-	assertThat( bord.getVeld( 8 ), is( 3 ) );
-	for ( int x = 9; x <= MAX_BORD; x++ )
+	assertThat( bord.getAlfaVeld( "f1" ), is( 0 ) );
+	assertThat( bord.getAlfaVeld( "g1" ), is( 1 ) );
+	assertThat( bord.getAlfaVeld( "h1" ), is( 2 ) );
+	if ( getConfig().getAantalStukken() >= 4 )
+	{
+		assertThat( bord.getAlfaVeld( "a2" ), is( 3 ) );
+	}
+	if ( getConfig().getAantalStukken() >= 5 )
+	{
+		assertThat( bord.getAlfaVeld( "b2" ), is( 4 ) );
+	}
+	for ( int x = 0x12; x <= MAX_BORD; x++ )
 	{
 		assertThat( bord.getVeld( x ), is( LEEG ) );
 	}

@@ -252,6 +252,7 @@ void setData( PageDescriptor aPageDescriptor, VMStelling aVmStelling, byte aData
 }
 void setData( PageDescriptor aPageDescriptor, int aPositionWithinPage, byte aData )
 {
+	// @@HIGH Zou het niet beter zijn om hier CacheEntry te gebruiken, voor de performance?
     getPage( aPageDescriptor )[aPositionWithinPage] = aData;
 	setVuil( aPageDescriptor, true );
 }

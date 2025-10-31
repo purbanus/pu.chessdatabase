@@ -210,7 +210,7 @@ List<BoStelling> matStellingenMetZwart = new ArrayList<>();
 public void isIllegaal( BoStelling aBoStelling )
 {
 	BoStelling boStelling = aBoStelling.clone();
-	if ( gen.isGeomIllegaal( boStelling ) || gen.isKKSchaak( boStelling ) )
+	if ( gen.isGeometrischIllegaal( boStelling ) || gen.isKKSchaak( boStelling ) )
 	{
 		boStelling.setResultaat( ILLEGAAL );
 		boStelling.setAanZet( WIT );
@@ -551,6 +551,12 @@ List<BoStelling> changes = new ArrayList<>();
  */
 void markeer( BoStelling aBoStelling )
 {
+
+	if ( aBoStelling.getResultaat() != REMISE )
+	{
+		return;
+	}
+
 	BoStelling boStellingVan = aBoStelling.clone();
 	List<BoStelling> gegenereerdeZetten = gen.genereerZetten( boStellingVan );
 	if ( gegenereerdeZetten.size() == 0 )
@@ -683,7 +689,7 @@ public void bouwDatabase()
 	StopWatch overallTimer = new StopWatch();
 	passNr = 0;
 	pass_0();
-	telAlles();
+//	telAlles();
 	printAllesMetKleur();
 	while ( passNchanges )
 	{

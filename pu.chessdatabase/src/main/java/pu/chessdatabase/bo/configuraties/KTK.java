@@ -17,6 +17,8 @@ public KTK()
 {
 	super();
 	getStukDefinities().add( new StukDefinitie( TOREN,   WIT ) );
+	getStukDefinities().add( new StukDefinitie( GEEN,   WIT ) );
+	getStukDefinities().add( new StukDefinitie( GEEN,   WIT ) );
 	databaseName = "dbs/KTK.DBS";
 	setStukken( new Stukken( this ) );
 }

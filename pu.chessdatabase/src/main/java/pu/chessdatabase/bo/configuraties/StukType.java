@@ -11,7 +11,8 @@ KONING( "K", "Koning", Richtingen.KRICHTING, false ),
 DAME( "D", "Dame", Richtingen.KRICHTING, true ), 
 TOREN( "T", "Toren", Richtingen.TRICHTING, true ), 
 LOPER( "L", "Loper", Richtingen.LRICHTING, true ), 
-PAARD( "P",  "Paard", Richtingen.PRICHTING, false );
+PAARD( "P",  "Paard", Richtingen.PRICHTING, false ),
+GEEN( "G",  "Geen stuk", Richtingen.GRICHTING, false );
 // geen pion!
 
 private String afko;

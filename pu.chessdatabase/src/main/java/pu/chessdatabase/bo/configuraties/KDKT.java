@@ -20,6 +20,7 @@ public KDKT()
 	//      Die geslagen stukken moeten dan altijd onder de bijbehorende koning gezet
 	getStukDefinities().add( new StukDefinitie( DAME,   WIT ) );
 	getStukDefinities().add( new StukDefinitie( TOREN,   ZWART ) );
+	getStukDefinities().add( new StukDefinitie( GEEN,   WIT ) );
 	databaseName = "dbs/KDKT.DBS";
 	setStukken( new Stukken( this ) );
 }

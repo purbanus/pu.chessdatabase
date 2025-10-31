@@ -68,11 +68,6 @@ public static Kleur getVeldKleur( int aVeld )
 	return ( rij + kol ) % 2 == 0 ? ZWART : WIT;
 }
 
-/**
- * CASE : BOOLEAN OF
-        |	TRUE : WK, ZK, s3, s4: Veld;
-        |	FALSE: Velden        : VeldArr;
- */
 private final boolean StellingType = true;
 private int wk;
 private int zk;
@@ -136,12 +131,40 @@ public String toString()
 		{
 			int veld = 16 * rij + kol;
 			String veldString;
-			if ( veld == wk ) veldString = getWkString();
-			else if ( veld == zk ) veldString = getZkString();
-			else if ( veld == s3 ) veldString = getS3String();
-			else if ( veld == s4 ) veldString = getS4String();
-//			else if ( veld == s5 ) veldString = getS5String(); // @@HIGH Nog effe niet
-			else veldString = "..";
+			// Omdat we eerst testen of het de wk is die oip het veld staat, komen andere stukken die op dat 
+			// veld staan, niet in aanmerking.
+			if ( veld == wk )
+			{
+				veldString = getWkString();
+			}
+			else if ( veld == zk )
+			{
+				veldString = getZkString();
+			}
+			else if ( veld == s3 )
+			{
+				veldString = getS3String();
+			}
+			else if ( veld == s4 )
+			{
+				veldString = getS4String(); 
+				if ( veldString.equals( "WG" ) )
+				{
+					veldString = "..";
+				}
+			}
+			else if ( veld == s5 )
+			{
+				veldString = getS5String(); 
+				if ( veldString.equals( "WG" ) )
+				{
+					veldString = "..";
+				}
+			}
+			else
+			{
+				veldString = "..";
+			}
 			sb.append( veldString ).append( " " );
 		}
 		sb.append( "\n" );
