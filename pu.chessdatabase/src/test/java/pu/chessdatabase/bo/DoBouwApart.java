@@ -57,7 +57,7 @@ public void buildKDK()
 	config.switchConfig( "KDK", false );
 	bouw.bouwDatabase();
 }
-@Test
+//@Test
 public void buildKTK()
 {
 	config.switchConfig( "KTK", false );
