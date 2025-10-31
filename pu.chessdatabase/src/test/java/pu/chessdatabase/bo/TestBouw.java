@@ -21,7 +21,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import pu.chessdatabase.dal.Dbs;
 import pu.chessdatabase.dal.PassType;
 
+import lombok.Data;
+
 @SpringBootTest
+@Data
 public class TestBouw
 {
 private static final String DATABASE_NAME = "dbs/Pipo";
@@ -152,6 +155,7 @@ public void testSchaakjes()
 }
 private void markeerIllegaal()
 {
+	// @@HIGH Check dat alle illegale stellingen zowel met wit als met zwart illegaal zijn
 	bouw.illegaalStellingen = new ArrayList<>();
 	bouw.stellingenMetSchaak = new ArrayList<>();
 	bouw.matStellingen  = new ArrayList<>();
@@ -271,6 +275,8 @@ public void testShowMatStellingen()
 //@Test
 public void testTelAlles()
 {
+	getConfig().switchConfig( "KDK", false );
+
 	bouw.pass_0();
 	dbs.open();
 	bouw.telAlles();
@@ -285,6 +291,7 @@ public void testTelAlles()
        Verloren     2194
 	 */
 	bouw.printAllesMetKleur();
+	System.out.println( "Illegale stellingen: " + bouw.illegaalStellingen );
 }
 @Test
 public void testMarkeer()
