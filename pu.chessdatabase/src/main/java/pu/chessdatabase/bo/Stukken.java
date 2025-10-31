@@ -92,13 +92,6 @@ public Stuk getS5()
 }
 public Stuk getStukAtIndex( int aStukNummer)
 {
-	try
-	{
 		return getStukken().get( aStukNummer );
 	}
-	catch ( Throwable e )
-	{
-		throw new RuntimeException( e );
-	}
-}
 }
