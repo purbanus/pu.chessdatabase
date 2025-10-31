@@ -308,13 +308,17 @@ VanNaar stellingToVanNaar( BoStelling aBoStellingVan, BoStelling aBoStellingNaar
 	{
 		return new VanNaar( aBoStellingVan.getZk(), aBoStellingNaar.getZk() );
 	}
-	if ( aBoStellingNaar.getS3() != aBoStellingNaar.getWk() && aBoStellingVan.getS3() != aBoStellingNaar.getS3() )
+	if ( aBoStellingNaar.getS3() != aBoStellingNaar.getWk() && aBoStellingNaar.getS3() != aBoStellingNaar.getZk() && aBoStellingVan.getS3() != aBoStellingNaar.getS3() )
 	{
 		return new VanNaar( aBoStellingVan.getS3(), aBoStellingNaar.getS3() );
 	}
-	if ( aBoStellingNaar.getS4() != aBoStellingNaar.getZk() && aBoStellingVan.getS4() != aBoStellingNaar.getS4())
+	if ( aBoStellingNaar.getS4() != aBoStellingNaar.getWk() && aBoStellingNaar.getS4() != aBoStellingNaar.getZk() && aBoStellingVan.getS4() != aBoStellingNaar.getS4() )
 	{
 		return new VanNaar( aBoStellingVan.getS4(), aBoStellingNaar.getS4() );
+	}
+	if ( aBoStellingNaar.getS5() != aBoStellingNaar.getWk() && aBoStellingNaar.getS5() != aBoStellingNaar.getZk() && aBoStellingVan.getS5() != aBoStellingNaar.getS5() )
+	{
+		return new VanNaar( aBoStellingVan.getS5(), aBoStellingNaar.getS5() );
 	}
 	throw new RuntimeException( "De stellingen zijn gelijk in stellingToVanNaar()" );
 }
@@ -379,7 +383,7 @@ END IsLegaal;
  */
 boolean isLegalMove( VanNaar aVanNaar )
 {
-	// Dit throws een RuntimeException als er geen stelling gevoinden kon worden
+	// Dit throws een RuntimeException als er geen stelling gevonden kon worden
 	vanCurrentPlyNaarToStelling( aVanNaar );
 	return true;
 }
