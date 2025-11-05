@@ -274,7 +274,7 @@ public void testMetGeslagenStuk()
 		config.getStukken().getS5().getStukString(),
 		boStelling.getAanZet().getAfko()
 	);
-	System.out.println( boStelling );
+	//System.out.println( boStelling );
 	assertThat( boStelling.toString().length(), is( localToStringText.length() ) );
 	assertThat( boStelling.toString(), is( localToStringText ) );
 }
