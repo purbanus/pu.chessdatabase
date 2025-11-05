@@ -10,7 +10,9 @@ import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.dal.ResultaatType.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +22,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.dal.Dbs;
 import pu.chessdatabase.dal.PassType;
+import pu.chessdatabase.dal.VM;
+import pu.chessdatabase.dal.VMStellingIterator;
 
 import lombok.Data;
 
@@ -28,9 +32,13 @@ import lombok.Data;
 public class TestBouw
 {
 private static final String DATABASE_NAME = "dbs/Pipo";
+private static final boolean DO_PRINT = false;
 @Autowired private Bouw bouw;
 @Autowired private Dbs dbs;
+@Autowired private VM vm;
 @Autowired private Gen gen;
+@Autowired private VMStellingIterator vmStellingIterator
+;
 @Autowired private Config config;
 String savedConfigString;
 
@@ -53,62 +61,43 @@ public void destroy()
 public void testConstructor()
 {
 	assertThat( bouw.passNchanges, is( true ) );
-	assertThat( bouw.passNr, is( 0 ) );
+	assertThat( bouw.passNumber, is( 0 ) );
 }
-//@Test
-//public void testInzReport()
-//{
-//	bouw.inzReport();
-//
-//	assertThat( bouw.rptPrev[0], is( 0L ) );
-//	assertThat( bouw.rptPrev[1], is( 0L ) );
-//	assertThat( bouw.rptPrev[2], is( 5 * bouw.MEG ) );
-//	assertThat( bouw.rptPrev[3], is( 0L ) );
-//	
-//	assertThat( bouw.rptTot[0], is( 0L ) );
-//	assertThat( bouw.rptTot[1], is( 0L ) );
-//	assertThat( bouw.rptTot[2], is( 5 * bouw.MEG ) );
-//	assertThat( bouw.rptTot[3], is( 0L ) );
-//}
-//@Test
-//public void testSetTotals()
-//{
-//	long [] totalsArray = new long [] { 1L, 2L, 3L, 4L };
-//	bouw.setTotals( totalsArray );
-//	for ( int x = 0; x < 4; x++ )
-//	{
-//		assertThat( bouw.rptTot[x], is( totalsArray[x] ) );
-//	}
-//}
-//@Test
-//public void testShowThisPass()
-//{
-//	long [] totalsArray = new long [] { 1L, 2L, 3L, 4L };
-//	bouw.showThisPass( totalsArray );
-//	assertThat( totalsArray[REMISE.ordinal()], is( -7L ) );
-//}
-//@Test
-//public void testReportNewPass()
-//{
-//	dbs.report = new long[] { 10L, 11L, 12L, 13L };
-//	bouw.rptTot  = new long[] { 5L, 6L, 7L, 9L };
-//	bouw.rptPrev = new long[] { 1L, 2L, 3L, 4L };
-//	long [] totals = new long[] { 6L, 8L, 10L, 13L };
-//	bouw.reportNewPass( "Pipo Koeie" );
-//	for ( int x = 0; x < 4; x++ )
-//	{
-//		if ( x == REMISE.ordinal() ) //Remise = 2
-//		{
-//			assertThat( bouw.rptPrev[x], is( -34L ) ); 
-//			assertThat( bouw.rptTot [x], is( -27L ) ); 
-//		}
-//		else
-//		{
-//			assertThat( bouw.rptTot[x], is( totals[x] ) );
-//			assertThat( bouw.rptTot[x], is( totals[x] ) );
-//		}
-//	}
-//}
+@Test
+public void testReportNewPass()
+{
+	int [][] totals = new int [][] { { 1, 2, 3, 4 }, { 5, 6, 7, 8 } };
+	vmStellingIterator.setTellingen( totals );
+	vmStellingIterator.setStellingTeller( 1500 );
+	vmStellingIterator.setReportFunction( null );
+	vmStellingIterator.setReportFrequency( 0 );
+	bouw.reportNewPass( "", DO_PRINT );
+	
+	totals = new int [][] { { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
+	assertThat( vmStellingIterator.getTellingen(), is( totals ) ); 
+	assertThat( vmStellingIterator.getStellingTeller(), is( 0 ) ); 
+	// Niet mogelijk assertThat( vmStellingIterator.getReportFunction(), is( bouw::showTellers ) ); 
+	assertThat( vmStellingIterator.getReportFunction(), is( notNullValue() ) );
+	assertThat( vmStellingIterator.getReportFrequency(), is( 64 * 64 * 64 * 2 ) ); 
+}
+@Test
+public void testTelAlles()
+{
+	if ( DO_PRINT )
+	{
+		System.out.println( "methode testTelAlles\n" );
+	}
+	getConfig().switchConfig( "KDK" );
+
+	bouw.pass_0( DO_PRINT );
+	dbs.open();
+	bouw.telAndPrintAlles( DO_PRINT );
+	if ( DO_PRINT )
+	{
+		System.out.println( "Illegale stellingen: " + bouw.illegaleStellingen );
+	}
+}
+
 @Test
 public void testIsIllegaal()
 {
@@ -133,11 +122,11 @@ public void testSchaakjes()
 	BoStelling boStelling;
 
 	// T links geeft schaak
-	boStelling = BoStelling.builder()
-		.wk( 0x11 )
-		.zk( 0x27 )
-		.s3( 0x76 )
-		.s4( 0x10 )
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "h3" )
+		.s3( "g8" )
+		.s4( "a2" )
 		.aanZet( WIT )
 		.resultaat( REMISE )
 		.build();
@@ -152,34 +141,105 @@ public void testSchaakjes()
 	gotBoStelling.setSchaak( gen.isSchaak( gotBoStelling ) );
 	assertThat( gotBoStelling.isSchaak(), is( false ) );
 	assertThat( gotBoStelling.getResultaat(), is( ILLEGAAL ) );
+	
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "f3" )
+		.zk( "h4" )
+		.s3( "g3" )
+		.s4( "a2" )
+		.aanZet( WIT )
+		.schaak( false )
+		.resultaat( REMISE )
+		.aantalZetten( 0 )
+		.build();
+	bouw.schaakjes( boStelling );
+	gotBoStelling = dbs.get( boStelling );
+	gotBoStelling.setSchaak( gen.isSchaak( gotBoStelling ) );
+	assertThat( gotBoStelling.isSchaak(), is( false ) );
+	assertThat( gotBoStelling.getResultaat(), is( ILLEGAAL ) );
+	assertThat( gotBoStelling.getAantalZetten(), is( 0 ) );
+}
+//@Test
+public void testPassSchaakjes()
+{
+	// BELANGRIJK!! Als je deze runt moet je in VMStellingIterator HOU_STELLINGEN_BIJ = true doen
+	getConfig().switchConfig( "TESTKDK", false );
+	bouw.reportNewPass( "Reserveren schijfruimte\n", DO_PRINT );
+	dbs.create();
+
+	bouw.reportNewPass( "Markeren illegale stellingen", DO_PRINT );
+	dbs.pass( PassType.MARKEER_WIT, bouw::isIllegaal );
+	assertThat(vmStellingIterator.getStellingen().size(), is( 10 * 64 * 64 ) ); // NIet * 2 want we hebben alleen witstellingen
+	
+	bouw.reportNewPass( "Markeren illegale stellingen", DO_PRINT );
+	dbs.pass( PassType.MARKEER_WIT, bouw::schaakjes );
+	assertThat(vmStellingIterator.getStellingen().size(), is( 10 * 64 * 64 ) ); // NIet * 2 want we hebben alleen witstellingen
+
+	Map<String, BoStelling> stellingLookup = new HashMap<>();
+	for ( BoStelling boStelling : vmStellingIterator.getStellingen() )
+	{
+		StringBuilder sb = new StringBuilder()
+			.append( Gen.veldToAlfa( boStelling.getWk() ) )
+			.append( Gen.veldToAlfa( boStelling.getZk() ) )
+			.append( Gen.veldToAlfa( boStelling.getS3() ) )
+			.append( boStelling.getAanZet().getAfko() );
+		stellingLookup.put( sb.toString(), boStelling );
+	}
+	for ( int wk : vm.wkVeldRange )
+	{
+		for ( int zk : vm.stukVeldRange )
+		{
+			for ( int s3 : vm.stukVeldRange )
+			{
+				StringBuilder sb = new StringBuilder()
+					.append( Gen.veldToAlfa( Dbs.CVT_WK  [wk] ) )
+					.append( Gen.veldToAlfa( Dbs.CVT_STUK[zk] ) )
+					.append( Gen.veldToAlfa( Dbs.CVT_STUK[s3] ) )
+					.append( WIT.getAfko() );
+				BoStelling boStellingLookup = stellingLookup.get( sb.toString() );
+				assertThat("For key: " + sb.toString(), boStellingLookup, is( notNullValue() ) );
+			}
+		}
+	}
 }
 private void markeerIllegaal()
 {
 	// @@HIGH Check dat alle illegale stellingen zowel met wit als met zwart illegaal zijn
-	bouw.illegaalStellingen = new ArrayList<>();
+	bouw.illegaleStellingen = new ArrayList<>();
 	bouw.stellingenMetSchaak = new ArrayList<>();
 	bouw.matStellingen  = new ArrayList<>();
+	bouw.passNumber = 0;
 	
-	bouw.passNr = 0;
-//	dbs.setReport( dbs.DFT_RPT_FREQ, bouw::showThisPass );
-	dbs.clearTellers();
-//	bouw.inzReport();
-//	bouw.reportNewPass( "Reserveren schijfruimte" );
+	bouw.reportNewPass( "Reserveren schijfruimte\n", DO_PRINT );
+	dbs.create();
 
-//	bouw.reportNewPass( "Illegaal" );
+	bouw.reportNewPass( "Markeren illegale stellingen", DO_PRINT );
 	dbs.pass( PassType.MARKEER_WIT, bouw::isIllegaal );
-
-//	bouw.reportNewPass( "Schaakjes" );
+	checkTellingen();
+	
+	bouw.reportNewPass( "Markeren schaakjes", DO_PRINT );
 	dbs.pass( PassType.MARKEER_WIT, bouw::schaakjes );
+	checkTellingen();
 
 //	dbs.SetReport( 100, bouw::showThisPass );
-//	bouw.reportNewPass( "Matstellingen" );
+//	bouw.reportNewPass( "Matstellingen", DO_PRINT );
 //	dbs.Pass( PassType.MarkeerWit  , bouw::isMat );
 //	dbs.Pass( PassType.MarkeerZwart, bouw::isMat );
+}
+void checkTellingen()
+{
+	int [][] tellingen = vmStellingIterator.getTellingen();
+	bouw.telAlles( DO_PRINT );
+	assertThat( vmStellingIterator.getTellingen(), is( tellingen ) );
 }
 @Test
 public void testIsMat()
 {
+	if ( DO_PRINT )
+	{
+		System.out.println( "methode testIsMat\n" );
+	}
+
 	// Je moet nu eerst de illegale stellingen markeren anders denkt genZPerStuk
 	// dat in het schaak gaan staan een legale zet is
 	markeerIllegaal();
@@ -203,7 +263,6 @@ public void testIsMat()
 	assertThat( gotBoStelling.getResultaat(), is( VERLOREN ) );
 	assertThat( gotBoStelling.getAantalZetten(), is( 1 ) );
 
-	//WK=2 ZK=0 S3=6 S4=4 AanZet=W
 	boStelling = BoStelling.builder()
 		.wk( 0x02 )
 		.zk( 0x00 )
@@ -263,40 +322,23 @@ ZK ZT WK .. .. .. .. ..
 	assertThat( gotBoStelling.getAantalZetten(), is( 1 ) );
 }
 //@Test
-public void testShowMatStellingen()
-{
-	bouw.pass_0();
-	dbs.open();
-	System.out.println( "MatMetWitAanZet" );
-	System.out.println( bouw.matStellingenMetWit );
-	System.out.println( "\n\n\nMatMetZwartAanZet" );
-	System.out.println( bouw.matStellingenMetZwart );
-}
-//@Test
-public void testTelAlles()
-{
-	getConfig().switchConfig( "KDK", false );
-
-	bouw.pass_0();
-	dbs.open();
-	bouw.telAlles();
-//	System.out.println( bouw.rptTot );
-	for ( int x = 0; x < 4; x++ )
-	{
-//		System.out.println( bouw.rptTot[x] );
-	}
-	/* Illegaal: 2039130
-       Gewonnen:       0
-       Remise    3201556
-       Verloren     2194
-	 */
-	bouw.printAllesMetKleur();
-	System.out.println( "Illegale stellingen: " + bouw.illegaalStellingen );
-}
+//public void testShowMatStellingen()
+//{
+//	bouw.pass_0( DO_PRINT );
+//	dbs.open();
+//	System.out.println( "MatMetWitAanZet" );
+//	System.out.println( bouw.matStellingenMetWit );
+//	System.out.println( "\n\n\nMatMetZwartAanZet" );
+//	System.out.println( bouw.matStellingenMetZwart );
+//}
 @Test
 public void testMarkeer()
 {
-	bouw.pass_0();
+	if ( DO_PRINT )
+	{
+		System.out.println( "methode testMarkeer\n" );
+	}
+	bouw.pass_0( DO_PRINT );
 	dbs.open();
 	BoStelling boStellingVan;
 	BoStelling gotBoStelling;
