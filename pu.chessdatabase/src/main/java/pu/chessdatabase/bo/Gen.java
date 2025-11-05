@@ -551,20 +551,23 @@ public List<BoStelling> genereerZetten( BoStelling aStelling )
 	Bord bord = new Bord( getConfig().getAantalStukken(), getConfig().getStukken(), aStelling );
 	int stukVeld;
 	int koningsVeld;
+	Stuk stuk;
 
 	//-------- Koningszetten --------
 	if ( aStelling.getAanZet() == WIT )
 	{
 		stukVeld = aStelling.getWk();
 		koningsVeld = aStelling.getWk();
-		gegenereerdeZetten.addAll( genereerZettenPerStuk( aStelling, getStukken().getWk(), koningsVeld, stukVeld, bord ) );
+		stuk = getStukken().getWk();
 	}
 	else
 	{
 		stukVeld = aStelling.getZk();
 		koningsVeld = aStelling.getZk();
-		gegenereerdeZetten.addAll( genereerZettenPerStuk( aStelling, getStukken().getZk(), koningsVeld, stukVeld, bord ) );
+		stuk = getStukken().getZk();
 	}
+	gegenereerdeZetten.addAll( genereerZettenPerStuk( aStelling, stuk, koningsVeld, stukVeld, bord ) );
+
 	//--------- Stukzetten ----------
 	if ( ( getStukken().getS3().getKleur() == aStelling.getAanZet() ) && ( aStelling.getS3() != koningsVeld ) )
 	{
