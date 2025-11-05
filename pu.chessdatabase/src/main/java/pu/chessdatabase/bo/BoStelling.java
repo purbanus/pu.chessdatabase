@@ -114,17 +114,16 @@ public String getS5String()
 @Override
 public String toString()
 {
-	StringBuilder sb = new StringBuilder();
-	sb
-	.append( "WK="  ).append( Gen.veldToAlfa( wk ) )
-	.append( " ZK=" ).append( Gen.veldToAlfa( zk ) )
-	.append( " S3=" ).append( Gen.veldToAlfa( s3 ) )
-	.append( " S4=" ).append( Gen.veldToAlfa( s4 ) )
-	.append( " S5=" ).append( Gen.veldToAlfa( s5 ) )
-	.append( " AanZet=" ).append( aanZet.getAfko() )
-	.append( " Resultaat=" ).append( resultaat )
-	.append( " AantalZetten=" ).append( aantalZetten )
-	.append( " Schaak=" ).append( schaak ).append( "\n" );
+	StringBuilder sb = new StringBuilder()
+		.append( "WK="  ).append( Gen.veldToAlfa( wk ) )
+		.append( " ZK=" ).append( Gen.veldToAlfa( zk ) )
+		.append( " S3=" ).append( Gen.veldToAlfa( s3 ) )
+		.append( " S4=" ).append( Gen.veldToAlfa( s4 ) )
+		.append( " S5=" ).append( Gen.veldToAlfa( s5 ) )
+		.append( " AanZet=" ).append( aanZet.getAfko() )
+		.append( " Resultaat=" ).append( resultaat )
+		.append( " AantalZetten=" ).append( aantalZetten )
+		.append( " Schaak=" ).append( schaak ).append( "\n" );
 	for ( int rij = 7; rij >= 0; rij-- )
 	{
 		for ( int kol = 0; kol < 8; kol++ )
