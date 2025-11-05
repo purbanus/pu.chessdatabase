@@ -27,28 +27,34 @@ import lombok.Data;
 @Data
 public class TestBouwOverProductie
 {
+public static final boolean DO_PRINT = false;
 @Autowired private Dbs dbs;
 @Autowired private Bouw bouw;
 @Autowired private Config config;
+int grootste = Integer.MIN_VALUE;
+List<BoStelling> grootsten = new ArrayList<>();
+List<BoStelling> grootstenMinEen = new ArrayList<>();
+String savedConfigString;
 
 @BeforeEach
 public void setup()
 {
+	savedConfigString = config.getConfig();
 	dbs.open();
 }
 @AfterEach
 public void destroy()
 {
 	dbs.close();
+	config.switchConfig( savedConfigString );
 }
-int grootste = Integer.MIN_VALUE;
-List<BoStelling> grootsten = new ArrayList<>();
-List<BoStelling> grootstenMinEen = new ArrayList<>();
+
 void vindGrootste( BoStelling aBoStelling )
 {
-	if ( aBoStelling.getAantalZetten() > grootste )
+	int aantalZetten = aBoStelling.getAantalZetten();
+	if ( aantalZetten > grootste )
 	{
-		grootste = aBoStelling.getAantalZetten();
+		grootste = aantalZetten;
 	}
 }
 void vindGrootsten( BoStelling aBoStelling )
@@ -65,19 +71,29 @@ void vindGrootstenMinEen( BoStelling aBoStelling )
 		grootstenMinEen.add(  aBoStelling );
 	}
 }
-
+void doNothing( int aStellingTeller, int [][] aTellingen )
+{
+}
 @Test
 public void testGrootsteAantalZetten()
 {
 	getConfig().switchConfig( "KTK" );
+	dbs.setReport( Integer.MAX_VALUE, this::doNothing, true );
+	grootste = Integer.MIN_VALUE;
 	dbs.pass( PassType.MARKEER_WIT_EN_ZWART, this::vindGrootste );
 	dbs.pass( PassType.MARKEER_WIT_EN_ZWART, this::vindGrootsten );
 	dbs.pass( PassType.MARKEER_WIT_EN_ZWART, this::vindGrootstenMinEen );
-	System.out.println( "Grootste aantal zetten tot mat: " + grootste );
-	System.out.println( "Aantal stellingen: " + grootsten.size() );
-	System.out.println(  grootsten );
-	System.out.println( "Aantal min-1-stellingen: " + grootstenMinEen.size() );
-	System.out.println(  grootstenMinEen );
+	if ( DO_PRINT )
+	{
+		System.out.println( "Grootste aantal zetten tot mat: " + grootste );
+		System.out.println( "Aantal stellingen: " + grootsten.size() );
+		System.out.println(  grootsten );
+		System.out.println( "Aantal min-1-stellingen: " + grootstenMinEen.size() );
+		System.out.println(  grootstenMinEen );
+	}
+	assertThat( grootste, is (19 ) );
+	assertThat( grootsten.size(), is (96 ) );
+	assertThat( grootstenMinEen.size(), is (1119 ) );
 }
 
 

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import pu.chessdatabase.bo.BoStelling;
+import pu.chessdatabase.bo.Kleur;
 import pu.chessdatabase.bo.ReportFunction;
 import pu.services.Matrix;
 import pu.services.Range;
@@ -16,8 +17,6 @@ public class Dbs
 {
 public static final int MAX_RESULTAAT_TYPE = 4;
 public static final int OKTANTEN = 8;
-
-public static final int DFT_RPT_FREQ = 4096;
 
 /**==============================================================================================================
 * Konversie WK notatie van VM naar Gen
@@ -119,34 +118,43 @@ public static final Vector [] TRANSLATIE_TABEL = new Vector [] {
 	new Vector( 7, 0),
 	new Vector( 0, 0)
 };
+public static void iterateOverKleurEnResultaat( IterateOverKleurEnResultaatFunction aIterateOverKleurEnResultaatFunction )
+{
+	for ( Kleur kleur : Kleur.values() )
+	{
+		for ( ResultaatType resultaat : ResultaatType.values() )
+		{
+			aIterateOverKleurEnResultaatFunction.doPass( kleur, resultaat );
+		}
+	}
+}
 
 @Autowired private VM vm;
 @Autowired private VMStellingIterator vmStellingIterator;
 
 //Range<Integer> Veld = Range.of( 0, 0x77 );
 //Range<Integer> OKtant = Range.of( 1, OKTANTEN );
-//Range<Integer> OKtant_0 = Range.of( 0, OKTANTEN );
 //Range<Integer> ResultaatRange = Range.of( 0, 3 );
 
 Range veldRange = new Range( 0, 0x77 );
 Range oktantRange = new Range( 1, OKTANTEN );
-//Range oktant_0_Range = new Range( 0, OKTANTEN );
 Range resultaatRange = new Range( 0, 3 );
 
 int[][] transformatieTabel = new int [OKTANTEN + 1][veldRange.getMaximum() + 1];
-public long [] report = new long [4];
-long [] reportArray = new long [4];
-int reportTeller;
-int reportFrequentie;
-ReportFunction reportProc;
 
 public Dbs()
 {
 	createTransformatieTabel();
-	reportFrequentie = DFT_RPT_FREQ;
-	reportProc = null;
-	clearTellers();
 }
+public void setReport( int aReportFrequency, ReportFunction aReportFunction )
+{
+	setReport( aReportFrequency, aReportFunction, false );
+}
+public void setReport( int aReportFrequency, ReportFunction aReportFunction, boolean aDoAllPositions )
+{
+	vmStellingIterator.setReport( aReportFrequency, aReportFunction, aDoAllPositions );
+}
+
 /**
  * ------- Naam geven -------------------
  */
@@ -154,51 +162,15 @@ public String getDatabaseName()
 {
 	return vm.getDatabaseName();
 }
+public long getDatabaseSize()
+{
+	return vm.getDatabaseSize();
+}
 public void setDatabaseName( String aDatabaseName )
 {
 	vm.setDatabaseName( aDatabaseName );
 }
 
-/**
- * ------------ Tellers leegmaken -------------------------
- */
-public void clearTellers()
-{
-	for ( int x = 0; x < 4; x++ )
-	{
-		report[x] = 0L;
-	}
-	reportTeller = 0;
-}
-/**
- * ------------- Tellerstand uitlezen ---------------------
- */
-public long [] getTellers()
-{
-	return new long [] { report[0], report[1], report[2], report[3] };
-}
-public void setReport( int aFrequency, ReportFunction aReportProc )
-{
-	reportFrequentie = aFrequency;
-	reportTeller = 0;
-	reportProc = aReportProc;
-}
-/**
- * -------- Bijwerken tellers ---------------------------------
- */
-public void updateTellers( ResultaatType aResultaatType )
-{
-	if ( reportProc != null )
-	{
-		report[aResultaatType.ordinal()]++;
-		reportTeller++;
-		if ( reportTeller >= reportFrequentie )
-		{
-			reportTeller = 0;
-			reportProc.doReport( report );
-		}
-	}
-}
 public void createTransformatieTabel()
 {
 	Vector Vres;
@@ -261,23 +233,23 @@ int getOktant( BoStelling aStelling )
 /**
  *----------- Schrijven ----------------- 
  */
-public void put( BoStelling aStelling )
+public void put( BoStelling aBoStelling )
 {
 	int VMRec = 0;
-	VMStelling vmStelling = cardinaliseer( aStelling );
-	switch ( aStelling.getResultaat() )
+	VMStelling vmStelling = cardinaliseer( aBoStelling );
+	switch ( aBoStelling.getResultaat() )
 	{
 		case ILLEGAAL: 
 			VMRec = VM.VM_ILLEGAAL; break;
 		// Waarom worden schaakjes als remise gezien?
 		// ==> Omdat ze alleen in pass_0 VM_SCHAAK krijgen en dat betekent dat de stelling remise is,
 		//     maar een potentiele matkandidaat
-		case REMISE  : VMRec = aStelling.isSchaak() ? VM.VM_SCHAAK : VM.VM_REMISE; break;
-		case GEWONNEN: VMRec = aStelling.getAantalZetten(); break;
-		case VERLOREN: VMRec = aStelling.getAantalZetten() + VM.VERLIES_OFFSET; break;
+		case REMISE  : VMRec = aBoStelling.isSchaak() ? VM.VM_SCHAAK : VM.VM_REMISE; break;
+		case GEWONNEN: VMRec = aBoStelling.getAantalZetten(); break;
+		case VERLOREN: VMRec = aBoStelling.getAantalZetten() + VM.VERLIES_OFFSET; break;
 	}
-	updateTellers( aStelling.getResultaat() );
 	vm.put( vmStelling, VMRec );
+	vmStellingIterator.addResultaat( aBoStelling );
 }
 /**
  * ----------- Lezen -----------------
@@ -317,7 +289,7 @@ BoStelling getDirect( VMStelling aVMStelling, BoStelling aBoStelling )
 	else if ( VMrec == VM.VM_SCHAAK )
 	{
 		// Waarom worden schaakjes als remise gezien?
-		// ==> Omdat ze alleen in pass_0 VM_SCHAAK krijgen en dat betekent dat de stelling remise is,
+		// ==> Omdat ze alleen in pass_0 VM_SCHAAK krijgen en dat betekent dat de stelling weliswaar remise is,
 		//     maar een potentiele matkandidaat
 		boStelling.setResultaat( REMISE );
 		boStelling.setAantalZetten( 0 );
@@ -372,33 +344,33 @@ public void delete()
 {
 	vm.delete();
 }
-/**
- * --------- Pass over stukken 3, 4 en 5 ----------------------------------
- */
-public void pass345( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
-{
-	vmStellingIterator.iterateOverPieces( aBoStelling, aVmStelling, aPassFunction, this::call345 );
-}
-void call345( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
-{
-	BoStelling gotBoStelling = getDirect( aVmStelling, aBoStelling );
-	// @@NOG Je kunt hier niet Gen.isSchaak() aanroepen dus moet het in de proc
-	if ( gotBoStelling.getResultaat() == ResultaatType.REMISE )
-	{
-		aPassFunction.doPass( gotBoStelling.clone() );
-	}
-}
+///**
+// * --------- Pass over stukken 3, 4 en 5 ----------------------------------
+// */
+//public void pass345( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
+//{
+//	vmStellingIterator.iterateOverPieces( aBoStelling, aVmStelling, aPassFunction, this::call345 );
+//}
+//void call345( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
+//{
+//	BoStelling gotBoStelling = getDirect( aVmStelling, aBoStelling );
+//	// @@NOG Je kunt hier niet Gen.isSchaak() aanroepen dus moet het in de proc
+//	if ( gotBoStelling.getResultaat() == ResultaatType.REMISE )
+//	{
+//		aPassFunction.doPass( gotBoStelling.clone() );
+//	}
+//}
 /**
  * --------- Pass over de remisestellingen met wit aan zet -------------
  */
 void markeerWitPass( PassFunction aPassFunction )
 {
-	vmStellingIterator.iterateOverWkZkWit(  aPassFunction, this::callPass345 );
+	vmStellingIterator.iterateOverWkZkWit(  aPassFunction/*, this::callPass345*/ );
 }
-void callPass345( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
-{
-	pass345( aBoStelling, aVmStelling, aPassFunction );
-}
+//void callPass345( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
+//{
+//	pass345( aBoStelling, aVmStelling, aPassFunction );
+//}
 /**
  * --------- Pass over de remisestellingen met zwart aan zet -------------
  */
@@ -411,25 +383,25 @@ void callPass345( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction a
  */
 void markeerWitEnZwartPass( PassFunction aPassFunction )
 {
-	vmStellingIterator.iterateOverAllPieces( aPassFunction, this::callWitEnZwart );
+	vmStellingIterator.iterateOverAllPieces( aPassFunction );
 }
 
-void callWitEnZwart( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
-{
-	BoStelling gotBoStelling = getDirect( aVmStelling, aBoStelling );
-	// Je kunt hier niet Gen.isSchaak() aanroepen dus moet het in de proc
-	// Je wilt het ook niet aanroepen want in de opbouwbeweging worden schaakjes niet gebruikt behalve in pass 0
-	
-	aPassFunction.doPass( gotBoStelling.clone() );
-}
-public void pass( PassType aPassType, PassFunction aPassProc )
+//void callWitEnZwart( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
+//{
+//	BoStelling gotBoStelling = getDirect( aVmStelling, aBoStelling );
+//	// Je kunt hier niet Gen.isSchaak() aanroepen dus moet het in de proc
+//	// Je wilt het ook niet aanroepen want in de opbouwbeweging worden schaakjes niet gebruikt behalve in pass 0
+//	
+//	aPassFunction.doPass( gotBoStelling.clone() );
+//}
+public void pass( PassType aPassType, PassFunction aPassFunction )
 {
 	open();
 	switch ( aPassType )
 	{
-		case MARKEER_WIT: markeerWitPass( aPassProc ); break;
+		case MARKEER_WIT: markeerWitPass( aPassFunction ); break;
 //		case MARKEER_ZWART: markeerZwartPass( aPassProc ); break;
-		case MARKEER_WIT_EN_ZWART: markeerWitEnZwartPass( aPassProc ); break;
+		case MARKEER_WIT_EN_ZWART: markeerWitEnZwartPass( aPassFunction ); break;
 	}
 	close();
 }

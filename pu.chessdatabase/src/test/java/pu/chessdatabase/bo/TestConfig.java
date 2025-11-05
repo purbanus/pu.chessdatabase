@@ -185,7 +185,7 @@ public void testGetConfigRegistry()
 	assertThat( getConfig().getConfigImplRegistry().get( "KLLK" ), is( new KLLK() ) );
 	assertThat( getConfig().getConfigImplRegistry().get( "TESTKDKT" ), is( new TestKDKT() ) );
 }
-@Test
+//@Test
 public void testToString()
 {
 	System.out.println( getConfig() );

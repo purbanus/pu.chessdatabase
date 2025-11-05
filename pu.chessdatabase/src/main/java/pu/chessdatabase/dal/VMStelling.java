@@ -99,14 +99,13 @@ public String getS5String()
 @Override
 public String toString()
 {
-	StringBuilder sb = new StringBuilder();
-	sb
-	.append( "WK="  ).append( VM.veldToAlfa( wk ) )
-	.append( " ZK=" ).append( VM.veldToAlfa( zk ) )
-	.append( " S3=" ).append( VM.veldToAlfa( s3 ) )
-	.append( " S4=" ).append( VM.veldToAlfa( s4 ) )
-	.append( " S5=" ).append( VM.veldToAlfa( s5 ) )
-	.append( " AanZet=" ).append( aanZet.getAfko() ).append( "\n" );
+	StringBuilder sb = new StringBuilder()
+		.append( "WK="  ).append( VM.veldToAlfa( wk ) )
+		.append( " ZK=" ).append( VM.veldToAlfa( zk ) )
+		.append( " S3=" ).append( VM.veldToAlfa( s3 ) )
+		.append( " S4=" ).append( VM.veldToAlfa( s4 ) )
+		.append( " S5=" ).append( VM.veldToAlfa( s5 ) )
+		.append( " AanZet=" ).append( aanZet.getAfko() ).append( "\n" );
 	for ( int rij = 7; rij >= 0; rij-- )
 	{
 		for ( int kol = 0; kol < 8; kol++ )

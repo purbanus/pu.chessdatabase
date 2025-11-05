@@ -11,202 +11,116 @@ import org.springframework.stereotype.Component;
 
 import pu.chessdatabase.dal.Dbs;
 import pu.chessdatabase.dal.PassType;
+import pu.chessdatabase.dal.VMStellingIterator;
 import pu.services.StopWatch;
 
+import lombok.Data;
+
 @Component
+@Data
 public class Bouw
 {
+
 public static final long MEG = 1048576;
 public static final boolean HOU_STELLINGEN_BIJ = false;
 
 @Autowired private Dbs dbs;
 @Autowired private Gen gen;
+@Autowired private Config config;
+private VMStellingIterator vmStellingIterator;
 
-int passNr;
-private int rptFreq = dbs.DFT_RPT_FREQ;
+int passNumber;
+List<BoStelling> illegaleStellingen = new ArrayList<>();
+List<BoStelling> stellingenMetSchaak = new ArrayList<>();
+List<BoStelling> matStellingen = new ArrayList<>();
+List<BoStelling> changes = new ArrayList<>();
+
 boolean passNchanges;
 
-private long [] rptPrev = new long[4];
-private long [] rptTot  = new long[4];
-
-public Bouw()
+public Bouw( VMStellingIterator VMStellingIterator )
 {
 	passNchanges = true;
-	passNr = 0;
-	//Window.PutOnTop(Win.BouwWin);
+	passNumber = 0;
+	vmStellingIterator = VMStellingIterator;
 }
+void reportNewPass( String aPassText )
+{
+	reportNewPass( aPassText, true );
+}
+void reportNewPass( String aPassText, boolean aDoPrint )
+{
+	if ( aDoPrint )
+	{
+		System.out.println( "\n" + aPassText + "\n" );
+		dbs.setReport( getReportFrequency(), this::showTellers );
+	}
+	else
+	{
+		dbs.setReport( getReportFrequency(), this::showNothing );
+	}
+}
+int getReportFrequency()
+{
+	switch ( getConfig().getAantalStukken() )
+	{
+		case 3: return (int) dbs.getDatabaseSize() / 10;
+		case 4: return (int) dbs.getDatabaseSize() / 10;
+		case 5: return (int) dbs.getDatabaseSize() / 100;
+	}
+	throw new RuntimeException( "Ongeldig aantal stukken in Config: " + getConfig().getAantalStukken() );
+}
+public void showNothing( int aStellingTeller, int [][] aTellingen )
+{
+}
+public void showTellers( int aStellingTeller, int [][] aTellingen )
+{
+	System.out.println( "Tellingen na " + aStellingTeller + " stellingen" );
+	printAlles( aTellingen );
+}
+
 /**
- * ==========================================================================
-		Deel 1: Rapportage
-===========================================================================
-*)
-PROCEDURE InzReport();
-VAR x: Dbs.ResType;
-BEGIN
-	FOR x:=MIN(ResType) TO MAX(ResType) DO
-		RptPrev[x]:=0;
-		RptTot [x]:=0;
-	END;
-	RptPrev[Remise]:=5*Meg;
-	RptTot [Remise]:=5*Meg;
-END InzReport;
+ * ----------- Tel resultaten ----------------------------
  */
-/**
- * (*------------ Initialisatie rapportage ------------------*)
- */
-//void inzReport()
-//{
-//	for ( ResultaatType resultaatType : ResultaatType.values() )
-//	{
-//		rptPrev[resultaatType.ordinal()] = 0;
-//		rptTot [resultaatType.ordinal()] = 0;
-//	}
-//	rptPrev[REMISE.ordinal()] = 5 * MEG;
-//	rptTot [REMISE.ordinal()] = 5 * MEG;
-//}
-/**
-PROCEDURE SetTotals(RA: Dbs.ReportArray);
-BEGIN
-	RptTot:=RA;
-	(*...
-	FOR x:=MIN(ResType) TO MAX(ResType) DO
-		RptTot [x]:=RA[x];
-	END;
-    *)
-END SetTotals;
- */
-/**
- * ---------- Geef de eindtotalen een beginwaarde ----------------
- */
-//void setTotals( long [] aReportArray )
-//{
-//	rptTot = aReportArray;
-////	for ( int x = 0; x < 4; x++ )
-////	{
-////		RptTot[x] = aReportArray[x];
-////	}
-//}
-/**
-PROCEDURE ShowThisPass(RA: Dbs.ReportArray);
-BEGIN
-	Window.Use(Win.BouwWin);
-	RA[Remise]:= -RA[Illegaal] - RA[Gewonnen] - RA[Verloren];
-	Window.GotoXY(12, 2); IO.WrLngInt(RA[Illegaal], 10);
-	Window.GotoXY(12, 3); IO.WrLngInt(RA[Remise  ], 10);
-	Window.GotoXY(12, 4); IO.WrLngInt(RA[Gewonnen], 10);
-	Window.GotoXY(12, 5); IO.WrLngInt(RA[Verloren], 10);
-END ShowThisPass;
- */
-/**
- * -------- Bijwerken tellers deze pass -----------------------
- */
-//void showThisPass( long [] aReportArray )
-//{
-//	//Window.Use(Win.BouwWin);
-//	aReportArray[REMISE.ordinal()] = 
-//		- aReportArray[ILLEGAAL.ordinal()]
-//		- aReportArray[GEWONNEN.ordinal()]
-//		- aReportArray[VERLOREN.ordinal()];
-////	Window.GotoXY(12, 2); IO.WrLngInt(RA[Illegaal], 10);
-////	Window.GotoXY(12, 3); IO.WrLngInt(RA[Remise  ], 10);
-////	Window.GotoXY(12, 4); IO.WrLngInt(RA[Gewonnen], 10);
-////	Window.GotoXY(12, 5); IO.WrLngInt(RA[Verloren], 10);
-//}
-/**
- * (*-------- Totalen laten zien --------------------------------*)
-PROCEDURE ShowTotals(RA: Dbs.ReportArray);
-BEGIN
-	Window.Use(Win.BouwWin);
-	Window.GotoXY(36, 2); IO.WrLngInt(RA[Illegaal], 12);
-	Window.GotoXY(36, 3); IO.WrLngInt(RA[Remise  ], 12);
-	Window.GotoXY(36, 4); IO.WrLngInt(RA[Gewonnen], 12);
-	Window.GotoXY(36, 5); IO.WrLngInt(RA[Verloren], 12);
-END ShowTotals;
- */
-/**
- * -------- Totalen laten zien --------------------------------
- */
-//void showTotals( long [] aReportArray )
-//{
-////	Window.Use(Win.BouwWin);
-////	Window.GotoXY(36, 2); IO.WrLngInt(RA[Illegaal], 12);
-////	Window.GotoXY(36, 3); IO.WrLngInt(RA[Remise  ], 12);
-////	Window.GotoXY(36, 4); IO.WrLngInt(RA[Gewonnen], 12);
-////	Window.GotoXY(36, 5); IO.WrLngInt(RA[Verloren], 12);
-//}
-/**
-PROCEDURE ReportNewPass(PassText: ARRAY OF CHAR);
-VAR x: ResType;
-BEGIN
-	FOR x:=MIN(ResType) TO MAX(ResType) DO
-    	RptTot [x]:=RptTot [x] + RptPrev[x];
-	END;
-	RptPrev:=Dbs.GetTellers();
-	RptPrev[Remise]:= -RptPrev[Illegaal] - RptPrev[Gewonnen] - RptPrev[Verloren];
-	RptTot [Remise]:= -RptTot [Illegaal] - RptTot [Gewonnen] - RptTot [Verloren];
-	Dbs.ClearTellers();
-	Window.Use(Win.BouwWin);
-	Window.Clear();
-	Window.GotoXY(12, 1); IO.WrStr(' Deze pass');
-	Window.GotoXY(24, 1); IO.WrStr('    Vorige');
-	Window.GotoXY(36, 1); IO.WrStr('    Totaal');
-	Window.GotoXY( 2, 2); IO.WrStr('Illegaal  '); IO.WrStr('         0'); IO.WrLngInt(RptPrev[Illegaal], 12); IO.WrLngInt(RptTot[Illegaal], 12);
-	Window.GotoXY( 2, 3); IO.WrStr('Remise    '); IO.WrStr('         0'); IO.WrLngInt(RptPrev[Remise  ], 12); IO.WrLngInt(RptTot[Remise  ], 12);
-	Window.GotoXY( 2, 4); IO.WrStr('Gewonnen  '); IO.WrStr('         0'); IO.WrLngInt(RptPrev[Gewonnen], 12); IO.WrLngInt(RptTot[Gewonnen], 12);
-	Window.GotoXY( 2, 5); IO.WrStr('Verloren  '); IO.WrStr('         0'); IO.WrLngInt(RptPrev[Verloren], 12); IO.WrLngInt(RptTot[Verloren], 12);
-	Window.GotoXY( 2, 7); IO.WrStr('Pass '); IO.WrCard(PassNr, 3); IO.WrChar(' '); IO.WrStr(PassText);
-END ReportNewPass;
- */
-/**
- * ------------ Bijwerken tellers als een nieuwe pass begint --------
- */
-//void reportNewPass( String aPassText )
-//{
-//	for ( ResultaatType resultaatType : ResultaatType.values() )
-//	{
-//		rptTot[resultaatType.ordinal()] = rptTot[resultaatType.ordinal()] + rptPrev[resultaatType.ordinal()];
-//	}
-//	rptPrev = dbs.getTellers();
-//	rptPrev[REMISE.ordinal()] = 
-//		- rptPrev[ILLEGAAL.ordinal()]
-//		- rptPrev[GEWONNEN.ordinal()]
-//		- rptPrev[VERLOREN.ordinal()];
-//	rptTot[REMISE.ordinal()] = 
-//		- rptTot[ILLEGAAL.ordinal()]
-//		- rptTot[GEWONNEN.ordinal()]
-//		- rptTot[VERLOREN.ordinal()];
-//	dbs.clearTellers(); // @@NOG Op de een of and're manier maakt hij nu de getallen in RptPrev allemaal nul
-////	Window.Use(Win.BouwWin);
-////	Window.Clear();
-////	Window.GotoXY(12, 1); IO.WrStr(' Deze pass');
-////	Window.GotoXY(24, 1); IO.WrStr('    Vorige');
-////	Window.GotoXY(36, 1); IO.WrStr('    Totaal');
-////	Window.GotoXY( 2, 2); IO.WrStr('Illegaal  '); IO.WrStr('         0'); IO.WrLngInt(RptPrev[Illegaal], 12); IO.WrLngInt(RptTot[Illegaal], 12);
-////	Window.GotoXY( 2, 3); IO.WrStr('Remise    '); IO.WrStr('         0'); IO.WrLngInt(RptPrev[Remise  ], 12); IO.WrLngInt(RptTot[Remise  ], 12);
-////	Window.GotoXY( 2, 4); IO.WrStr('Gewonnen  '); IO.WrStr('         0'); IO.WrLngInt(RptPrev[Gewonnen], 12); IO.WrLngInt(RptTot[Gewonnen], 12);
-////	Window.GotoXY( 2, 5); IO.WrStr('Verloren  '); IO.WrStr('         0'); IO.WrLngInt(RptPrev[Verloren], 12); IO.WrLngInt(RptTot[Verloren], 12);
-////	Window.GotoXY( 2, 7); IO.WrStr('Pass '); IO.WrCard(PassNr, 3); IO.WrChar(' '); IO.WrStr(PassText);
-/**
-PROCEDURE IsIllegaal(S: Dbs.Stelling);
-BEGIN
-	IF Gen.IsGeomIllegaal(S) OR Gen.IsKKschaak(S) THEN
-		S.Resultaat:= Illegaal;
-		S.AanZet:=Wit;
-		Dbs.Put(S);
-		S.AanZet:=Zwart;
-		Dbs.Put(S);
-	END;
-END IsIllegaal;
- */
+void tel( BoStelling aBoStelling )
+{
+	// Hoeft niks meer te doen; al het tellen gebeurt in VMStellingIterator
+}
+void telAlles()
+{
+	telAlles( true );
+}
+void telAlles( boolean aDoPrint)
+{
+	if ( aDoPrint )
+	{
+		System.out.println( "Tellen van alle stellingen" );
+	}
+	vmStellingIterator.clearTellingen();
+	dbs.pass( PassType.MARKEER_WIT_EN_ZWART, this::tel );
+}
+void telAndPrintAlles( boolean aDoPrint )
+{
+	telAlles( aDoPrint );
+	if ( aDoPrint )
+	{
+		printAlles( vmStellingIterator.getTellingen() );
+	}
+}
+void printAlles( int [][] aArrayl)
+{
+	System.out.println( "Illegaal met wit aan zet  : " + aArrayl[0][0] );
+	System.out.println( "Gewonnen met wit aan zet  : " + aArrayl[0][1] );
+    System.out.println( "Remise met wit aan zet    : " + aArrayl[0][2] );
+    System.out.println( "Verloren met wit aan zet  : " + aArrayl[0][3] );
+    System.out.println( "Illegaal met zwart aan zet: " + aArrayl[1][0] );
+	System.out.println( "Gewonnen met zwart aan zet: " + aArrayl[1][1] );
+    System.out.println( "Remise met zwart aan zet  : " + aArrayl[1][2] );
+    System.out.println( "Verloren met zwart aan zet: " + aArrayl[1][3] );
+}
 /**
  * ------------ Kijk of een stelling illegaal is ---------------
  */
 
-List<BoStelling> illegaalStellingen = new ArrayList<>();
-List<BoStelling> stellingenMetSchaak = new ArrayList<>();
-List<BoStelling> matStellingen = new ArrayList<>();
-List<BoStelling> matStellingenMetWit = new ArrayList<>();
-List<BoStelling> matStellingenMetZwart = new ArrayList<>();
 public void isIllegaal( BoStelling aBoStelling )
 {
 	BoStelling boStelling = aBoStelling.clone();
@@ -216,7 +130,7 @@ public void isIllegaal( BoStelling aBoStelling )
 		boStelling.setAanZet( WIT );
 		if ( HOU_STELLINGEN_BIJ )
 		{
-			illegaalStellingen.add( boStelling );
+			illegaleStellingen.add( boStelling );
 		}
 		dbs.put( boStelling );
 
@@ -224,48 +138,16 @@ public void isIllegaal( BoStelling aBoStelling )
 		boStelling.setAanZet( ZWART );
 		if ( HOU_STELLINGEN_BIJ )
 		{
-			illegaalStellingen.add( boStelling );
+			illegaleStellingen.add( boStelling );
 		}
 		dbs.put( boStelling );
 	}
 }
 /**
-PROCEDURE Schaakjes(Swaz: Dbs.Stelling);
-VAR Szaz: Dbs.Stelling;
-BEGIN
-	
-    (* Er wordt gebruik van gemaakt dat op dit moment alle remise stellingen   *)
-    (* zowel voor wit als voor zwart remise zijn;                              *)
-    (* dat geldt trouwens ook voor illegale stellingen.                        *)
-
-	IF Swaz.Resultaat = Remise THEN
-		Szaz:=Swaz;
-		Szaz.AanZet:=Zwart;
-		(*---- Wit aan zet ----- *)
-    	IF Gen.IsSchaak(Swaz) THEN
-    		Swaz.Schaak:=TRUE;
-    		Szaz.Schaak:=TRUE;
-    		Szaz.Resultaat:=Illegaal;
-    	END;
-		(*---- Zwart aan zet ----*)
-    	IF Gen.IsSchaak(Szaz) THEN
-    		Swaz.Schaak:=TRUE;
-    		Szaz.Schaak:=TRUE;
-			Swaz.Resultaat:=Illegaal;
-		END;
-		IF Swaz.Schaak THEN
-	    	Dbs.Put(Swaz);
-    	END;
-		IF Szaz.Schaak THEN
-	    	Dbs.Put(Szaz);
-    	END;
-    END;
-END Schaakjes;
- */
-/**
  *------------- Kontroleer schaakjes ---------------------------
  */
-	// @@HIGH Ik begrijp niet hoe dit werkt
+// @@HIGH Ik begrijp niet hoe dit werkt
+// @@HIGH Dit kun je combineren met isMat. Dan kun je isMat over alleen de witte stellingen draaien
 public void schaakjes( BoStelling aBoStellingMetWitAanZet )
 {
 	/*
@@ -273,70 +155,50 @@ public void schaakjes( BoStelling aBoStellingMetWitAanZet )
      * zowel voor wit als voor zwart remise zijn;                              
      * dat geldt trouwens ook voor illegale stellingen.                        
 	 */
-	if ( aBoStellingMetWitAanZet.getResultaat() == REMISE )
-	{
-		BoStelling boStellingMetWitAanZet = aBoStellingMetWitAanZet.clone();
-		BoStelling boStellingMetZwartAanZet = aBoStellingMetWitAanZet.clone();
-		boStellingMetZwartAanZet.setAanZet( ZWART );
-//		boStellingMetWitAanZet.setSchaak( gen.isSchaak( boStellingMetWitAanZet ) );
-//		boStellingMetZwartAanZet.setSchaak( gen.isSchaak( boStellingMetZwartAanZet ) );
+	BoStelling boStellingMetWitAanZet = aBoStellingMetWitAanZet.clone();
+	BoStelling boStellingMetZwartAanZet = aBoStellingMetWitAanZet.clone();
+	boStellingMetZwartAanZet.setAanZet( ZWART );
 
-		// Wit aan zet
-//		if ( boStellingMetWitAanZet.isSchaak() )
-		if ( gen.isSchaak( boStellingMetWitAanZet ) )
+	// Wit aan zet
+	if ( gen.isSchaak( boStellingMetWitAanZet ) )
+	{
+		boStellingMetWitAanZet.setSchaak( true );
+		boStellingMetZwartAanZet.setSchaak( true );
+		boStellingMetZwartAanZet.setResultaat( ILLEGAAL );
+	}
+	// Zwart aan zet
+	if ( gen.isSchaak( boStellingMetZwartAanZet ) )
+	{
+		boStellingMetZwartAanZet.setSchaak( true );
+		boStellingMetWitAanZet.setSchaak( true );
+		boStellingMetWitAanZet.setResultaat( ILLEGAAL );
+	}
+	if ( boStellingMetWitAanZet.isSchaak() )
+	{
+		if ( HOU_STELLINGEN_BIJ )
 		{
-			boStellingMetWitAanZet.setSchaak( true );
-			boStellingMetZwartAanZet.setSchaak( true );
-			boStellingMetZwartAanZet.setResultaat( ILLEGAAL );
+			stellingenMetSchaak.add( boStellingMetWitAanZet );
 		}
-		// Zwart aan zet
-//		if ( boStellingMetZwartAanZet.isSchaak() )
-		if ( gen.isSchaak( boStellingMetZwartAanZet ) )
+		dbs.put( boStellingMetWitAanZet );
+	}
+	if ( boStellingMetZwartAanZet.isSchaak() )
+	{
+		if ( HOU_STELLINGEN_BIJ )
 		{
-			boStellingMetZwartAanZet.setSchaak( true );
-			boStellingMetWitAanZet.setSchaak( true );
-			boStellingMetWitAanZet.setResultaat( ILLEGAAL );
+			stellingenMetSchaak.add( boStellingMetZwartAanZet );
 		}
-		if ( boStellingMetWitAanZet.isSchaak() )
-		{
-			if ( HOU_STELLINGEN_BIJ )
-			{
-				stellingenMetSchaak.add( boStellingMetWitAanZet );
-			}
-			dbs.put( boStellingMetWitAanZet );
-		}
-		if ( boStellingMetZwartAanZet.isSchaak() )
-		{
-			if ( HOU_STELLINGEN_BIJ )
-			{
-				stellingenMetSchaak.add( boStellingMetZwartAanZet );
-			}
-			dbs.put( boStellingMetZwartAanZet );
-		}
+		dbs.put( boStellingMetZwartAanZet );
 	}
 }
 
-/**
-PROCEDURE IsMat(S: Dbs.Stelling);
-VAR GZ: Gen.GenZrec;
-BEGIN
-	IF (S.Resultaat = Remise) AND (S.Schaak = TRUE) THEN
-		GZ:=Gen.GenZ(S);
-		IF GZ.Aantal = 0 THEN
-			S.Resultaat:=Verloren;
-			S.Aantal   :=1;
-			Dbs.Put(S);
-		END;
-	END;
-END IsMat;
- */
 /**
  *----------- Kijk of een stelling mat is --------------------
  */
 public void isMat( BoStelling aBoStelling )
 {
 	BoStelling boStelling = aBoStelling.clone();
-	if ( boStelling.getResultaat() == REMISE && boStelling.isSchaak() == true )
+	// Er komen alleen remisestellingen binnen
+	if ( boStelling.isSchaak() == true )
 	{
 		List<BoStelling> gegenereerdeZetten = gen.genereerZetten( boStelling );
 		if ( gegenereerdeZetten.size() == 0 )
@@ -347,203 +209,39 @@ public void isMat( BoStelling aBoStelling )
 			{
 				matStellingen.add( boStelling );
 			}
-//			if ( boStelling.getAanZet() == WIT )
-//			{
-//				matStellingenMetWit.add( boStelling );
-//			}
-//			else
-//			{
-//				matStellingenMetZwart.add( boStelling );
-//			}
 			dbs.put( boStelling );
 		}
 	}
 }
 /**
-PROCEDURE Pass_0();
-BEGIN
-	PassNr:=0;
-	Dbs.SetReport(4096, ShowThisPass);
-	Dbs.ClearTellers();
-	InzReport();
-	ReportNewPass('Reserveren schijfruimte');
-	Dbs.Create();
-
-	ReportNewPass('Illegaal');
-	Dbs.Pass(MarkeerWit, IsIllegaal);
-
-	ReportNewPass('Schaakjes');
-	Dbs.Pass(MarkeerWit, Schaakjes);
-
-	Dbs.SetReport( 100, ShowThisPass);
-	ReportNewPass('Matstellingen');
-	Dbs.Pass(MarkeerWit  , IsMat);
-	Dbs.Pass(MarkeerZwart, IsMat);
-END Pass_0;
- */
-/**
  * ------------ Pass 0: Initialisatie database ---------------
  */
 void pass_0()
 {
-	illegaalStellingen = new ArrayList<>();
+	pass_0( true );
+}
+void pass_0( boolean aDoPrint )
+{
+	illegaleStellingen = new ArrayList<>();
 	stellingenMetSchaak = new ArrayList<>();
 	matStellingen = new ArrayList<>();
 	
-	passNr = 0;
-//	dbs.setReport( rptFreq, this::showThisPass );
-	dbs.clearTellers();
-//	inzReport();
-//	reportNewPass( "Reserveren schijfruimte" );
+	passNumber = 0;
+	// Hier geen reportNewPass doen want de Cache is er pas in VM na de create!
 	dbs.create();
 
-//	reportNewPass( "Illegaal" );
+	reportNewPass( "Markeren illegale stellingen", aDoPrint );
 	dbs.pass( PassType.MARKEER_WIT, this::isIllegaal );
 
-//	reportNewPass( "Schaakjes" );
+	reportNewPass( "Markeren schaakjes", aDoPrint );
 	dbs.pass( PassType.MARKEER_WIT, this::schaakjes );
 
-//	dbs.setReport( 100, this::showThisPass );
-//	reportNewPass( "Matstellingen" );
+	reportNewPass( "Markeren matstellingen", aDoPrint );
 	dbs.pass( PassType.MARKEER_WIT_EN_ZWART  , this::isMat );
 }
 /**
- * ==============================================================================
-		Deel 3: Verzamel statistische informatie
-==============================================================================
-*)
-
-VAR ResTeller: CARDINAL;
-PROCEDURE Tel(S: Dbs.Stelling);
-BEGIN
-	INC(RptTot[S.Resultaat]);
-	INC(ResTeller);
-	IF ResTeller>=4096 THEN
-		ShowTotals(RptTot);
-		ResTeller:=0;
-	END;
-END Tel;
- */
-/**
- * ----------- Tel resultaten ----------------------------
- */
-int resTeller;
-void tel( BoStelling aBoStelling )
-{
-	rptTot[aBoStelling.getResultaat().ordinal()]++;
-	resTeller++;
-	if ( resTeller >= rptFreq )
-	{
-//		showTotals( rptTot );
-		resTeller = 0;
-	}
-}
-/**
-PROCEDURE TelAlles();
-VAR S: Dbs.Stelling;
-	x: Dbs.ResType;
-BEGIN
-	InzReport();
-	RptPrev[Remise] := 0;
-	RptTot [Remise] := 0;
-	ReportNewPass('Tellen van alle stellingen');
-	ResTeller:=0;
-	Dbs.Pass(WitEnZwart, Tel);
-END TelAlles;
- */
-/**
- * ----------- Tel alle stellingen in de database --------------
- */
-void telAlles()
-{
-//	inzReport();
-	rptPrev[REMISE.ordinal()] = 0;
-	rptTot[REMISE.ordinal()] = 0;
-//	reportNewPass( "Tellen van alle stellingen" );
-	resTeller = 0;
-	dbs.pass( PassType.MARKEER_WIT_EN_ZWART, this::tel );
-}
-long[][] tellersMetKleur;
-void telMetKleur( BoStelling aBoStelling )
-{
-	int aanZet = aBoStelling.getAanZet() == ZWART ? 1 : 0;
-	tellersMetKleur[aanZet][aBoStelling.getResultaat().ordinal()]++;
-	resTeller++;
-	if ( resTeller >= rptFreq )
-	{
-//		showTotals( rptTot );
-		resTeller = 0;
-	}
-}
-void telAllesMetKleur()
-{
-	tellersMetKleur = new long[2][4];
-//	reportNewPass( "Tellen van alle stellingen" );
-	resTeller = 0;
-	dbs.pass( PassType.MARKEER_WIT_EN_ZWART, this::telMetKleur );
-}
-void printAllesMetKleur()
-{
-	telAllesMetKleur();
-	System.out.println( "Illegaal met wit aan zet  : " + tellersMetKleur[0][0] );
-	System.out.println( "Gewonnen met wit aan zet  : " + tellersMetKleur[0][1] );
-    System.out.println( "Remise met wit aan zet    : " + tellersMetKleur[0][2] );
-    System.out.println( "Verloren met wit aan zet  : " + tellersMetKleur[0][3] );
-    System.out.println( "Illegaal met zwart aan zet: " + tellersMetKleur[1][0] );
-	System.out.println( "Gewonnen met zwart aan zet: " + tellersMetKleur[1][1] );
-    System.out.println( "Remise met zwart aan zet  : " + tellersMetKleur[1][2] );
-    System.out.println( "Verloren met zwart aan zet: " + tellersMetKleur[1][3] );
-}
-/**
- * ================================================================================
-		Deel 4: Markeer stellingen gewonnen of verloren
-=================================================================================
-
-PROCEDURE Markeer(S: Dbs.Stelling);
-VAR GZ: Gen.GenZrec;
-	MinGewonnen, MaxVerloren: Dbs.AantalZetten;
-	x : Gen.AantalGzetten;
-BEGIN
-	GZ:=Gen.GenZ(S);
-	IF GZ.Aantal = 0 THEN
-		RETURN;
-	END;
-	S.Resultaat:=Verloren;
-	MinGewonnen:=MAX(Dbs.AantalZetten);
-	MaxVerloren:=MIN(Dbs.AantalZetten);
-	FOR x:=1 TO GZ.Aantal DO
-		CASE GZ.Sptr^.Resultaat OF
-		|	Verloren:
-				S.Resultaat:=Gewonnen;
-				IF GZ.Sptr^.Aantal < MinGewonnen THEN
-					MinGewonnen:=GZ.Sptr^.Aantal;
-				END;
-		|	Gewonnen:
-				IF GZ.Sptr^.Aantal > MaxVerloren THEN
-					MaxVerloren:=GZ.Sptr^.Aantal;
-				END;
-		|	Remise  :
-				IF S.Resultaat = Verloren THEN
-					S.Resultaat:=Remise;
-				END;
-		END;
-		IncAddr(GZ.Sptr, SIZE(Dbs.Stelling));
-	END;
-	IF S.Resultaat # Remise THEN
-		IF S.Resultaat = Gewonnen THEN
-			S.Aantal:=MinGewonnen + 1;
-		ELSE
-			S.Aantal:=MaxVerloren;
-		END;
-		Dbs.Put(S);
-		PassNchanges:=TRUE;
-	END;
-END Markeer;
- */
-/**
  * ------- Markeer een stelling gewonnen/verloren -----------
  */
-List<BoStelling> changes = new ArrayList<>();
 /**
  * Markeer kan aangeroepen worden met alleen remisestellingen.
  * Zie het commentaar tussendoor voor meer details.
@@ -554,6 +252,7 @@ void markeer( BoStelling aBoStelling )
 
 	if ( aBoStelling.getResultaat() != REMISE )
 	{
+		//telMetKleur( aBoStelling );
 		return;
 	}
 
@@ -630,6 +329,7 @@ void markeer( BoStelling aBoStelling )
 			}
 		}
 	}
+	//telMetKleur( boStellingVan );
 	if ( boStellingVan.getResultaat() != REMISE )
 	{
 		if ( boStellingVan.getResultaat() == GEWONNEN )
@@ -649,62 +349,31 @@ void markeer( BoStelling aBoStelling )
 	}
 }
 /**
-PROCEDURE Pass_n();
-BEGIN
-	Dbs.SetReport(100, ShowThisPass);
-	ReportNewPass('Wit aan zet  ');
-	Dbs.Pass(MarkeerWit, Markeer);
-	
-	ReportNewPass('Zwart aan zet');
-	Dbs.Pass(MarkeerZwart, Markeer);
-END Pass_n;
- */
-/**
 ---------- Pass over de stellingen die nog niet gewonnen/verloren zijn ------------
  */
 void pass_n()
 {
-//	dbs.setReport( 100, this::showThisPass );
-//	reportNewPass( "Wit aan zet" );
+	reportNewPass( "Pass " + passNumber );
 	dbs.pass( PassType.MARKEER_WIT_EN_ZWART, this::markeer );
 }
-/**
-PROCEDURE BouwDataBase(StartPass: CARDINAL);
-BEGIN
-	PassNr:=StartPass;
-	TelAlles();
-	WHILE PassNchanges AND NOT IO.KeyPressed() DO
-		PassNchanges:=FALSE;
-		Pass_n();
-		INC(PassNr);
-	END;
-END BouwDataBase;
- */
 /**
  * ---------- Markeer tot er niets meer verandert ------------------
  */
 public void bouwDatabase()
 {
 	System.out.println( "We bouwen op: " + dbs.getDatabaseName() );
-	StopWatch overallTimer = new StopWatch();
-	passNr = 0;
+	StopWatch timer = new StopWatch();
+	passNumber = 0;
 	pass_0();
-//	telAlles();
-	printAllesMetKleur();
+	System.out.println( "Pass: " + passNumber + " duurde " + timer.getLapTimeMs() );
 	while ( passNchanges )
 	{
-		StopWatch timer = new StopWatch();
 		passNchanges = false;
 		pass_n();
-		passNr++;
-		System.out.println( "Pass: " + passNr + " duurde " + timer.getElapsedMs() );
-		printAllesMetKleur();
+		passNumber++;
+		System.out.println( "Pass: " + passNumber + " duurde " + timer.getLapTimeMs() );
 	}
-	System.out.println( "Totaaltijd: " + overallTimer.getElapsedMs() );
+	System.out.println( "Totaaltijd: " + timer.getElapsedMs() );
 }
 
-void delete()
-{
-	dbs.delete();
-}
 }

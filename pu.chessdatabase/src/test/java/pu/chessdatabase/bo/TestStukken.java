@@ -10,11 +10,7 @@ import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.bo.Richtingen.*;
 import static pu.chessdatabase.bo.configuraties.StukType.*;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.configuraties.KDK;
 import pu.chessdatabase.bo.configuraties.KDKTT;

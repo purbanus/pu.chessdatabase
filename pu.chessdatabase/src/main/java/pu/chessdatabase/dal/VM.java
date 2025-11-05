@@ -67,8 +67,8 @@ private static final String [] RepZK = {
 @SuppressWarnings( "unused" )
 private static final String [] RepAZ = { "W", "Z" };
 
-Range wkVeldRange = new Range( 0, 9 );
-Range veldRange = new Range( 0, 63 );
+public Range wkVeldRange = new Range( 0, 9 );
+public Range stukVeldRange = new Range( 0, 63 );
 
 @Autowired private Config config;
 @Getter( AccessLevel.PACKAGE ) 
@@ -133,6 +133,11 @@ void setDatabase( RandomAccessFile aRandomAccessFile )
 {
 	getCache().setDatabase( aRandomAccessFile );
 }
+public long getDatabaseSize()
+{
+	return getCache().getDatabaseSize();
+}
+
 public void switchConfig()
 {
 	setDatabaseName( null );
