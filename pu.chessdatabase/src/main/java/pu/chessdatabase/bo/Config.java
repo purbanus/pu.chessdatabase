@@ -133,7 +133,7 @@ public String getConfig()
 }
 public List<String> getAvailableConfigs()
 {
-	return Arrays.asList( new String [] { "KDKT", "KLPK", "KLLK" } );
+	return Arrays.asList( new String [] { "KDK", "KTK", "KDKT", "KLPK", "KLLK" } );
 }
 @Override
 public String toString()
