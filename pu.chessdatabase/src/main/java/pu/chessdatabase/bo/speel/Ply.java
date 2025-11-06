@@ -23,7 +23,7 @@ public class Ply
 public static final Ply NULL_PLY = Ply.builder()
 	.boStelling( BoStelling.NULL_STELLING )
 	.einde( EindeType.NOG_NIET )
-	.zetNummer( Partij.MAX_HELE_ZET_NUMMER )
+	.zetNummer( Plies.MAX_HELE_ZET_NUMMER )
 	.vanNaar( null )
 	.build();
 
