@@ -14,6 +14,8 @@ import lombok.Setter;
 @Data
 public class Plies
 {
+public static final int MAX_HELE_ZET_NUMMER = 130;
+
 @Setter( AccessLevel.PRIVATE ) private int currentPlyNumber = -1;
 @Setter( AccessLevel.PRIVATE ) private boolean begonnen = false;
 @Setter( AccessLevel.PRIVATE ) private List<Ply> plies = new ArrayList<>();

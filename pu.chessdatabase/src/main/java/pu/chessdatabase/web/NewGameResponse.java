@@ -15,6 +15,7 @@ private String wkAlfa;
 private String zkAlfa;
 private String s3Alfa;
 private String s4Alfa;
+private String s5Alfa;
 private String aanZet;
 public BoStellingKey getBoStellingKey()
 {
@@ -23,6 +24,7 @@ public BoStellingKey getBoStellingKey()
 		.zk( Partij.alfaToVeld( zkAlfa ) )
 		.s3( Partij.alfaToVeld( s3Alfa ) )
 		.s4( Partij.alfaToVeld( s4Alfa ) )
+		.s5( Partij.alfaToVeld( s5Alfa ) )
 		.aanZet( Kleur.valueOf( aanZet.toUpperCase() ) )
 		.build();
 }

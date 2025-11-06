@@ -17,6 +17,8 @@ public class Stukken
 {
 
 private List<Stuk> stukken = new ArrayList<>();
+private List<Stuk> realStukken = null;
+private List<Stuk> fakeStukken = null;
 private ConfigImpl configImpl;
 public Stukken( ConfigImpl aConfigImpl )
 {
@@ -28,20 +30,44 @@ public List<Stuk> getStukken()
 {
 	return stukken;
 }
+void fillStukken()
+{
+	realStukken = new ArrayList<>();
+	fakeStukken = new ArrayList<>();
+	for ( Stuk stuk : getStukken() )
+	{
+		if ( stuk.getStukType() == GEEN )
+		{
+			fakeStukken.add( stuk );
+		}
+		else
+		{
+			realStukken.add( stuk );
+		}
+	}
+
+}
 public List<Stuk> getRealStukken()
 {
 //	List<Stuk> realStukken = getStukken().stream()
 //		.filter( Stuk::getStukType == GEEN )
 //		.collect(toList() );
-	List<Stuk> realStukken = new ArrayList<>();
-	for ( Stuk stuk : getStukken() )
+	if ( realStukken == null )
 	{
-		if ( stuk.getStukType() != GEEN )
-		{
-			realStukken.add( stuk );
-		}
+		fillStukken();
 	}
 	return realStukken;
+}
+public List<Stuk> getFakeStukken()
+{
+//	List<Stuk> realStukken = getStukken().stream()
+//		.filter( Stuk::getStukType == GEEN )
+//		.collect(toList() );
+	if ( fakeStukken == null )
+	{
+		fillStukken();
+	}
+	return fakeStukken;
 }
 public int getAantalStukken()
 {

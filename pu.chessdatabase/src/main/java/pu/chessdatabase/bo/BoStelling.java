@@ -91,6 +91,20 @@ public BoStelling clone()
 		throw new RuntimeException( e );
 	}
 }
+public void normaliseer( int aAantalStukken )
+{
+	if ( aAantalStukken == 3 )
+	{
+		// s4 en s5 zijn witte stukken, dat dus onder de witte koning wordt gezet
+		setS4( getWk() );
+		setS5( getWk() );
+	}
+	if ( aAantalStukken == 4 )
+	{
+		// s5 is een wit stuk, dat dus onder de witte koning wordt gezet
+		setS5( getWk() );
+	}
+}
 public String getWkString()
 {
 	return Config.getStaticStukken().getWk().getStukString();

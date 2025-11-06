@@ -102,7 +102,7 @@ public String game( @ModelAttribute GameResponse aGameResponse, Model aModel, Ht
 	LOG.info( "Game response gestart" );
 	LOG.debug( "Model=" + aModel.asMap() );
 	LOG.debug( "GameResponse=" + aGameResponse );
-	//showSession( aSession );
+	showSession( aSession );
 
 	PartijDocument partijDocument = getService().getPartijDocument( aGameResponse.getBoStellingKey() );
 	aModel.addAttribute( "doc", partijDocument );
