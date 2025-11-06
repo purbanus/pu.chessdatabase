@@ -125,7 +125,7 @@ private int getFreeCacheEntry()
     	return LaagsteGeneratieNr;
     }
 }
-// @@NOG private maken want wordt alleen in tests gebruikt. Helaas ook in TestVN, dus nog ff niet
+// @@NOG private maken want wordt alleen in tests gebruikt. Helaas ook in TestVM, dus nog ff niet
 byte [] getPage( PageDescriptor aPageDescriptor )
 {
 	if ( aPageDescriptor.getCacheNummer() >= CACHE_SIZE )
