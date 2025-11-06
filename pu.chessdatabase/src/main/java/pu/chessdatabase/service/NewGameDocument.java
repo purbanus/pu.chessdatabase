@@ -19,10 +19,7 @@ public static class Stuk
 }
 private final List<String> configList;
 private final String config;
-private final List<Stuk> stukken;
-//private final String wk;
-//private final String zk;
-//private final String s3;
-//private final String s4;
+private final List<Stuk> realStukken;
+private final List<Stuk> fakeStukken;
 private final String aanZet;
 }
