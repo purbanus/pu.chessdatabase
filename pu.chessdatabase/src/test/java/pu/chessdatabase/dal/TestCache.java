@@ -133,13 +133,13 @@ public void testShowCache()
 @Test
 public void testGetPageSize()
 {
-	// @@HIGH Eerst de databases opbouwen 
-//	getConfig().switchConfig( "KDK", false ); // false want de file bestaat nog niet
-//	assertThat( getCache().getPageSize(), is( 64 ) );
-//	getConfig().switchConfig( "KDKT" );
-	assertThat( getCache().getPageSize(), is( 4096 ) );
-//	getConfig().switchConfig( "KDKTT", false ); // false want de file bestaat nog niet
-//	assertThat( getCache().getPageSize(), is( 262144 ) );
+	// Hier niet de lokale cache gebruiken maar die uit VM, want die is geconfigSwithed
+	getConfig().switchConfig( "KDK" );
+	assertThat( vm.getCache().getPageSize(), is( 64 ) );
+	getConfig().switchConfig( "KDKT" );
+	assertThat( vm.getCache().getPageSize(), is( 4096 ) );
+	getConfig().switchConfig( "KDKTT" );
+	assertThat( vm.getCache().getPageSize(), is( 262144 ) );
 }
 @Test
 public void testInitializeCache()
@@ -430,16 +430,16 @@ public void testGetPositionWithinPage()
 		.s5( 0x09 )
 		.aanZet( WIT )
 		.build();
-	// @@HIGH Eerst de databases opbouwen 
-//	getConfig().switchConfig( "KDK", false );
-//	assertThat( getCache().getPositionWithinPage( vmStelling), is( 0 ) );
-//	getConfig().switchConfig( "KDKT" );
-	assertThat( getCache().getPositionWithinPage( vmStelling ), is( 7 ) );
-//	getConfig().switchConfig( "KDKTT", false );
-//	assertThat( getCache().getPositionWithinPage( vmStelling), is( 7 * 64 + 9 ) );
+	// Hier niet de lokale cache gebruiken maar die uit VM, want die is geconfigSwithed
+	getConfig().switchConfig( "KDK" );
+	assertThat( vm.getCache().getPositionWithinPage( vmStelling), is( 0 ) );
+	getConfig().switchConfig( "KDKT" );
+	assertThat( vm.getCache().getPositionWithinPage( vmStelling ), is( 7 ) );
+	getConfig().switchConfig( "KDKTT" );
+	assertThat( vm.getCache().getPositionWithinPage( vmStelling), is( 7 * 64 + 9 ) );
 }
 @Test
-public void testSetData()
+public void testGetSetData()
 {
 	long pageNumber = 9L;
 	int cacheNumber = 20;
@@ -476,6 +476,35 @@ public void testSetData()
 		.build();
 	getCache().setData( pageDescriptor, vmStelling, newValue );
 	assertThat( getCache().getData( pageDescriptor, vmStelling ), is( newValue ) );
+}
+@Test
+public void testGetDataWithNoGetPage()
+{
+	long pageNumber = 9L;
+	int cacheNumber = 21;
+	byte value = (byte)0x25;
+	byte newValue = (byte)0x00;
+	int positionWithinPage = 10;
+
+	writePageWithAll( pageNumber, cacheNumber, value );
+	
+	PageDescriptor pageDescriptor = PageDescriptor.builder()
+		.waar( Lokatie.IN_RAM )
+		.cacheNummer( cacheNumber )
+		.schijfAdres( pageNumber * getCache().getPageSize() )
+		.build();
+	byte [] page = getCache().getCache().get( 20 ).getPage();
+	CacheEntry cacheEntry = CacheEntry.builder()
+		.page( page )
+		.pageDescriptor( pageDescriptor )
+		.vuil( false )
+		.generatie( 1 )
+		.build();
+	getCache().setCacheEntry( pageDescriptor, cacheEntry );
+	
+	//getCache().setData( pageDescriptor, positionWithinPage, newValue );
+	assertThat( getCache().getData( pageDescriptor, positionWithinPage ), is( newValue ) );
+	
 }
 @Test
 public void testFlushWithNothingChanged()
