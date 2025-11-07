@@ -146,8 +146,7 @@ public void isIllegaal( BoStelling aBoStelling )
 /**
  *------------- Kontroleer schaakjes ---------------------------
  */
-// @@HIGH Ik begrijp niet hoe dit werkt
-// @@HIGH Dit kun je combineren met isMat. Dan kun je isMat over alleen de witte stellingen draaien
+// @@LOW Dit kun je combineren met isMat. Dan kun je isMat over alleen de witte stellingen draaien
 public void schaakjes( BoStelling aBoStellingMetWitAanZet )
 {
 	/*
