@@ -479,7 +479,7 @@ public void testGenZetPerStuk()
 		.build();
 	Bord bord = new Bord( getConfig().getAantalStukken(), getConfig().getStukken(), boStelling );
 
-	List<BoStelling> gegenereerdeZetten = gen.genereerZettenPerStuk( boStelling, gen.getStukken().getS4(), 0x27, 0x33, bord );
+	List<BoStelling> gegenereerdeZetten = gen.genereerZettenPerStuk( boStelling, gen.getStukken().getS4(), boStelling.getZk(), boStelling.getS4(), bord );
 	assertThat( gegenereerdeZetten.size(), is( 14 ) );
 	assertThat( gegenereerdeZetten.get(  0 ).getS4(), is( 0x34 ) );
 	assertThat( gegenereerdeZetten.get(  0 ).getAanZet(), is( WIT ) );
@@ -517,7 +517,8 @@ public void testGenZetPerStuk()
 		.s4( 0x77 )
 		.aanZet( ZWART )
 		.build();
-	bord = new Bord( getConfig().getAantalStukken(), getConfig().getStukken(), boStelling );	gegenereerdeZetten = gen.genereerZettenPerStuk( boStelling, gen.getStukken().getS4(), 0x27, 0x77, bord );
+	bord = new Bord( getConfig().getAantalStukken(), getConfig().getStukken(), boStelling );
+	gegenereerdeZetten = gen.genereerZettenPerStuk( boStelling, gen.getStukken().getS4(), boStelling.getZk(), boStelling.getS4(), bord );
 	assertThat( gegenereerdeZetten.size(), is( 5 ) );
 	assertThat( gegenereerdeZetten.get(  0 ).getS4(), is( 0x76 ) );
 	assertThat( gegenereerdeZetten.get(  0 ).getS3(), is( 0x11 ) );
@@ -537,7 +538,7 @@ public void testGenZetPerStuk()
 		.aantalZetten( 0 )
 		.build();
 	bord = new Bord( getConfig().getAantalStukken(), getConfig().getStukken(), boStelling );	//gen.printBord();
-	gegenereerdeZetten = gen.genereerZettenPerStuk( boStelling, gen.getStukken().getWk(), 0x02, 0x02, bord );
+	gegenereerdeZetten = gen.genereerZettenPerStuk( boStelling, gen.getStukken().getWk(), boStelling.getWk(), boStelling.getWk(), bord );
 	assertThat( gegenereerdeZetten.size(), is( 5 ) );
 
 }
@@ -563,7 +564,9 @@ public void testGenereerZetten()
 
 	assertThat( gegenereerdeZetten.get(  0 ).getZk(), is( 0x37 ) );
 	assertThat( gegenereerdeZetten.get(  1 ).getZk(), is( 0x36 ) );
-	assertThat( gegenereerdeZetten.get(  2 ).getZk(), is( 0x26 ) ); //@@HIGH Dit is een illegale stelling
+	// Dit is een illegale stelling! Klopt, maar je hebt ook nog geen bouw.schaakjes gedaan. Die zou hem markeren
+	// als ILLEGAAL en dan zou deze stelling nit gegenereerd worden.
+	assertThat( gegenereerdeZetten.get(  2 ).getZk(), is( 0x26 ) );
 	assertThat( gegenereerdeZetten.get(  3 ).getZk(), is( 0x16 ) );
 	assertThat( gegenereerdeZetten.get(  4 ).getZk(), is( 0x17 ) );
 
