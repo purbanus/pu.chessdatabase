@@ -20,7 +20,7 @@ import pu.chessdatabase.bo.Config;
 public class TestVmStelling
 {
 public static final String VM_TO_STRING = """
-WK=a1 ZK=c1 S3=b2 S4=d3 S5=a1 AanZet={4}
+WK=a1 ZK=c1 S3=b2 S4=d3 S5=a1 AanZet={5}
 .. .. .. .. .. .. .. ..\s
 .. .. .. .. .. .. .. ..\s
 .. .. .. .. .. .. .. ..\s
@@ -62,6 +62,7 @@ public void testGetBoStelling()
 		.zk( 0x02 )
 		.s3( 0x11 )
 		.s4( 0x23 )
+		.s5( 0x00 )
 		.aanZet( WIT )
 		.build();
 	BoStelling boStelling = BoStelling.builder()
@@ -69,6 +70,7 @@ public void testGetBoStelling()
 		.zk( 0x02 )
 		.s3( 0x21 )
 		.s4( 0x43 )
+		.s5( 0x00 )
 		.aanZet( WIT )
 		.build();
 	assertThat( vmStelling.getBoStelling(), is( boStelling ) );
@@ -78,6 +80,7 @@ public void testGetBoStelling()
 		.zk( "h3" )
 		.s3( "g8" )
 		.s4( "d4" )
+		.s5( "f1" )
 		.aanZet( ZWART )
 		.build();
 	boStelling = BoStelling.alfaBuilder()
@@ -85,6 +88,7 @@ public void testGetBoStelling()
 		.zk( "h3" )
 		.s3( "g8" )
 		.s4( "d4" )
+		.s5( "f1" )
 		.aanZet( ZWART )
 		.build();
 	assertThat( vmStelling.getBoStelling(), is( boStelling ) );
@@ -108,18 +112,18 @@ public void testToString()
 		config.getStukken().getZk().getStukString(),
 		config.getStukken().getS3().getStukString(),
 		config.getStukken().getS4().getStukString(),
-		// config.getStukken().getS5().getStukString(), // @@HIGH Nog effe niet
+		config.getStukken().getS5().getStukString(),
 		vmStelling.getAanZet().getAfko()
 	);
 	assertThat( vmStelling.toString().length(), is( vmStringText.length() ) );
-//	String vmStellingToString = vmStelling.toString();
-//	for ( int x = 0; x < vmStringText.length(); x++ )
-//	{
-//		if ( vmStringText.charAt( x ) != vmStellingToString.charAt( x ) )
-//		{
-//			System.out.println( "Op positie " + x + " " + vmStringText.charAt( x ) + " " + vmStellingToString.charAt( x ) );
-//		}
-//	}
+	String vmStellingToString = vmStelling.toString();
+	for ( int x = 0; x < vmStringText.length(); x++ )
+	{
+		if ( vmStringText.charAt( x ) != vmStellingToString.charAt( x ) )
+		{
+			System.out.println( "Op positie " + x + " " + vmStringText.charAt( x ) + " " + vmStellingToString.charAt( x ) );
+		}
+	}
 	assertThat( vmStelling.toString(), is( vmStringText ) );
 	
 	config.switchConfig( "KLPK" );
@@ -128,6 +132,7 @@ public void testToString()
 		config.getStukken().getZk().getStukString(),
 		config.getStukken().getS3().getStukString(),
 		config.getStukken().getS4().getStukString(),
+		config.getStukken().getS5().getStukString(),
 		vmStelling.getAanZet().getAfko()
 	);
 	assertThat( vmStelling.toString().length(), is( vmStringText.length() ) );
@@ -139,6 +144,7 @@ public void testToString()
 		config.getStukken().getZk().getStukString(),
 		config.getStukken().getS3().getStukString(),
 		config.getStukken().getS4().getStukString(),
+		config.getStukken().getS5().getStukString(),
 		vmStelling.getAanZet().getAfko()
 	);
 	assertThat( vmStelling.toString().length(), is( vmStringText.length() ) );

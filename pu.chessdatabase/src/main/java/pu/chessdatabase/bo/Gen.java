@@ -368,7 +368,7 @@ BEGIN
 END AddZet;
  */
 // Geen gegenereerdeZetten als parm maar gewoon de nieuwe stelling retourneren
-// ==> Nee, want dan moet je soms null retourmerem (Of Optional<BoStelling gebruiken, maar dat maakt het alleen maar erger)
+// ==> Nee, want dan moet je soms null retournerem (Of Optional<BoStelling gebruiken, maar dat maakt het alleen maar erger)
 void addZet( final BoStelling aBoStelling, Stuk aStuk, int aNaar, ZetSoort aZetsoort, int aKoningsVeld, int aStukVeld, List<BoStelling> aGegenereerdeZetten )
 {
 	BoStelling boStelling = aBoStelling.clone();
@@ -377,7 +377,8 @@ void addZet( final BoStelling aBoStelling, Stuk aStuk, int aNaar, ZetSoort aZets
 		//---- Stop het geslagen stuk "onder" de koning ----
 		if ( boStelling.getS3() == aNaar )
 		{
-			// @@HIGH Kun je hier niet boStelling.setS3( aKoningsVeld ) doen?
+			// Kun je hier niet boStelling.setS3( aKoningsVeld ) doen?
+			// --> Nee sukkel dat is de verkeerde koning!
 			Stuk geslagenStuk = getStukken().getS3();
 			if ( geslagenStuk.getKoningsNummer() == 0 )
 			{
@@ -390,7 +391,6 @@ void addZet( final BoStelling aBoStelling, Stuk aStuk, int aNaar, ZetSoort aZets
 		}
 		if ( getConfig().getAantalStukken() >= 4 && boStelling.getS4() == aNaar )
 		{
-			// @@HIGH En hier mut.mut?
 			Stuk geslagenStuk = getStukken().getS4();
 			if ( geslagenStuk.getKoningsNummer() == 0 )
 			{
@@ -403,7 +403,6 @@ void addZet( final BoStelling aBoStelling, Stuk aStuk, int aNaar, ZetSoort aZets
 		}
 		if ( getConfig().getAantalStukken() >= 5 && boStelling.getS5() == aNaar )
 		{
-			// @@HIGH En hier mut.mut?
 			Stuk geslagenStuk = getStukken().getS5();
 			if ( geslagenStuk.getKoningsNummer() == 0 )
 			{

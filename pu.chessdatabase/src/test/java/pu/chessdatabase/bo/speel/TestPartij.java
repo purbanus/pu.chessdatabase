@@ -1105,7 +1105,7 @@ public void testGegenereerdeZetDocument()
 		.zetNummer( 16 )
 		.zet( stukDatZet.getAfko() + "b2-c3 " )
 		.resultaat( "Gewonnen" )
-		.matInHoeveel( "Mat in 29" ) // @@HIGH Dit was 28 en dat werkte denk ik
+		.matInHoeveel( "Mat in 29" )
 		.build();
 	BoStelling boStellingNaar= partij.vanNaarToStelling( ply, vanNaar );
 	assertThat( partij.getGegenereerdeZetDocument( ply, boStellingNaar ), is( gegenereerdeZetDocument ) );
@@ -1132,7 +1132,7 @@ public void testGegenereerdeZetDocument()
 		.resultaat( "Remise" )
 		.matInHoeveel( "..." )
 		.build();
-	boStellingNaar= partij.vanNaarToStelling( ply, vanNaar );
+	boStellingNaar = partij.vanNaarToStelling( ply, vanNaar );
 	assertThat( partij.getGegenereerdeZetDocument( ply, boStellingNaar ), is( gegenereerdeZetDocument ) );
 }
 @Test

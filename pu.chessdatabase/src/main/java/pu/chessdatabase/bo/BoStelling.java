@@ -26,7 +26,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-// @@HIGH config-afhankelijk maken
 public class BoStelling implements Cloneable
 {
 public static class AlfaBuilder

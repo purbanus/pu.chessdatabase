@@ -242,8 +242,8 @@ public void put( BoStelling aBoStelling )
 		case ILLEGAAL: 
 			VMRec = VM.VM_ILLEGAAL; break;
 		// Waarom worden schaakjes als remise gezien?
-		// ==> Omdat ze alleen in pass_0 VM_SCHAAK krijgen en dat betekent dat de stelling remise is,
-		//     maar een potentiele matkandidaat
+		// ==> Omdat ze alleen in pass_0 VM_SCHAAK krijgen en dat betekent dat de stelling weliswaar remise is,
+		//     maar wel een potentiele matkandidaat
 		case REMISE  : VMRec = aBoStelling.isSchaak() ? VM.VM_SCHAAK : VM.VM_REMISE; break;
 		case GEWONNEN: VMRec = aBoStelling.getAantalZetten(); break;
 		case VERLOREN: VMRec = aBoStelling.getAantalZetten() + VM.VERLIES_OFFSET; break;

@@ -174,7 +174,10 @@ public byte [] getPage( VMStelling aVmStelling )
  */
 public int get( VMStelling aVmStelling )
 {
-    getPage( aVmStelling );  // Dit is o.a. om de pageDescriptor goed te zetten @@HIGH CHECH
+	// Dit is o.a. om de pageDescriptor goed te zetten. Gecheckt, ik zie niet wat dit uitmaakt
+	// maar ik kan niet aantonen dat het fout gaat als je het weglaat. Voorlopig laten staan dus
+    getPage( aVmStelling );
+    
 	PageDescriptor pageDescriptor = getPageDescriptor( aVmStelling );
     byte vmRec = getCache().getData( pageDescriptor, aVmStelling );
     return Byte.toUnsignedInt( vmRec );
@@ -184,8 +187,10 @@ public int get( VMStelling aVmStelling )
  */
 public void put( VMStelling aVmStelling, int aDbsRec )
 {
-	// CheckStelling gebeurt al in GetPage
-	getPage( aVmStelling ); // Dit is o.a. om de pageDescriptor goed te zetten
+	// Dit is o.a. om de pageDescriptor goed te zetten. Gecheckt, ik zie niet wat dit uitmaakt
+	// maar ik kan niet aantonen dat het fout gaat als je het weglaat. Voorlopig laten staan dus
+    getPage( aVmStelling );
+    
 	PageDescriptor pageDescriptor = getPageDescriptor( aVmStelling );
     byte vmRec = (byte)( aDbsRec & 0xff );
     getCache().setData( pageDescriptor, aVmStelling, vmRec);
