@@ -103,6 +103,7 @@ public void testIsIllegaal()
 {
 	//IsGeomIllegaal wordt al getest in TestGen. We nemen nu een willekeurige illegale stelling
 	BoStelling boStelling;
+	BoStelling gotBoStelling;
 	boStelling = BoStelling.builder()
 		.wk( 0x05 )
 		.zk( 0x05 )
@@ -113,8 +114,21 @@ public void testIsIllegaal()
 	bouw.isIllegaal( boStelling );
 	
 	// Dit is VMStelling(WK=2, ZK=2, s3=10, s4=9, AanZet=false)
-	BoStelling gotBoStelling = dbs.get( boStelling );
+	gotBoStelling = dbs.get( boStelling );
 	assertThat( gotBoStelling.getResultaat(), is( ILLEGAAL ) );
+
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "g7" )
+		.s4( "h8" )
+		.aanZet( ZWART )
+		.build();
+	bouw.isIllegaal( boStelling );
+	
+	// Dit is VMStelling(WK=2, ZK=2, s3=10, s4=9, AanZet=false)
+	gotBoStelling = dbs.get( boStelling );
+	assertThat( gotBoStelling.getResultaat(), is( REMISE ) );
 }
 @Test
 public void testSchaakjes()
@@ -124,6 +138,20 @@ public void testSchaakjes()
 	// T links geeft schaak
 	boStelling = BoStelling.alfaBuilder()
 		.wk( "b2" )
+		.zk( "g3" )
+		.s3( "g8" )
+		.s4( "d4" )
+		.aanZet( WIT )
+		.resultaat( REMISE )
+		.build();
+	bouw.schaakjes( boStelling );
+	BoStelling gotBoStelling = dbs.get( boStelling );
+	gotBoStelling.setSchaak( gen.isSchaak( boStelling ) );
+	assertThat( gotBoStelling.isSchaak(), is( false ) );
+	assertThat( gotBoStelling.getResultaat(), is( ILLEGAAL ) );
+	
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "b2" )
 		.zk( "h3" )
 		.s3( "g8" )
 		.s4( "a2" )
@@ -131,7 +159,7 @@ public void testSchaakjes()
 		.resultaat( REMISE )
 		.build();
 	bouw.schaakjes( boStelling );
-	BoStelling gotBoStelling = dbs.get( boStelling );
+	gotBoStelling = dbs.get( boStelling );
 	gotBoStelling.setSchaak( gen.isSchaak( boStelling ) );
 	assertThat( gotBoStelling.isSchaak(), is( true ) );
 	assertThat( gotBoStelling.getResultaat(), is( REMISE ) );
@@ -158,6 +186,21 @@ public void testSchaakjes()
 	assertThat( gotBoStelling.isSchaak(), is( false ) );
 	assertThat( gotBoStelling.getResultaat(), is( ILLEGAAL ) );
 	assertThat( gotBoStelling.getAantalZetten(), is( 0 ) );
+	
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "g7" )
+		.s4( "h8" )
+		.aanZet( WIT )
+		.schaak( false )
+		.resultaat( REMISE )
+		.aantalZetten( 0 )
+		.build();
+	bouw.schaakjes( boStelling );
+	
+	gotBoStelling = dbs.get( boStelling );
+	assertThat( gotBoStelling.getResultaat(), is( ILLEGAAL ) );
 }
 //@Test
 public void testPassSchaakjes()
@@ -204,7 +247,6 @@ public void testPassSchaakjes()
 }
 private void markeerIllegaal()
 {
-	// @@HIGH Check dat alle illegale stellingen zowel met wit als met zwart illegaal zijn
 	bouw.illegaleStellingen = new ArrayList<>();
 	bouw.stellingenMetSchaak = new ArrayList<>();
 	bouw.matStellingen  = new ArrayList<>();
@@ -220,11 +262,6 @@ private void markeerIllegaal()
 	bouw.reportNewPass( "Markeren schaakjes", DO_PRINT );
 	dbs.pass( PassType.MARKEER_WIT, bouw::schaakjes );
 	checkTellingen();
-
-//	dbs.SetReport( 100, bouw::showThisPass );
-//	bouw.reportNewPass( "Matstellingen", DO_PRINT );
-//	dbs.Pass( PassType.MarkeerWit  , bouw::isMat );
-//	dbs.Pass( PassType.MarkeerZwart, bouw::isMat );
 }
 void checkTellingen()
 {
