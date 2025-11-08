@@ -11,12 +11,14 @@ import org.springframework.stereotype.Component;
 import pu.chessdatabase.bo.configuraties.ConfigImpl;
 import pu.chessdatabase.bo.configuraties.KDK;
 import pu.chessdatabase.bo.configuraties.KDKT;
+import pu.chessdatabase.bo.configuraties.KDKTT;
 import pu.chessdatabase.bo.configuraties.KLLK;
 import pu.chessdatabase.bo.configuraties.KLPK;
 import pu.chessdatabase.bo.configuraties.KTK;
 import pu.chessdatabase.bo.configuraties.StukDefinitie;
 import pu.chessdatabase.bo.configuraties.TestKDK;
 import pu.chessdatabase.bo.configuraties.TestKDKT;
+import pu.chessdatabase.bo.configuraties.TestKDKTT;
 import pu.chessdatabase.dal.VM;
 
 import lombok.AccessLevel;
@@ -70,8 +72,10 @@ Map<String, ConfigImpl> getConfigImplRegistry()
 		configImplRegistry.put( "KDKT", new KDKT() );
 		configImplRegistry.put( "KLPK", new KLPK() );
 		configImplRegistry.put( "KLLK", new KLLK() );
+		configImplRegistry.put( "KDKTT", new KDKTT() );
 		configImplRegistry.put( "TESTKDK", new TestKDK() );
 		configImplRegistry.put( "TESTKDKT", new TestKDKT() );
+		configImplRegistry.put( "TESTKDKTT", new TestKDKTT() );
 	}
 	return configImplRegistry;
 }
