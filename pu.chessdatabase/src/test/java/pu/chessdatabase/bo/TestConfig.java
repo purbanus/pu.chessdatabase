@@ -143,6 +143,17 @@ public void testgetStukDefinities()
 	);
 	assertThat( getConfig().getStukDefinities(), is( expectedStukDefinities ) );
 }
+@Test
+public void testgetAantalStukken()
+{
+	getConfig().switchConfig( "kdk" );
+	assertThat( getConfig().getAantalStukken(), is( 3 ) );
+	getConfig().switchConfig( "kdkt" );
+	assertThat( getConfig().getAantalStukken(), is( 4 ) );
+	getConfig().switchConfig( "kdktt" );
+	assertThat( getConfig().getAantalStukken(), is( 5 ) );
+
+}
 @SuppressWarnings( "null" )
 @Test
 public void testGetConfigRegistry()
