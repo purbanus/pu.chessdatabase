@@ -20,6 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.dal.Dbs;
 import pu.chessdatabase.dal.PassType;
+import pu.services.StopWatch;
 
 @SpringBootTest
 public class TestBouw
@@ -271,6 +272,7 @@ public void testShowMatStellingen()
 //@Test
 public void testTelAlles()
 {
+	StopWatch timer = new StopWatch();
 	bouw.pass_0();
 	dbs.open();
 	bouw.telAlles();
@@ -284,7 +286,8 @@ public void testTelAlles()
        Remise    3201556
        Verloren     2194
 	 */
-	bouw.printAllesMetKleur();
+//	bouw.printAllesMetKleur();
+	System.out.println( "TelAlles duurde " + timer.getElapsedMs() );
 }
 @Test
 public void testMarkeer()
