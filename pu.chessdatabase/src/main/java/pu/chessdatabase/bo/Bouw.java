@@ -235,8 +235,10 @@ void pass_0( boolean aDoPrint )
 	reportNewPass( "Markeren schaakjes", aDoPrint );
 	dbs.pass( PassType.MARKEER_WIT, this::schaakjes );
 
-	reportNewPass( "Markeren matstellingen", aDoPrint );
-	dbs.pass( PassType.MARKEER_WIT_EN_ZWART  , this::isMat );
+//	dbs.setReport( 100, this::showThisPass );
+//	reportNewPass( "Matstellingen" );
+	dbs.pass( PassType.MARKEER_WIT  , this::isMat );
+	dbs.pass( PassType.MARKEER_ZWART, this::isMat );
 }
 /**
  * ------- Markeer een stelling gewonnen/verloren -----------
@@ -352,8 +354,12 @@ void markeer( BoStelling aBoStelling )
  */
 void pass_n()
 {
-	reportNewPass( "Pass " + passNumber );
-	dbs.pass( PassType.MARKEER_WIT_EN_ZWART, this::markeer );
+//	dbs.setReport( 100, this::showThisPass );
+//	reportNewPass( "Wit aan zet" );
+	dbs.pass( PassType.MARKEER_WIT, this::markeer );
+
+//	reportNewPass( "Zwart aan zet" );
+	dbs.pass( PassType.MARKEER_ZWART, this::markeer );
 }
 /**
  * ---------- Markeer tot er niets meer verandert ------------------
@@ -364,13 +370,16 @@ public void bouwDatabase()
 	StopWatch timer = new StopWatch();
 	passNumber = 0;
 	pass_0();
-	System.out.println( "Pass: " + passNumber + " duurde " + timer.getLapTimeMs() );
+//	telAlles();
+//	printAllesMetKleur();
+	System.out.printf( "Pass %d duurde %s\n", passNr, overallTimer.getLapTimeMs() );
 	while ( passNchanges )
 	{
 		passNchanges = false;
 		pass_n();
-		passNumber++;
-		System.out.println( "Pass: " + passNumber + " duurde " + timer.getLapTimeMs() );
+		passNr++;
+		System.out.printf( "Pass %d duurde %s\n", passNr, timer.getElapsedMs() );
+//		printAllesMetKleur();
 	}
 	System.out.println( "Totaaltijd: " + timer.getElapsedMs() );
 }

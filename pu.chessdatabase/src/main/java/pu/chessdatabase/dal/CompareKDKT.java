@@ -1,6 +1,7 @@
 package pu.chessdatabase.dal;
 
 import pu.chessdatabase.bo.Config;
+import pu.services.StopWatch;
 
 public class CompareKDKT
 {
@@ -13,10 +14,11 @@ public static void main( String [] args )
 }
 private void run()
 {
+	StopWatch timer = new StopWatch();
 	setupVm( vm1, "KDKT", "dbs/KDKT.DBS" );
 	setupVm( vm2, "KDKT", "dbs/KDKT2.DBS" );
 	vm1.getPageDescriptorTable().iterateOverAllPageDescriptors( this::compareDeDatabases );
-	System.out.println( "CompareKDKT klaar" );
+	System.out.println( "CompareKDKT klaar, duurde " + timer.getElapsedMs() );
 	System.out.println( "Totaal aantal stellingen ongelijk: " + aantalStellingenOngelijk );
 }
 void setupVm( VM aVm, String aConfigName, String aDatabaseName )
