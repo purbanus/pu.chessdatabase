@@ -18,6 +18,7 @@ public TestKDKT()
 	super();
 	getStukDefinities().add( new StukDefinitie( DAME,   WIT ) );
 	getStukDefinities().add( new StukDefinitie( TOREN,  ZWART ) );
+	getStukDefinities().add( new StukDefinitie( GEEN,   WIT ) );
 	databaseName = "dbs/Pipo4";
 	setStukken( new Stukken( this ) );
 }

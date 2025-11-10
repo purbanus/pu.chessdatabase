@@ -8,14 +8,12 @@ import pu.chessdatabase.bo.Kleur;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
 public class VMStelling implements Cloneable
 {
 public static class AlfaBuilder
@@ -101,26 +99,53 @@ public String getS5String()
 @Override
 public String toString()
 {
-	StringBuilder sb = new StringBuilder();
-	sb
-	.append( "WK="  ).append( VM.veldToAlfa( wk ) )
-	.append( " ZK=" ).append( VM.veldToAlfa( zk ) )
-	.append( " S3=" ).append( VM.veldToAlfa( s3 ) )
-	.append( " S4=" ).append( VM.veldToAlfa( s4 ) )
-	.append( " S5=" ).append( VM.veldToAlfa( s5 ) )
-	.append( " AanZet=" ).append( aanZet.getAfko() ).append( "\n" );
+	StringBuilder sb = new StringBuilder()
+		.append( "WK="  ).append( VM.veldToAlfa( wk ) )
+		.append( " ZK=" ).append( VM.veldToAlfa( zk ) )
+		.append( " S3=" ).append( VM.veldToAlfa( s3 ) )
+		.append( " S4=" ).append( VM.veldToAlfa( s4 ) )
+		.append( " S5=" ).append( VM.veldToAlfa( s5 ) )
+		.append( " AanZet=" ).append( aanZet.getAfko() ).append( "\n" );
 	for ( int rij = 7; rij >= 0; rij-- )
 	{
 		for ( int kol = 0; kol < 8; kol++ )
 		{
 			int veld = 8 * rij + kol;
 			String veldString;
-			if ( veld == wk ) veldString = getWkString();
-			else if ( veld == zk ) veldString = getZkString();
-			else if ( veld == s3 ) veldString = getS3String();
-			else if ( veld == s4 ) veldString = getS4String();
-			else if ( veld == s5 ) veldString = getS5String();
-			else veldString = "..";
+			// Omdat we eerst testen of het de wk is die oip het veld staat, komen andere stukken die op dat 
+			// veld staan, niet in aanmerking.
+			if ( veld == wk )
+			{
+				veldString = getWkString();
+			}
+			else if ( veld == zk )
+			{
+				veldString = getZkString();
+			}
+			else if ( veld == s3 )
+			{
+				veldString = getS3String();
+			}
+			else if ( veld == s4 )
+			{
+				veldString = getS4String(); 
+				if ( veldString.equals( "WG" ) )
+				{
+					veldString = "..";
+				}
+			}
+			else if ( veld == s5 )
+			{
+				veldString = getS5String(); 
+				if ( veldString.equals( "WG" ) )
+				{
+					veldString = "..";
+				}
+			}
+			else
+			{
+				veldString = "..";
+			}
 			sb.append( veldString ).append( " " );
 		}
 		sb.append( "\n" );

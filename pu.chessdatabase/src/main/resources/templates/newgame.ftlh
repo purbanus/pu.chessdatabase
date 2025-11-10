@@ -39,27 +39,16 @@
 
 	<h4>Zet een nieuwe stelling op</h4>
 	<form action='<@spring.url "/do-newgame" />' method="post">
+		<#list doc.fakeStukken as stuk>
+			<input id="${stuk.name}" type="hidden" name="${stuk.name}" value="${stuk.veld}" />
+		</#list>
 		<table id="detabel" class="newGame" border="0">
-			<#list doc.stukken as stuk>
+			<#list doc.realStukken as stuk>
 				<tr>
 					<td><label for="${stuk.name}">${stuk.label}</label></td>	
 					<td><input id="${stuk.name}" type="text" name="${stuk.name}" value="${stuk.veld}" /></td>
 				</tr>
 			</#list>
-<#--  
-			<tr>
-				<td><label for="s3Alfa">${doc.s3Label}</label></td>
-				<td><input id="s3Alfa" type="text" name="s3Alfa" value="${doc.s3}" /></td>
-			</tr>
-			<tr>
-				<td><label for="zkAlfa">${doc.zkLabel}</label></td>
-				<td><input id="zkAlfa" type="text" name="zkAlfa" value="${doc.zk}" /></td>
-			</tr>
-			<tr>
-				<td><label for="s4Alfa">${doc.s4Label}</label></td>
-				<td><input id="s4Alfa" type="text" name="s4Alfa" value="${doc.s4}" /></td>
-			</tr>
--->
 			<tr>
 				<td>Wie is er aan zet</td>
 				<td
@@ -76,7 +65,6 @@
 					</label>
 				</td>
 			</tr>
-
 		</table>
 		
 		<button type="submit" name="submit">DoIt</button>

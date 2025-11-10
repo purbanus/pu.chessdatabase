@@ -11,15 +11,18 @@ public static final int LEEG = 0xFF;
 public static final int MAX_BORD = 0x77;
 
 private int [] bord = new int[MAX_BORD + 1];
-
-public Bord()
+private int aantalStukken;
+private Stukken stukken;
+public Bord( int aAantalStukken, Stukken aStukken )
 {
 	super();
+	aantalStukken = aAantalStukken;
+	stukken = aStukken;
 	maakBordLeeg();
 }
-public Bord( BoStelling aBoStelling )
+public Bord( int aAantalStukken, Stukken aStukken, BoStelling aBoStelling )
 {
-	this();
+	this( aAantalStukken, aStukken );
 	zetBordOp( aBoStelling );
 }
 
@@ -60,7 +63,14 @@ public void zetBordOp( BoStelling aStelling )
 {
 	// eerst de stukken, dan kunnen ze eventueel uitgeveegd worden door de koningen 
 	bord[aStelling.getS3()] = 2;
-	bord[aStelling.getS4()] = 3;
+	if ( getAantalStukken() >= 4 )
+	{
+		bord[aStelling.getS4()] = 3;
+	}
+	if ( getAantalStukken() >= 5 )
+	{
+		bord[aStelling.getS5()] = 4;
+	}
 	bord[aStelling.getWk()] = 0;
 	bord[aStelling.getZk()] = 1;
 }
@@ -81,12 +91,17 @@ public void clearBord( BoStelling aStelling )
 {
 	bord[aStelling.getS3()] = LEEG;
 	bord[aStelling.getS4()] = LEEG;
+	bord[aStelling.getS5()] = LEEG;
 	bord[aStelling.getWk()] = LEEG;
 	bord[aStelling.getZk()] = LEEG;
 }
 public int getVeld( int aVeld )
 {
 	return bord[aVeld];
+}
+public int getAlfaVeld( String aAlfaVeld )
+{
+	return bord[Gen.alfaToVeld(aAlfaVeld)];
 }
 public boolean isVeldLeeg( int aVeld )
 {
@@ -103,10 +118,11 @@ public String toString()
 			int index = 16 * rij + kol;
 			int veld = bord[index];
 			String veldString;
-			if ( veld == 0 ) veldString = "WK";
-			else if ( veld == 1 ) veldString = "ZK";
-			else if ( veld == 2 ) veldString = "WD";
-			else if ( veld == 3 ) veldString = "ZT";
+			if      ( veld == 0 ) veldString = getStukken().getWk().getStukString();
+			else if ( veld == 1 ) veldString = getStukken().getZk().getStukString();
+			else if ( veld == 2 ) veldString = getStukken().getS3().getStukString();
+			else if ( veld == 3 ) veldString = getStukken().getS4().getStukString();
+			else if ( veld == 4 ) veldString = getStukken().getS5().getStukString();
 			else veldString = ( veld < 16 ? "0":"" ) + Integer.toHexString( veld  );
 			sb.append( veldString ).append( " " );
 		}

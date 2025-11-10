@@ -32,7 +32,7 @@ public void buildKDKT()
 	config.switchConfig( "KDKT", false );
 	bouw.bouwDatabase();
 }
-//@Test
+@Test
 public void buildKDKT2()
 {
 	config.switchConfig( "KDKT", false );
@@ -49,6 +49,25 @@ public void buildKLPK()
 public void buildKLLK()
 {
 	config.switchConfig( "KLLK", false );
+	bouw.bouwDatabase();
+}
+//@Test
+public void buildKDK()
+{
+	config.switchConfig( "KDK", false );
+	bouw.bouwDatabase();
+}
+//@Test
+public void buildKTK()
+{
+	config.switchConfig( "KTK", false );
+	bouw.bouwDatabase();
+}
+//@Test
+// Als je deze activeert, zet dan HOU_STELLINGEN_BIJ op false, anders loop je uit het geheugen
+public void buildKDKTT()
+{
+	config.switchConfig( "KDKTT", false );
 	bouw.bouwDatabase();
 }
 }

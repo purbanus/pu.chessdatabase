@@ -16,10 +16,9 @@ import lombok.Setter;
 
 class Cache
 {
-static final int PAGE_SIZE_3_STUKKEN = 64;               // Bytes per page
-static final int PAGE_SIZE_4_STUKKEN = 64*64;            // Bytes per page
-static final int PAGE_SIZE_5_STUKKEN = 64*64*64;         // Bytes per page
-static final int CACHE_SIZE     = 30;                 // Aantal pagina"s
+private static final int PAGE_SIZE_3_STUKKEN = 64;               // Bytes per page
+private static final int PAGE_SIZE_4_STUKKEN = 64*64;            // Bytes per page
+private static final int PAGE_SIZE_5_STUKKEN = 64*64*64;         // Bytes per page
 static final Map<Integer, Integer> PAGE_SIZE_LOOKUP = new HashMap<>();
 static
 {
@@ -27,17 +26,32 @@ static
 	PAGE_SIZE_LOOKUP.put( 4, PAGE_SIZE_4_STUKKEN );
 	PAGE_SIZE_LOOKUP.put( 5, PAGE_SIZE_5_STUKKEN );
 }
-private final int aantalStukken;
-private static int staticAantalStukken;
-static int getStaticAantalStukken()
-{
-	return staticAantalStukken;
-}
-static int getStaticPageSize()
+public static int getStaticPageSize()
 {
 	return PAGE_SIZE_LOOKUP.get( getStaticAantalStukken() );
 }
 
+private static final long DATABASE_SIZE_3_STUKKEN = 10 * 64 * 2 * PAGE_SIZE_3_STUKKEN;
+private static final long DATABASE_SIZE_4_STUKKEN = 10 * 64 * 2 * PAGE_SIZE_4_STUKKEN;
+private static final long DATABASE_SIZE_5_STUKKEN = 10 * 64 * 2 * PAGE_SIZE_5_STUKKEN;
+private static final Map<Integer, Long> DATABASE_SIZE_LOOKUP = new HashMap<>();
+static
+{
+	DATABASE_SIZE_LOOKUP.put( 3, DATABASE_SIZE_3_STUKKEN );
+	DATABASE_SIZE_LOOKUP.put( 4, DATABASE_SIZE_4_STUKKEN );
+	DATABASE_SIZE_LOOKUP.put( 5, DATABASE_SIZE_5_STUKKEN );
+}
+public static long getStaticDatabaseSize()
+{
+	return DATABASE_SIZE_LOOKUP.get( getStaticAantalStukken() );
+}
+static final int CACHE_SIZE     = 30;                 // Aantal pagina"s
+private static int staticAantalStukken;
+public static int getStaticAantalStukken()
+{
+	return staticAantalStukken;
+}
+private final int aantalStukken;
 private RandomAccessFile database = null;
 private List<CacheEntry> cache = new ArrayList<>();
 @Getter( AccessLevel.PACKAGE ) 
@@ -56,9 +70,13 @@ Cache( int aAantalStukken, RandomAccessFile aDatabase )
 	this( aAantalStukken );
 	database = aDatabase;
 }
-int getPageSize()
+public int getPageSize()
 {
 	return PAGE_SIZE_LOOKUP.get( getAantalStukken() );
+}
+public long getDatabaseSize()
+{
+	return DATABASE_SIZE_LOOKUP.get( getAantalStukken() );
 }
 
 private void initializeCache()
@@ -107,7 +125,7 @@ private int getFreeCacheEntry()
     	return LaagsteGeneratieNr;
     }
 }
-// @@NOG private maken want wordt alleen in tests gebruikt. Helaas ook in TestVN, dus nog ff niet
+// @@NOG private maken want wordt alleen in tests gebruikt. Helaas ook in TestVM, dus nog ff niet
 byte [] getPage( PageDescriptor aPageDescriptor )
 {
 	if ( aPageDescriptor.getCacheNummer() >= CACHE_SIZE )
@@ -252,6 +270,7 @@ void setData( PageDescriptor aPageDescriptor, VMStelling aVmStelling, byte aData
 }
 void setData( PageDescriptor aPageDescriptor, int aPositionWithinPage, byte aData )
 {
+	// @@HIGH Zou het niet beter zijn om hier CacheEntry te gebruiken, voor de performance?
     getPage( aPageDescriptor )[aPositionWithinPage] = aData;
 	setVuil( aPageDescriptor, true );
 }

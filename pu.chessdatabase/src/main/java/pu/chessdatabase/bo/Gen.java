@@ -14,7 +14,10 @@ import org.springframework.stereotype.Component;
 import pu.chessdatabase.dal.Dbs;
 import pu.chessdatabase.dal.ResultaatType;
 
+import lombok.Data;
+
 @Component
+@Data
 public class Gen
 {
 public static final BitSet BUITENBORD = bitSetOfInt( 0x88 );
@@ -148,17 +151,37 @@ END IsGeomIllegaal;
 /**
  * ------------ Kijk of een stelling geometrisch illegaal is ------------
  */
-public boolean isGeomIllegaal( BoStelling aBoStelling )
+public boolean isGeometrischIllegaal( BoStelling aBoStelling )
 {
-	if ( ( aBoStelling.getWk() == aBoStelling.getZk() ) || ( aBoStelling.getS3() == aBoStelling.getS4()     ) ) return true;
+	if ( aBoStelling.getWk() == aBoStelling.getZk() ) return true;
 	if ( ( aBoStelling.getWk() == aBoStelling.getS3() ) && ( getStukken().getS3().getKleur() != WIT   ) ) return true;
-	if ( ( aBoStelling.getWk() == aBoStelling.getS4() ) && ( getStukken().getS4().getKleur() != WIT   ) ) return true;
 	if ( ( aBoStelling.getZk() == aBoStelling.getS3() ) && ( getStukken().getS3().getKleur() != ZWART ) ) return true;
-	if ( ( aBoStelling.getZk() == aBoStelling.getS4() ) && ( getStukken().getS4().getKleur() != ZWART ) ) return true;
-	if ( getStukken().getS3().getStukType() == LOPER && getStukken().getS4().getStukType() == LOPER
-		&& aBoStelling.getVeldKleur( aBoStelling.getS3() ) == aBoStelling.getVeldKleur( aBoStelling.getS4() ) )
+	if ( getConfig().getAantalStukken() >= 4 )
 	{
-		return true;
+		if ( aBoStelling.getS3() == aBoStelling.getS4() ) return true;
+		if ( ( aBoStelling.getWk() == aBoStelling.getS4() ) && ( getStukken().getS4().getKleur() != WIT   ) ) return true;
+		if ( ( aBoStelling.getZk() == aBoStelling.getS4() ) && ( getStukken().getS4().getKleur() != ZWART ) ) return true;
+		if ( getStukken().getS3().getStukType() == LOPER && getStukken().getS4().getStukType() == LOPER
+			&& aBoStelling.getVeldKleur( aBoStelling.getS3() ) == aBoStelling.getVeldKleur( aBoStelling.getS4() ) )
+		{
+			return true;
+		}
+	}
+	if ( getConfig().getAantalStukken() >= 5 )
+	{
+		if ( ( aBoStelling.getS3() == aBoStelling.getS5() ) || ( aBoStelling.getS4() == aBoStelling.getS5() ) ) return true;
+		if ( ( aBoStelling.getWk() == aBoStelling.getS5() ) && ( getStukken().getS5().getKleur() != WIT   ) ) return true;
+		if ( ( aBoStelling.getZk() == aBoStelling.getS5() ) && ( getStukken().getS5().getKleur() != ZWART ) ) return true;
+		if ( getStukken().getS3().getStukType() == LOPER && getStukken().getS5().getStukType() == LOPER
+			&& aBoStelling.getVeldKleur( aBoStelling.getS3() ) == aBoStelling.getVeldKleur( aBoStelling.getS5() ) )
+		{
+			return true;
+		}
+		if ( getStukken().getS4().getStukType() == LOPER && getStukken().getS5().getStukType() == LOPER
+			&& aBoStelling.getVeldKleur( aBoStelling.getS4() ) == aBoStelling.getVeldKleur( aBoStelling.getS5() ) )
+		{
+			return true;
+		}
 	}
 	return false;
 }
@@ -291,15 +314,25 @@ public boolean checkSchaakDoorStuk( BoStelling aStelling, Stuk aStuk, int aKonin
  */
 public boolean isSchaak( BoStelling aStelling )
 {
-	Bord bord = new Bord( aStelling );
+	Bord bord = new Bord( getConfig().getAantalStukken(), getConfig().getStukken(), aStelling );
 	int KVeld = aStelling.getAanZet() == WIT ? aStelling.getWk() : aStelling.getZk();
 	if ( checkSchaakDoorStuk( aStelling, getStukken().getS3(), KVeld, aStelling.getS3(), bord ) )
 	{
 		return true;
 	}
-	if ( checkSchaakDoorStuk( aStelling, getStukken().getS4(), KVeld, aStelling.getS4(), bord ) )
+	if ( getConfig().getAantalStukken() >= 4 )
 	{
-		return true;
+		if ( checkSchaakDoorStuk( aStelling, getStukken().getS4(), KVeld, aStelling.getS4(), bord ) )
+		{
+			return true;
+		}
+	}
+	if ( getConfig().getAantalStukken() >= 5 )
+	{
+		if ( checkSchaakDoorStuk( aStelling, getStukken().getS4(), KVeld, aStelling.getS5(), bord ) )
+		{
+			return true;
+		}
 	}
 	return false;
 }
@@ -335,7 +368,7 @@ BEGIN
 END AddZet;
  */
 // Geen gegenereerdeZetten als parm maar gewoon de nieuwe stelling retourneren
-// ==> Nee, want dan moet je soms null retourmerem (Of Optional<BoStelling gebruiken, maar dat maakt het alleen maar erger)
+// ==> Nee, want dan moet je soms null retournerem (Of Optional<BoStelling gebruiken, maar dat maakt het alleen maar erger)
 void addZet( final BoStelling aBoStelling, Stuk aStuk, int aNaar, ZetSoort aZetsoort, int aKoningsVeld, int aStukVeld, List<BoStelling> aGegenereerdeZetten )
 {
 	BoStelling boStelling = aBoStelling.clone();
@@ -344,7 +377,8 @@ void addZet( final BoStelling aBoStelling, Stuk aStuk, int aNaar, ZetSoort aZets
 		//---- Stop het geslagen stuk "onder" de koning ----
 		if ( boStelling.getS3() == aNaar )
 		{
-			// @@HIGH Kun je hier niet boStelling.setS3( aKoningsVeld ) doen?
+			// Kun je hier niet boStelling.setS3( aKoningsVeld ) doen?
+			// --> Nee sukkel dat is de verkeerde koning!
 			Stuk geslagenStuk = getStukken().getS3();
 			if ( geslagenStuk.getKoningsNummer() == 0 )
 			{
@@ -355,9 +389,8 @@ void addZet( final BoStelling aBoStelling, Stuk aStuk, int aNaar, ZetSoort aZets
 				boStelling.setS3( boStelling.getZk() );
 			}
 		}
-		else if ( boStelling.getS4() == aNaar )
+		if ( getConfig().getAantalStukken() >= 4 && boStelling.getS4() == aNaar )
 		{
-			// @@HIGH En hier mut.mut?
 			Stuk geslagenStuk = getStukken().getS4();
 			if ( geslagenStuk.getKoningsNummer() == 0 )
 			{
@@ -368,6 +401,18 @@ void addZet( final BoStelling aBoStelling, Stuk aStuk, int aNaar, ZetSoort aZets
 				boStelling.setS4( boStelling.getZk() );
 			}
 		}
+		if ( getConfig().getAantalStukken() >= 5 && boStelling.getS5() == aNaar )
+		{
+			Stuk geslagenStuk = getStukken().getS5();
+			if ( geslagenStuk.getKoningsNummer() == 0 )
+			{
+				boStelling.setS5( boStelling.getWk() );
+			}
+			else
+			{
+				boStelling.setS5( boStelling.getZk() );
+			}
+		}
 	}
 	//------- Sjouw geslagen stukken mee bij koningszetten -----------
 	if ( aStukVeld == aKoningsVeld )
@@ -376,9 +421,13 @@ void addZet( final BoStelling aBoStelling, Stuk aStuk, int aNaar, ZetSoort aZets
 		{
 			boStelling.setS3( aNaar );
 		}
-		if ( boStelling.getS4() == aKoningsVeld )
+		if ( getConfig().getAantalStukken() >= 4 && boStelling.getS4() == aKoningsVeld )
 		{
 			boStelling.setS4( aNaar );
+		}
+		if ( getConfig().getAantalStukken() >= 5 && boStelling.getS5() == aKoningsVeld )
+		{
+			boStelling.setS5( aNaar );
 		}
 	}
 	//------ Verzet het stuk ---------
@@ -388,6 +437,7 @@ void addZet( final BoStelling aBoStelling, Stuk aStuk, int aNaar, ZetSoort aZets
 		case 1: boStelling.setZk( aNaar ); break;
 		case 2: boStelling.setS3( aNaar ); break;
 		case 3: boStelling.setS4( aNaar ); break;
+		case 4: boStelling.setS5( aNaar ); break;
 	}
 	boStelling.setAanZet( boStelling.getAanZet() == WIT ? ZWART : WIT );
 	BoStelling gotBoStelling = dbs.get( boStelling );
@@ -497,23 +547,26 @@ END GenZ;
 public List<BoStelling> genereerZetten( BoStelling aStelling )
 {
 	List<BoStelling> gegenereerdeZetten = new ArrayList<>();
-	Bord bord = new Bord( aStelling );
+	Bord bord = new Bord( getConfig().getAantalStukken(), getConfig().getStukken(), aStelling );
 	int stukVeld;
 	int koningsVeld;
+	Stuk stuk;
 
 	//-------- Koningszetten --------
 	if ( aStelling.getAanZet() == WIT )
 	{
 		stukVeld = aStelling.getWk();
 		koningsVeld = aStelling.getWk();
-		gegenereerdeZetten.addAll( genereerZettenPerStuk( aStelling, getStukken().getWk(), koningsVeld, stukVeld, bord ) );
+		stuk = getStukken().getWk();
 	}
 	else
 	{
 		stukVeld = aStelling.getZk();
 		koningsVeld = aStelling.getZk();
-		gegenereerdeZetten.addAll( genereerZettenPerStuk( aStelling, getStukken().getZk(), koningsVeld, stukVeld, bord ) );
+		stuk = getStukken().getZk();
 	}
+	gegenereerdeZetten.addAll( genereerZettenPerStuk( aStelling, stuk, koningsVeld, stukVeld, bord ) );
+
 	//--------- Stukzetten ----------
 	if ( ( getStukken().getS3().getKleur() == aStelling.getAanZet() ) && ( aStelling.getS3() != koningsVeld ) )
 	{
@@ -521,11 +574,23 @@ public List<BoStelling> genereerZetten( BoStelling aStelling )
 		koningsVeld = getStukken().getS3().getKoningsNummer() == 0 ? aStelling.getWk() : aStelling.getZk();
 		gegenereerdeZetten.addAll( genereerZettenPerStuk( aStelling, getStukken().getS3(), koningsVeld, stukVeld, bord ) );
 	}
-	if ( ( getStukken().getS4().getKleur() == aStelling.getAanZet() ) && ( aStelling.getS4() != koningsVeld ) )
+	if ( getConfig().getAantalStukken() >= 4 )
 	{
-		stukVeld = aStelling.getS4();
-		koningsVeld = getStukken().getS4().getKoningsNummer() == 0 ? aStelling.getWk() : aStelling.getZk();
-		gegenereerdeZetten.addAll( genereerZettenPerStuk( aStelling, getStukken().getS4(), koningsVeld, stukVeld, bord ) );
+		if ( ( getStukken().getS4().getKleur() == aStelling.getAanZet() ) && ( aStelling.getS4() != koningsVeld ) )
+		{
+			stukVeld = aStelling.getS4();
+			koningsVeld = getStukken().getS4().getKoningsNummer() == 0 ? aStelling.getWk() : aStelling.getZk();
+			gegenereerdeZetten.addAll( genereerZettenPerStuk( aStelling, getStukken().getS4(), koningsVeld, stukVeld, bord ) );
+		}
+	}
+	if ( getConfig().getAantalStukken() >= 5 )
+	{
+		if ( ( getStukken().getS5().getKleur() == aStelling.getAanZet() ) && ( aStelling.getS5() != koningsVeld ) )
+		{
+			stukVeld = aStelling.getS5();
+			koningsVeld = getStukken().getS5().getKoningsNummer() == 0 ? aStelling.getWk() : aStelling.getZk();
+			gegenereerdeZetten.addAll( genereerZettenPerStuk( aStelling, getStukken().getS5(), koningsVeld, stukVeld, bord ) );
+		}
 	}
 	return gegenereerdeZetten;
 }
@@ -624,6 +689,7 @@ public StukInfo getStukInfo( BoStelling aStelling, Stuk aStuk )
 		case 1: veld = aStelling.getZk(); break;
 		case 2: veld = aStelling.getS3(); break;
 		case 3: veld = aStelling.getS4(); break;
+		case 4: veld = aStelling.getS5(); break;
 	}
 	StukInfo stukInfo = StukInfo.builder()
 		.stuk( aStuk )

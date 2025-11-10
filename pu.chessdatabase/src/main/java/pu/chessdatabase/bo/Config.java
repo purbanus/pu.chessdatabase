@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import pu.chessdatabase.bo.configuraties.ConfigImpl;
 import pu.chessdatabase.bo.configuraties.KDK;
 import pu.chessdatabase.bo.configuraties.KDKT;
+import pu.chessdatabase.bo.configuraties.KDKTT;
 import pu.chessdatabase.bo.configuraties.KLLK;
 import pu.chessdatabase.bo.configuraties.KLPK;
 import pu.chessdatabase.bo.configuraties.KTK;
@@ -30,15 +31,15 @@ import lombok.ToString;
 public class Config
 {
 private static final ConfigImpl DEFAULT_CONFIG_IMPL = new KLPK();
-private static List<Stuk> stukList = DEFAULT_CONFIG_IMPL.getStukken().getStukken();
-private static Stukken stukken = DEFAULT_CONFIG_IMPL.getStukken();
+private static List<Stuk> staticStukList = DEFAULT_CONFIG_IMPL.getStukken().getStukken();
+private static Stukken staticStukken = DEFAULT_CONFIG_IMPL.getStukken();
 public static List<Stuk> getStaticStukList()
 {
-	return stukList;
+	return staticStukList;
 }
 public static Stukken getStaticStukken()
 {
-	return stukken;
+	return staticStukken;
 }
 @Setter( AccessLevel.NONE ) 
 @ToString.Exclude
@@ -55,6 +56,8 @@ public Config( @Lazy VM aVm)
 {
 	super();
 	vm = aVm;
+	staticStukList = getStukList();
+	staticStukken = getStukken();
 }
 VM getVm()
 {
@@ -70,6 +73,7 @@ Map<String, ConfigImpl> getConfigImplRegistry()
 		configImplRegistry.put( "KDKT", new KDKT() );
 		configImplRegistry.put( "KLPK", new KLPK() );
 		configImplRegistry.put( "KLLK", new KLLK() );
+		configImplRegistry.put( "KDKTT", new KDKTT() );
 		configImplRegistry.put( "TESTKDK", new TestKDK() );
 		configImplRegistry.put( "TESTKDKT", new TestKDKT() );
 	}
@@ -86,8 +90,8 @@ void switchConfig( ConfigImpl aNewConfig, boolean aSwitchVM )
 	{
 		vm.setDatabaseName( getDatabaseName() );
 	}
-	stukList = getStukList();
-	stukken = getStukken();
+	staticStukList = getStukList();
+	staticStukken = getStukken();
 
 }
 public void switchConfig( String aConfigString, boolean aSwitchVM )
@@ -121,8 +125,7 @@ public String getDatabaseName()
 }
 public int getAantalStukken()
 {
-	// @@HIGH Het is gevaarlijk om het uit stukList te halen. Het kan best zzijn dat we daar altijd 5 stukken in zetten!
-	return getStukList().size();
+	return getStukken().getAantalStukken();
 }
 public String getConfig()
 {
@@ -130,7 +133,7 @@ public String getConfig()
 }
 public List<String> getAvailableConfigs()
 {
-	return Arrays.asList( new String [] { "KDKT", "KLPK", "KLLK" } );
+	return Arrays.asList( new String [] { "KDK", "KTK", "KDKT", "KLPK", "KLLK" } );
 }
 @Override
 public String toString()

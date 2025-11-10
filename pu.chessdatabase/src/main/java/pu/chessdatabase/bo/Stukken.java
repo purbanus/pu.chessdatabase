@@ -1,5 +1,7 @@
 package pu.chessdatabase.bo;
 
+import static pu.chessdatabase.bo.configuraties.StukType.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +17,8 @@ public class Stukken
 {
 
 private List<Stuk> stukken = new ArrayList<>();
+private List<Stuk> realStukken = null;
+private List<Stuk> fakeStukken = null;
 private ConfigImpl configImpl;
 public Stukken( ConfigImpl aConfigImpl )
 {
@@ -25,6 +29,49 @@ public Stukken( ConfigImpl aConfigImpl )
 public List<Stuk> getStukken()
 {
 	return stukken;
+}
+void fillStukken()
+{
+	realStukken = new ArrayList<>();
+	fakeStukken = new ArrayList<>();
+	for ( Stuk stuk : getStukken() )
+	{
+		if ( stuk.getStukType() == GEEN )
+		{
+			fakeStukken.add( stuk );
+		}
+		else
+		{
+			realStukken.add( stuk );
+		}
+	}
+
+}
+public List<Stuk> getRealStukken()
+{
+//	List<Stuk> realStukken = getStukken().stream()
+//		.filter( Stuk::getStukType == GEEN )
+//		.collect(toList() );
+	if ( realStukken == null )
+	{
+		fillStukken();
+	}
+	return realStukken;
+}
+public List<Stuk> getFakeStukken()
+{
+//	List<Stuk> realStukken = getStukken().stream()
+//		.filter( Stuk::getStukType == GEEN )
+//		.collect(toList() );
+	if ( fakeStukken == null )
+	{
+		fillStukken();
+	}
+	return fakeStukken;
+}
+public int getAantalStukken()
+{
+	return getRealStukken().size();
 }
 public void vulStukTabel()
 {
@@ -71,6 +118,6 @@ public Stuk getS5()
 }
 public Stuk getStukAtIndex( int aStukNummer)
 {
-	return getStukken().get( aStukNummer );
-}
+		return getStukken().get( aStukNummer );
+	}
 }

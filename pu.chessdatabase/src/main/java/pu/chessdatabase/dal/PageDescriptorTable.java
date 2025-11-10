@@ -26,7 +26,7 @@ void setPageDescriptor( VMStelling aVmStelling, PageDescriptor aPageDescriptor )
 {
 	getPageDescriptorTable()[aVmStelling.getWk()][aVmStelling.getZk()][aVmStelling.getAanZet().ordinal()] = aPageDescriptor; 
 }
-void iterateOverAllPageDescriptors( VMStellingFunction aPageDescriptorsFunction )
+void iterateOverAllPageDescriptors( PageDescriptorFunction aPageDescriptorsFunction )
 {
 	for ( int wk = 0; wk < MAX_WK; wk++ )
 	{

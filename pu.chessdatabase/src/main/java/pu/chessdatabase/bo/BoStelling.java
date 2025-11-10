@@ -26,7 +26,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-// @@HIGH config-afhankelijk maken
 public class BoStelling implements Cloneable
 {
 public static class AlfaBuilder
@@ -68,11 +67,6 @@ public static Kleur getVeldKleur( int aVeld )
 	return ( rij + kol ) % 2 == 0 ? ZWART : WIT;
 }
 
-/**
- * CASE : BOOLEAN OF
-        |	TRUE : WK, ZK, s3, s4: Veld;
-        |	FALSE: Velden        : VeldArr;
- */
 private final boolean StellingType = true;
 private int wk;
 private int zk;
@@ -94,6 +88,20 @@ public BoStelling clone()
 	catch ( CloneNotSupportedException e )
 	{
 		throw new RuntimeException( e );
+	}
+}
+public void normaliseer( int aAantalStukken )
+{
+	if ( aAantalStukken == 3 )
+	{
+		// s4 en s5 zijn witte stukken, dat dus onder de witte koning wordt gezet
+		setS4( getWk() );
+		setS5( getWk() );
+	}
+	if ( aAantalStukken == 4 )
+	{
+		// s5 is een wit stuk, dat dus onder de witte koning wordt gezet
+		setS5( getWk() );
 	}
 }
 public String getWkString()
@@ -119,29 +127,56 @@ public String getS5String()
 @Override
 public String toString()
 {
-	StringBuilder sb = new StringBuilder();
-	sb
-	.append( "WK="  ).append( Gen.veldToAlfa( wk ) )
-	.append( " ZK=" ).append( Gen.veldToAlfa( zk ) )
-	.append( " S3=" ).append( Gen.veldToAlfa( s3 ) )
-	.append( " S4=" ).append( Gen.veldToAlfa( s4 ) )
-	.append( " S5=" ).append( Gen.veldToAlfa( s5 ) )
-	.append( " AanZet=" ).append( aanZet.getAfko() )
-	.append( " Resultaat=" ).append( resultaat )
-	.append( " AantalZetten=" ).append( aantalZetten )
-	.append( " Schaak=" ).append( schaak ).append( "\n" );
+	StringBuilder sb = new StringBuilder()
+		.append( "WK="  ).append( Gen.veldToAlfa( wk ) )
+		.append( " ZK=" ).append( Gen.veldToAlfa( zk ) )
+		.append( " S3=" ).append( Gen.veldToAlfa( s3 ) )
+		.append( " S4=" ).append( Gen.veldToAlfa( s4 ) )
+		.append( " S5=" ).append( Gen.veldToAlfa( s5 ) )
+		.append( " AanZet=" ).append( aanZet.getAfko() )
+		.append( " Resultaat=" ).append( resultaat )
+		.append( " AantalZetten=" ).append( aantalZetten )
+		.append( " Schaak=" ).append( schaak ).append( "\n" );
 	for ( int rij = 7; rij >= 0; rij-- )
 	{
 		for ( int kol = 0; kol < 8; kol++ )
 		{
 			int veld = 16 * rij + kol;
 			String veldString;
-			if ( veld == wk ) veldString = getWkString();
-			else if ( veld == zk ) veldString = getZkString();
-			else if ( veld == s3 ) veldString = getS3String();
-			else if ( veld == s4 ) veldString = getS4String();
-//			else if ( veld == s5 ) veldString = getS5String(); // @@HIGH Nog effe niet
-			else veldString = "..";
+			// Omdat we eerst testen of het de wk is die oip het veld staat, komen andere stukken die op dat 
+			// veld staan, niet in aanmerking.
+			if ( veld == wk )
+			{
+				veldString = getWkString();
+			}
+			else if ( veld == zk )
+			{
+				veldString = getZkString();
+			}
+			else if ( veld == s3 )
+			{
+				veldString = getS3String();
+			}
+			else if ( veld == s4 )
+			{
+				veldString = getS4String(); 
+				if ( veldString.equals( "WG" ) )
+				{
+					veldString = "..";
+				}
+			}
+			else if ( veld == s5 )
+			{
+				veldString = getS5String(); 
+				if ( veldString.equals( "WG" ) )
+				{
+					veldString = "..";
+				}
+			}
+			else
+			{
+				veldString = "..";
+			}
 			sb.append( veldString ).append( " " );
 		}
 		sb.append( "\n" );

@@ -71,13 +71,11 @@ is gewoon het nummer dat afgedrukt moet worden.
 @Data
 public class Partij
 {
-public static final int MAX_HELE_ZET_NUMMER = 130;
-public static final int MAX_PLY_NUMMER = 255;
-
 private Dbs dbs;
+
 @Autowired private Gen gen;
 
-Plies plies = new Plies();
+private Plies plies = new Plies();
 
 /**
  * BEGIN
@@ -182,7 +180,7 @@ END IsLegaleStelling;
  */
 public boolean isLegaleStelling( BoStelling aBoStelling )
 {
-	BoStelling boStelling = dbs.get( aBoStelling );
+	BoStelling boStelling = getDbs().get( aBoStelling );
 	return boStelling.getResultaat() != ResultaatType.ILLEGAAL;
 }
 /**
@@ -204,13 +202,13 @@ END IsEindStelling;
  */
 public EindeType isEindStelling( BoStelling aBoStelling )
 {
-	BoStelling boStelling = dbs.get( aBoStelling );
-	boStelling.setSchaak( gen.isSchaak( boStelling ) );
+	BoStelling boStelling = getDbs().get( aBoStelling );
+	boStelling.setSchaak( getGen().isSchaak( boStelling ) );
 	if ( boStelling.getResultaat() == ResultaatType.ILLEGAAL )
 	{
 		return EindeType.ILLEGAAL;
 	}
-	List<BoStelling> gegenereerdeZetten = gen.genereerZetten( aBoStelling );
+	List<BoStelling> gegenereerdeZetten = getGen().genereerZetten( aBoStelling );
 	if ( gegenereerdeZetten.size() > 0 )
 	{
 		return NOG_NIET;
@@ -241,8 +239,8 @@ public BoStelling newGame( BoStelling aStartStelling )
 		throw new RuntimeException( "Je kunt niet met een illegale stelling starten bij newGame()" );
 	}
 	setPlies( new Plies() );
-	BoStelling boStelling = dbs.get( aStartStelling );
-	boStelling.setSchaak( gen.isSchaak( boStelling ) );
+	BoStelling boStelling = getDbs().get( aStartStelling );
+	boStelling.setSchaak( getGen().isSchaak( boStelling ) );
 	getPlies().clear();
 	getPlies().addPly( Ply.builder()
 		.boStelling( boStelling )
@@ -308,13 +306,17 @@ VanNaar stellingToVanNaar( BoStelling aBoStellingVan, BoStelling aBoStellingNaar
 	{
 		return new VanNaar( aBoStellingVan.getZk(), aBoStellingNaar.getZk() );
 	}
-	if ( aBoStellingNaar.getS3() != aBoStellingNaar.getWk() && aBoStellingVan.getS3() != aBoStellingNaar.getS3() )
+	if ( aBoStellingNaar.getS3() != aBoStellingNaar.getWk() && aBoStellingNaar.getS3() != aBoStellingNaar.getZk() && aBoStellingVan.getS3() != aBoStellingNaar.getS3() )
 	{
 		return new VanNaar( aBoStellingVan.getS3(), aBoStellingNaar.getS3() );
 	}
-	if ( aBoStellingNaar.getS4() != aBoStellingNaar.getZk() && aBoStellingVan.getS4() != aBoStellingNaar.getS4())
+	if ( aBoStellingNaar.getS4() != aBoStellingNaar.getWk() && aBoStellingNaar.getS4() != aBoStellingNaar.getZk() && aBoStellingVan.getS4() != aBoStellingNaar.getS4() )
 	{
 		return new VanNaar( aBoStellingVan.getS4(), aBoStellingNaar.getS4() );
+	}
+	if ( aBoStellingNaar.getS5() != aBoStellingNaar.getWk() && aBoStellingNaar.getS5() != aBoStellingNaar.getZk() && aBoStellingVan.getS5() != aBoStellingNaar.getS5() )
+	{
+		return new VanNaar( aBoStellingVan.getS5(), aBoStellingNaar.getS5() );
 	}
 	throw new RuntimeException( "De stellingen zijn gelijk in stellingToVanNaar()" );
 }
@@ -353,7 +355,7 @@ BoStelling vanCurrentPlyNaarToStelling( VanNaar aVanNaar )
 BoStelling vanNaarToStelling( Ply aPly, VanNaar aVanNaar )
 {
 	BoStelling boStellingVan = aPly.getBoStelling();
-	List<BoStelling> gegenereerdeZetten = gen.genereerZetten( boStellingVan );
+	List<BoStelling> gegenereerdeZetten = getGen().genereerZetten( boStellingVan );
 	if ( gegenereerdeZetten.size() > 0 )
 	{
 		for ( BoStelling boStellingNaar : gegenereerdeZetten )
@@ -379,7 +381,7 @@ END IsLegaal;
  */
 boolean isLegalMove( VanNaar aVanNaar )
 {
-	// Dit throws een RuntimeException als er geen stelling gevoinden kon worden
+	// Dit throws een RuntimeException als er geen stelling gevonden kon worden
 	vanCurrentPlyNaarToStelling( aVanNaar );
 	return true;
 }
@@ -474,7 +476,7 @@ public BoStelling bedenk()
 	if ( isBegonnen() && getPlies().getCurrentEinde() == NOG_NIET )
 	{
 		BoStelling boStellingVan = getPlies().getCurrentPly().getBoStelling();
-		List<BoStelling> gegenereerdeZetten = gen.genereerZettenGesorteerd( boStellingVan );
+		List<BoStelling> gegenereerdeZetten = getGen().genereerZettenGesorteerd( boStellingVan );
 		if ( gegenereerdeZetten.size() > 0 )
 		{
 			return zetStelling( gegenereerdeZetten.get( 0 ) );
@@ -586,7 +588,7 @@ public BoStelling zet( VanNaar aVanNaar )
 	BoStelling boStellingNaar = vanCurrentPlyNaarToStelling( aVanNaar );
 	checkPartijVoorZet( boStellingNaar );
 
-	boStellingNaar.setSchaak( gen.isSchaak( boStellingNaar ) );
+	boStellingNaar.setSchaak( getGen().isSchaak( boStellingNaar ) );
 	Ply currentPly = getPlies().getCurrentPly();
 	if ( aVanNaar.equals( currentPly.getVanNaar() ) )
 	{
@@ -609,7 +611,7 @@ public boolean isSlagZet( BoStelling aBoStelling, VanNaar aVanNaar )
 {
 	// Als het 'naar' veld bezet is geldt het als een slagzet
 	int naar = aVanNaar.getNaar();
-	return aBoStelling.getWk() == naar || aBoStelling.getZk() == naar || aBoStelling.getS3() == naar || aBoStelling.getS4() == naar;
+	return aBoStelling.getWk() == naar || aBoStelling.getZk() == naar || aBoStelling.getS3() == naar || aBoStelling.getS4() == naar || aBoStelling.getS5() == naar;
 }
 
 /**
@@ -650,9 +652,9 @@ END WatStaatErOp;
  */
 String watStaatErOp( BoStelling aBoStelling, int aVeld )
 {
-	for ( Stuk stuk : gen.getStukken().getStukken() )
+	for ( Stuk stuk : getGen().getStukken().getStukken() )
 	{
-		StukInfo stukInfo = gen.getStukInfo( aBoStelling, stuk );
+		StukInfo stukInfo = getGen().getStukInfo( aBoStelling, stuk );
 		if ( stukInfo.getVeld() == aVeld )
 		{
 			return stukInfo.getAfko();
@@ -1111,7 +1113,7 @@ END GenToStr;
 public List<GegenereerdeZetDocument> getGegenereerdeZetten()
 {
 	BoStelling boStellingVan = getPlies().getCurrentPly().getBoStelling();
-	List<BoStelling> gegenereerdeZetten = gen.genereerZettenGesorteerd( boStellingVan );
+	List<BoStelling> gegenereerdeZetten = getGen().genereerZettenGesorteerd( boStellingVan );
 	List<GegenereerdeZetDocument> zetten = new ArrayList<>();
 	int zetNummer = 0;
 	for ( BoStelling boStellingNaar : gegenereerdeZetten )
@@ -1121,7 +1123,7 @@ public List<GegenereerdeZetDocument> getGegenereerdeZetten()
 			.boStelling( boStellingVan )
 			.einde( NOG_NIET ) // @@NOG klopt dit??
 			.vanNaar( stellingToVanNaar( boStellingVan, boStellingNaar ) )
-			.schaak( gen.isSchaak( boStellingNaar ) )
+			.schaak( getGen().isSchaak( boStellingNaar ) )
 			.build();
 		zetten.add( getGegenereerdeZetDocument( ply, boStellingNaar ) );
 		zetNummer++;
