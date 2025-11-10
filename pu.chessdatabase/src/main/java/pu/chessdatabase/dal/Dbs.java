@@ -1,6 +1,7 @@
 package pu.chessdatabase.dal;
 
 import static pu.chessdatabase.dal.ResultaatType.*;
+import static pu.chessdatabase.bo.Kleur .*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -401,10 +402,10 @@ void callPass345( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction a
 /**
  * --------- Pass over de remisestellingen met zwart aan zet -------------
  */
-//void markeerZwartPass( PassFunction aPassFunction )
-//{
-//	vmStellingIterator.iterateOverWkZk( ZWART, aPassFunction, this::callPass345 );
-//}
+void markeerZwartPass( PassFunction aPassFunction )
+{
+	vmStellingIterator.iterateOverWkZk( ZWART, aPassFunction, this::callPass345 );
+}
 /**
  * --------- Pass over alle stellingen -------------
  */
@@ -427,7 +428,7 @@ public void pass( PassType aPassType, PassFunction aPassProc )
 	switch ( aPassType )
 	{
 		case MARKEER_WIT: markeerWitPass( aPassProc ); break;
-//		case MARKEER_ZWART: markeerZwartPass( aPassProc ); break;
+		case MARKEER_ZWART: markeerZwartPass( aPassProc ); break;
 		case MARKEER_WIT_EN_ZWART: markeerWitEnZwartPass( aPassProc ); break;
 	}
 	close();
