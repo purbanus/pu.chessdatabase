@@ -48,6 +48,25 @@ public void iterateOverWkZkWit( PassFunction aPassFunction, VMIteratorFunction a
 		}
 	}
 }
+public void iterateOverWkZk( Kleur aKleur, PassFunction aPassFunction, VMIteratorFunction aVmIteratorFunction )
+{
+	VMStelling vmStelling = new VMStelling();
+	vmStelling.setAanZet( aKleur );
+	BoStelling boStelling = new BoStelling();
+	boStelling.setAanZet( aKleur );
+	for ( int zk = 0; zk < 64; zk++ )
+	{
+		vmStelling.setZk( zk );
+		boStelling.setZk( Dbs.CVT_STUK[zk] );
+		for ( int wk = 0; wk < 10; wk++ )
+		{
+			vmStelling.setWk( wk );
+			boStelling.setWk( Dbs.CVT_WK[wk] );
+			aVmIteratorFunction.doPass( boStelling, vmStelling, aPassFunction );
+		}
+	}
+}
+
 // @@HIGH Je kunt dit aanroepen in iterateOverAllPieces
 public void iterateOverPieces( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction, VMIteratorFunction aVmIteratorFunction )
 {
