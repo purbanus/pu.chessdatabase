@@ -1,5 +1,8 @@
 package pu.chessdatabase.dal;
 
+import pu.chessdatabase.bo.Config;
+import pu.services.StopWatch;
+
 public class CompareKDKT
 {
 VM vm1 = new VM();
@@ -9,16 +12,24 @@ public static void main( String [] args )
 {
 	new CompareKDKT().run();
 }
-
 private void run()
 {
-	vm1.setDatabaseName( "dbs/KDKT.DBS" );
-	vm2.setDatabaseName( "dbs/KDKT2.DBS" );
-	vm1.open();
-	vm2.open();
+	StopWatch timer = new StopWatch();
+	setupVm( vm1, "KDKT", "dbs/KDKT.DBS" );
+	setupVm( vm2, "KDKT", "dbs/KDKT2.DBS" );
 	vm1.getPageDescriptorTable().iterateOverAllPageDescriptors( this::compareDeDatabases );
-	System.out.println( "CompareKDKT klaar" );
+	System.out.println( "CompareKDKT klaar, duurde " + timer.getElapsedMs() );
+	System.out.println( "Totaal aantal stellingen ongelijk: " + aantalStellingenOngelijk );
 }
+void setupVm( VM aVm, String aConfigName, String aDatabaseName )
+{
+	Config config1 = new Config( aVm );
+	aVm.setConfig( config1 );
+	config1.switchConfig( aConfigName );
+	aVm.setDatabaseName( aDatabaseName );
+	aVm.open();
+}
+int aantalStellingenOngelijk = 0;
 void compareDeDatabases( VMStelling aVmStelling )
 {
 	VMStelling vmStelling = aVmStelling.clone();
@@ -32,7 +43,8 @@ void compareDeDatabases( VMStelling aVmStelling )
 			int vm2Rec = vm2.get( vmStelling );
 			if ( vm1Rec != vm2Rec )
 			{
-				throw new RuntimeException( "De stellingen zijn niet gelijk: " + vmStelling + " vm1Rec = " + vm1Rec + " vm2Rec = " + vm2Rec );
+				//System.err.println( "Stellingen ongelijk: " + vmStelling + "vm1Rec = " + vm1Rec + " vm2Rec = " + vm2Rec );
+				aantalStellingenOngelijk++;
 			}
 		}
 	}
