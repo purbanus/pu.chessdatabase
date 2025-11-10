@@ -405,7 +405,8 @@ void pass_0()
 
 //	dbs.setReport( 100, this::showThisPass );
 //	reportNewPass( "Matstellingen" );
-	dbs.pass( PassType.MARKEER_WIT_EN_ZWART  , this::isMat );
+	dbs.pass( PassType.MARKEER_WIT  , this::isMat );
+	dbs.pass( PassType.MARKEER_ZWART, this::isMat );
 }
 /**
  * ==============================================================================
@@ -660,7 +661,10 @@ void pass_n()
 {
 //	dbs.setReport( 100, this::showThisPass );
 //	reportNewPass( "Wit aan zet" );
-	dbs.pass( PassType.MARKEER_WIT_EN_ZWART, this::markeer );
+	dbs.pass( PassType.MARKEER_WIT, this::markeer );
+
+//	reportNewPass( "Zwart aan zet" );
+	dbs.pass( PassType.MARKEER_ZWART, this::markeer );
 }
 /**
 PROCEDURE BouwDataBase(StartPass: CARDINAL);
@@ -683,16 +687,17 @@ public void bouwDatabase()
 	StopWatch overallTimer = new StopWatch();
 	passNr = 0;
 	pass_0();
-	telAlles();
-	printAllesMetKleur();
+//	telAlles();
+//	printAllesMetKleur();
+	System.out.printf( "Pass %d duurde %s\n", passNr, overallTimer.getLapTimeMs() );
 	while ( passNchanges )
 	{
 		StopWatch timer = new StopWatch();
 		passNchanges = false;
 		pass_n();
 		passNr++;
-		System.out.println( "Pass: " + passNr + " duurde " + timer.getElapsedMs() );
-		printAllesMetKleur();
+		System.out.printf( "Pass %d duurde %s\n", passNr, timer.getElapsedMs() );
+//		printAllesMetKleur();
 	}
 	System.out.println( "Totaaltijd: " + overallTimer.getElapsedMs() );
 }
