@@ -2,7 +2,7 @@ package pu.chessdatabase.bo;
 
 import static pu.chessdatabase.bo.Kleur.*;
 
-import pu.chessdatabase.dal.ResultaatType;
+import pu.chessdatabase.dbs.ResultaatType;
 import pu.chessdatabase.service.BoStellingKey;
 
 import lombok.AllArgsConstructor;

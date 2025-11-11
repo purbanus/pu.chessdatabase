@@ -17,8 +17,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import pu.chessdatabase.dal.Dbs;
-import pu.chessdatabase.dal.PassType;
+import pu.chessdatabase.dbs.Dbs;
+import pu.chessdatabase.dbs.PassType;
 
 import lombok.Data;
 

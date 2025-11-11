@@ -18,7 +18,7 @@ import pu.chessdatabase.bo.configuraties.KTK;
 import pu.chessdatabase.bo.configuraties.StukDefinitie;
 import pu.chessdatabase.bo.configuraties.TestKDK;
 import pu.chessdatabase.bo.configuraties.TestKDKT;
-import pu.chessdatabase.dal.VM;
+import pu.chessdatabase.dbs.VM;
 
 import lombok.AccessLevel;
 import lombok.Data;

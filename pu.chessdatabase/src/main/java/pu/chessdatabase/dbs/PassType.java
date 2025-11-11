@@ -1,4 +1,4 @@
-package pu.chessdatabase.dal;
+package pu.chessdatabase.dbs;
 
 public enum PassType
 {

@@ -1,4 +1,4 @@
-package pu.chessdatabase.dal;
+package pu.chessdatabase.dbs;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Config;
+import pu.chessdatabase.dbs.VMStelling;
 
 @SpringBootTest
 public class TestVmStelling

@@ -1,4 +1,6 @@
-package pu.chessdatabase.dal;
+package pu.chessdatabase.dbs;
+
+import pu.chessdatabase.dbs.Cache;
 
 //=================================================================================================
 // Hulpmethodes bij testen

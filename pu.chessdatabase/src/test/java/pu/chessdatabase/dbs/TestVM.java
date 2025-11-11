@@ -1,4 +1,4 @@
-package pu.chessdatabase.dal;
+package pu.chessdatabase.dbs;
 
 //====================================================================================================================
 //BELANGRIJK
@@ -19,6 +19,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.Config;
+import pu.chessdatabase.dbs.CacheEntry;
+import pu.chessdatabase.dbs.Lokatie;
+import pu.chessdatabase.dbs.PageDescriptor;
+import pu.chessdatabase.dbs.PageDescriptorTable;
+import pu.chessdatabase.dbs.VM;
+import pu.chessdatabase.dbs.VMStelling;
 
 import lombok.Data;
 

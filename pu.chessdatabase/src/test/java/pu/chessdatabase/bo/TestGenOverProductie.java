@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import pu.chessdatabase.dal.Dbs;
+import pu.chessdatabase.dbs.Dbs;
 
 @SuppressWarnings( "unused" ) // Dit gaat over die jupiter.api.Assertions
 @SpringBootTest
