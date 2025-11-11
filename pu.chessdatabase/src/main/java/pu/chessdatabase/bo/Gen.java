@@ -11,8 +11,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import pu.chessdatabase.dal.Dbs;
-import pu.chessdatabase.dal.ResultaatType;
+import pu.chessdatabase.dbs.Dbs;
+import pu.chessdatabase.dbs.ResultaatType;
 
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package pu.chessdatabase.dal;
+package pu.chessdatabase.dbs;
 
 //====================================================================================================================
 //BELANGRIJK
@@ -7,8 +7,8 @@ package pu.chessdatabase.dal;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static pu.chessdatabase.bo.Kleur.*;
-import static pu.chessdatabase.dal.PassType.*;
-import static pu.chessdatabase.dal.ResultaatType.*;
+import static pu.chessdatabase.dbs.PassType.*;
+import static pu.chessdatabase.dbs.ResultaatType.*;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +20,10 @@ import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Bouw;
 import pu.chessdatabase.bo.Config;
 import pu.chessdatabase.bo.Gen;
+import pu.chessdatabase.dbs.Dbs;
+import pu.chessdatabase.dbs.VM;
+import pu.chessdatabase.dbs.VMStelling;
+import pu.chessdatabase.dbs.VMStellingIterator;
 import pu.services.Vector;
 
 import lombok.Data;
@@ -797,19 +801,14 @@ public void testMarkeerWitEnZwartPass()
 
 	// Alle pagina's moeten nu 0x34 zijn
 
-	vmStellingIterator.iterateOverWkZk( this::checkMarkeerPassMet0x34 ); // @@HIGH Niet doen
+	vmStellingIterator.iterateOverWkZk( this::checkMarkeerPassMet0x34 );
 	// Maal twee want we runnen over alle wit- en zwartstellingen. Die iterateOverWkZk telt niet!
 	assertThat( vmStellingIterator.getStellingTeller(), is( 10 * 64 * 64 * 64 * 2 ) );
 
 }
 void checkMarkeerPassMet0x34( VMStelling vmStelling )
 {
-	byte [] page;
-	vmStelling.setAanZet( WIT );
-	page = vm.getPage( vmStelling );
-	assertThat( TestHelper.isAll( page, (byte)0x34 ), is( true ) );
-	vmStelling.setAanZet( ZWART );
-	page = vm.getPage( vmStelling );
+	byte [] page = vm.getPage( vmStelling );
 	assertThat( TestHelper.isAll( page, (byte)0x34 ), is( true ) );
 }
 @Test

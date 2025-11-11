@@ -1,4 +1,4 @@
-package pu.chessdatabase.dal;
+package pu.chessdatabase.dbs;
 
 import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Config;

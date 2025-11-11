@@ -76,11 +76,10 @@
 			<scope>test</scope>
 		</dependency>
 		
-<!--		<dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
--->		
 		<dependency>
 			<groupId>org.eclipse.jdt</groupId>
 			<artifactId>org.eclipse.jdt.annotation</artifactId>
@@ -128,7 +127,8 @@
 			<artifactId>ejml-all</artifactId>
 			<version>0.38</version>
 		</dependency>
--->	</dependencies>
+-->
+	</dependencies>
 
 	<build>
 		<plugins>

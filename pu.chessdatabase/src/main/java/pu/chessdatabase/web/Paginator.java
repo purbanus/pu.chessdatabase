@@ -3,7 +3,7 @@ package pu.chessdatabase.web;
 import java.util.ArrayList;
 import java.util.List;
 
-import pu.chessdatabase.dal.RowBounds;
+import pu.chessdatabase.dbs.RowBounds;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

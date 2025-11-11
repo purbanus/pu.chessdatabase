@@ -1,4 +1,4 @@
-package pu.chessdatabase.dal;
+package pu.chessdatabase.dbs;
 
 //====================================================================================================================
 //BELANGRIJK
@@ -8,7 +8,7 @@ package pu.chessdatabase.dal;
 //import static org.hamcrest.Matchers.*;
 
 import static pu.chessdatabase.bo.Kleur.*;
-import static pu.chessdatabase.dal.ResultaatType.*;
+import static pu.chessdatabase.dbs.ResultaatType.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.BoStelling;
+import pu.chessdatabase.dbs.Dbs;
 
 @SpringBootTest
 public class TestDbsOverProductie

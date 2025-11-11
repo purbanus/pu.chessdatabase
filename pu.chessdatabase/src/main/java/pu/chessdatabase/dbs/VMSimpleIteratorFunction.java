@@ -1,4 +1,4 @@
-package pu.chessdatabase.dal;
+package pu.chessdatabase.dbs;
 
 @FunctionalInterface
 public interface VMSimpleIteratorFunction

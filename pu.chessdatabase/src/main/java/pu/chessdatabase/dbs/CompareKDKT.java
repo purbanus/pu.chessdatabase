@@ -1,4 +1,4 @@
-package pu.chessdatabase.dal;
+package pu.chessdatabase.dbs;
 
 import pu.chessdatabase.bo.Config;
 import pu.services.StopWatch;
@@ -19,7 +19,7 @@ private void run()
 	setupVm( vm2, "KDKT", "dbs/KDKT2.DBS" );
 	vm1.getPageDescriptorTable().iterateOverAllPageDescriptors( this::compareDeDatabases );
 	System.out.println( "CompareKDKT klaar, duurde " + timer.getElapsedMs() );
-	System.out.println( "Totaal aantal stellingen ongelijk: " + aantalStellingenOngelijk );
+	System.out.printf( "Aantal stellingen: %d waarvan ongelijk: %d", aantalStellingen, aantalStellingenOngelijk );
 }
 void setupVm( VM aVm, String aConfigName, String aDatabaseName )
 {
@@ -29,6 +29,7 @@ void setupVm( VM aVm, String aConfigName, String aDatabaseName )
 	aVm.setDatabaseName( aDatabaseName );
 	aVm.open();
 }
+int aantalStellingen = 0;
 int aantalStellingenOngelijk = 0;
 void compareDeDatabases( VMStelling aVmStelling )
 {
@@ -38,6 +39,7 @@ void compareDeDatabases( VMStelling aVmStelling )
 		vmStelling.setS3( s3 );
 		for ( int s4 = 0; s4 < VM.VELD_MAX; s4++ )
 		{
+			aantalStellingen++;
 			vmStelling.setS4( s4 );
 			int vm1Rec = vm1.get( vmStelling );
 			int vm2Rec = vm2.get( vmStelling );

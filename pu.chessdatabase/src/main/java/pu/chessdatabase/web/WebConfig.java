@@ -8,7 +8,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.web.context.WebApplicationContext;
 
 import pu.chessdatabase.bo.speel.Partij;
-import pu.chessdatabase.dal.Dbs;
+import pu.chessdatabase.dbs.Dbs;
 
 @Configuration
 public class WebConfig

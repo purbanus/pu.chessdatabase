@@ -1,4 +1,4 @@
-package pu.chessdatabase.dal;
+package pu.chessdatabase.dbs;
 
 import java.io.File;
 import java.io.FileNotFoundException;

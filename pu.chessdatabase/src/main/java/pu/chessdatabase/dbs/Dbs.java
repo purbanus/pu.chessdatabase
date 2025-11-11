@@ -1,7 +1,7 @@
-package pu.chessdatabase.dal;
+package pu.chessdatabase.dbs;
 
-import static pu.chessdatabase.dal.ResultaatType.*;
 import static pu.chessdatabase.bo.Kleur .*;
+import static pu.chessdatabase.dbs.ResultaatType.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -400,9 +400,9 @@ public void pass( PassType aPassType, PassFunction aPassFunction )
 	open();
 	switch ( aPassType )
 	{
-		case MARKEER_WIT: markeerWitPass( aPassProc ); break;
-		case MARKEER_ZWART: markeerZwartPass( aPassProc ); break;
-		case MARKEER_WIT_EN_ZWART: markeerWitEnZwartPass( aPassProc ); break;
+		case MARKEER_WIT: markeerWitPass( aPassFunction ); break;
+		case MARKEER_ZWART: markeerZwartPass( aPassFunction ); break;
+		case MARKEER_WIT_EN_ZWART: markeerWitEnZwartPass( aPassFunction ); break;
 	}
 	close();
 }

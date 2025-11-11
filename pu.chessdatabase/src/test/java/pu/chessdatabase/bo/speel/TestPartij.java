@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 //import static org.mockito.ArgumentMatchers.*;
 import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.bo.speel.EindeType.*;
-import static pu.chessdatabase.dal.ResultaatType.*;
+import static pu.chessdatabase.dbs.ResultaatType.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +24,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Config;
 import pu.chessdatabase.bo.Stuk;
-import pu.chessdatabase.dal.Dbs;
-import pu.chessdatabase.dal.ResultaatType;
+import pu.chessdatabase.dbs.Dbs;
+import pu.chessdatabase.dbs.ResultaatType;
 
 @SpringBootTest
 public class TestPartij

@@ -1,4 +1,4 @@
-package pu.chessdatabase.dal;
+package pu.chessdatabase.dbs;
 
 import java.io.RandomAccessFile;
 import java.lang.reflect.InvocationTargetException;
@@ -7,6 +7,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.map.HashedMap;
+
+import pu.chessdatabase.dbs.Cache;
+import pu.chessdatabase.dbs.CacheEntry;
+import pu.chessdatabase.dbs.PageDescriptor;
+import pu.chessdatabase.dbs.VMStelling;
 
 import lombok.Data;
 

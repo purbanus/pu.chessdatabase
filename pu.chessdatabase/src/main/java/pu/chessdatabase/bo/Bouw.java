@@ -1,7 +1,7 @@
 package pu.chessdatabase.bo;
 
 import static pu.chessdatabase.bo.Kleur.*;
-import static pu.chessdatabase.dal.ResultaatType.*;
+import static pu.chessdatabase.dbs.ResultaatType.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,9 +9,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import pu.chessdatabase.dal.Dbs;
-import pu.chessdatabase.dal.PassType;
-import pu.chessdatabase.dal.VMStellingIterator;
+import pu.chessdatabase.dbs.Dbs;
+import pu.chessdatabase.dbs.PassType;
+import pu.chessdatabase.dbs.VMStellingIterator;
 import pu.services.StopWatch;
 
 import lombok.Data;
@@ -29,12 +29,12 @@ public static final boolean HOU_STELLINGEN_BIJ = false;
 @Autowired private Config config;
 private VMStellingIterator vmStellingIterator;
 
-int passNumber;
 List<BoStelling> illegaleStellingen = new ArrayList<>();
 List<BoStelling> stellingenMetSchaak = new ArrayList<>();
 List<BoStelling> matStellingen = new ArrayList<>();
 List<BoStelling> changes = new ArrayList<>();
 
+int passNumber;
 boolean passNchanges;
 
 public Bouw( VMStellingIterator VMStellingIterator )
@@ -45,7 +45,7 @@ public Bouw( VMStellingIterator VMStellingIterator )
 }
 void reportNewPass( String aPassText )
 {
-	reportNewPass( aPassText, true );
+	reportNewPass( aPassText, false );
 }
 void reportNewPass( String aPassText, boolean aDoPrint )
 {
@@ -217,7 +217,7 @@ public void isMat( BoStelling aBoStelling )
  */
 void pass_0()
 {
-	pass_0( true );
+	pass_0( false );
 }
 void pass_0( boolean aDoPrint )
 {
@@ -372,13 +372,13 @@ public void bouwDatabase()
 	pass_0();
 //	telAlles();
 //	printAllesMetKleur();
-	System.out.printf( "Pass %d duurde %s\n", passNr, overallTimer.getLapTimeMs() );
+	System.out.printf( "Pass %d duurde %s\n", passNumber, timer.getLapTimeMs() );
 	while ( passNchanges )
 	{
 		passNchanges = false;
 		pass_n();
-		passNr++;
-		System.out.printf( "Pass %d duurde %s\n", passNr, timer.getElapsedMs() );
+		passNumber++;
+		System.out.printf( "Pass %d duurde %s\n", passNumber, timer.getLapTimeMs() );
 //		printAllesMetKleur();
 	}
 	System.out.println( "Totaaltijd: " + timer.getElapsedMs() );

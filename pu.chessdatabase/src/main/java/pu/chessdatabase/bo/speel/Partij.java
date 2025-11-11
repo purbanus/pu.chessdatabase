@@ -2,7 +2,7 @@ package pu.chessdatabase.bo.speel;
 
 import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.bo.speel.EindeType.*;
-import static pu.chessdatabase.dal.ResultaatType.*;
+import static pu.chessdatabase.dbs.ResultaatType.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,8 +14,8 @@ import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Gen;
 import pu.chessdatabase.bo.Stuk;
 import pu.chessdatabase.bo.StukInfo;
-import pu.chessdatabase.dal.Dbs;
-import pu.chessdatabase.dal.ResultaatType;
+import pu.chessdatabase.dbs.Dbs;
+import pu.chessdatabase.dbs.ResultaatType;
 
 import lombok.Data;
 
