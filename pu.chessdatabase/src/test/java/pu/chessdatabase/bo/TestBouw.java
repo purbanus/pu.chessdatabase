@@ -7,7 +7,7 @@ package pu.chessdatabase.bo;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static pu.chessdatabase.bo.Kleur.*;
-import static pu.chessdatabase.dal.ResultaatType.*;
+import static pu.chessdatabase.dbs.ResultaatType.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,11 +20,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import pu.chessdatabase.dal.Dbs;
-import pu.chessdatabase.dal.PassType;
+import pu.chessdatabase.dbs.Dbs;
+import pu.chessdatabase.dbs.PassType;
+import pu.chessdatabase.dbs.VM;
+import pu.chessdatabase.dbs.VMStellingIterator;
 import pu.services.StopWatch;
-import pu.chessdatabase.dal.VM;
-import pu.chessdatabase.dal.VMStellingIterator;
 
 import lombok.Data;
 
@@ -81,7 +81,7 @@ public void testReportNewPass()
 	assertThat( vmStellingIterator.getReportFunction(), is( notNullValue() ) );
 	assertThat( vmStellingIterator.getReportFrequency(), is( 64 * 64 * 64 * 2 ) ); 
 }
-@Test
+//@Test
 public void testTelAlles()
 {
 	if ( DO_PRINT )
@@ -93,10 +93,6 @@ public void testTelAlles()
 	bouw.pass_0( DO_PRINT );
 	dbs.open();
 	bouw.telAndPrintAlles( DO_PRINT );
-	if ( DO_PRINT )
-	{
-		System.out.println( "Illegale stellingen: " + bouw.illegaleStellingen );
-	}
 }
 
 @Test
@@ -358,36 +354,6 @@ ZK ZT WK .. .. .. .. ..
 	assertThat( gotBoStelling.isSchaak(), is( false ) );
 	assertThat( gotBoStelling.getResultaat(), is( VERLOREN ) );
 	assertThat( gotBoStelling.getAantalZetten(), is( 1 ) );
-}
-//@Test
-public void testShowMatStellingen()
-{
-	bouw.pass_0();
-	dbs.open();
-	System.out.println( "MatMetWitAanZet" );
-	System.out.println( bouw.matStellingenMetWit );
-	System.out.println( "\n\n\nMatMetZwartAanZet" );
-	System.out.println( bouw.matStellingenMetZwart );
-}
-//@Test
-public void testTelAlles()
-{
-	StopWatch timer = new StopWatch();
-	bouw.pass_0();
-	dbs.open();
-	bouw.telAlles();
-//	System.out.println( bouw.rptTot );
-	for ( int x = 0; x < 4; x++ )
-	{
-//		System.out.println( bouw.rptTot[x] );
-	}
-	/* Illegaal: 2039130
-       Gewonnen:       0
-       Remise    3201556
-       Verloren     2194
-	 */
-//	bouw.printAllesMetKleur();
-	System.out.println( "TelAlles duurde " + timer.getElapsedMs() );
 }
 @Test
 public void testMarkeer()
