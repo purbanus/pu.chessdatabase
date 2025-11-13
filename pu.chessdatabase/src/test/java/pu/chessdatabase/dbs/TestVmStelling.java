@@ -15,7 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Config;
-import pu.chessdatabase.dbs.VMStelling;
 
 @SpringBootTest
 public class TestVmStelling

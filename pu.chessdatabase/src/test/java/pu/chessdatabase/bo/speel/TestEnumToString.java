@@ -6,10 +6,9 @@ package pu.chessdatabase.bo.speel;
 //===================================================================================================================== 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
 
-import static pu.chessdatabase.bo.speel.Einde.*;
 import static pu.chessdatabase.bo.Kleur.*;
+import static pu.chessdatabase.bo.speel.Einde.*;
 
 import org.junit.jupiter.api.Test;
 
