@@ -20,10 +20,6 @@ import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Bouw;
 import pu.chessdatabase.bo.Config;
 import pu.chessdatabase.bo.Gen;
-import pu.chessdatabase.dbs.Dbs;
-import pu.chessdatabase.dbs.VM;
-import pu.chessdatabase.dbs.VMStelling;
-import pu.chessdatabase.dbs.VMStellingIterator;
 import pu.services.Vector;
 
 import lombok.Data;

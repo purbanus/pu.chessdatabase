@@ -57,7 +57,7 @@ private void writePageWithAll( long aPageNumber, int aCacheNumber, byte aValue )
 {
 	byte [] page = TestHelper.createPageWithAll( aValue );
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.InRam )
+		.waar( InRam )
 		.cacheNummer( aCacheNumber )
 		.schijfAdres( aPageNumber * getCache().getPageSize() )
 		.build();
@@ -209,7 +209,7 @@ public void testGetSetPage()
 	byte value = (byte)0x70;
 
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.OpSchijf )
+		.waar( OpSchijf )
 		.cacheNummer( cacheNumber )
 		.schijfAdres( pageNumber * getCache().getPageSize() )
 		.build();
@@ -228,7 +228,7 @@ public void testGetSetPage()
 //	byte value = (byte)0x60;
 //
 //	PageDescriptor pageDescriptor = PageDescriptor.builder()
-//		.waar( Lokatie.OP_SCHIJF )
+//		.waar( OpSchijf )
 //		.cacheNummer( cacheNumber )
 //		.schijfAdres( pageNumber * getCache().getPageSize() )
 //		.build();
@@ -245,7 +245,7 @@ public void testIsSetVuil()
 	int cacheNumber = 15;
 
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.OpSchijf )
+		.waar( OpSchijf )
 		.cacheNummer( cacheNumber )
 		.schijfAdres( pageNumber * getCache().getPageSize() )
 		.build();
@@ -263,7 +263,7 @@ public void testGetSetCacheEntry()
 	long generatie = 215L;
 	
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.OpSchijf )
+		.waar( OpSchijf )
 		.cacheNummer( cacheNumber )
 		.schijfAdres( pageNumber * getCache().getPageSize() )
 		.build();
@@ -291,7 +291,7 @@ public void testGetRawPageData()
 	writePageWithAll( pageNumber, cacheNumber, value );
 
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.OpSchijf )
+		.waar( OpSchijf )
 		.cacheNummer( cacheNumber )
 		.schijfAdres( pageNumber * getCache().getPageSize() )
 		.build();
@@ -306,7 +306,7 @@ public void testPutRawPageData()
 	byte value = (byte)0x70;
 
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.OpSchijf )
+		.waar( OpSchijf )
 		.cacheNummer( cacheNumber )
 		.schijfAdres( pageNumber * getCache().getPageSize() )
 		.build();
@@ -325,7 +325,7 @@ public void testPageOut()
 	byte value = (byte)0x60;
 
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.InRam )
+		.waar( InRam )
 		.cacheNummer( cacheNumber )
 		.schijfAdres( pageNumber * getCache().getPageSize() )
 		.build();
@@ -354,7 +354,7 @@ public void testPageIn() throws IOException
 
 	writePageWithAll( pageNumber, cacheNumber, value );
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.InRam )
+		.waar( InRam )
 		.cacheNummer( cacheNumber )
 		.schijfAdres( pageNumber * getCache().getPageSize() )
 		.build();
@@ -373,7 +373,7 @@ public void testGetPageFromDatabase()
 	writePageWithAll( pageNumber, cacheNumber, value );
 	
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.OpSchijf )
+		.waar( OpSchijf )
 		.cacheNummer( cacheNumber )
 		.schijfAdres( pageNumber * getCache().getPageSize() )
 		.build();
@@ -402,7 +402,7 @@ public void testGetPageNotDirtyAndInRam()
 	writePageWithAll( pageNumber, cacheNumber, value );
 	
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.InRam )
+		.waar( InRam )
 		.cacheNummer( cacheNumber )
 		.schijfAdres( pageNumber * getCache().getPageSize() )
 		.build();
@@ -452,7 +452,7 @@ public void testGetSetData()
 	writePageWithAll( pageNumber, cacheNumber, value );
 	
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.InRam )
+		.waar( InRam )
 		.cacheNummer( cacheNumber )
 		.schijfAdres( pageNumber * getCache().getPageSize() )
 		.build();
@@ -491,7 +491,7 @@ public void testGetDataWithNoGetPage()
 	writePageWithAll( pageNumber, cacheNumber, value );
 	
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.InRam )
+		.waar( InRam )
 		.cacheNummer( cacheNumber )
 		.schijfAdres( pageNumber * getCache().getPageSize() )
 		.build();
@@ -519,7 +519,7 @@ public void testFlushWithSomePagesPresentButNoneVuil()
 {
 	byte [] page = TestHelper.createPageWithAllOnes();
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.InRam )
+		.waar( InRam )
 		.cacheNummer( 1 )
 		.schijfAdres( 0L )
 		.build();
@@ -532,7 +532,7 @@ public void testFlushWithSomePagesPresentButNoneVuil()
 	getCache().setCacheEntry( pageDescriptor, cacheEntry );
 	
 	pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.InRam )
+		.waar( InRam )
 		.cacheNummer( 15 )
 		.schijfAdres( 4096L )
 		.build();
@@ -552,7 +552,7 @@ public void testFlushWithSomePagesPresentAndVuil()
 {
 	byte [] page = TestHelper.createPageWithAllOnes();
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.InRam )
+		.waar( InRam )
 		.cacheNummer( 1 )
 		.schijfAdres( 0L )
 		.build();
@@ -565,7 +565,7 @@ public void testFlushWithSomePagesPresentAndVuil()
 	getCache().setCacheEntry( pageDescriptor, cacheEntry );
 	
 	pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.InRam )
+		.waar( InRam )
 		.cacheNummer( 15 )
 		.schijfAdres( 4096L )
 		.build();

@@ -2,6 +2,7 @@ package pu.chessdatabase.bo;
 
 import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.bo.ZetSoort.*;
+import static pu.chessdatabase.dbs.Resultaat.*;
 import static pu.chessdatabase.bo.configuraties.StukType.*;
 
 import java.util.ArrayList;
@@ -13,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import pu.chessdatabase.dbs.Dbs;
-import pu.chessdatabase.dbs.Resultaat;
 
 import lombok.Data;
 
@@ -445,7 +445,7 @@ void addZet( final BoStelling aBoStelling, Stuk aStuk, int aNaar, ZetSoort aZets
 	
 	// Niet doen, dit heeft een verschrikkelijke invloed op de performance! van zo'n 70 sec naar 330 sec
 	// boStelling.setSchaak( isSchaak( boStelling ) );
-	if ( gotBoStelling.getResultaat() != Resultaat.Illegaal )
+	if ( gotBoStelling.getResultaat() != Illegaal )
 	{
 		aGegenereerdeZetten.add( gotBoStelling );
 	}
@@ -628,7 +628,7 @@ Comparator<BoStelling> stellingComparator = new Comparator<>()
 		{
 			return 0;
 		}
-		if ( L.getResultaat() == Resultaat.Gewonnen )
+		if ( L.getResultaat() == Gewonnen )
 		{
 			if ( L.getAantalZetten() > R.getAantalZetten() )
 			{
@@ -639,7 +639,7 @@ Comparator<BoStelling> stellingComparator = new Comparator<>()
 				return L.getAanZet() == Zwart ? -1 : 1;
 			}
 		}
-		if ( L.getResultaat() == Resultaat.Verloren )
+		if ( L.getResultaat() == Verloren )
 		{
 			if ( L.getAantalZetten() > R.getAantalZetten() )
 			{

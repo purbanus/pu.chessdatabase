@@ -7,7 +7,9 @@ package pu.chessdatabase.dbs;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
+
 import static pu.chessdatabase.bo.Kleur.*;
+import static pu.chessdatabase.dbs.Lokatie.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -111,7 +113,7 @@ private void writePageWithAll( long aPageNumber, int aCacheNumber, byte aValue )
 {
 	byte [] page = TestHelper.createPageWithAll( aValue );
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.InRam )
+		.waar( InRam )
 		.cacheNummer( aCacheNumber )
 		.schijfAdres( aPageNumber * vm.getCache().getPageSize() )
 		.build();
@@ -161,7 +163,7 @@ public void testGetPage()
 
 	writePageWithAll( pageNumber, cacheNumber, value );
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.OpSchijf )
+		.waar( OpSchijf )
 		.cacheNummer( cacheNumber )
 		.schijfAdres( pageNumber * vm.getCache().getPageSize() )
 		.build();
@@ -179,7 +181,7 @@ public void testGetPage()
 
 	// Test met Integer.MAX_VALUE
 	pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.OpSchijf )
+		.waar( OpSchijf )
 		.cacheNummer( Integer.MAX_VALUE )
 		.schijfAdres( pageNumber * vm.getCache().getPageSize() )
 		.build();
@@ -198,7 +200,7 @@ public void testGet()
 
 	writePageWithAll( pageNumber, cacheNumber, value );
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.OpSchijf )
+		.waar( OpSchijf )
 		.cacheNummer( cacheNumber )
 		.schijfAdres( pageNumber * vm.getCache().getPageSize() )
 		.build();
@@ -224,7 +226,7 @@ public void testPut()
 	writePageWithAll( pageNumber, cacheNumber, value );
 	
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.OpSchijf )
+		.waar( OpSchijf )
 		.cacheNummer( cacheNumber )
 		.schijfAdres( pageNumber * vm.getCache().getPageSize() )
 		.build();
@@ -244,7 +246,7 @@ public void testPut()
 	
 	// Test met Integer.MAX_VALUE
 	pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.OpSchijf )
+		.waar( OpSchijf )
 		.cacheNummer( Integer.MAX_VALUE )
 		.schijfAdres( pageNumber * vm.getCache().getPageSize() )
 		.build();
@@ -263,7 +265,7 @@ public void testFreeRecord()
 
 	byte [] page = TestHelper.createPageWithAll( value );
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.InRam )
+		.waar( InRam )
 		.cacheNummer( cacheNumber )
 		.schijfAdres( pageNumber * vm.getCache().getPageSize() )
 		.build();
