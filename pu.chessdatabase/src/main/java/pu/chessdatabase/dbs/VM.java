@@ -1,5 +1,7 @@
 package pu.chessdatabase.dbs;
 
+import static pu.chessdatabase.dbs.Lokatie.*;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -204,7 +206,7 @@ public void freeRecord( VMStelling aStelling )
 	// - PD niet, die is permanent
 	aStelling.checkStelling();
 	PageDescriptor pageDescriptor = getPageDescriptor( aStelling );
-	if ( pageDescriptor.getWaar() == Lokatie.IN_RAM )
+	if ( pageDescriptor.getWaar() == InRam )
 	{
 		getCache().pageOut( pageDescriptor ); // Checkt of de page vuil is
 		getCache().getCacheEntry( pageDescriptor ).setGeneratie( 0 );

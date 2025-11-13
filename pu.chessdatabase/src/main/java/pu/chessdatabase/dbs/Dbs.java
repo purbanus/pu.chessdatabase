@@ -1,7 +1,7 @@
 package pu.chessdatabase.dbs;
 
 import static pu.chessdatabase.bo.Kleur .*;
-import static pu.chessdatabase.dbs.ResultaatType.*;
+import static pu.chessdatabase.dbs.Resultaat.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -123,7 +123,7 @@ public static void iterateOverKleurEnResultaat( IterateOverKleurEnResultaatFunct
 {
 	for ( Kleur kleur : Kleur.values() )
 	{
-		for ( ResultaatType resultaat : ResultaatType.values() )
+		for ( Resultaat resultaat : Resultaat.values() )
 		{
 			aIterateOverKleurEnResultaatFunction.doPass( kleur, resultaat );
 		}
@@ -240,14 +240,14 @@ public void put( BoStelling aBoStelling )
 	VMStelling vmStelling = cardinaliseer( aBoStelling );
 	switch ( aBoStelling.getResultaat() )
 	{
-		case ILLEGAAL: 
+		case Illegaal: 
 			VMRec = VM.VM_ILLEGAAL; break;
 		// Waarom worden schaakjes als remise gezien?
 		// ==> Omdat ze alleen in pass_0 VM_SCHAAK krijgen en dat betekent dat de stelling weliswaar remise is,
 		//     maar wel een potentiele matkandidaat
-		case REMISE  : VMRec = aBoStelling.isSchaak() ? VM.VM_SCHAAK : VM.VM_REMISE; break;
-		case GEWONNEN: VMRec = aBoStelling.getAantalZetten(); break;
-		case VERLOREN: VMRec = aBoStelling.getAantalZetten() + VM.VERLIES_OFFSET; break;
+		case Remise  : VMRec = aBoStelling.isSchaak() ? VM.VM_SCHAAK : VM.VM_REMISE; break;
+		case Gewonnen: VMRec = aBoStelling.getAantalZetten(); break;
+		case Verloren: VMRec = aBoStelling.getAantalZetten() + VM.VERLIES_OFFSET; break;
 	}
 	vm.put( vmStelling, VMRec );
 	vmStellingIterator.addResultaat( aBoStelling );
@@ -279,12 +279,12 @@ BoStelling getDirect( VMStelling aVMStelling, BoStelling aBoStelling )
 	boStelling.setSchaak( false );
 	if ( VMrec == VM.VM_ILLEGAAL )
 	{
-		boStelling.setResultaat( ILLEGAAL );
+		boStelling.setResultaat( Illegaal );
 		boStelling.setAantalZetten( 0 );
 	}
 	else if ( VMrec == VM.VM_REMISE )
 	{
-		boStelling.setResultaat( REMISE );
+		boStelling.setResultaat( Remise );
 		boStelling.setAantalZetten( 0 );
 	}
 	else if ( VMrec == VM.VM_SCHAAK )
@@ -292,18 +292,18 @@ BoStelling getDirect( VMStelling aVMStelling, BoStelling aBoStelling )
 		// Waarom worden schaakjes als remise gezien?
 		// ==> Omdat ze alleen in pass_0 VM_SCHAAK krijgen en dat betekent dat de stelling weliswaar remise is,
 		//     maar een potentiele matkandidaat
-		boStelling.setResultaat( REMISE );
+		boStelling.setResultaat( Remise );
 		boStelling.setAantalZetten( 0 );
 		boStelling.setSchaak( true );
 	}
 	else if ( VMrec < VM.VERLIES_OFFSET )
 	{
-		boStelling.setResultaat( GEWONNEN );
+		boStelling.setResultaat( Gewonnen );
 		boStelling.setAantalZetten( VMrec );
 	}
 	else
 	{
-		boStelling.setResultaat( VERLOREN );
+		boStelling.setResultaat( Verloren );
 		boStelling.setAantalZetten( VMrec - VM.VERLIES_OFFSET );
 	}
 	return boStelling;
@@ -377,7 +377,7 @@ void markeerWitPass( PassFunction aPassFunction )
  */
 void markeerZwartPass( PassFunction aPassFunction )
 {
-	vmStellingIterator.iterateOverWkZk( ZWART, aPassFunction );
+	vmStellingIterator.iterateOverWkZk( Zwart, aPassFunction );
 }
 /**
  * --------- Pass over alle stellingen -------------
@@ -400,9 +400,9 @@ public void pass( PassType aPassType, PassFunction aPassFunction )
 	open();
 	switch ( aPassType )
 	{
-		case MARKEER_WIT: markeerWitPass( aPassFunction ); break;
-		case MARKEER_ZWART: markeerZwartPass( aPassFunction ); break;
-		case MARKEER_WIT_EN_ZWART: markeerWitEnZwartPass( aPassFunction ); break;
+		case MarkeerWit: markeerWitPass( aPassFunction ); break;
+		case MarkeerZwart: markeerZwartPass( aPassFunction ); break;
+		case MarkeerWitEnZwart: markeerWitEnZwartPass( aPassFunction ); break;
 	}
 	close();
 }

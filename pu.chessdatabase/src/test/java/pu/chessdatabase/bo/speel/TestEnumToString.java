@@ -1,4 +1,4 @@
-package pu.chessdatabase.bo;
+package pu.chessdatabase.bo.speel;
 
 //====================================================================================================================
 //BELANGRIJK
@@ -7,20 +7,20 @@ package pu.chessdatabase.bo;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
+
+import static pu.chessdatabase.bo.speel.Einde.*;
 import static pu.chessdatabase.bo.Kleur.*;
 
 import org.junit.jupiter.api.Test;
 
-public class TestKleur
+public class TestEnumToString
 {
 @Test
-public void testValueOf()
+public void testEnumToString()
 {
-	Kleur kleur;
-	kleur = Kleur.valueOf( "Wit" );
-	assertThat( kleur, is( Wit ) );
-	assertThrows( IllegalArgumentException.class, () -> Kleur.valueOf( "WIT" ) );
-	kleur = Kleur.valueOf( "Zwart" );
-	assertThat( kleur, is( Zwart ) );
+	assertThat( Nog_niet.toString(), is( "Nog_niet" ) );
+	assertThat( Mat.toString(), is( "Mat" ) );
+	assertThat( Wit.toString(), is( "Wit" ) );
+	assertThat( Zwart.toString(), is( "Zwart" ) );
 }
 }

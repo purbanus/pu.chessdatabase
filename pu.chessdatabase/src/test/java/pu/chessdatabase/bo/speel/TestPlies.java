@@ -9,36 +9,50 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import static pu.chessdatabase.bo.Kleur.*;
-import static pu.chessdatabase.bo.speel.EindeType.*;
+import static pu.chessdatabase.bo.speel.Einde.*;
 
 import org.apache.commons.lang3.tuple.Triple;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.BoStelling;
+import pu.chessdatabase.bo.Config;
 
+import lombok.Data;
+
+@Data
+@SpringBootTest
 public class TestPlies
 {
-Plies plies = new Plies();
+@Autowired private Config config;
+Plies plies;
 
+@BeforeEach
+public void setup()
+{
+	plies = new Plies( getConfig().getConfig() );
+}
 private Triple<Ply, Ply, Ply> createThreeDifferentPlies( BoStelling aBoStelling )
 {
 	Ply firstPly = Ply.builder()
 		.boStelling( aBoStelling )
-		.einde( NOG_NIET )
+		.einde( Nog_niet )
 		.schaak( false )
 		.vanNaar( new VanNaar( "a1", "a2" ) )
 		.zetNummer( 17 )
 		.build();
 	Ply secondPly = Ply.builder()
 		.boStelling( aBoStelling )
-		.einde( MAT )
+		.einde( Mat )
 		.schaak( false )
 		.vanNaar( new VanNaar( "b2", "c3" ) )
 		.zetNummer( 27 )
 		.build();
 	Ply thirdPly = Ply.builder()
 		.boStelling( aBoStelling )
-		.einde( MAT )
+		.einde( Mat )
 		.schaak( false )
 		.vanNaar( new VanNaar( "b2", "c3" ) )
 		.zetNummer( 39 )
@@ -95,29 +109,29 @@ public void testAddPlyWithBoStellingAndEinde()
 		.zk( "h8" )
 		.s3( "b2" )
 		.s4( "g7" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
-	plies.addPly( boStellingMetWitAanZet, NOG_NIET );
+	plies.addPly( boStellingMetWitAanZet, Nog_niet );
 	assertThat( plies.getSize(), is( 1 ) );
 	assertThat( plies.getCurrentPlyNumber(), is( 0 ) );
 	assertThat( plies.getLastPlyNumber(), is( 0 ) );
 	Ply firstPly = plies.getFirstPly();
 	assertThat( firstPly.getBoStelling(), is( boStellingMetWitAanZet ) );
-	assertThat( firstPly.getEinde(), is( NOG_NIET ) );
+	assertThat( firstPly.getEinde(), is( Nog_niet ) );
 	assertThat( firstPly.getZetNummer(), is( 1 ) );
 
 	BoStelling boStellingMetZwartAanZet = boStellingMetWitAanZet.clone();
-	boStellingMetZwartAanZet.setAanZet( ZWART );
-	plies.addPly( boStellingMetZwartAanZet, MAT );
+	boStellingMetZwartAanZet.setAanZet( Zwart );
+	plies.addPly( boStellingMetZwartAanZet, Mat );
 	Ply secondPly = plies.getSecondPly();
 	assertThat( secondPly.getBoStelling(), is( boStellingMetZwartAanZet ) );
-	assertThat( secondPly.getEinde(), is( MAT ) );
+	assertThat( secondPly.getEinde(), is( Mat ) );
 	assertThat( secondPly.getZetNummer(), is( 1 ) );
 
-	plies.addPly( boStellingMetWitAanZet, NOG_NIET );
+	plies.addPly( boStellingMetWitAanZet, Nog_niet );
 	Ply thirdPly = plies.getLastPly();
 	assertThat( thirdPly.getBoStelling(), is( boStellingMetWitAanZet ) );
-	assertThat( thirdPly.getEinde(), is( NOG_NIET ) );
+	assertThat( thirdPly.getEinde(), is( Nog_niet ) );
 	assertThat( thirdPly.getZetNummer(), is( 2 ) );
 }
 @Test
@@ -128,7 +142,7 @@ public void testHasPly()
 		.zk( "h8" )
 		.s3( "b2" )
 		.s4( "g7" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	Triple<Ply, Ply, Ply> threePlies = createThreeDifferentPlies( boStelling );
 	Ply firstPly = threePlies.getLeft();
@@ -153,7 +167,7 @@ public void testGetPly()
 		.zk( "h8" )
 		.s3( "b2" )
 		.s4( "g7" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	Triple<Ply, Ply, Ply> threePlies = createThreeDifferentPlies( boStelling );
 	Ply firstPly = threePlies.getLeft();
@@ -167,13 +181,13 @@ public void testGetPly()
 	Ply newFirstPly = plies.getPly( 0 );
 	assertThat( newFirstPly, is( firstPly ) );
 	assertThat( newFirstPly.getBoStelling(), is( boStelling ) );
-	assertThat( newFirstPly.getEinde(), is( NOG_NIET ) );
+	assertThat( newFirstPly.getEinde(), is( Nog_niet ) );
 	assertThat( newFirstPly.getZetNummer(), is( 17 ) );
 	
 	Ply newSecondPly = plies.getPly( 1 );
 	assertThat( newSecondPly, is( secondPly ) );
 	assertThat( newSecondPly.getBoStelling(), is( boStelling ) );
-	assertThat( newSecondPly.getEinde(), is( MAT ) );
+	assertThat( newSecondPly.getEinde(), is( Mat ) );
 	assertThat( newSecondPly.getZetNummer(), is( 27 ) );
 }
 @Test
@@ -187,7 +201,7 @@ public void testGetCurrentPreviousAndLastPly()
 	plies.setCurrentPlyNumberForTestingOnlhy( 0 );
 	assertThrows( RuntimeException.class, () -> plies.getPreviousPly() );
 	
-	plies = new Plies();
+	plies = new Plies( getConfig().getConfig() );
 	Triple<Ply, Ply, Ply> threePlies = createThreeDifferentPlies();
 	Ply firstPly = threePlies.getLeft();
 	Ply secondPly = threePlies.getMiddle();
@@ -208,7 +222,7 @@ public void testGetFirstAndSecondPly()
 	assertThrows( RuntimeException.class, () -> plies.getFirstPly() );
 	assertThrows( RuntimeException.class, () -> plies.getSecondPly() );
 
-	plies = new Plies();
+	plies = new Plies( getConfig().getConfig() );
 	Triple<Ply, Ply, Ply> threePlies = createThreeDifferentPlies();
 	Ply firstPly = threePlies.getLeft();
 	Ply secondPly = threePlies.getMiddle();
@@ -355,9 +369,9 @@ public void testgetEindePartij()
 	//Ply thirdPly = threePlies.getRight();
 	
 	plies.addPly( firstPly );
-	assertThat( plies.getCurrentEinde(), is( NOG_NIET ) );
+	assertThat( plies.getCurrentEinde(), is( Nog_niet ) );
 	plies.addPly( secondPly );
-	assertThat( plies.getCurrentEinde(), is( MAT ) );
+	assertThat( plies.getCurrentEinde(), is( Mat ) );
 }
 
 }

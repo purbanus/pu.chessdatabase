@@ -16,9 +16,9 @@ private final String databaseName;
 public TestKDKT()
 {
 	super();
-	getStukDefinities().add( new StukDefinitie( DAME,   WIT ) );
-	getStukDefinities().add( new StukDefinitie( TOREN,  ZWART ) );
-	getStukDefinities().add( new StukDefinitie( GEEN,   WIT ) );
+	getStukDefinities().add( new StukDefinitie( Dame,   Wit ) );
+	getStukDefinities().add( new StukDefinitie( Toren,  Zwart ) );
+	getStukDefinities().add( new StukDefinitie( Geen,   Wit ) );
 	databaseName = "dbs/Pipo4";
 	setStukken( new Stukken( this ) );
 }

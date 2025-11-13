@@ -1,15 +1,6 @@
 package pu.chessdatabase.bo.speel;
 
-public enum EindeType
+public enum Einde
 {
-NOG_NIET( "Nog niet"), MAT( "Mat" ), PAT( "Pat" ), ILLEGAAL( "Illegaal" );
-private String normaleSpelling;
-EindeType( String aNormaleSpelling )
-{
-	normaleSpelling = aNormaleSpelling;
-}
-public String getNormaleSpelling()
-{
-	return normaleSpelling;
-}
+Nog_niet, Mat, Pat, Illegaal;
 }

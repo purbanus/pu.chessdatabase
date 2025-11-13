@@ -43,7 +43,7 @@ public NewGameDocument newGame()
 	List<NewGameDocument.Stuk> fakeStukken = new ArrayList<>();
 	for ( Stuk stuk : stukken )
 	{
-		if ( stuk.getStukType() == GEEN )
+		if ( stuk.getStukType() == Geen )
 		{
 			fakeStukken.add( NewGameDocument.Stuk.builder()
 				.name( stuk.getId() + "Alfa" )
@@ -67,7 +67,7 @@ public NewGameDocument newGame()
 		.config( getConfig().getConfig() )
 		.realStukken( realStukken )
 		.fakeStukken( fakeStukken )
-		.aanZet( WIT.getNormaleSpelling() )
+		.aanZet( Wit.toString() )
 		.build();
 }
 Map<String, String> createStukVelden()
@@ -125,14 +125,14 @@ private List<Stuk> sorteerStukken( List<Stuk> aStukken )
 	List<Stuk> newStukken = new ArrayList<>();
 	for ( Stuk stuk : aStukken )
 	{
-		if ( stuk.getKleur() == WIT )
+		if ( stuk.getKleur() == Wit )
 		{
 			newStukken.add( stuk );
 		}
 	}
 	for ( Stuk stuk : aStukken )
 	{
-		if ( stuk.getKleur() == ZWART )
+		if ( stuk.getKleur() == Zwart )
 		{
 			newStukken.add( stuk );
 		}
@@ -167,7 +167,7 @@ public PartijDocument getPartijDocument( BoStellingKey aStellingKey )
 		.s3( Partij.veldToHexGetal( aStellingKey.getS3() ) )
 		.s4( Partij.veldToHexGetal( aStellingKey.getS4() ) )
 		.s5( Partij.veldToHexGetal( aStellingKey.getS5() ) )
-		.aanZet( aStellingKey.getAanZet().getNormaleSpelling() )
+		.aanZet( aStellingKey.getAanZet().toString() )
 		.wkStuk( config.getStukken().getWk().getLabel() )
 		.zkStuk( config.getStukken().getZk().getLabel() )
 		.s3Stuk( config.getStukken().getS3().getLabel() )

@@ -1,6 +1,7 @@
 package pu.chessdatabase.bo;
 
 import static pu.chessdatabase.bo.Kleur.*;
+import static pu.chessdatabase.bo.ZetSoort.*;
 import static pu.chessdatabase.bo.configuraties.StukType.*;
 
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import pu.chessdatabase.dbs.Dbs;
-import pu.chessdatabase.dbs.ResultaatType;
+import pu.chessdatabase.dbs.Resultaat;
 
 import lombok.Data;
 
@@ -154,14 +155,14 @@ END IsGeomIllegaal;
 public boolean isGeometrischIllegaal( BoStelling aBoStelling )
 {
 	if ( aBoStelling.getWk() == aBoStelling.getZk() ) return true;
-	if ( ( aBoStelling.getWk() == aBoStelling.getS3() ) && ( getStukken().getS3().getKleur() != WIT   ) ) return true;
-	if ( ( aBoStelling.getZk() == aBoStelling.getS3() ) && ( getStukken().getS3().getKleur() != ZWART ) ) return true;
+	if ( ( aBoStelling.getWk() == aBoStelling.getS3() ) && ( getStukken().getS3().getKleur() != Wit   ) ) return true;
+	if ( ( aBoStelling.getZk() == aBoStelling.getS3() ) && ( getStukken().getS3().getKleur() != Zwart ) ) return true;
 	if ( getConfig().getAantalStukken() >= 4 )
 	{
 		if ( aBoStelling.getS3() == aBoStelling.getS4() ) return true;
-		if ( ( aBoStelling.getWk() == aBoStelling.getS4() ) && ( getStukken().getS4().getKleur() != WIT   ) ) return true;
-		if ( ( aBoStelling.getZk() == aBoStelling.getS4() ) && ( getStukken().getS4().getKleur() != ZWART ) ) return true;
-		if ( getStukken().getS3().getStukType() == LOPER && getStukken().getS4().getStukType() == LOPER
+		if ( ( aBoStelling.getWk() == aBoStelling.getS4() ) && ( getStukken().getS4().getKleur() != Wit   ) ) return true;
+		if ( ( aBoStelling.getZk() == aBoStelling.getS4() ) && ( getStukken().getS4().getKleur() != Zwart ) ) return true;
+		if ( getStukken().getS3().getStukType() == Loper && getStukken().getS4().getStukType() == Loper
 			&& aBoStelling.getVeldKleur( aBoStelling.getS3() ) == aBoStelling.getVeldKleur( aBoStelling.getS4() ) )
 		{
 			return true;
@@ -170,14 +171,14 @@ public boolean isGeometrischIllegaal( BoStelling aBoStelling )
 	if ( getConfig().getAantalStukken() >= 5 )
 	{
 		if ( ( aBoStelling.getS3() == aBoStelling.getS5() ) || ( aBoStelling.getS4() == aBoStelling.getS5() ) ) return true;
-		if ( ( aBoStelling.getWk() == aBoStelling.getS5() ) && ( getStukken().getS5().getKleur() != WIT   ) ) return true;
-		if ( ( aBoStelling.getZk() == aBoStelling.getS5() ) && ( getStukken().getS5().getKleur() != ZWART ) ) return true;
-		if ( getStukken().getS3().getStukType() == LOPER && getStukken().getS5().getStukType() == LOPER
+		if ( ( aBoStelling.getWk() == aBoStelling.getS5() ) && ( getStukken().getS5().getKleur() != Wit   ) ) return true;
+		if ( ( aBoStelling.getZk() == aBoStelling.getS5() ) && ( getStukken().getS5().getKleur() != Zwart ) ) return true;
+		if ( getStukken().getS3().getStukType() == Loper && getStukken().getS5().getStukType() == Loper
 			&& aBoStelling.getVeldKleur( aBoStelling.getS3() ) == aBoStelling.getVeldKleur( aBoStelling.getS5() ) )
 		{
 			return true;
 		}
-		if ( getStukken().getS4().getStukType() == LOPER && getStukken().getS5().getStukType() == LOPER
+		if ( getStukken().getS4().getStukType() == Loper && getStukken().getS5().getStukType() == Loper
 			&& aBoStelling.getVeldKleur( aBoStelling.getS4() ) == aBoStelling.getVeldKleur( aBoStelling.getS5() ) )
 		{
 			return true;
@@ -315,7 +316,7 @@ public boolean checkSchaakDoorStuk( BoStelling aStelling, Stuk aStuk, int aKonin
 public boolean isSchaak( BoStelling aStelling )
 {
 	Bord bord = new Bord( getConfig().getAantalStukken(), getConfig().getStukken(), aStelling );
-	int KVeld = aStelling.getAanZet() == WIT ? aStelling.getWk() : aStelling.getZk();
+	int KVeld = aStelling.getAanZet() == Wit ? aStelling.getWk() : aStelling.getZk();
 	if ( checkSchaakDoorStuk( aStelling, getStukken().getS3(), KVeld, aStelling.getS3(), bord ) )
 	{
 		return true;
@@ -372,7 +373,7 @@ END AddZet;
 void addZet( final BoStelling aBoStelling, Stuk aStuk, int aNaar, ZetSoort aZetsoort, int aKoningsVeld, int aStukVeld, List<BoStelling> aGegenereerdeZetten )
 {
 	BoStelling boStelling = aBoStelling.clone();
-	if ( aZetsoort == ZetSoort.SLAGZET )
+	if ( aZetsoort == Slagzet )
 	{
 		//---- Stop het geslagen stuk "onder" de koning ----
 		if ( boStelling.getS3() == aNaar )
@@ -439,12 +440,12 @@ void addZet( final BoStelling aBoStelling, Stuk aStuk, int aNaar, ZetSoort aZets
 		case 3: boStelling.setS4( aNaar ); break;
 		case 4: boStelling.setS5( aNaar ); break;
 	}
-	boStelling.setAanZet( boStelling.getAanZet() == WIT ? ZWART : WIT );
+	boStelling.setAanZet( boStelling.getAanZet() == Wit ? Zwart : Wit );
 	BoStelling gotBoStelling = dbs.get( boStelling );
 	
 	// Niet doen, dit heeft een verschrikkelijke invloed op de performance! van zo'n 70 sec naar 330 sec
 	// boStelling.setSchaak( isSchaak( boStelling ) );
-	if ( gotBoStelling.getResultaat() != ResultaatType.ILLEGAAL )
+	if ( gotBoStelling.getResultaat() != Resultaat.Illegaal )
 	{
 		aGegenereerdeZetten.add( gotBoStelling );
 	}
@@ -489,7 +490,7 @@ List<BoStelling> genereerZettenPerStuk( BoStelling aBoStelling, Stuk aStuk, int 
 			while ( veldToBitSetAndBuitenBord( veld ).equals( NUL ) && aBord.isVeldLeeg( veld ) )
 			{
 //				void AddZet( Stelling aStelling, int aStukNr, int Naar, ZetSoort aZsoort, int aKVeld, int aSVeld, GenZRec GZ )
-				addZet( aBoStelling, aStuk, veld, ZetSoort.GEWOON, aKoningsVeld, aStukVeld, gegenereerdeZetten );
+				addZet( aBoStelling, aStuk, veld, Gewoon, aKoningsVeld, aStukVeld, gegenereerdeZetten );
 				veld += richting;
 			}
 		}
@@ -497,13 +498,13 @@ List<BoStelling> genereerZettenPerStuk( BoStelling aBoStelling, Stuk aStuk, int 
 		{
 			if ( aBord.isVeldLeeg( veld ) )
 			{
-				addZet( aBoStelling, aStuk, veld, ZetSoort.GEWOON, aKoningsVeld, aStukVeld, gegenereerdeZetten );
+				addZet( aBoStelling, aStuk, veld, Gewoon, aKoningsVeld, aStukVeld, gegenereerdeZetten );
 			}
 			else
 			{
 				if ( getStukken().getStukAtIndex( aBord.getVeld( veld ) ).getKleur() != aBoStelling.getAanZet() )
 				{
-					addZet( aBoStelling, aStuk, veld, ZetSoort.SLAGZET, aKoningsVeld, aStukVeld, gegenereerdeZetten );
+					addZet( aBoStelling, aStuk, veld, Slagzet, aKoningsVeld, aStukVeld, gegenereerdeZetten );
 				}
 			}
 		}
@@ -553,7 +554,7 @@ public List<BoStelling> genereerZetten( BoStelling aStelling )
 	Stuk stuk;
 
 	//-------- Koningszetten --------
-	if ( aStelling.getAanZet() == WIT )
+	if ( aStelling.getAanZet() == Wit )
 	{
 		stukVeld = aStelling.getWk();
 		koningsVeld = aStelling.getWk();
@@ -621,32 +622,32 @@ Comparator<BoStelling> stellingComparator = new Comparator<>()
 		int compare = L.getResultaat().compareTo( R.getResultaat() );
 		if ( compare != 0 )
 		{
-			return L.getAanZet() == ZWART ? compare : -compare;
+			return L.getAanZet() == Zwart ? compare : -compare;
 		}
 		if ( L.getAantalZetten() == R.getAantalZetten() )
 		{
 			return 0;
 		}
-		if ( L.getResultaat() == ResultaatType.GEWONNEN )
+		if ( L.getResultaat() == Resultaat.Gewonnen )
 		{
 			if ( L.getAantalZetten() > R.getAantalZetten() )
 			{
-				return L.getAanZet() == ZWART ? 1 : -1;
+				return L.getAanZet() == Zwart ? 1 : -1;
 			}
 			else
 			{
-				return L.getAanZet() == ZWART ? -1 : 1;
+				return L.getAanZet() == Zwart ? -1 : 1;
 			}
 		}
-		if ( L.getResultaat() == ResultaatType.VERLOREN )
+		if ( L.getResultaat() == Resultaat.Verloren )
 		{
 			if ( L.getAantalZetten() > R.getAantalZetten() )
 			{
-				return L.getAanZet() == ZWART ? -1 : 1;
+				return L.getAanZet() == Zwart ? -1 : 1;
 			}
 			else
 			{
-				return L.getAanZet() == ZWART ? 1 : -1;
+				return L.getAanZet() == Zwart ? 1 : -1;
 			}
 		}
 		return 0;
@@ -659,7 +660,7 @@ public List<BoStelling> genereerZettenGesorteerd( BoStelling aStelling )
 	gegenereerdeZetten.sort( stellingComparator );
 	// @@LOW Met zwart aan zet geeft hij de juiste volgorde, met wit precies de omgekeerde
 	// Dus omdat ik geen zin heb om dat sorteren opnieuw te doen, doen we hier een reverse()
-	if ( aStelling.getAanZet() == WIT )
+	if ( aStelling.getAanZet() == Wit )
 	{
 		gegenereerdeZetten = gegenereerdeZetten.reversed();
 	}

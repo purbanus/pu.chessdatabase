@@ -1,8 +1,8 @@
 package pu.chessdatabase.bo.speel;
 
 import static pu.chessdatabase.bo.Kleur.*;
-import static pu.chessdatabase.bo.speel.EindeType.*;
-import static pu.chessdatabase.dbs.ResultaatType.*;
+import static pu.chessdatabase.bo.speel.Einde.*;
+import static pu.chessdatabase.dbs.Resultaat.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,11 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import pu.chessdatabase.bo.BoStelling;
+import pu.chessdatabase.bo.Config;
 import pu.chessdatabase.bo.Gen;
 import pu.chessdatabase.bo.Stuk;
 import pu.chessdatabase.bo.StukInfo;
 import pu.chessdatabase.dbs.Dbs;
-import pu.chessdatabase.dbs.ResultaatType;
+import pu.chessdatabase.dbs.Resultaat;
 
 import lombok.Data;
 
@@ -74,15 +75,10 @@ public class Partij
 private Dbs dbs;
 
 @Autowired private Gen gen;
+@Autowired private Config config;
 
-private Plies plies = new Plies();
+private Plies plies;
 
-/**
- * BEGIN
-	Dbs.Open();
-	InzPartij();
-END Partij
- */
 /**
  * Spring roept de constructor aan voordat hij de @AutoWired velden initialiseert.
  * Gelukkig kun je een constructor maken met als parm het veld dat je wilt initialiseren.
@@ -181,7 +177,7 @@ END IsLegaleStelling;
 public boolean isLegaleStelling( BoStelling aBoStelling )
 {
 	BoStelling boStelling = getDbs().get( aBoStelling );
-	return boStelling.getResultaat() != ResultaatType.ILLEGAAL;
+	return boStelling.getResultaat() != Resultaat.Illegaal;
 }
 /**
 PROCEDURE IsEindStelling(S: Dbs.Stelling): EindeType;
@@ -200,20 +196,20 @@ END IsEindStelling;
 /**
  * ------- Kijk of een stelling het einde van een partij is ------------
  */
-public EindeType isEindStelling( BoStelling aBoStelling )
+public Einde isEindStelling( BoStelling aBoStelling )
 {
 	BoStelling boStelling = getDbs().get( aBoStelling );
 	boStelling.setSchaak( getGen().isSchaak( boStelling ) );
-	if ( boStelling.getResultaat() == ResultaatType.ILLEGAAL )
+	if ( boStelling.getResultaat() == Resultaat.Illegaal )
 	{
-		return EindeType.ILLEGAAL;
+		return Einde.Illegaal;
 	}
 	List<BoStelling> gegenereerdeZetten = getGen().genereerZetten( aBoStelling );
 	if ( gegenereerdeZetten.size() > 0 )
 	{
-		return NOG_NIET;
+		return Nog_niet;
 	}
-	return boStelling.isSchaak() ? MAT : PAT;
+	return boStelling.isSchaak() ? Mat : Pat;
 }
 /**
 PROCEDURE NewGame(StartS: Dbs.Stelling);
@@ -238,7 +234,7 @@ public BoStelling newGame( BoStelling aStartStelling )
 	{
 		throw new RuntimeException( "Je kunt niet met een illegale stelling starten bij newGame()" );
 	}
-	setPlies( new Plies() );
+	setPlies( new Plies( getConfig().getConfig() ) );
 	BoStelling boStelling = getDbs().get( aStartStelling );
 	boStelling.setSchaak( getGen().isSchaak( boStelling ) );
 	getPlies().clear();
@@ -436,7 +432,7 @@ public BoStelling zetVooruit()
 		}
 		else
 		{
-			if ( getPlies().getCurrentEinde() == NOG_NIET )
+			if ( getPlies().getCurrentEinde() == Nog_niet )
 			{
 				bedenk();
 			}
@@ -473,7 +469,7 @@ END Bedenk;
  */
 public BoStelling bedenk()
 {
-	if ( isBegonnen() && getPlies().getCurrentEinde() == NOG_NIET )
+	if ( isBegonnen() && getPlies().getCurrentEinde() == Nog_niet )
 	{
 		BoStelling boStellingVan = getPlies().getCurrentPly().getBoStelling();
 		List<BoStelling> gegenereerdeZetten = getGen().genereerZettenGesorteerd( boStellingVan );
@@ -572,10 +568,10 @@ void checkPartijVoorZet( BoStelling boStellingNaar )
 	{
 		throw new RuntimeException( "De partij is nog niet begonnen. Je kunt geen zet doen als de partij nog niet begonnen is." );
 	}
-	EindeType einde = getPlies().getCurrentEinde();
-	if ( einde != NOG_NIET )
+	Einde einde = getPlies().getCurrentEinde();
+	if ( einde != Nog_niet )
 	{
-		throw new RuntimeException( "De partij is geeindigd in " + einde.getNormaleSpelling() + ". Je kunt geen zetten meer doen." );
+		throw new RuntimeException( "De partij is geeindigd in " + einde + ". Je kunt geen zetten meer doen." );
 	}
 	if ( boStellingNaar == null )
 	{
@@ -701,8 +697,8 @@ String plyToString( Ply aPly )
 	sb.append( van ).append( isSlagZet( aPly.getBoStelling(), aPly.getVanNaar() ) ? "x" : "-" );
 	String naar = veldToAlfa( aPly.getVanNaar().getNaar() );
 	sb.append( naar ).append( aPly.isSchaak() ? "+" : " " );
-	sb.append( aPly.getEinde() == MAT ? "#" : "" );
-	sb.append( aPly.getEinde() == PAT ? "=" : "" );
+	sb.append( aPly.getEinde() == Mat ? "#" : "" );
+	sb.append( aPly.getEinde() == Pat ? "=" : "" );
 	return sb.toString();
 }
 /**
@@ -763,18 +759,18 @@ public ResultaatRecord getResultaatRecord()
 	ResultaatRecord resultaatRec = new ResultaatRecord();
 	resultaatRec.setRes2( "" );
 	Ply Ply = getPlies().getCurrentPly();
-	if ( Ply.getEinde() != NOG_NIET )
+	if ( Ply.getEinde() != Nog_niet )
 	{
-		resultaatRec.setRes1( Ply.getEinde().getNormaleSpelling() );
+		resultaatRec.setRes1( Ply.getEinde().toString() );
 	}
 	else
 	{
-		ResultaatType resultaat = Ply.getBoStelling().getResultaat();
-		if ( resultaat != ResultaatType.ILLEGAAL )
+		Resultaat resultaat = Ply.getBoStelling().getResultaat();
+		if ( resultaat != Resultaat.Illegaal )
 		{
-			resultaatRec.setRes1( resultaat.getNormaleSpelling() );
+			resultaatRec.setRes1( resultaat.toString() );
 		}
-		if ( resultaat == GEWONNEN || resultaat == VERLOREN )
+		if ( resultaat == Gewonnen || resultaat == Verloren )
 		{
 			resultaatRec.setRes2( "Mat in " + ( Ply.getBoStelling().getAantalZetten() - 1 ) );
 		}
@@ -932,7 +928,7 @@ ZetDocument createZetDocument( int aPlyNummer )
 	Ply ply = getPlies().getPly( aPlyNummer );
 	// Dit geldt toch alleen bij plynummer 0? Ja, maar alleen bij ply 0 kunnen we aangeroepen worden 
 	// met zwart aan zet. Bij alle andere aanropjes is altijd wit aan zet.
-	if ( ply.getBoStelling().getAanZet() == ZWART )
+	if ( ply.getBoStelling().getAanZet() == Zwart )
 	{
 		return ZetDocument.builder()
 			.zetNummer( ply.getZetNummer() )
@@ -957,7 +953,7 @@ List<ZetDocument> createZetten()
 	int startPly = 0;
 	// Als de eerste zet zwart is maken we puntje puntje puntje plus de  ply hierna
 	Ply firstPly = getPlies().getFirstPly();
-	if ( firstPly.getBoStelling().getAanZet() == ZWART )
+	if ( firstPly.getBoStelling().getAanZet() == Zwart )
 	{
 		zetten.add( ZetDocument.builder()
 			.zetNummer( firstPly.getZetNummer() )
@@ -994,7 +990,7 @@ VooruitRecord createVooruit()
 	{
 		vooruitRecord.setErIsVooruit( true );
 		int currentPlyNumber = getPlies().getCurrentPlyNumber();
-		if ( getPlies().getFirstPly().getBoStelling().getAanZet() == WIT )
+		if ( getPlies().getFirstPly().getBoStelling().getAanZet() == Wit )
 		{
 			vooruitRecord.setStart( ( currentPlyNumber - 1 ) / 2 + 1 );
 		}
@@ -1005,7 +1001,7 @@ VooruitRecord createVooruit()
 		/* Zou je dit niet precies anderom moeten doen, dus == ZWART?
 		 * De test is nu of de laatste stelling Wit aan zet heeft, maar wit heeft nog niet gezet!
 		 */
-		vooruitRecord.setHalverwege( getPlies().getCurrentPly().getBoStelling().getAanZet() == ZWART );
+		vooruitRecord.setHalverwege( getPlies().getCurrentPly().getBoStelling().getAanZet() == Zwart );
 	}
 	return vooruitRecord;
 }
@@ -1058,22 +1054,22 @@ GegenereerdeZetDocument getGegenereerdeZetDocument( Ply aPly, BoStelling aBoStel
 	return GegenereerdeZetDocument.builder()
 		.zetNummer( aPly.getZetNummer() + 1 )
 		.zet( plyToString( aPly ) )
-		.resultaat( getGegenereerdeZetResultaat( aBoStellingNaar.getResultaat() ).getNormaleSpelling() )
-		.matInHoeveel( aBoStellingNaar.getResultaat() == REMISE ? "..." : matInHoeveelString )
+		.resultaat( getGegenereerdeZetResultaat( aBoStellingNaar.getResultaat() ).toString() )
+		.matInHoeveel( aBoStellingNaar.getResultaat() == Remise ? "..." : matInHoeveelString )
 		.build();
 }
-ResultaatType getGegenereerdeZetResultaat( ResultaatType aResultaat )
+Resultaat getGegenereerdeZetResultaat( Resultaat aResultaat )
 {
 	// We doen het hier precies andersom: GEWONNEN <-> VERLOREN, want dat is psychologisch beter.
 	// Want stel dat wit gewonnen staat, dan zijn al die zetten VERLOREN, immers in al die zetten
 	// is zwart aan zet. Wij willen dan GEWONNEN zien.
-	if ( aResultaat == GEWONNEN )
+	if ( aResultaat == Gewonnen )
 	{
-		return VERLOREN;
+		return Verloren;
 	}
-	if ( aResultaat == VERLOREN )
+	if ( aResultaat == Verloren )
 	{
-		return GEWONNEN;
+		return Gewonnen;
 	}
 	return aResultaat;
 }
@@ -1121,7 +1117,7 @@ public List<GegenereerdeZetDocument> getGegenereerdeZetten()
 		Ply ply = Ply.builder()
 			.zetNummer( zetNummer )
 			.boStelling( boStellingVan )
-			.einde( NOG_NIET ) // @@NOG klopt dit??
+			.einde( Nog_niet ) // @@NOG klopt dit??
 			.vanNaar( stellingToVanNaar( boStellingVan, boStellingNaar ) )
 			.schaak( getGen().isSchaak( boStellingNaar ) )
 			.build();
@@ -1144,12 +1140,6 @@ public BoStelling getStand()
 {
 	return getPlies().getCurrentPly().getBoStelling();
 }
-
-
-
-
-
-
 
 }
 

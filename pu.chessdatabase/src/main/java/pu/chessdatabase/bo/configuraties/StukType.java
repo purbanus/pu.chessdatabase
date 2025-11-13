@@ -7,12 +7,12 @@ import pu.chessdatabase.bo.Richtingen;
 public enum StukType
 {
 
-KONING( "K", "Koning", Richtingen.KRICHTING, false ), 
-DAME( "D", "Dame", Richtingen.KRICHTING, true ), 
-TOREN( "T", "Toren", Richtingen.TRICHTING, true ), 
-LOPER( "L", "Loper", Richtingen.LRICHTING, true ), 
-PAARD( "P",  "Paard", Richtingen.PRICHTING, false ),
-GEEN( "G",  "Geen stuk", Richtingen.GRICHTING, false );
+Koning( "K", "Koning", Richtingen.KRICHTING, false ), 
+Dame( "D", "Dame", Richtingen.KRICHTING, true ), 
+Toren( "T", "Toren", Richtingen.TRICHTING, true ), 
+Loper( "L", "Loper", Richtingen.LRICHTING, true ), 
+Paard( "P",  "Paard", Richtingen.PRICHTING, false ),
+Geen( "G",  "Geen stuk", Richtingen.GRICHTING, false );
 // geen pion!
 
 private String afko;

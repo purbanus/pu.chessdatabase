@@ -36,7 +36,7 @@ void fillStukken()
 	fakeStukken = new ArrayList<>();
 	for ( Stuk stuk : getStukken() )
 	{
-		if ( stuk.getStukType() == GEEN )
+		if ( stuk.getStukType() == Geen )
 		{
 			fakeStukken.add( stuk );
 		}

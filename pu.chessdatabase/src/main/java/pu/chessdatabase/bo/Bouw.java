@@ -1,7 +1,7 @@
 package pu.chessdatabase.bo;
 
 import static pu.chessdatabase.bo.Kleur.*;
-import static pu.chessdatabase.dbs.ResultaatType.*;
+import static pu.chessdatabase.dbs.Resultaat.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,7 +96,7 @@ void telAlles( boolean aDoPrint)
 		System.out.println( "Tellen van alle stellingen" );
 	}
 	vmStellingIterator.clearTellingen();
-	dbs.pass( PassType.MARKEER_WIT_EN_ZWART, this::tel );
+	dbs.pass( PassType.MarkeerWitEnZwart, this::tel );
 }
 void telAndPrintAlles( boolean aDoPrint )
 {
@@ -126,8 +126,8 @@ public void isIllegaal( BoStelling aBoStelling )
 	BoStelling boStelling = aBoStelling.clone();
 	if ( gen.isGeometrischIllegaal( boStelling ) || gen.isKKSchaak( boStelling ) )
 	{
-		boStelling.setResultaat( ILLEGAAL );
-		boStelling.setAanZet( WIT );
+		boStelling.setResultaat( Illegaal );
+		boStelling.setAanZet( Wit );
 		if ( HOU_STELLINGEN_BIJ )
 		{
 			illegaleStellingen.add( boStelling );
@@ -135,7 +135,7 @@ public void isIllegaal( BoStelling aBoStelling )
 		dbs.put( boStelling );
 
 		boStelling = boStelling.clone();
-		boStelling.setAanZet( ZWART );
+		boStelling.setAanZet( Zwart );
 		if ( HOU_STELLINGEN_BIJ )
 		{
 			illegaleStellingen.add( boStelling );
@@ -156,21 +156,21 @@ public void schaakjes( BoStelling aBoStellingMetWitAanZet )
 	 */
 	BoStelling boStellingMetWitAanZet = aBoStellingMetWitAanZet.clone();
 	BoStelling boStellingMetZwartAanZet = aBoStellingMetWitAanZet.clone();
-	boStellingMetZwartAanZet.setAanZet( ZWART );
+	boStellingMetZwartAanZet.setAanZet( Zwart );
 
 	// Wit aan zet
 	if ( gen.isSchaak( boStellingMetWitAanZet ) )
 	{
 		boStellingMetWitAanZet.setSchaak( true );
 		boStellingMetZwartAanZet.setSchaak( true );
-		boStellingMetZwartAanZet.setResultaat( ILLEGAAL );
+		boStellingMetZwartAanZet.setResultaat( Illegaal );
 	}
 	// Zwart aan zet
 	if ( gen.isSchaak( boStellingMetZwartAanZet ) )
 	{
 		boStellingMetZwartAanZet.setSchaak( true );
 		boStellingMetWitAanZet.setSchaak( true );
-		boStellingMetWitAanZet.setResultaat( ILLEGAAL );
+		boStellingMetWitAanZet.setResultaat( Illegaal );
 	}
 	if ( boStellingMetWitAanZet.isSchaak() )
 	{
@@ -202,7 +202,7 @@ public void isMat( BoStelling aBoStelling )
 		List<BoStelling> gegenereerdeZetten = gen.genereerZetten( boStelling );
 		if ( gegenereerdeZetten.size() == 0 )
 		{
-			boStelling.setResultaat( VERLOREN );
+			boStelling.setResultaat( Verloren );
 			boStelling.setAantalZetten( 1 );
 			if ( HOU_STELLINGEN_BIJ )
 			{
@@ -230,15 +230,15 @@ void pass_0( boolean aDoPrint )
 	dbs.create();
 
 	reportNewPass( "Markeren illegale stellingen", aDoPrint );
-	dbs.pass( PassType.MARKEER_WIT, this::isIllegaal );
+	dbs.pass( PassType.MarkeerWit, this::isIllegaal );
 
 	reportNewPass( "Markeren schaakjes", aDoPrint );
-	dbs.pass( PassType.MARKEER_WIT, this::schaakjes );
+	dbs.pass( PassType.MarkeerWit, this::schaakjes );
 
 //	dbs.setReport( 100, this::showThisPass );
 //	reportNewPass( "Matstellingen" );
-	dbs.pass( PassType.MARKEER_WIT  , this::isMat );
-	dbs.pass( PassType.MARKEER_ZWART, this::isMat );
+	dbs.pass( PassType.MarkeerWit  , this::isMat );
+	dbs.pass( PassType.MarkeerZwart, this::isMat );
 }
 /**
  * ------- Markeer een stelling gewonnen/verloren -----------
@@ -251,7 +251,7 @@ void pass_0( boolean aDoPrint )
 void markeer( BoStelling aBoStelling )
 {
 
-	if ( aBoStelling.getResultaat() != REMISE )
+	if ( aBoStelling.getResultaat() != Remise )
 	{
 		//telMetKleur( aBoStelling );
 		return;
@@ -271,7 +271,7 @@ void markeer( BoStelling aBoStelling )
 		return;
 	}
 	// We beginnen met VERLOREN omdat dat het meest pessimistische resultaat is
-	boStellingVan.setResultaat( VERLOREN ); 
+	boStellingVan.setResultaat( Verloren ); 
 
 	int minGewonnen = Integer.MAX_VALUE;
 	int maxVerloren = Integer.MIN_VALUE;
@@ -280,20 +280,20 @@ void markeer( BoStelling aBoStelling )
 		int aantal = boStellingNaar.getAantalZetten();
 		switch( boStellingNaar.getResultaat() )
 		{
-			case VERLOREN:
+			case Verloren:
 			{
 				// Als degene die aan zet is: 
 				// - tot nu toe verloren staat, is gewonnen gewoon beter
 				// - tot nu toe remise staat, is gewonnen gewoon beter
 				// - tot nu toe gewonnen staat, kan setgewonnen geen kwaadis gewonnen gewoon beter
-				boStellingVan.setResultaat( GEWONNEN );
+				boStellingVan.setResultaat( Gewonnen );
 				if ( aantal < minGewonnen )
 				{
 					minGewonnen = aantal;
 				}
 				break;
 			}
-			case GEWONNEN:
+			case Gewonnen:
 			{
 				// Als degene die aan zet is: 
 				// - tot nu toe verloren staat, kan setVerloren geen kwaad 
@@ -307,7 +307,7 @@ void markeer( BoStelling aBoStelling )
 				}
 				break;
 			}
-			case REMISE:
+			case Remise:
 			{
 				// Dit hangt er van af wie er aan zet is.
 				// Wit aan zet:
@@ -317,9 +317,9 @@ void markeer( BoStelling aBoStelling )
 				// - als hij verloren staat tot nu toe, is remize te prefereren
 				// - als hij gewonnen staat, doet remise er niet toe
 				// Dus ik ben het hier nu mee eens
-				if ( boStellingVan.getResultaat() == VERLOREN )
+				if ( boStellingVan.getResultaat() == Verloren )
 				{
-					boStellingVan.setResultaat( REMISE );
+					boStellingVan.setResultaat( Remise );
 				}
 				break;
 			}
@@ -331,9 +331,9 @@ void markeer( BoStelling aBoStelling )
 		}
 	}
 	//telMetKleur( boStellingVan );
-	if ( boStellingVan.getResultaat() != REMISE )
+	if ( boStellingVan.getResultaat() != Remise )
 	{
-		if ( boStellingVan.getResultaat() == GEWONNEN )
+		if ( boStellingVan.getResultaat() == Gewonnen )
 		{
 			boStellingVan.setAantalZetten( minGewonnen + 1 );
 		}
@@ -356,10 +356,10 @@ void pass_n()
 {
 //	dbs.setReport( 100, this::showThisPass );
 //	reportNewPass( "Wit aan zet" );
-	dbs.pass( PassType.MARKEER_WIT, this::markeer );
+	dbs.pass( PassType.MarkeerWit, this::markeer );
 
 //	reportNewPass( "Zwart aan zet" );
-	dbs.pass( PassType.MARKEER_ZWART, this::markeer );
+	dbs.pass( PassType.MarkeerZwart, this::markeer );
 }
 /**
  * ---------- Markeer tot er niets meer verandert ------------------

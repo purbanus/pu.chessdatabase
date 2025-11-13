@@ -29,8 +29,8 @@ public void testVulStukTabelKDKT()
 	Stuk stuk;
 	
 	stuk = stukken.getWk();
-	assertThat( stuk.getStukType(), is( KONING ) );
-	assertThat( stuk.getKleur(), is( WIT ) );
+	assertThat( stuk.getStukType(), is( Koning ) );
+	assertThat( stuk.getKleur(), is( Wit ) );
 	assertThat( stuk.getKoningsNummer(), is( 0 ) );
 	assertThat( stuk.getRichtingen(), is( KRICHTING ) );
 	assertThat( stuk.getRichtingen().size(), is( 8 ) );
@@ -39,8 +39,8 @@ public void testVulStukTabelKDKT()
 	assertThat( stuk.getStukString(), is( "WK" ) );
 	
 	stuk = stukken.getZk();
-	assertThat( stuk.getStukType(), is( KONING ) );
-	assertThat( stuk.getKleur(), is( ZWART ) );
+	assertThat( stuk.getStukType(), is( Koning ) );
+	assertThat( stuk.getKleur(), is( Zwart ) );
 	assertThat( stuk.getKoningsNummer(), is( 1 ) );
 	assertThat( stuk.getRichtingen(), is( KRICHTING ) );
 	assertThat( stuk.getRichtingen().size(), is( 8 ) );
@@ -49,8 +49,8 @@ public void testVulStukTabelKDKT()
 	assertThat( stuk.getStukString(), is( "ZK" ) );
 
 	stuk = stukken.getS3();
-	assertThat( stuk.getStukType(), is( DAME ) );
-	assertThat( stuk.getKleur(), is( WIT ) );
+	assertThat( stuk.getStukType(), is( Dame ) );
+	assertThat( stuk.getKleur(), is( Wit ) );
 	assertThat( stuk.getKoningsNummer(), is( 0 ) );
 	assertThat( stuk.getRichtingen(), is( KRICHTING ) );
 	assertThat( stuk.getRichtingen().size(), is( 8 ) );
@@ -59,8 +59,8 @@ public void testVulStukTabelKDKT()
 	assertThat( stuk.getStukString(), is( "WD" ) );
 	
 	stuk = stukken.getS4();
-	assertThat( stuk.getStukType(), is( TOREN ) );
-	assertThat( stuk.getKleur(), is( ZWART ) );
+	assertThat( stuk.getStukType(), is( Toren ) );
+	assertThat( stuk.getKleur(), is( Zwart ) );
 	assertThat( stuk.getKoningsNummer(), is( 1 ) );
 	assertThat( stuk.getRichtingen(), is( TRICHTING ) );
 	assertThat( stuk.getRichtingen().size(), is( 4 ) );
@@ -69,8 +69,8 @@ public void testVulStukTabelKDKT()
 	assertThat( stuk.getStukString(), is( "ZT" ) );
 
 	stuk = stukken.getS5();
-	assertThat( stuk.getStukType(), is( GEEN ) );
-	assertThat( stuk.getKleur(), is( WIT ) );
+	assertThat( stuk.getStukType(), is( Geen ) );
+	assertThat( stuk.getKleur(), is( Wit ) );
 	assertThat( stuk.getKoningsNummer(), is( 0 ) );
 	assertThat( stuk.getRichtingen(), is( GRICHTING ) );
 	assertThat( stuk.getRichtingen().size(), is( 0 ) );
@@ -85,8 +85,8 @@ public void testVulStukTabelKLPK()
 	Stuk stuk;
 	
 	stuk = stukken.getWk();
-	assertThat( stuk.getStukType(), is( KONING ) );
-	assertThat( stuk.getKleur(), is( WIT ) );
+	assertThat( stuk.getStukType(), is( Koning ) );
+	assertThat( stuk.getKleur(), is( Wit ) );
 	assertThat( stuk.getKoningsNummer(), is( 0 ) );
 	assertThat( stuk.getRichtingen(), is( KRICHTING ) );
 	assertThat( stuk.getRichtingen().size(), is( 8 ) );
@@ -95,8 +95,8 @@ public void testVulStukTabelKLPK()
 	assertThat( stuk.getStukString(), is( "WK" ) );
 	
 	stuk = stukken.getZk();
-	assertThat( stuk.getStukType(), is( KONING ) );
-	assertThat( stuk.getKleur(), is( ZWART ) );
+	assertThat( stuk.getStukType(), is( Koning ) );
+	assertThat( stuk.getKleur(), is( Zwart ) );
 	assertThat( stuk.getKoningsNummer(), is( 1 ) );
 	assertThat( stuk.getRichtingen(), is( KRICHTING ) );
 	assertThat( stuk.getRichtingen().size(), is( 8 ) );
@@ -106,8 +106,8 @@ public void testVulStukTabelKLPK()
 
 	stuk = stukken.getS3();
 	//if ( Config.getConfig().equals( stuk ))
-	assertThat( stuk.getStukType(), is( LOPER ) );
-	assertThat( stuk.getKleur(), is( WIT ) );
+	assertThat( stuk.getStukType(), is( Loper ) );
+	assertThat( stuk.getKleur(), is( Wit ) );
 	assertThat( stuk.getKoningsNummer(), is( 0 ) );
 	assertThat( stuk.getRichtingen(), is( LRICHTING ) );
 	assertThat( stuk.getRichtingen().size(), is( 4 ) );
@@ -116,8 +116,8 @@ public void testVulStukTabelKLPK()
 	assertThat( stuk.getStukString(), is( "WL" ) );
 	
 	stuk = stukken.getS4();
-	assertThat( stuk.getStukType(), is( PAARD ) );
-	assertThat( stuk.getKleur(), is( WIT ) );
+	assertThat( stuk.getStukType(), is( Paard ) );
+	assertThat( stuk.getKleur(), is( Wit ) );
 	assertThat( stuk.getKoningsNummer(), is( 0 ) );
 	assertThat( stuk.getRichtingen(), is( PRICHTING ) );
 	assertThat( stuk.getRichtingen().size(), is( 8 ) );
@@ -126,8 +126,8 @@ public void testVulStukTabelKLPK()
 	assertThat( stuk.getStukString(), is( "WP" ) );
 
 	stuk = stukken.getS5();
-	assertThat( stuk.getStukType(), is( GEEN ) );
-	assertThat( stuk.getKleur(), is( WIT ) );
+	assertThat( stuk.getStukType(), is( Geen ) );
+	assertThat( stuk.getKleur(), is( Wit ) );
 	assertThat( stuk.getKoningsNummer(), is( 0 ) );
 	assertThat( stuk.getRichtingen(), is( GRICHTING ) );
 	assertThat( stuk.getRichtingen().size(), is( 0 ) );

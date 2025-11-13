@@ -8,6 +8,8 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import static pu.chessdatabase.dbs.PassType.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,9 +82,9 @@ public void testGrootsteAantalZetten()
 	getConfig().switchConfig( "KTK" );
 	dbs.setReport( Integer.MAX_VALUE, this::doNothing, true );
 	grootste = Integer.MIN_VALUE;
-	dbs.pass( PassType.MARKEER_WIT_EN_ZWART, this::vindGrootste );
-	dbs.pass( PassType.MARKEER_WIT_EN_ZWART, this::vindGrootsten );
-	dbs.pass( PassType.MARKEER_WIT_EN_ZWART, this::vindGrootstenMinEen );
+	dbs.pass( PassType.MarkeerWitEnZwart, this::vindGrootste );
+	dbs.pass( PassType.MarkeerWitEnZwart, this::vindGrootsten );
+	dbs.pass( PassType.MarkeerWitEnZwart, this::vindGrootstenMinEen );
 	if ( DO_PRINT )
 	{
 		System.out.println( "Grootste aantal zetten tot mat: " + grootste );

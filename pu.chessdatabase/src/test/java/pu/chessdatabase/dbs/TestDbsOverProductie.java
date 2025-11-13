@@ -8,7 +8,7 @@ package pu.chessdatabase.dbs;
 //import static org.hamcrest.Matchers.*;
 
 import static pu.chessdatabase.bo.Kleur.*;
-import static pu.chessdatabase.dbs.ResultaatType.*;
+import static pu.chessdatabase.dbs.Resultaat.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.BoStelling;
-import pu.chessdatabase.dbs.Dbs;
 
 @SpringBootTest
 public class TestDbsOverProductie
@@ -49,7 +48,7 @@ void getRemiseStelling( BoStelling aBoStelling )
 	{
 		return;
 	}
-	if ( aBoStelling.getResultaat() == REMISE )
+	if ( aBoStelling.getResultaat() == Remise )
 	{
 		remiseStellingen.add( aBoStelling );
 		aantalRemiseStellingen++;
@@ -82,16 +81,16 @@ List<BoStelling> verlorenStellingenMetZwartAanZet = new ArrayList<>();
 int aantalStellingen = 0;
 void getGewonnenOfVerlorenStelling( BoStelling aBoStelling )
 {
-	if ( aBoStelling.getResultaat() == GEWONNEN || aBoStelling.getResultaat() == VERLOREN )
+	if ( aBoStelling.getResultaat() == Gewonnen || aBoStelling.getResultaat() == Verloren )
 	{
 		aantalStellingen++;
 		if ( aantalStellingen % 10000 == 0 )
 		{
 			System.out.println( aantalStellingen );
 		}
-		if ( aBoStelling.getResultaat() == GEWONNEN )
+		if ( aBoStelling.getResultaat() == Gewonnen )
 		{
-			if ( aBoStelling.getAanZet() == WIT)
+			if ( aBoStelling.getAanZet() == Wit)
 			{
 				gewonnenStellingenMetWitAanZet.add( aBoStelling );
 			}
@@ -100,9 +99,9 @@ void getGewonnenOfVerlorenStelling( BoStelling aBoStelling )
 				gewonnenStellingenMetZwartAanZet.add( aBoStelling );
 			}
 		}
-		if ( aBoStelling.getResultaat() == VERLOREN )
+		if ( aBoStelling.getResultaat() == Verloren )
 		{
-			if ( aBoStelling.getAanZet() == WIT)
+			if ( aBoStelling.getAanZet() == Wit)
 			{
 				verlorenStellingenMetWitAanZet.add( aBoStelling );
 			}
@@ -113,7 +112,7 @@ void getGewonnenOfVerlorenStelling( BoStelling aBoStelling )
 		}
 		for ( BoStelling boStelling : verlorenStellingenMetWitAanZet )
 		{
-			if ( boStelling.getResultaat() == GEWONNEN )
+			if ( boStelling.getResultaat() == Gewonnen )
 			{
 				System.out.println( "Gewonnen gevonden" );
 			}

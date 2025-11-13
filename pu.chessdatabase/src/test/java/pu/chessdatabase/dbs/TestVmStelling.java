@@ -64,7 +64,7 @@ public void testGetBoStelling()
 		.s3( 0x11 )
 		.s4( 0x23 )
 		.s5( 0x00 )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	BoStelling boStelling = BoStelling.builder()
 		.wk( 0x00 )
@@ -72,7 +72,7 @@ public void testGetBoStelling()
 		.s3( 0x21 )
 		.s4( 0x43 )
 		.s5( 0x00 )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	assertThat( vmStelling.getBoStelling(), is( boStelling ) );
 	
@@ -82,7 +82,7 @@ public void testGetBoStelling()
 		.s3( "g8" )
 		.s4( "d4" )
 		.s5( "f1" )
-		.aanZet( ZWART )
+		.aanZet( Zwart )
 		.build();
 	boStelling = BoStelling.alfaBuilder()
 		.wk( "c2" )
@@ -90,7 +90,7 @@ public void testGetBoStelling()
 		.s3( "g8" )
 		.s4( "d4" )
 		.s5( "f1" )
-		.aanZet( ZWART )
+		.aanZet( Zwart )
 		.build();
 	assertThat( vmStelling.getBoStelling(), is( boStelling ) );
 }
@@ -105,7 +105,7 @@ public void testToString()
 		.s3( "b2" )
 		.s4( "d3" )
 		.s5( "a1" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	config.switchConfig( "KDKT" );
 	String vmStringText = MessageFormat.format( VM_TO_STRING, 

@@ -51,7 +51,7 @@ public void testGenereerZetten()
 		.zk( "h8" )
 		.s3( "b2" )
 		.s4( "g7" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	genZRec = gen.genereerZetten( boStelling );
 	assertThat( genZRec.size(), is( 23 ) );

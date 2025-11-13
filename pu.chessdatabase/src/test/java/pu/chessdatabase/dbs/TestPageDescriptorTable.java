@@ -6,7 +6,9 @@ package pu.chessdatabase.dbs;
 //===================================================================================================================== 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+
 import static pu.chessdatabase.bo.Kleur.*;
+import static pu.chessdatabase.dbs.Lokatie.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,11 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.Config;
-import pu.chessdatabase.dbs.Cache;
-import pu.chessdatabase.dbs.Lokatie;
-import pu.chessdatabase.dbs.PageDescriptor;
-import pu.chessdatabase.dbs.PageDescriptorTable;
-import pu.chessdatabase.dbs.VMStelling;
 
 import lombok.Data;
 
@@ -39,7 +36,7 @@ public void setup()
 public void testGetSetPageDescriptor()
 {
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.IN_RAM )
+		.waar( InRam )
 		.cacheNummer( 0x17 )
 		.schijfAdres( 1_000_000 )
 		.build();
@@ -48,7 +45,7 @@ public void testGetSetPageDescriptor()
 		.zk( 0x29 )
 		.s3( 0x01 )
 		.s4( 0x17 )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	getPageDescriptorTable().setPageDescriptor( vmStelling, pageDescriptor );
 	PageDescriptor gotPageDescriptor = getPageDescriptorTable().getPageDescriptor( vmStelling );
@@ -78,7 +75,7 @@ public void testInitializePageDescriptorTable()
 void testPageDescriptor( VMStelling aVmStelling )
 {
 	PageDescriptor pageDescriptor = getPageDescriptorTable().getPageDescriptor( aVmStelling );
-	assertThat( pageDescriptor.getWaar(), is( Lokatie.OP_SCHIJF ) );
+	assertThat( pageDescriptor.getWaar(), is( OpSchijf ) );
 	assertThat( pageDescriptor.getSchijfAdres(), is( address ) );
 	assertThat( pageDescriptor.getCacheNummer(), is( Integer.MAX_VALUE ) );
 	address += getCache().getPageSize();

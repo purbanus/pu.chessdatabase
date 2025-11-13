@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import pu.chessdatabase.dbs.ResultaatType;
+import pu.chessdatabase.dbs.Resultaat;
 @SuppressWarnings( "unused" )
 @SpringBootTest
 public class TestBoStelling
@@ -38,16 +38,16 @@ public void destroy()
 @Test
 public void testGetVeldKleur()
 {
-	assertThat( BoStelling.getVeldKleur( 0x00 ), is( ZWART ) );
-	assertThat( BoStelling.getVeldKleur( 0x01 ), is( WIT ) );
-	assertThat( BoStelling.getVeldKleur( 0x02 ), is( ZWART ) );
-	assertThat( BoStelling.getVeldKleur( 0x07 ), is( WIT ) );
-	assertThat( BoStelling.getVeldKleur( 0x10 ), is( WIT ) );
-	assertThat( BoStelling.getVeldKleur( 0x17 ), is( ZWART ) );
-	assertThat( BoStelling.getVeldKleur( 0x20 ), is( ZWART ) );
-	assertThat( BoStelling.getVeldKleur( 0x27 ), is( WIT ) );
-	assertThat( BoStelling.getVeldKleur( 0x70 ), is( WIT ) );
-	assertThat( BoStelling.getVeldKleur( 0x77 ), is( ZWART ) );
+	assertThat( BoStelling.getVeldKleur( 0x00 ), is( Zwart ) );
+	assertThat( BoStelling.getVeldKleur( 0x01 ), is( Wit ) );
+	assertThat( BoStelling.getVeldKleur( 0x02 ), is( Zwart ) );
+	assertThat( BoStelling.getVeldKleur( 0x07 ), is( Wit ) );
+	assertThat( BoStelling.getVeldKleur( 0x10 ), is( Wit ) );
+	assertThat( BoStelling.getVeldKleur( 0x17 ), is( Zwart ) );
+	assertThat( BoStelling.getVeldKleur( 0x20 ), is( Zwart ) );
+	assertThat( BoStelling.getVeldKleur( 0x27 ), is( Wit ) );
+	assertThat( BoStelling.getVeldKleur( 0x70 ), is( Wit ) );
+	assertThat( BoStelling.getVeldKleur( 0x77 ), is( Zwart ) );
 }
 // Let op: alle trailing spaces worden door de compiler weggehaald.
 // Gelukkig bestaat er een \s waarmee je een niet-verwijderbare space
@@ -83,7 +83,7 @@ public void testToString()
 		.s3( "b2" )
 		.s4( "d3" )
 		.s5( "a1" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 
 	config.switchConfig( "KDKT" );
@@ -130,8 +130,8 @@ public void testClone()
 		.zk( 2 )
 		.s3( 3 )
 		.s4( 4 )
-		.aanZet( ZWART )
-		.resultaat( ResultaatType.GEWONNEN )
+		.aanZet( Zwart )
+		.resultaat( Resultaat.Gewonnen )
 		.aantalZetten( 18 )
 		.schaak( true )
 		.build();
@@ -203,7 +203,7 @@ public void testAlfaBuilderMets5OpWk()
 		.s3( "b2" )
 		.s4( "d3" )
 		.s5( "a1" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	config.switchConfig( "KDKT" );
 	String boStringText = MessageFormat.format( BO_TO_STRING, 
@@ -223,8 +223,8 @@ public void testAlfaBuilderMets5OpWk()
 		.s3( "b2" )
 		.s4( "d3" )
 		.s5( "a1" )
-		.aanZet( WIT )
-		.resultaat( ResultaatType.GEWONNEN )
+		.aanZet( Wit )
+		.resultaat( Resultaat.Gewonnen )
 		.aantalZetten( 19 )
 		.schaak( true )
 		.build();
@@ -264,7 +264,7 @@ public void testMetGeslagenStuk()
 		.s3( "a1" )
 		.s4( "d3" )
 		.s5( "a1" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	String localToStringText = MessageFormat.format( localToString, 
 		config.getStukken().getWk().getStukString(),
