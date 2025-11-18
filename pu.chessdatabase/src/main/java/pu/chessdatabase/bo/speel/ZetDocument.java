@@ -5,7 +5,6 @@ import lombok.ToString;
 import lombok.Value;
 
 @Value
-@ToString
 @Builder
 public class ZetDocument
 {
