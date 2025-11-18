@@ -2,24 +2,103 @@ package pu.chessdatabase.bo.speel;
 
 import static pu.chessdatabase.bo.Kleur.*;
 
+import java.io.Serializable;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-import pu.chessdatabase.bo.BoStelling;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
+import pu.chessdatabase.bo.BoStelling;
+import pu.chessdatabase.dal.FlatDocument;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Data
-public class Plies
+@Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class Plies implements Serializable
 {
 public static final int MAX_HELE_ZET_NUMMER = 130;
+public static LocalDateTime timeStampToLocalDateTime( Timestamp aTimeStamp )
+{
+	return aTimeStamp.toInstant().atZone( ZoneId.systemDefault() ).toLocalDateTime();
+}
+public static Plies fromFlatDocument( FlatDocument aFlatDocument )
+{
+	return builder()
+		.id( aFlatDocument.getPliesId() )
+		.configString( aFlatDocument.getConfigString() )
+		.userName( aFlatDocument.getUserName() )
+		.started( timeStampToLocalDateTime( aFlatDocument.getStarted() ) )
+		.currentPlyNumber( aFlatDocument.getCurrentPlyNumber() )
+		.begonnen( aFlatDocument.isBegonnen() )
+		.plies( new ArrayList<>() )
+		.build();
+}
 
-@Setter( AccessLevel.PRIVATE ) private int currentPlyNumber = -1;
-@Setter( AccessLevel.PRIVATE ) private boolean begonnen = false;
-@Setter( AccessLevel.PRIVATE ) private List<Ply> plies = new ArrayList<>();
+@Id
+@GeneratedValue(strategy = GenerationType.AUTO)
+private Integer id;
 
+@Column( nullable = false )
+private String configString;
+
+@Column( nullable = false )
+private String userName;
+
+@Column( nullable = false )
+private LocalDateTime started;
+
+@Setter( AccessLevel.PRIVATE )
+@Column( nullable = false )
+@Builder.Default
+private int currentPlyNumber = -1;
+
+@Setter( AccessLevel.PRIVATE ) 
+@Column( nullable = false )
+@Builder.Default
+private boolean begonnen = false;
+
+@Setter( AccessLevel.PRIVATE ) 
+@Builder.Default
+@OneToMany(
+	mappedBy = "plies",
+	cascade = CascadeType.ALL, // Zodat de plys ook gesavet worden
+	fetch = FetchType.LAZY 
+)
+@EqualsAndHashCode.Exclude
+@OnDelete( action = OnDeleteAction.CASCADE )
+private List<Ply> plies = new ArrayList<>();
+
+public Plies( String aConfigString )
+{
+	super();
+	configString = aConfigString;
+	// @@HIGH Waarom doet hij niet wat hieboven staat?
+	plies = new ArrayList<>();
+	currentPlyNumber = -1;
+}
 public int getSize()
 {
 	return getPlies().size();
@@ -28,6 +107,10 @@ public int getLastPlyNumber()
 {
 	return getPlies().size() - 1;
 }
+public void setStarted( LocalDateTime aLocalDateTime )
+{
+	started = aLocalDateTime.truncatedTo( ChronoUnit.SECONDS );
+}
 public void clear()
 {
 	getPlies().clear();
@@ -35,17 +118,18 @@ public void clear()
 }
 public void addPly( Ply aPly )
 {
+	aPly.setPlies( this );
 	getPlies().add( aPly );
 	setBegonnen( true );
 	setVooruit();
 }
-public Ply addPly( BoStelling aBoStelling, EindeType aEindeType )
+public Ply addPly( BoStelling aBoStelling, Einde aEindeType )
 {
 	int zetNummer;
 	if ( hasPlies() )
 	{
 		zetNummer = getCurrentPly().getZetNummer();
-		if ( aBoStelling.getAanZet() == WIT )
+		if ( aBoStelling.getAanZet() == Wit )
 		{
 			zetNummer++;
 		}
@@ -200,7 +284,7 @@ public void clearPliesFromNextPly()
 		getPlies().remove( getCurrentPlyNumber() + 1 );
 	}
 }
-public EindeType getCurrentEinde()
+public Einde getCurrentEinde()
 {
 	return getCurrentPly().getEinde();
 }
