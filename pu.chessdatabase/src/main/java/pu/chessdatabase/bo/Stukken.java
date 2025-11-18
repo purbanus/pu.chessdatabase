@@ -1,5 +1,6 @@
 package pu.chessdatabase.bo;
 
+import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.bo.configuraties.StukType.*;
 
 import java.util.ArrayList;
@@ -30,11 +31,32 @@ public List<Stuk> getStukken()
 {
 	return stukken;
 }
+public List<Stuk> getSortedStukken()
+{
+	List<Stuk> stukken = getStukken();
+	List<Stuk> newStukken = new ArrayList<>();
+	for ( Stuk stuk : stukken )
+	{
+		if ( stuk.getKleur() == Wit )
+		{
+			newStukken.add( stuk );
+		}
+	}
+	for ( Stuk stuk : stukken )
+	{
+		if ( stuk.getKleur() == Zwart )
+		{
+			newStukken.add( stuk );
+		}
+	}
+	return newStukken;
+}
+
 void fillStukken()
 {
 	realStukken = new ArrayList<>();
 	fakeStukken = new ArrayList<>();
-	for ( Stuk stuk : getStukken() )
+	for ( Stuk stuk : getSortedStukken() )
 	{
 		if ( stuk.getStukType() == Geen )
 		{
