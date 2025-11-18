@@ -85,7 +85,7 @@ private String databaseName = null;
 @Getter( AccessLevel.PACKAGE ) 
 @Setter( AccessLevel.PRIVATE ) 
 private File databaseFile;
-@Getter( AccessLevel.PACKAGE ) 
+@Getter( AccessLevel.PUBLIC ) 
 @Setter( AccessLevel.PRIVATE ) 
 private boolean open = false;
 
