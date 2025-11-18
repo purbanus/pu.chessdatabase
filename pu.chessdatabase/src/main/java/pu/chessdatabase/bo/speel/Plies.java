@@ -42,6 +42,7 @@ public class Plies implements Serializable
 public static final int MAX_HELE_ZET_NUMMER = 130;
 public static LocalDateTime timeStampToLocalDateTime( Timestamp aTimeStamp )
 {
+	// @@HIGH moet je hier niet meteen afronden op hele seconden?
 	return aTimeStamp.toInstant().atZone( ZoneId.systemDefault() ).toLocalDateTime();
 }
 public static Plies fromFlatDocument( FlatDocument aFlatDocument )
