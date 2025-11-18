@@ -1,8 +1,10 @@
 package pu.chessdatabase.bo;
 
 import static pu.chessdatabase.bo.Kleur.*;
+import static pu.chessdatabase.dbs.Resultaat.*;
 
-import pu.chessdatabase.dbs.ResultaatType;
+import pu.chessdatabase.dal.FlatDocument;
+import pu.chessdatabase.dbs.Resultaat;
 import pu.chessdatabase.service.BoStellingKey;
 
 import lombok.AllArgsConstructor;
@@ -37,7 +39,7 @@ public AlfaBuilder s3( String aS3 ) { boStelling.setS3( Gen.alfaToVeld( aS3 ) );
 public AlfaBuilder s4( String aS4 ) { boStelling.setS4( Gen.alfaToVeld( aS4 ) ); return this; }
 public AlfaBuilder s5( String aS5 ) { boStelling.setS5( Gen.alfaToVeld( aS5 ) ); return this; }
 public AlfaBuilder aanZet( Kleur aAanZet ) { boStelling.setAanZet( aAanZet ); return this; }
-public AlfaBuilder resultaat( ResultaatType aResultaat ) { boStelling.setResultaat( aResultaat ); return this; }
+public AlfaBuilder resultaat( Resultaat aResultaat ) { boStelling.setResultaat( aResultaat ); return this; }
 public AlfaBuilder aantalZetten( int aAantalZetten ) { boStelling.setAantalZetten( aAantalZetten ); return this; }
 public AlfaBuilder schaak( boolean aSchaak ) { boStelling.setSchaak( aSchaak ); return this; }
 public BoStelling build()
@@ -49,14 +51,27 @@ public static AlfaBuilder alfaBuilder()
 {
 	return new AlfaBuilder();
 }
+public static BoStelling fromFlatDocument( FlatDocument aFlatDocument )
+{
+	return BoStelling.builder()
+		.wk( aFlatDocument.getWk() )
+		.zk( aFlatDocument.getZk() )
+		.s3( aFlatDocument.getS3() )
+		.s4( aFlatDocument.getS4() )
+		.s5( aFlatDocument.getS5() )
+		.aanZet( Kleur.valueOf( aFlatDocument.getAanZet() ) )
+		.resultaat( Resultaat.valueOf( aFlatDocument.getResultaat() ) )
+		.aantalZetten( aFlatDocument.getAantalZetten() )
+		.build();
+}
 public static final BoStelling NULL_STELLING = BoStelling.builder()
 	.wk( 0 )
 	.zk( 0 )
 	.s3( 0 )
 	.s4( 0 )
 	.s5( 0 )
-	.aanZet( WIT )
-	.resultaat( ResultaatType.ILLEGAAL )
+	.aanZet( Wit )
+	.resultaat( Illegaal )
 	.aantalZetten( 0 )
 	.schaak( false )
 	.build();
@@ -64,7 +79,7 @@ public static Kleur getVeldKleur( int aVeld )
 {
 	int rij = aVeld / 16;
 	int kol = aVeld % 16;
-	return ( rij + kol ) % 2 == 0 ? ZWART : WIT;
+	return ( rij + kol ) % 2 == 0 ? Zwart : Wit;
 }
 
 private final boolean StellingType = true;
@@ -74,7 +89,7 @@ private int s3;
 private int s4;
 private int s5;
 private Kleur aanZet;
-private ResultaatType resultaat;
+private Resultaat resultaat;
 private int aantalZetten;
 private boolean schaak;
 
