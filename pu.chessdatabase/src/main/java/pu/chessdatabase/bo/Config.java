@@ -1,5 +1,9 @@
 package pu.chessdatabase.bo;
 
+import static pu.chessdatabase.bo.Kleur.*;
+import static pu.chessdatabase.bo.configuraties.StukType.*;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -59,10 +63,6 @@ public Config( @Lazy VM aVm)
 	staticStukList = getStukList();
 	staticStukken = getStukken();
 }
-VM getVm()
-{
-	return vm;
-}
 Map<String, ConfigImpl> getConfigImplRegistry()
 {
 	if ( configImplRegistry == null )
@@ -114,6 +114,18 @@ public List<Stuk> getStukList()
 public Stukken getStukken()
 {
 	return getConfigImpl().getStukken();
+}
+public List<Stuk> getSortedStukList()
+{
+	return getStukken().getSortedStukken();
+}
+public List<Stuk> getRealStukken()
+{
+	return getStukken().getRealStukken();
+}
+public List<Stuk> getFakeStukken()
+{
+	return getStukken().getFakeStukken();
 }
 List<StukDefinitie> getStukDefinities()
 {
