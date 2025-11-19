@@ -241,10 +241,11 @@ public void testIsLegalMove()
 	//int naar = 0x21 + config.getStukken().getS4().getRichtingen().get( 3 );
 	int naar = 0x20;
 	boStelling = partij.newGame( boStelling );
-	assertThat( partij.isLegalMove( new VanNaar( 0x21, naar ) ), is( true ) );
+	assertThat( partij.isLegalMove( boStelling, new VanNaar( 0x21, naar ) ), is( true ) );
 	
-	boStelling.setAanZet( Wit );
-	assertThrows( RuntimeException.class, () -> partij.isLegalMove( new VanNaar( 0x21, 0x20 ) ) );
+	final BoStelling boStelling2 = boStelling.clone();
+	boStelling2.setAanZet( Wit );
+	assertThrows( RuntimeException.class, () -> partij.isLegalMove( boStelling2, new VanNaar( 0x21, 0x20 ) ) );
 
 }
 /**
@@ -721,6 +722,24 @@ public void testPlyToString()
 		.schaak( true )
 		.build();
 	assertThat( partij.plyToString( ply ), is( "Db2-h2+" ) );
+	
+	boStelling = BoStelling.builder()
+		.wk( 0x00 )
+		.zk( 0x77 )
+		.s3( 0x11 )
+		.s4( 0x66 )
+		.schaak(  true )
+		.aanZet( Wit )
+		.build();
+	vanNaar = null;
+	ply = Ply.builder()
+		.boStelling( boStelling )
+		.einde( Nog_niet )
+		.vanNaar( vanNaar )
+		.zetNummer( 1 )
+		.schaak( true )
+		.build();
+	assertThat( partij.plyToString( ply ), is( "..." ) );
 }
 @Test
 public void testCurPlyToString()
