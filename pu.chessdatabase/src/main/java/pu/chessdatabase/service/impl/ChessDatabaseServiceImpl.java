@@ -186,6 +186,7 @@ void maybeRestoreGame( BoStelling aBoStelling )
 	if ( ! getPartij().isBegonnen() )
 	{
 		Plies plies = getPliesDao().getLatestPlies( Partij.DEFAULT_USER_NAME );
+		// @@HIGH Check of de aankomende zet in die stelling past 
 		if ( plies != null )
 		{
 			// Restore current game
