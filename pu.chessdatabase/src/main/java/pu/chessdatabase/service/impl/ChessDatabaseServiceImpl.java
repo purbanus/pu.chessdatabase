@@ -15,6 +15,8 @@ import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Config;
 import pu.chessdatabase.bo.Stuk;
 import pu.chessdatabase.bo.speel.Partij;
+import pu.chessdatabase.bo.speel.Plies;
+import pu.chessdatabase.dal.PliesDao;
 import pu.chessdatabase.service.BoStellingKey;
 import pu.chessdatabase.service.ChessDatabaseService;
 import pu.chessdatabase.service.NewGameDocument;
@@ -23,6 +25,7 @@ import pu.chessdatabase.web.NewGameResponse;
 import pu.chessdatabase.web.SwitchConfigResponse;
 import pu.chessdatabase.web.ZetResponse;
 
+import jakarta.transaction.Transactional;
 import lombok.Data;
 
 @Data
@@ -30,46 +33,45 @@ import lombok.Data;
 public class ChessDatabaseServiceImpl implements ChessDatabaseService
 {
 @Autowired private Partij partij;
+@Autowired private PliesDao pliesDao;
 @Autowired private Config config;
 
 @Override
 public NewGameDocument newGame()
 {
-	List<Stuk> stukken = config.getStukList();
-	stukken = sorteerStukken( stukken );
+	List<Stuk> realStukken = getConfig().getRealStukken();
+	List<Stuk> fakeStukken = getConfig().getFakeStukken();
 
 	Map<String, String> stukVelden = createStukVelden();
-	List<NewGameDocument.Stuk> realStukken = new ArrayList<>();
-	List<NewGameDocument.Stuk> fakeStukken = new ArrayList<>();
-	for ( Stuk stuk : stukken )
+	List<NewGameDocument.Stuk> realDocStukken = new ArrayList<>();
+	List<NewGameDocument.Stuk> fakeDocStukken = new ArrayList<>();
+	for ( Stuk stuk : realStukken )
 	{
-		if ( stuk.getStukType() == Geen )
-		{
-			fakeStukken.add( NewGameDocument.Stuk.builder()
-				.name( stuk.getId() + "Alfa" )
-				.label( stuk.getLabel() )
-				.veld( stukVelden.get( "wk" ) )
-				.build()
-			);
-		}
-		else
-		{
-			realStukken.add( NewGameDocument.Stuk.builder()
-				.name( stuk.getId() + "Alfa" )
-				.label( stuk.getLabel() )
-				.veld( stukVelden.get( stuk.getId() ) )
-				.build()
-			);
-		}
+		realDocStukken.add( NewGameDocument.Stuk.builder()
+			.name( stuk.getId() + "Alfa" )
+			.label( stuk.getLabel() )
+			.veld( stukVelden.get( stuk.getId() ) )
+			.build()
+		);
+	}
+	for ( Stuk stuk : fakeStukken )
+	{
+		fakeDocStukken.add( NewGameDocument.Stuk.builder()
+			.name( stuk.getId() + "Alfa" )
+			.label( stuk.getLabel() )
+			.veld( stukVelden.get( "wk" ) )
+			.build()
+		);
 	}
 	return NewGameDocument.builder()
 		.configList( getConfig().getAvailableConfigs() )
 		.config( getConfig().getConfig() )
-		.realStukken( realStukken )
-		.fakeStukken( fakeStukken )
+		.realStukken( realDocStukken )
+		.fakeStukken( fakeDocStukken )
 		.aanZet( Wit.toString() )
 		.build();
 }
+// @@HIGH Dit hoort eigenlijk ook bij de config-beweging
 Map<String, String> createStukVelden()
 {
 	Map<String, String> stukVelden = new HashMap<>();
@@ -120,47 +122,26 @@ Map<String, String> createStukVelden()
 	}
 	return stukVelden;
 }
-private List<Stuk> sorteerStukken( List<Stuk> aStukken )
-{
-	List<Stuk> newStukken = new ArrayList<>();
-	for ( Stuk stuk : aStukken )
-	{
-		if ( stuk.getKleur() == Wit )
-		{
-			newStukken.add( stuk );
-		}
-	}
-	for ( Stuk stuk : aStukken )
-	{
-		if ( stuk.getKleur() == Zwart )
-		{
-			newStukken.add( stuk );
-		}
-	}
-	return newStukken;
-}
 @Override
 public void doSwitchConfig( SwitchConfigResponse aSwitchConfigResponse )
 {
 	getConfig().switchConfig( aSwitchConfigResponse.getConfig() );
-  }
+}
 @Override
+@Transactional
 public PartijDocument doNewGame( NewGameResponse aNewGameResponse )
 {
 	BoStelling boStelling = createBoStelling( aNewGameResponse.getBoStellingKey() );
 	boStelling.normaliseer( getConfig().getAantalStukken() );
 	getPartij().newGame( boStelling );
+	getPliesDao().savePlies( getPartij().getPlies() );
 	return getPartijDocument( aNewGameResponse.getBoStellingKey() );
 }
 @Override
 public PartijDocument getPartijDocument( BoStellingKey aStellingKey )
 {
 	BoStelling boStelling = createBoStelling( aStellingKey );
-	// @@LOW Dit moet je in Partij doen!
-	if ( ! getPartij().isBegonnen() && getPartij().isLegaleStelling( boStelling ) )
-	{
-		getPartij().newGame( boStelling );
-	}
+	maybeRestoreGame( boStelling );
 	return PartijDocument.builder()
 		.wk( Partij.veldToHexGetal( aStellingKey.getWk() ) )
 		.zk( Partij.veldToHexGetal( aStellingKey.getZk() ) )
@@ -200,41 +181,77 @@ BoStelling createBoStelling( BoStellingKey aBoStellingKey )
 	boStelling.normaliseer( getConfig().getAantalStukken() );
 	return boStelling;
 }
+void maybeRestoreGame( BoStelling aBoStelling )
+{
+	if ( ! getPartij().isBegonnen() )
+	{
+		Plies plies = getPliesDao().getLatestPlies( Partij.DEFAULT_USER_NAME );
+		if ( plies != null )
+		{
+			// Restore current game
+			getPartij().setPlies( plies );
+		}
+		else
+		{
+			if ( aBoStelling != null && getPartij().isLegaleStelling( aBoStelling ) )
+			{
+				// In vredesnaam maar een newGame
+				getPartij().newGame( aBoStelling );
+			}
+			else
+			{
+				// @@HIGH Misschien een redirect naar newGame?
+				throw new RuntimeException( "Er is geen stelling te bepalen. Probeer het met een nieuwe stelling (newGame)" );
+			}
+		}
+	}
+}
 @Override
+@Transactional
 public PartijDocument zet( ZetResponse aZetResponse )
 {
 	BoStelling boStelling = createBoStelling( aZetResponse.getBoStellingKey() );
-	// @@LOW Dit moet je in Partij doen!
-	if ( ! getPartij().isBegonnen() && getPartij().isLegaleStelling( boStelling ) )
-	{
-		getPartij().newGame( boStelling );
-	}
+	maybeRestoreGame( boStelling );
 
 	getPartij().zet( aZetResponse.getNieuweZet() );
+	getPliesDao().savePlies( getPartij().getPlies() );
 	return getPartijDocument( getPartij().getStand() );
 }
 @Override
+@Transactional
 public PartijDocument zetNaarBegin()
 {
+	maybeRestoreGame( null );
 	BoStelling boStelling = getPartij().zetNaarBegin();
+	getPliesDao().savePlies( getPartij().getPlies() );
 	return getPartijDocument( boStelling );
 }
 @Override
+@Transactional
 public PartijDocument zetTerug()
 {
+	maybeRestoreGame( null );
 	BoStelling boStelling = getPartij().zetTerug();
+	getPliesDao().savePlies( getPartij().getPlies() );
 	return getPartijDocument( boStelling );
 }
 @Override
+@Transactional
 public PartijDocument zetVooruit()
 {
+	maybeRestoreGame( null );
 	BoStelling boStelling = getPartij().zetVooruit();
+	getPliesDao().savePlies( getPartij().getPlies() );
 	return getPartijDocument( boStelling );
 }
 @Override
+@Transactional
+
 public PartijDocument zetNaarEinde()
 {
+	maybeRestoreGame( null );
 	BoStelling boStelling = getPartij().zetNaarEinde();
+	getPliesDao().savePlies( getPartij().getPlies() );
 	return getPartijDocument( boStelling );
 }
 }
