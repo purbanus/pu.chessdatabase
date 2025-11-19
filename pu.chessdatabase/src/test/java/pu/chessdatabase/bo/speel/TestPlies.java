@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.bo.speel.Einde.*;
-
+import static pu.chessdatabase.dbs.Resultaat.*;
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Config;
+import pu.chessdatabase.dbs.TestHelper;
 
 import lombok.Data;
 
@@ -33,35 +34,6 @@ Plies plies;
 public void setup()
 {
 	plies = new Plies( getConfig().getConfig() );
-}
-private Triple<Ply, Ply, Ply> createThreeDifferentPlies( BoStelling aBoStelling )
-{
-	Ply firstPly = Ply.builder()
-		.boStelling( aBoStelling )
-		.einde( Nog_niet )
-		.schaak( false )
-		.vanNaar( new VanNaar( "a1", "a2" ) )
-		.zetNummer( 17 )
-		.build();
-	Ply secondPly = Ply.builder()
-		.boStelling( aBoStelling )
-		.einde( Mat )
-		.schaak( false )
-		.vanNaar( new VanNaar( "b2", "c3" ) )
-		.zetNummer( 27 )
-		.build();
-	Ply thirdPly = Ply.builder()
-		.boStelling( aBoStelling )
-		.einde( Mat )
-		.schaak( false )
-		.vanNaar( new VanNaar( "b2", "c3" ) )
-		.zetNummer( 39 )
-		.build();
-	return Triple.of( firstPly, secondPly, thirdPly );
-}
-private Triple<Ply, Ply, Ply> createThreeDifferentPlies()
-{
-	return createThreeDifferentPlies( null );
 }
 @Test
 public void testSize()
@@ -137,14 +109,7 @@ public void testAddPlyWithBoStellingAndEinde()
 @Test
 public void testHasPly()
 {
-	BoStelling boStelling = BoStelling.alfaBuilder()
-		.wk( "a1" )
-		.zk( "h8" )
-		.s3( "b2" )
-		.s4( "g7" )
-		.aanZet( Wit )
-		.build();
-	Triple<Ply, Ply, Ply> threePlies = createThreeDifferentPlies( boStelling );
+	Triple<Ply, Ply, Ply> threePlies = TestHelper.createThreeDifferentPlies();
 	Ply firstPly = threePlies.getLeft();
 	Ply secondPly = threePlies.getMiddle();
 	Ply thirdPly = threePlies.getRight();
@@ -169,7 +134,7 @@ public void testGetPly()
 		.s4( "g7" )
 		.aanZet( Wit )
 		.build();
-	Triple<Ply, Ply, Ply> threePlies = createThreeDifferentPlies( boStelling );
+	Triple<Ply, Ply, Ply> threePlies = TestHelper.createThreeDifferentPlies( boStelling );
 	Ply firstPly = threePlies.getLeft();
 	Ply secondPly = threePlies.getMiddle();
 
@@ -202,7 +167,7 @@ public void testGetCurrentPreviousAndLastPly()
 	assertThrows( RuntimeException.class, () -> plies.getPreviousPly() );
 	
 	plies = new Plies( getConfig().getConfig() );
-	Triple<Ply, Ply, Ply> threePlies = createThreeDifferentPlies();
+	Triple<Ply, Ply, Ply> threePlies = TestHelper.createThreeDifferentPlies();
 	Ply firstPly = threePlies.getLeft();
 	Ply secondPly = threePlies.getMiddle();
 	Ply thirdPly = threePlies.getRight();
@@ -223,7 +188,7 @@ public void testGetFirstAndSecondPly()
 	assertThrows( RuntimeException.class, () -> plies.getSecondPly() );
 
 	plies = new Plies( getConfig().getConfig() );
-	Triple<Ply, Ply, Ply> threePlies = createThreeDifferentPlies();
+	Triple<Ply, Ply, Ply> threePlies = TestHelper.createThreeDifferentPlies();
 	Ply firstPly = threePlies.getLeft();
 	Ply secondPly = threePlies.getMiddle();
 	Ply thirdPly = threePlies.getRight();
@@ -259,7 +224,7 @@ public void testSetToBeginAndEnd()
 	assertThrows( RuntimeException.class, () -> plies.setNaarEinde() );
 	assertFalse( plies.isNaarEindeMag() );
 
-	Triple<Ply, Ply, Ply> threePlies = createThreeDifferentPlies();
+	Triple<Ply, Ply, Ply> threePlies = TestHelper.createThreeDifferentPlies();
 	Ply firstPly = threePlies.getLeft();
 	Ply secondPly = threePlies.getMiddle();
 	Ply thirdPly = threePlies.getRight();
@@ -286,7 +251,7 @@ public void testSetTerug()
 	assertThrows( RuntimeException.class, () -> plies.setTerug() );
 	assertFalse( plies.isTerugMag() );
 
-	Triple<Ply, Ply, Ply> threePlies = createThreeDifferentPlies();
+	Triple<Ply, Ply, Ply> threePlies = TestHelper.createThreeDifferentPlies();
 	Ply firstPly = threePlies.getLeft();
 	Ply secondPly = threePlies.getMiddle();
 	Ply thirdPly = threePlies.getRight();
@@ -310,7 +275,7 @@ public void testSetVooruit()
 	assertThrows( RuntimeException.class, () -> plies.setVooruit() );
 	assertFalse( plies.isVooruitMag() );
 
-	Triple<Ply, Ply, Ply> threePlies = createThreeDifferentPlies();
+	Triple<Ply, Ply, Ply> threePlies = TestHelper.createThreeDifferentPlies();
 	Ply firstPly = threePlies.getLeft();
 	Ply secondPly = threePlies.getMiddle();
 	Ply thirdPly = threePlies.getRight();
@@ -331,7 +296,7 @@ public void testSetVooruit()
 @Test
 public void testClearPliesFromNextPly()
 {
-	Triple<Ply, Ply, Ply> threePlies = createThreeDifferentPlies();
+	Triple<Ply, Ply, Ply> threePlies = TestHelper.createThreeDifferentPlies();
 	Ply firstPly = threePlies.getLeft();
 	Ply secondPly = threePlies.getMiddle();
 	Ply thirdPly = threePlies.getRight();
@@ -363,7 +328,7 @@ public void testClearPliesFromNextPly()
 @Test
 public void testgetEindePartij()
 {
-	Triple<Ply, Ply, Ply> threePlies = createThreeDifferentPlies();
+	Triple<Ply, Ply, Ply> threePlies = TestHelper.createThreeDifferentPlies();
 	Ply firstPly = threePlies.getLeft();
 	Ply secondPly = threePlies.getMiddle();
 	//Ply thirdPly = threePlies.getRight();
