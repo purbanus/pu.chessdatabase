@@ -10,9 +10,12 @@ import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.bo.Richtingen.*;
 import static pu.chessdatabase.bo.configuraties.StukType.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import pu.chessdatabase.bo.configuraties.KDK;
+import pu.chessdatabase.bo.configuraties.KDKT;
 import pu.chessdatabase.bo.configuraties.KDKTT;
 import pu.chessdatabase.bo.configuraties.KLPK;
 import pu.chessdatabase.bo.configuraties.TestKDKT;
@@ -136,16 +139,70 @@ public void testVulStukTabelKLPK()
 	assertThat( stuk.getStukString(), is( "WG" ) );
 }
 @Test
+public void testGetSortedStukken()
+{
+	Stukken stukken = new Stukken( new KDK() );
+	List<Stuk> stukList = stukken.getSortedStukken();
+	assertThat( stukList.size(), is( 5 ) );
+	assertThat( stukList.get( 0 ).getStukString(), is( "WK" ) );
+	assertThat( stukList.get( 1 ).getStukString(), is( "WD" ) );
+	assertThat( stukList.get( 2 ).getStukString(), is( "WG" ) );
+	assertThat( stukList.get( 3 ).getStukString(), is( "WG" ) );
+	assertThat( stukList.get( 4 ).getStukString(), is( "ZK" ) );
+
+	stukken = new Stukken( new KDKT() );
+	stukList = stukken.getSortedStukken();
+	assertThat( stukList.size(), is( 5 ) );
+	assertThat( stukList.get( 0 ).getStukString(), is( "WK" ) );
+	assertThat( stukList.get( 1 ).getStukString(), is( "WD" ) );
+	assertThat( stukList.get( 2 ).getStukString(), is( "WG" ) );
+	assertThat( stukList.get( 3 ).getStukString(), is( "ZK" ) );
+	assertThat( stukList.get( 4 ).getStukString(), is( "ZT" ) );
+
+	stukken = new Stukken( new KDKTT() );
+	stukList = stukken.getSortedStukken();
+	assertThat( stukList.size(), is( 5 ) );
+	assertThat( stukList.get( 0 ).getStukString(), is( "WK" ) );
+	assertThat( stukList.get( 1 ).getStukString(), is( "WD" ) );
+	assertThat( stukList.get( 2 ).getStukString(), is( "ZK" ) );
+	assertThat( stukList.get( 3 ).getStukString(), is( "ZT" ) );
+	assertThat( stukList.get( 4 ).getStukString(), is( "ZT" ) );
+}
+@Test
 public void testGetRealStukken()
 {
 	Stukken stukken = new Stukken( new KDK() );
 	assertThat( stukken.getRealStukken().size(), is( 3 ) );
+	assertThat( stukken.getRealStukken().get( 0 ).getStukString(), is( "WK" ) );
+	assertThat( stukken.getRealStukken().get( 1 ).getStukString(), is( "WD" ) );
+	assertThat( stukken.getRealStukken().get( 2 ).getStukString(), is( "ZK" ) );
 
 	stukken = new Stukken( new KLPK() );
 	assertThat( stukken.getRealStukken().size(), is( 4 ) );
+	assertThat( stukken.getRealStukken().get( 0 ).getStukString(), is( "WK" ) );
+	assertThat( stukken.getRealStukken().get( 1 ).getStukString(), is( "WL" ) );
+	assertThat( stukken.getRealStukken().get( 2 ).getStukString(), is( "WP" ) );
+	assertThat( stukken.getRealStukken().get( 3 ).getStukString(), is( "ZK" ) );
 
 	stukken = new Stukken( new KDKTT() );
 	assertThat( stukken.getRealStukken().size(), is( 5 ) );
+	assertThat( stukken.getRealStukken().get( 0 ).getStukString(), is( "WK" ) );
+	assertThat( stukken.getRealStukken().get( 1 ).getStukString(), is( "WD" ) );
+	assertThat( stukken.getRealStukken().get( 2 ).getStukString(), is( "ZK" ) );
+	assertThat( stukken.getRealStukken().get( 3 ).getStukString(), is( "ZT" ) );
+	assertThat( stukken.getRealStukken().get( 4 ).getStukString(), is( "ZT" ) );
+}
+@Test
+public void testGetFakeStukken()
+{
+	Stukken stukken = new Stukken( new KDK() );
+	assertThat( stukken.getFakeStukken().size(), is( 2 ) );
+
+	stukken = new Stukken( new KLPK() );
+	assertThat( stukken.getFakeStukken().size(), is( 1 ) );
+
+	stukken = new Stukken( new KDKTT() );
+	assertThat( stukken.getFakeStukken().size(), is( 0 ) );
 }
 @Test
 public void testGetAantalStukken()
