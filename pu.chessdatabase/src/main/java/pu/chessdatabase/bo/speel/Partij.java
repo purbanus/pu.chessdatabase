@@ -349,11 +349,11 @@ String watStaatErOp( BoStelling aBoStelling, Integer aVeld )
  */
 String plyToString( Ply aPly )
 {
-	StringBuilder sb = new StringBuilder();
 	if ( aPly.getVanNaar() == null )
 	{
 		return "...";
 	}
+	StringBuilder sb = new StringBuilder();
 	sb.append( watStaatErOp( aPly.getBoStelling(), aPly.getVanNaar().getVan() ) );
 	String van = veldToAlfa( aPly.getVanNaar().getVan() );
 	sb.append( van ).append( isSlagZet( aPly.getBoStelling(), aPly.getVanNaar() ) ? "x" : "-" );
