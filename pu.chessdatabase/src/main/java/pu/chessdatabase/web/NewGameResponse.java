@@ -5,10 +5,12 @@ import pu.chessdatabase.bo.speel.Partij;
 import pu.chessdatabase.service.BoStellingKey;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
+@Builder
 public class NewGameResponse
 {
 private String wkAlfa;
@@ -25,7 +27,7 @@ public BoStellingKey getBoStellingKey()
 		.s3( Partij.alfaToVeld( s3Alfa ) )
 		.s4( Partij.alfaToVeld( s4Alfa ) )
 		.s5( Partij.alfaToVeld( s5Alfa ) )
-		.aanZet( Kleur.valueOf( aanZet.toUpperCase() ) )
+		.aanZet( Kleur.valueOf( aanZet ) )
 		.build();
 }
 }

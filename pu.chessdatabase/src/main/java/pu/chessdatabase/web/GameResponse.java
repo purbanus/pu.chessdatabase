@@ -23,7 +23,7 @@ public BoStellingKey getBoStellingKey()
 		.zk( Partij.hexGetalToVeld( zk ) ) 
 		.s3( Partij.hexGetalToVeld( s3 ) ) 
 		.s4( Partij.hexGetalToVeld( s4 ) ) 
-		.aanZet( Kleur.valueOf( aanZet.toUpperCase() ) )
+		.aanZet( Kleur.valueOf( aanZet ) )
 		.build();
 }
 }
