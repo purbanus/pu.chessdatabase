@@ -17,10 +17,10 @@ public class TestKleur
 public void testValueOf()
 {
 	Kleur kleur;
-	kleur = Kleur.valueOf( "WIT" );
-	assertThat( kleur, is( WIT ) );
-	assertThrows( IllegalArgumentException.class, () -> Kleur.valueOf( "Wit" ) );
-	kleur = Kleur.valueOf( "ZWART" );
-	assertThat( kleur, is( ZWART ) );
+	kleur = Kleur.valueOf( "Wit" );
+	assertThat( kleur, is( Wit ) );
+	assertThrows( IllegalArgumentException.class, () -> Kleur.valueOf( "WIT" ) );
+	kleur = Kleur.valueOf( "Zwart" );
+	assertThat( kleur, is( Zwart ) );
 }
 }

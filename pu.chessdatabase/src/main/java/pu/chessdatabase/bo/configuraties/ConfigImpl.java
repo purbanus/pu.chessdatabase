@@ -27,8 +27,8 @@ public ConfigImpl()
 {
 	super();
 	// Dit hebben ze allemaal
-	stukDefinities.add( new StukDefinitie( KONING, WIT ) );
-	stukDefinities.add( new StukDefinitie( KONING, ZWART ) );
+	stukDefinities.add( new StukDefinitie( Koning, Wit ) );
+	stukDefinities.add( new StukDefinitie( Koning, Zwart ) );
 }
 public abstract String getDatabaseName();
 public abstract String getName();

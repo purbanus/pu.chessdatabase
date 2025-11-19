@@ -27,8 +27,8 @@ public static AlfaBuilder alfaBuilder()
 {
 	return new AlfaBuilder();
 }
-private int van;
-private int naar;
+private Integer van;
+private Integer naar;
 public VanNaar( String aVan, String aNaar )
 {
 	super();

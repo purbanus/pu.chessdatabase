@@ -1,7 +1,7 @@
 package pu.chessdatabase.dbs;
 
 import static pu.chessdatabase.bo.Kleur.*;
-import static pu.chessdatabase.dbs.ResultaatType.*;
+import static pu.chessdatabase.dbs.Resultaat.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +32,7 @@ public static int [][] cloneArray( int [][] aArrayToClone )
 }
 public static int [][] newTellingen()
 {
-	return new int[Kleur.values().length][ResultaatType.values().length];
+	return new int[Kleur.values().length][Resultaat.values().length];
 }
 
 @Autowired private VM vm;
@@ -83,9 +83,9 @@ public void iterateOverWkZk( VMSimpleIteratorFunction aVmSimpleIteratorFunction 
 public void iterateOverWkZkWit( PassFunction aPassFunction )
 {
 	VMStelling vmStelling = new VMStelling();
-	vmStelling.setAanZet( WIT );
+	vmStelling.setAanZet( Wit );
 	BoStelling boStelling = new BoStelling();
-	boStelling.setAanZet( WIT );
+	boStelling.setAanZet( Wit );
 	for ( int zk = 0; zk < 64; zk++ )
 	{
 		vmStelling.setZk( zk );
@@ -226,7 +226,7 @@ void callForAllPieces( BoStelling aBoStelling, VMStelling aVmStelling, PassFunct
 	{
 		reportFunction.doReport( stellingTeller, tellingen );
 	}
-	if ( gotBoStelling.getResultaat() == REMISE || isDoAllPositions() )
+	if ( gotBoStelling.getResultaat() == Remise || isDoAllPositions() )
 	{
 		aPassFunction.doPass( gotBoStelling );
 	}
@@ -238,15 +238,15 @@ void callForAllPiecesOnlyWhite( BoStelling aBoStelling, VMStelling aVmStelling, 
 	{
 		stellingen.add( gotBoStelling );
 	}
-	tellingen [WIT.ordinal()][gotBoStelling.getResultaat().ordinal()]++;
-	tellingen [ZWART.ordinal()][gotBoStelling.getResultaat().ordinal()]++;
+	tellingen [Wit.ordinal()][gotBoStelling.getResultaat().ordinal()]++;
+	tellingen [Zwart.ordinal()][gotBoStelling.getResultaat().ordinal()]++;
 	stellingTeller++;
 	stellingTeller++;
 	if ( getReportFunction() != null && stellingTeller % reportFrequency == 0 )
 	{
 		reportFunction.doReport( stellingTeller, tellingen );
 	}
-	if ( gotBoStelling.getResultaat() == REMISE || isDoAllPositions() )
+	if ( gotBoStelling.getResultaat() == Remise || isDoAllPositions() )
 	{
 		aPassFunction.doPass( gotBoStelling );
 	}
@@ -254,7 +254,7 @@ void callForAllPiecesOnlyWhite( BoStelling aBoStelling, VMStelling aVmStelling, 
 public void addResultaat( BoStelling aBoStelling )
 {
 	int kleurOrdinal = aBoStelling.getAanZet().ordinal();
-	tellingen[kleurOrdinal][REMISE.ordinal()]--;
+	tellingen[kleurOrdinal][Remise.ordinal()]--;
 	tellingen[kleurOrdinal][aBoStelling.getResultaat().ordinal()]++;
 }
 }

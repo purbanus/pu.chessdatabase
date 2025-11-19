@@ -1,5 +1,7 @@
 package pu.chessdatabase.dbs;
 
+import static pu.chessdatabase.dbs.Lokatie.*;
+
 import pu.chessdatabase.bo.Kleur;
 
 import lombok.Data;
@@ -53,7 +55,7 @@ void initializePageDescriptorTable()
 void initializePageDescriptor( VMStelling aVmStelling )
 {
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( Lokatie.OP_SCHIJF )
+		.waar( OpSchijf )
 		.schijfAdres( address )
 		.cacheNummer( Integer.MAX_VALUE )
 		.build();

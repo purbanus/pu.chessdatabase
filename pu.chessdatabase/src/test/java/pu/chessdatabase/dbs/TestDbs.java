@@ -8,7 +8,7 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.dbs.PassType.*;
-import static pu.chessdatabase.dbs.ResultaatType.*;
+import static pu.chessdatabase.dbs.Resultaat.*;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,10 +20,6 @@ import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Bouw;
 import pu.chessdatabase.bo.Config;
 import pu.chessdatabase.bo.Gen;
-import pu.chessdatabase.dbs.Dbs;
-import pu.chessdatabase.dbs.VM;
-import pu.chessdatabase.dbs.VMStelling;
-import pu.chessdatabase.dbs.VMStellingIterator;
 import pu.services.Vector;
 
 import lombok.Data;
@@ -177,14 +173,14 @@ public void testSpiegelEnRoteerAlleenWk()
 		.zk( 0 )
 		.s3( 0 )
 		.s4( 0 )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	VMStelling expectedVmStelling = VMStelling.builder()
 		.wk( 0 )
 		.zk( 0 )
 		.s3( 0 )
 		.s4( 0 )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	
 	boStelling.setWk( 0x11 );
@@ -204,7 +200,7 @@ public void testSpiegelEnRoteerAlleenWk()
 		.zk( 0x11 )
 		.s3( 0x57 )
 		.s4( 0x20 )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	// De WK staat in oktant 3. Dit krijgt een rotatie over +90 graden
 	actualVmStelling = dbs.spiegelEnRoteer( boStelling );
@@ -213,7 +209,7 @@ public void testSpiegelEnRoteerAlleenWk()
 		.zk( 0x31 )
 		.s3( 0x05 )
 		.s4( 0x3a )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	assertThat( actualVmStelling, is( actualVmStelling ) );
 	
@@ -222,7 +218,7 @@ public void testSpiegelEnRoteerAlleenWk()
 		.zk( 0x11 )
 		.s3( 0x43 )
 		.s4( 0x20 )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	// De WK staat in oktant 4. Dit krijgt een rotatie van 180 graden om het middelpunt
 	actualVmStelling = dbs.spiegelEnRoteer( boStelling );
@@ -231,7 +227,7 @@ public void testSpiegelEnRoteerAlleenWk()
 		.zk( 0x31 )
 		.s3( 0x05 )
 		.s4( 0x3a )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	assertThat( actualVmStelling, is( actualVmStelling ) );
 	
@@ -240,7 +236,7 @@ public void testSpiegelEnRoteerAlleenWk()
 		.zk( 0x12 )
 		.s3( 0x00 )
 		.s4( 0x13 )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	// De WK zit in oktant 8. Dit krijgt een spiegeling in de diagonaal a1-h8 
 	actualVmStelling = dbs.spiegelEnRoteer( boStelling );
@@ -249,7 +245,7 @@ public void testSpiegelEnRoteerAlleenWk()
 		.zk( 0x11 )
 		.s3( 0x00 )
 		.s4( 0x19 )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	assertThat( actualVmStelling, is( actualVmStelling ) );
 	
@@ -274,7 +270,7 @@ public void testSpiegelEnRoteer()
 		.s3( "a1" )
 		.s4( "a3" )
 		.s5( "b1" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	// De WK staat in oktant 1, dit krijgt een identieke afbeelding,
 	assertThat( dbs.getOktant( boStelling ), is( 1 ) );
@@ -285,7 +281,7 @@ public void testSpiegelEnRoteer()
 		.s3( "a1" )
 		.s4( "a3" )
 		.s5( "b1" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
 
@@ -295,7 +291,7 @@ public void testSpiegelEnRoteer()
 		.s3( "h1" )
 		.s4( "h3" )
 		.s5( "g1" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	// De WK staat in oktant 2. Dit krijgt een spiegeling in de y-as
 	assertThat( dbs.getOktant( boStelling ), is( 2 ) );
@@ -306,7 +302,7 @@ public void testSpiegelEnRoteer()
 		.s3( "a1" )
 		.s4( "a3" )
 		.s5( "b1" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
 	
@@ -316,7 +312,7 @@ public void testSpiegelEnRoteer()
 		.s3( "g4" )
 		.s4( "g6" )
 		.s5( "h4" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	// De WK staat in oktant 3. Dit krijgt een rotatie over -90 graden
 	assertThat( dbs.getOktant( boStelling ), is( 3 ) );
@@ -327,7 +323,7 @@ public void testSpiegelEnRoteer()
 		.s3( "d2" )
 		.s4( "f2" )
 		.s5( "d1" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
 	
@@ -337,7 +333,7 @@ public void testSpiegelEnRoteer()
 		.s3( "g5" )
 		.s4( "g7" )
 		.s5( "h5" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	// De WK staat in oktant 4. Dit krijgt een spiegeling in de diagonaal a8-h1
 	assertThat( dbs.getOktant( boStelling ), is( 4 ) );
@@ -348,7 +344,7 @@ public void testSpiegelEnRoteer()
 		.s3( "d2" )
 		.s4( "b2" )
 		.s5( "d1" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
 
@@ -358,7 +354,7 @@ public void testSpiegelEnRoteer()
 		.s3( "e5" )
 		.s4( "e7" )
 		.s5( "f5" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	// De WK staat in oktant 4. Dit krijgt een spiegeling in de diagonaal a8-h1
 	assertThat( dbs.getOktant( boStelling ), is( 4 ) );
@@ -369,7 +365,7 @@ public void testSpiegelEnRoteer()
 		.s3( "d4" )
 		.s4( "b4" )
 		.s5( "d3" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
 
@@ -379,7 +375,7 @@ public void testSpiegelEnRoteer()
 		.s3( "f5" )
 		.s4( "f3" )
 		.s5( "e5" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	// De WK staat in oktant 5. Dit krijgt een spiegeling in de x-as gevolgd door een spiegeling in de y-as
 	assertThat( dbs.getOktant( boStelling ), is( 5 ) );
@@ -390,7 +386,7 @@ public void testSpiegelEnRoteer()
 		.s3( "c4" )
 		.s4( "c6" )
 		.s5( "d4" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
 	
@@ -400,7 +396,7 @@ public void testSpiegelEnRoteer()
 		.s3( "e5" )
 		.s4( "e3" )
 		.s5( "d5" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	// De WK staat in oktant 6. Dit krijgt een spiegeling in de x-as
 	assertThat( dbs.getOktant( boStelling ), is( 6 ) );
@@ -411,7 +407,7 @@ public void testSpiegelEnRoteer()
 		.s3( "e4" )
 		.s4( "e6" )
 		.s5( "d4" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
 	
@@ -421,7 +417,7 @@ public void testSpiegelEnRoteer()
 		.s3( "d5" )
 		.s4( "d3" )
 		.s5( "c5" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	// De WK staat in oktant 7. Dit krijgt een rotatie over +90 graden
 	assertThat( dbs.getOktant( boStelling ), is( 7 ) );
@@ -432,7 +428,7 @@ public void testSpiegelEnRoteer()
 		.s3( "d4" )
 		.s4( "f4" )
 		.s5( "d3" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
 	
@@ -442,7 +438,7 @@ public void testSpiegelEnRoteer()
 		.s3( "c6" )
 		.s4( "d6" )
 		.s5( "c4" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	// De WK staat in oktant 8. Dit krijgt een spiegeling in de diagonaal a1-h8
 	assertThat( dbs.getOktant( boStelling ), is( 8 ) );
@@ -453,7 +449,7 @@ public void testSpiegelEnRoteer()
 		.s3( "f3" )
 		.s4( "f4" )
 		.s5( "d3" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
 
@@ -464,7 +460,7 @@ public void testSpiegelEnRoteer()
 		.s3( 0x00 )
 		.s4( 0x13 )
 		.s5( 0x10 )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	// De WK zit in oktant 8. Dit krijgt een spiegeling in de diagonaal a1-h8 
 	assertThat( dbs.getOktant( boStelling ), is( 8 ) );
@@ -475,7 +471,7 @@ public void testSpiegelEnRoteer()
 		.s3( 0x00 )
 		.s4( 0x19 )
 		.s5( 0x01 )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
 	
@@ -490,7 +486,7 @@ public void testSpiegelEnRoteerOktant5()
 		.s3( "f5" )
 		.s4( "f3" )
 		.s5( "e5" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	// De WK staat in oktant 5, maar we gaan roteren in oktant 3
 	VMStelling vmStelling = dbs.spiegelEnRoteer( boStelling, 3 );
@@ -500,7 +496,7 @@ public void testSpiegelEnRoteerOktant5()
 		.s3( "e3" )
 		.s4( "c3" )
 		.s5( "e4" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
 	
@@ -511,7 +507,7 @@ public void testSpiegelEnRoteerOktant5()
 		.s3( "e3" )
 		.s4( "c3" )
 		.s5( "e4" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	vmStelling = dbs.spiegelEnRoteer( boStelling, 3 );
 	VMStelling oktant3Stelling = VMStelling.alfaBuilder()
@@ -520,7 +516,7 @@ public void testSpiegelEnRoteerOktant5()
 		.s3( "c4" )
 		.s4( "c6" )
 		.s5( "d4" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	assertThat( vmStelling, is( oktant3Stelling ) );
 	
@@ -531,7 +527,7 @@ public void testSpiegelEnRoteerOktant5()
 		.s3( "f5" )
 		.s4( "f3" )
 		.s5( "e5" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	// De WK staat in oktant 5. Dit krijgt een spiegeling in de x-as gevolgd door een spiegeling in de y-as
 	assertThat( dbs.getOktant( boStelling ), is( 5 ) );
@@ -542,7 +538,7 @@ public void testSpiegelEnRoteerOktant5()
 		.s3( "c4" )
 		.s4( "c6" )
 		.s5( "d4" )
-		.aanZet( WIT )
+		.aanZet( Wit )
 		.build();
 	assertThat( vmStelling, is( oktant3Stelling ) );
 	assertThat( oktant3Stelling, is( oktant5Stelling ) );
@@ -560,8 +556,8 @@ public void testPut()
 		.zk( 0x12 )
 		.s3( 0x00 )
 		.s4( 0x13 )
-		.aanZet( WIT )
-		.resultaat( ILLEGAAL )
+		.aanZet( Wit )
+		.resultaat( Illegaal )
 		.aantalZetten( 0 )
 		.schaak( false )
 		.build();
@@ -571,7 +567,7 @@ public void testPut()
 	newBoStelling.setSchaak( gen.isSchaak( newBoStelling ) );
 	// Dit moet je niet doen want het is altijd true!!
 	// assertThat( newBoStelling, is( boStelling ) );
-	assertThat( newBoStelling.getResultaat(), is( ILLEGAAL ) );
+	assertThat( newBoStelling.getResultaat(), is( Illegaal ) );
 	assertThat( newBoStelling.getAantalZetten(), is( 0 ) );
 	assertThat( newBoStelling.isSchaak(), is( false ) );
 	
@@ -580,15 +576,15 @@ public void testPut()
 		.zk( 0x12 )
 		.s3( 0x00 )
 		.s4( 0x13 )
-		.aanZet( WIT )
-		.resultaat( REMISE )
+		.aanZet( Wit )
+		.resultaat( Remise )
 		.aantalZetten( 0 )
 		.schaak( false )
 		.build();
 	dbs.put( boStelling );
 	
 	newBoStelling = dbs.get( boStelling );
-	assertThat( newBoStelling.getResultaat(), is( REMISE ) );
+	assertThat( newBoStelling.getResultaat(), is( Remise ) );
 	assertThat( newBoStelling.getAantalZetten(), is( 0 ) );
 	assertThat( newBoStelling.isSchaak(), is( false ) );
 	
@@ -597,15 +593,15 @@ public void testPut()
 		.zk( 0x12 )
 		.s3( 0x00 )
 		.s4( 0x13 )
-		.aanZet( WIT )
-		.resultaat( GEWONNEN )
+		.aanZet( Wit )
+		.resultaat( Gewonnen )
 		.aantalZetten( 13 )
 		.schaak( false )
 		.build();
 	dbs.put( boStelling );
 	
 	newBoStelling = dbs.get( boStelling );
-	assertThat( newBoStelling.getResultaat(), is( GEWONNEN ) );
+	assertThat( newBoStelling.getResultaat(), is( Gewonnen ) );
 	assertThat( newBoStelling.getAantalZetten(), is( 13 ) );
 	assertThat( newBoStelling.isSchaak(), is( false ) );
 	
@@ -614,15 +610,15 @@ public void testPut()
 		.zk( 0x12 )
 		.s3( 0x00 )
 		.s4( 0x13 )
-		.aanZet( WIT )
-		.resultaat( VERLOREN )
+		.aanZet( Wit )
+		.resultaat( Verloren )
 		.aantalZetten( 27 )
 		.schaak( false )
 		.build();
 	dbs.put( boStelling );
 	
 	newBoStelling = dbs.get( boStelling );
-	assertThat( newBoStelling.getResultaat(), is( VERLOREN ) );
+	assertThat( newBoStelling.getResultaat(), is( Verloren ) );
 	assertThat( newBoStelling.getAantalZetten(), is( 27 ) );
 	assertThat( newBoStelling.isSchaak(), is( false ) );
 	
@@ -631,15 +627,15 @@ public void testPut()
 		.zk( 0x12 )
 		.s3( 0x00 )
 		.s4( 0x13 )
-		.aanZet( WIT )
-		.resultaat( REMISE )
+		.aanZet( Wit )
+		.resultaat( Remise )
 		.aantalZetten( 27 )
 		.schaak( true )
 		.build();
 	dbs.put( boStelling );
 	
 	newBoStelling = dbs.get( boStelling );
-	assertThat( newBoStelling.getResultaat(), is( REMISE ) );
+	assertThat( newBoStelling.getResultaat(), is( Remise ) );
 	assertThat( newBoStelling.getAantalZetten(), is( 0 ) );
 	assertThat( newBoStelling.isSchaak(), is( true ) );
 
@@ -662,8 +658,8 @@ public void testFreeRecord()
 		.zk( 0x12 )
 		.s3( 0x00 )
 		.s4( 0x13 )
-		.aanZet( WIT )
-		.resultaat( VERLOREN )
+		.aanZet( Wit )
+		.resultaat( Verloren )
 		.aantalZetten( 27 )
 		.schaak( false )
 		.build();
@@ -700,13 +696,13 @@ public void testDelete()
 }
 void set0x0b( BoStelling aBoStelling )
 {
-	aBoStelling.setResultaat( GEWONNEN );
+	aBoStelling.setResultaat( Gewonnen );
 	aBoStelling.setAantalZetten( 0x0b );
 	dbs.put( aBoStelling );
 }
 void set0x8b( BoStelling aBoStelling )
 {
-	aBoStelling.setResultaat( GEWONNEN );
+	aBoStelling.setResultaat( Gewonnen );
 	aBoStelling.setAantalZetten( 0x8b );
 	dbs.put( aBoStelling );
 }
@@ -728,10 +724,10 @@ void checkMarkeerPassMet0x0b( BoStelling aBoStelling )
 	VMStelling vmStelling = dbs.cardinaliseer( aBoStelling );
 
 	byte []  page;
-	vmStelling.setAanZet( WIT );
+	vmStelling.setAanZet( Wit );
 	page = vm.getPage( vmStelling );
 	assertThat( TestHelper.isAll( page, (byte)0x0b ), is( true ) );
-	vmStelling.setAanZet( ZWART );
+	vmStelling.setAanZet( Zwart );
 	page = vm.getPage( vmStelling );
 	assertThat( TestHelper.isAll( page, (byte)0x00 ), is( true ) );
 }
@@ -752,17 +748,17 @@ void checkMarkeerPassMet0x8b( BoStelling aBoStelling )
 	VMStelling vmStelling = dbs.cardinaliseer( aBoStelling );
 
 	byte [] page;
-	vmStelling.setAanZet( WIT );
+	vmStelling.setAanZet( Wit );
 	page = vm.getPage( vmStelling );
 	assertThat( TestHelper.isAll( page, (byte)0x8b ), is( true ) );
-	vmStelling.setAanZet( ZWART );
+	vmStelling.setAanZet( Zwart );
 	page = vm.getPage( vmStelling );
 	assertThat( TestHelper.isAll( page, (byte)0x00 ), is( true ) );
 }
 
 void set0x11( BoStelling aBoStelling )
 {
-	aBoStelling.setResultaat( GEWONNEN );
+	aBoStelling.setResultaat( Gewonnen );
 	aBoStelling.setAantalZetten( 0x11 );
 	dbs.put( aBoStelling );
 }
@@ -778,16 +774,16 @@ void set0x11( BoStelling aBoStelling )
 void checkMarkeerPassMet0x11( VMStelling vmStelling )
 {
 	byte [] page;
-	vmStelling.setAanZet( WIT );
+	vmStelling.setAanZet( Wit );
 	page = vm.getPage( vmStelling );
 	assertThat( TestHelper.isAll( page, (byte)0x00 ), is( true ) );
-	vmStelling.setAanZet( ZWART );
+	vmStelling.setAanZet( Zwart );
 	page = vm.getPage( vmStelling );
 	assertThat( TestHelper.isAll( page, (byte)0x11 ), is( true ) );
 }
 void set0x34( BoStelling aBoStelling )
 {
-	aBoStelling.setResultaat( GEWONNEN );
+	aBoStelling.setResultaat( Gewonnen );
 	aBoStelling.setAantalZetten( 0x34 );
 	dbs.put( aBoStelling );
 }
@@ -815,9 +811,9 @@ void checkMarkeerPassMet0x34( VMStelling vmStelling )
 public void testPass()
 {
 	dbs.setReport( (int)dbs.getDatabaseSize() / 10, this:: doReport );
-	dbs.pass( MARKEER_WIT, this::set0x0b );
+	dbs.pass( MarkeerWit, this::set0x0b );
 //	dbs.pass( MARKEER_ZWART, this::set0x0b );
-	dbs.pass( MARKEER_WIT_EN_ZWART, this::set0x0b );
+	dbs.pass( MarkeerWitEnZwart, this::set0x0b );
 	// Die markeer-methodes zijn hierboven al getest, we checken hier alleen of de aanroepjes goed gaan
 	assertThat( vmStellingIterator.getStellingTeller(), is( 10 * 64 * 64 * 64 * 2 * 2 ) );
 }

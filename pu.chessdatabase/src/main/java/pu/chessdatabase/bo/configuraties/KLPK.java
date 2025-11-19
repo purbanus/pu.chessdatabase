@@ -16,9 +16,9 @@ private final String databaseName;
 public KLPK()
 {
 	super();
-	getStukDefinities().add( new StukDefinitie( LOPER,   WIT ) );
-	getStukDefinities().add( new StukDefinitie( PAARD,  WIT ) );
-	getStukDefinities().add( new StukDefinitie( GEEN,   WIT ) );
+	getStukDefinities().add( new StukDefinitie( Loper,   Wit ) );
+	getStukDefinities().add( new StukDefinitie( Paard,  Wit ) );
+	getStukDefinities().add( new StukDefinitie( Geen,   Wit ) );
 	databaseName = "dbs/KLPK.DBS";
 	setStukken( new Stukken( this ) );
 }

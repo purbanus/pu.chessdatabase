@@ -1,5 +1,7 @@
 package pu.chessdatabase.dbs;
 
+import static pu.chessdatabase.dbs.Lokatie.*;
+
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
@@ -203,7 +205,7 @@ void pageOut( PageDescriptor aPageDescriptor )
  */
 private void pageIn( PageDescriptor aPageDescriptor )
 {
-    if ( aPageDescriptor.getWaar() == Lokatie.OP_SCHIJF )
+    if ( aPageDescriptor.getWaar() == OpSchijf )
     {
     	aPageDescriptor.setCacheNummer( getFreeCacheEntry() );
     }
@@ -214,7 +216,7 @@ private void pageIn( PageDescriptor aPageDescriptor )
     if ( oudePageDescriptor != null )
     {
         pageOut( oudePageDescriptor );
-        oudePageDescriptor.setWaar( Lokatie.OP_SCHIJF );
+        oudePageDescriptor.setWaar( OpSchijf );
         oudePageDescriptor.setCacheNummer( Integer.MAX_VALUE );
     }
 
@@ -227,14 +229,14 @@ private void pageIn( PageDescriptor aPageDescriptor )
     cacheEntry.setGeneratie( generatieTeller++ );
 
     //-------- Update Page descriptor ------------
-    aPageDescriptor.setWaar( Lokatie.IN_RAM );
+    aPageDescriptor.setWaar( InRam );
 }
 /**
  *  ------- Haal pagina op uit de cache ---------
  */
 byte [ ] getPageFromDatabase( PageDescriptor aPageDescriptor )
 {
-	if ( aPageDescriptor.getWaar() == Lokatie.OP_SCHIJF )
+	if ( aPageDescriptor.getWaar() == OpSchijf )
 	{
 		pageIn( aPageDescriptor );
 	}

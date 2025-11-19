@@ -23,7 +23,7 @@ public String getAfko()
 }
 public int getKoningsNummer()
 {
-	return getKleur() == WIT ? 0 : 1;
+	return getKleur() == Wit ? 0 : 1;
 }
 public boolean isMeer()
 {
