@@ -4,6 +4,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import pu.chessdatabase.bo.speel.Partij;
+
 import jakarta.servlet.http.HttpSession;
 
 @RestController
@@ -16,7 +18,7 @@ public class SessionController
 public String createSession( HttpSession session )
 {
 	// Set a session attribute (e.g., username)
-	session.setAttribute( "username", "purbanus" );
+	session.setAttribute( "username", Partij.DEFAULT_USER_NAME );
 
 	// Retrieve and return the session ID
 	String sessionId = session.getId();
