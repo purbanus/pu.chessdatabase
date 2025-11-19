@@ -17,7 +17,6 @@ public static final int PAGES_IN_PAGINATOR = 20;
 public static final int FIRST_PAGE_ID = 1977;
 
 @Data
-@ToString
 @Builder
 @AllArgsConstructor
 public static class Page
