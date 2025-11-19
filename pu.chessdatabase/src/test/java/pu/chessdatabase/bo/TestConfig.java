@@ -133,6 +133,7 @@ public void testGetStukList()
 public void testGetStukken()
 {
 	getConfig().switchConfig( "klpk" );
+	// @@HIGH Test afmaken
 }
 @Test
 public void testgetStukDefinities()
