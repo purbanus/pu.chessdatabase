@@ -6,6 +6,7 @@ package pu.chessdatabase.service.impl;
 //===================================================================================================================== 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -148,7 +149,9 @@ public void testDoNewGame()
 	
 	Ply ply = TestHelper.createOnePly( (VanNaar) null );
 	ply.setId( 501 );
-	assertThat( getPartij().getPlies().getCurrentPly(), is( ply ) );
+	Ply currentPly = getPartij().getPlies().getCurrentPly();
+	//assertThat( getPartij().getPlies().getCurrentPly(), is( ply ) );
+	assertEquals( ply, currentPly );
 
 	LocalDateTime started = LocalDateTime.now();
 	Plies plies = Plies.builder()

@@ -33,16 +33,15 @@ public List<Stuk> getStukken()
 }
 public List<Stuk> getSortedStukken()
 {
-	List<Stuk> stukken = getStukken();
 	List<Stuk> newStukken = new ArrayList<>();
-	for ( Stuk stuk : stukken )
+	for ( Stuk stuk : getStukken() )
 	{
 		if ( stuk.getKleur() == Wit )
 		{
 			newStukken.add( stuk );
 		}
 	}
-	for ( Stuk stuk : stukken )
+	for ( Stuk stuk : getStukken() )
 	{
 		if ( stuk.getKleur() == Zwart )
 		{

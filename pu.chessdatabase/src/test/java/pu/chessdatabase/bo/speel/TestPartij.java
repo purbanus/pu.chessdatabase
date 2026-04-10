@@ -184,7 +184,6 @@ public void testIsBegonnen()
 	partij.newGame( startStelling );
 	assertThat( partij.isBegonnen(), is( true ) );
 }
-@SuppressWarnings( "null" )
 @Test
 public void testStellingToVanNaar()
 {

@@ -25,7 +25,6 @@ import pu.chessdatabase.bo.speel.Plies;
 import pu.chessdatabase.bo.speel.Ply;
 import pu.chessdatabase.bo.speel.VanNaar;
 
-import jakarta.persistence.Tuple;
 import jakarta.transaction.Transactional;
 
 @SpringBootTest
@@ -36,9 +35,6 @@ public class TestPliesDao
 @Autowired private PliesDao dao;
 @Autowired private Config config;
 
-@SuppressWarnings( {
-    "null"
-} )
 public void checkPlies( Plies aPlies )
 {
 	assertThat( aPlies.getId(), is( 1 ) );
