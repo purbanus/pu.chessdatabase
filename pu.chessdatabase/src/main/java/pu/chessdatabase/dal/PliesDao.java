@@ -80,6 +80,7 @@ Plies convertFlatDocumentsToPlies( List<FlatDocument> aFlatDocuments )
 		if ( ply == null )
 		{
 			ply = Ply.fromFlatDocument( flatDocument );
+			ply.setPlies( plies );
 			plyMap.put( ply.getId(), ply );
 			ply.setPlies( plies );
 			plies.getPlies().add( ply );

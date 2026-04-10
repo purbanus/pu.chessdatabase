@@ -140,10 +140,13 @@ public Ply addPly( BoStelling aBoStelling, Einde aEindeType )
 		zetNummer = 1;
 	}
 	Ply newPly = Ply.builder()
-		.boStelling( aBoStelling )
+		//.id is voor JPA
+		.plies( this )
 		.einde( aEindeType )
 		.zetNummer( zetNummer )
-//		.vanNaar( VanNaar.ILLEGAL_VAN_NAAR ) // Liever null want daar kun je gemakkelijk op testen
+		//,schaak @@Waarom niet??
+		//.vanNaar( VanNaar.ILLEGAL_VAN_NAAR ) // Liever null want daar kun je gemakkelijk op testen
+		.boStelling( aBoStelling )
 		.build();
 	addPly( newPly );
 	return newPly;

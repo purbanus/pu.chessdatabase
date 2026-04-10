@@ -108,7 +108,7 @@ public void testAddPlyWithBoStellingAndEinde()
 @Test
 public void testHasPly()
 {
-	Triple<Ply, Ply, Ply> threePlies = TestHelper.createThreeDifferentPlies();
+	Triple<Ply, Ply, Ply> threePlies = TestHelper.createThreeDifferentPlies( getPlies() );
 	Ply firstPly = threePlies.getLeft();
 	Ply secondPly = threePlies.getMiddle();
 	Ply thirdPly = threePlies.getRight();
@@ -133,7 +133,7 @@ public void testGetPly()
 		.s4( "g7" )
 		.aanZet( Wit )
 		.build();
-	Triple<Ply, Ply, Ply> threePlies = TestHelper.createThreeDifferentPlies( boStelling );
+	Triple<Ply, Ply, Ply> threePlies = TestHelper.createThreeDifferentPlies( getPlies(), boStelling );
 	Ply firstPly = threePlies.getLeft();
 	Ply secondPly = threePlies.getMiddle();
 
@@ -166,7 +166,7 @@ public void testGetCurrentPreviousAndLastPly()
 	assertThrows( RuntimeException.class, () -> plies.getPreviousPly() );
 	
 	plies = new Plies( getConfig().getConfig() );
-	Triple<Ply, Ply, Ply> threePlies = TestHelper.createThreeDifferentPlies();
+	Triple<Ply, Ply, Ply> threePlies = TestHelper.createThreeDifferentPlies( getPlies() );
 	Ply firstPly = threePlies.getLeft();
 	Ply secondPly = threePlies.getMiddle();
 	Ply thirdPly = threePlies.getRight();
@@ -187,7 +187,7 @@ public void testGetFirstAndSecondPly()
 	assertThrows( RuntimeException.class, () -> plies.getSecondPly() );
 
 	plies = new Plies( getConfig().getConfig() );
-	Triple<Ply, Ply, Ply> threePlies = TestHelper.createThreeDifferentPlies();
+	Triple<Ply, Ply, Ply> threePlies = TestHelper.createThreeDifferentPlies( getPlies() );
 	Ply firstPly = threePlies.getLeft();
 	Ply secondPly = threePlies.getMiddle();
 	Ply thirdPly = threePlies.getRight();
@@ -223,7 +223,7 @@ public void testSetToBeginAndEnd()
 	assertThrows( RuntimeException.class, () -> plies.setNaarEinde() );
 	assertFalse( plies.isNaarEindeMag() );
 
-	Triple<Ply, Ply, Ply> threePlies = TestHelper.createThreeDifferentPlies();
+	Triple<Ply, Ply, Ply> threePlies = TestHelper.createThreeDifferentPlies( getPlies() );
 	Ply firstPly = threePlies.getLeft();
 	Ply secondPly = threePlies.getMiddle();
 	Ply thirdPly = threePlies.getRight();
@@ -250,7 +250,7 @@ public void testSetTerug()
 	assertThrows( RuntimeException.class, () -> plies.setTerug() );
 	assertFalse( plies.isTerugMag() );
 
-	Triple<Ply, Ply, Ply> threePlies = TestHelper.createThreeDifferentPlies();
+	Triple<Ply, Ply, Ply> threePlies = TestHelper.createThreeDifferentPlies( getPlies() );
 	Ply firstPly = threePlies.getLeft();
 	Ply secondPly = threePlies.getMiddle();
 	Ply thirdPly = threePlies.getRight();
@@ -274,7 +274,7 @@ public void testSetVooruit()
 	assertThrows( RuntimeException.class, () -> plies.setVooruit() );
 	assertFalse( plies.isVooruitMag() );
 
-	Triple<Ply, Ply, Ply> threePlies = TestHelper.createThreeDifferentPlies();
+	Triple<Ply, Ply, Ply> threePlies = TestHelper.createThreeDifferentPlies( getPlies() );
 	Ply firstPly = threePlies.getLeft();
 	Ply secondPly = threePlies.getMiddle();
 	Ply thirdPly = threePlies.getRight();
@@ -295,7 +295,7 @@ public void testSetVooruit()
 @Test
 public void testClearPliesFromNextPly()
 {
-	Triple<Ply, Ply, Ply> threePlies = TestHelper.createThreeDifferentPlies();
+	Triple<Ply, Ply, Ply> threePlies = TestHelper.createThreeDifferentPlies( getPlies() );
 	Ply firstPly = threePlies.getLeft();
 	Ply secondPly = threePlies.getMiddle();
 	Ply thirdPly = threePlies.getRight();
@@ -327,7 +327,7 @@ public void testClearPliesFromNextPly()
 @Test
 public void testgetEindePartij()
 {
-	Triple<Ply, Ply, Ply> threePlies = TestHelper.createThreeDifferentPlies();
+	Triple<Ply, Ply, Ply> threePlies = TestHelper.createThreeDifferentPlies( getPlies() );
 	Ply firstPly = threePlies.getLeft();
 	Ply secondPly = threePlies.getMiddle();
 	//Ply thirdPly = threePlies.getRight();

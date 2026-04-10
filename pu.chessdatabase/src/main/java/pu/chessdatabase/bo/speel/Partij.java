@@ -556,11 +556,13 @@ public List<GegenereerdeZetDocument> getGegenereerdeZetten()
 	for ( BoStelling boStellingNaar : gegenereerdeZetten )
 	{
 		Ply ply = Ply.builder()
-			.zetNummer( zetNummer )
-			.boStelling( boStellingVan )
+			// .id is voor JPA
+			.plies( getPlies() )
 			.einde( Nog_niet ) // @@NOG klopt dit??
-			.vanNaar( stellingToVanNaar( boStellingVan, boStellingNaar ) )
+			.zetNummer( zetNummer )
 			.schaak( getGen().isSchaak( boStellingNaar ) )
+			.vanNaar( stellingToVanNaar( boStellingVan, boStellingNaar ) )
+			.boStelling( boStellingVan )
 			.build();
 		zetten.add( getGegenereerdeZetDocument( ply, boStellingNaar ) );
 		zetNummer++;

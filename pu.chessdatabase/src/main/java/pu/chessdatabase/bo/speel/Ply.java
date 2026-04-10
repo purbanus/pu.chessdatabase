@@ -54,6 +54,7 @@ public static Ply fromFlatDocument( FlatDocument aFlatDocument )
 {
 	return Ply.builder()
 		.id( aFlatDocument.getPlyId() )
+		//.plies(xxx) @@zit niet in FlatDocument
 		.einde( Einde.valueOf( aFlatDocument.getEinde() ) )
 		.zetNummer( aFlatDocument.getZetNummer() )
 		.schaak( aFlatDocument.isSchaak() )
