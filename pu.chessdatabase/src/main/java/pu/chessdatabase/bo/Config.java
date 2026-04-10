@@ -1,9 +1,5 @@
 package pu.chessdatabase.bo;
 
-import static pu.chessdatabase.bo.Kleur.*;
-import static pu.chessdatabase.bo.configuraties.StukType.*;
-
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;

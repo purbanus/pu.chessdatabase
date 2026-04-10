@@ -7,10 +7,9 @@ package pu.chessdatabase.bo.speel;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
-
 import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.bo.speel.Einde.*;
-import static pu.chessdatabase.dbs.Resultaat.*;
+
 import org.apache.commons.lang3.tuple.Triple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 
 public class TestVanNaar
 {
-@SuppressWarnings( "null" )
 @Test
 public void testCtorWithInts()
 {
@@ -21,7 +20,6 @@ public void testCtorWithInts()
 		.build();
 	assertThat( new VanNaar( 0x11, 0x33 ), is( expectedVanNaar ) );
 }
-@SuppressWarnings( "null" )
 @Test
 public void testCtorWithStrings()
 {
@@ -31,7 +29,6 @@ public void testCtorWithStrings()
 		.build();
 	assertThat( new VanNaar( "b2", "d4" ), is( expectedVanNaar ) );
 }
-@SuppressWarnings( "null" )
 @Test
 public void testCtorWithString()
 {

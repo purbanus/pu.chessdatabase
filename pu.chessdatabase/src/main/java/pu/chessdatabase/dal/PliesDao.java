@@ -1,10 +1,8 @@
 package pu.chessdatabase.dal;
 
-import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +10,6 @@ import org.springframework.stereotype.Service;
 import pu.chessdatabase.bo.speel.Plies;
 import pu.chessdatabase.bo.speel.Ply;
 
-import jakarta.persistence.Tuple;
 import lombok.Data;
 
 @Data
@@ -31,7 +28,6 @@ public PliesDao()
 // - Die Tuples converteer je naar een FlatDocument, zie convertTuplesToFlatDocuments. Het enige lastige is dat je dat hier op index moet doen, 
 //   niet op veldnaam, en dat je de class moet opgeven
 // - Converteer de FlatDocuments naar Plies met hun Plys
-@SuppressWarnings( "null" )
 //List<FlatDocument> convertTuplesToFlatDocuments( List<Tuple> aTuples )
 //{
 //	return aTuples.stream()
@@ -96,7 +92,6 @@ public Plies getPliesById( int aId )
 	List<FlatDocument> flatDocuments = getPliesQueryRepository().getPliesFlatDocumentsById( aId );
 	return convertFlatDocumentsToPlies( flatDocuments );
 }
-@SuppressWarnings( { "null", "unused" } )
 public Plies getLatestPlies( String aUserName )
 {
 	Integer latestId = getPliesRepository().getLatestPlies( aUserName );
@@ -112,7 +107,6 @@ public Plies getPliesByIdNewStyle( int aId )
 	//return pliesRepository.getReferenceById( aId );
 	return pliesRepository.getPliesById( aId );
 }
-@SuppressWarnings( { "null", "unused" } )
 public Plies getLatestPliesNewStyle( String aUserName )
 {
 	// @@NOG Ik krijg dit maar niet blijvend aan de praat

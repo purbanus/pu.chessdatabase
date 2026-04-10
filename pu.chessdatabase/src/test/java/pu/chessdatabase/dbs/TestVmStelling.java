@@ -44,7 +44,6 @@ public void destroy()
 }
 @Autowired private Config config;
 
-@SuppressWarnings( "null" )
 @Test
 public void testShiftLeft()
 {
