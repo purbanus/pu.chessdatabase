@@ -147,10 +147,10 @@ public void testDoNewGame()
 	assertThat( getPartij().getPlies().getPlies().size(), is( 1 ) );
 	assertThat( getPartij().getPlies().getCurrentPlyNumber(), is( 0 ) );
 	
-	Ply ply = TestHelper.createOnePly( (VanNaar) null );
+	Ply ply = TestHelper.createOnePly( getPartij().getPlies(), (VanNaar) null );
 	ply.setId( 501 );
 	Ply currentPly = getPartij().getPlies().getCurrentPly();
-	//assertThat( getPartij().getPlies().getCurrentPly(), is( ply ) );
+	assertThat( getPartij().getPlies().getCurrentPly(), is( ply ) );
 	assertEquals( ply, currentPly );
 
 	LocalDateTime started = LocalDateTime.now();

@@ -155,6 +155,7 @@ public void testSavePlies()
 		.aantalZetten( 29 )
 		.build();
 	plies.addPly( Ply.builder()
+		//.id is voor JPA
 		.plies( plies )
 		.einde( Nog_niet )
 		.zetNummer( 1 )
@@ -164,6 +165,7 @@ public void testSavePlies()
 		.build()
 		);
 	plies.addPly( Ply.builder()
+		//.id is voor JPA
 		.plies( plies )
 		.einde( Nog_niet )
 		.zetNummer( 1 )
@@ -173,6 +175,7 @@ public void testSavePlies()
 		.build()
 		);
 	plies.addPly( Ply.builder()
+		//.id is voor JPA
 		.plies( plies )
 		.einde( Nog_niet )
 		.zetNummer( 2 )

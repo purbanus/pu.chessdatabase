@@ -27,6 +27,9 @@ import pu.chessdatabase.bo.Stuk;
 import pu.chessdatabase.dbs.Dbs;
 import pu.chessdatabase.dbs.Resultaat;
 
+import lombok.Data;
+
+@Data
 @SpringBootTest
 public class TestPartij
 {
@@ -154,10 +157,13 @@ public void testNewGame()
 	BoStelling newBoStelling = partij.newGame( startStelling );
 	assertThat( newBoStelling.isSchaak(), is( false ) );
 	Ply ply = Ply.builder()
-		.boStelling( newBoStelling )
-		.einde( Nog_niet )
+		//.id is voor JPA
+		.plies( getPartij().getPlies() )
+		.einde( Einde.Nog_niet )
 		.zetNummer( 1 )
+		.schaak( false )
 		.vanNaar( null )
+		.boStelling( newBoStelling )
 		.build();
 	assertThat( partij.getPlies().getFirstPly(), is( ply ) );
 	
@@ -679,11 +685,13 @@ public void testPlyToString()
 		.build();
 	VanNaar vanNaar = new VanNaar( 0x11, 0x22 );
 	Ply ply = Ply.builder()
-		.boStelling( boStelling )
-		.einde( Nog_niet )
-		.vanNaar( vanNaar )
+		//.id is voor JPA
+		.plies( getPartij().getPlies() )
+		.einde( Einde.Nog_niet )
 		.zetNummer( 1 )
 		.schaak( false )
+		.vanNaar( vanNaar )
+		.boStelling( boStelling )
 		.build();
 	assertThat( partij.plyToString( ply ), is( "Db2-c3 " ) );
 
@@ -696,11 +704,13 @@ public void testPlyToString()
 		.build();
 	vanNaar = new VanNaar( 0x11, 0x66 );
 	ply = Ply.builder()
-		.boStelling( boStelling )
-		.einde( Nog_niet )
-		.vanNaar( vanNaar )
+		//.id is voor JPA
+		.plies( getPartij().getPlies() )
+		.einde( Einde.Nog_niet )
 		.zetNummer( 1 )
 		.schaak( true )
+		.vanNaar( vanNaar )
+		.boStelling( boStelling )
 		.build();
 	assertThat( partij.plyToString( ply ), is( "Db2xg7+" ) );
 
@@ -714,11 +724,13 @@ public void testPlyToString()
 		.build();
 	vanNaar = new VanNaar( 0x11, 0x17 );
 	ply = Ply.builder()
-		.boStelling( boStelling )
-		.einde( Nog_niet )
-		.vanNaar( vanNaar )
+		//.id is voor JPA
+		.plies( getPartij().getPlies() )
+		.einde( Einde.Nog_niet )
 		.zetNummer( 1 )
 		.schaak( true )
+		.vanNaar( vanNaar )
+		.boStelling( boStelling )
 		.build();
 	assertThat( partij.plyToString( ply ), is( "Db2-h2+" ) );
 	
@@ -732,11 +744,13 @@ public void testPlyToString()
 		.build();
 	vanNaar = null;
 	ply = Ply.builder()
-		.boStelling( boStelling )
-		.einde( Nog_niet )
-		.vanNaar( vanNaar )
+		//.id is voor JPA
+		.plies( getPartij().getPlies() )
+		.einde( Einde.Nog_niet )
 		.zetNummer( 1 )
 		.schaak( true )
+		.vanNaar( vanNaar )
+		.boStelling( boStelling )
 		.build();
 	assertThat( partij.plyToString( ply ), is( "..." ) );
 }
@@ -1113,11 +1127,13 @@ public void testGegenereerdeZetDocument()
 	VanNaar vanNaar = new VanNaar( "b2", "c3" );
 	Stuk stukDatZet = config.getStukken().getS3();
 	Ply ply = Ply.builder()
-		.boStelling( boStellingVan )
+		//.id is voor JPA
+		.plies( getPartij().getPlies() )
 		.einde( Nog_niet )
-		.vanNaar( vanNaar )
 		.zetNummer( 15 )
 		.schaak( false )
+		.vanNaar( vanNaar )
+		.boStelling( boStellingVan )
 		.build();
 	GegenereerdeZetDocument gegenereerdeZetDocument = GegenereerdeZetDocument.builder()
 		.zetNummer( 16 )
@@ -1138,11 +1154,13 @@ public void testGegenereerdeZetDocument()
 	vanNaar = new VanNaar( 0x11, 0x66 );
 	stukDatZet = config.getStukken().getS3();
 	ply = Ply.builder()
-		.boStelling( boStellingVan )
+		//.id is voor JPA
+		.plies( getPartij().getPlies() )
 		.einde( Nog_niet )
-		.vanNaar( vanNaar )
 		.zetNummer( 17 )
 		.schaak( true )
+		.vanNaar( vanNaar )
+		.boStelling( boStellingVan )
 		.build();
 	gegenereerdeZetDocument = GegenereerdeZetDocument.builder()
 		.zetNummer( 18 )
@@ -1268,32 +1286,40 @@ public void testModula2Partij_1()
 	partij.zet( vanNaar4 );
 
 	Ply ply1 = Ply.builder()
-		.boStelling( boStelling1 )
-		.vanNaar( vanNaar1 )
-		.zetNummer( 1 )
+		//.id is voor JPA
+		.plies( getPartij().getPlies() )
 		.einde( Einde.Nog_niet )
+		.zetNummer( 1 )
 		.schaak( false )
+		.vanNaar( vanNaar1 )
+		.boStelling( boStelling1 )
 		.build();
 	Ply ply2 = Ply.builder()
-		.boStelling( boStelling2 )
-		.vanNaar( vanNaar2 )
-		.zetNummer( 1 )
+		//.id is voor JPA
+		.plies( getPartij().getPlies() )
 		.einde( Einde.Nog_niet )
+		.zetNummer( 1 )
 		.schaak( false )
+		.vanNaar( vanNaar2 )
+		.boStelling( boStelling2 )
 		.build();
 	Ply ply3 = Ply.builder()
-		.boStelling( boStelling3 )
-		.vanNaar( vanNaar3 )
-		.zetNummer( 2 )
+		//.id is voor JPA
+		.plies( getPartij().getPlies() )
 		.einde( Einde.Nog_niet )
+		.zetNummer( 2 )
 		.schaak( false )
+		.vanNaar( vanNaar3 )		
+		.boStelling( boStelling3 )
 		.build();
 	Ply ply4 = Ply.builder()
-		.boStelling( boStelling4 )
-		.vanNaar( vanNaar4 )
-		.zetNummer( 2 )
+		//.id is voor JPA
+		.plies( getPartij().getPlies() )
 		.einde( Einde.Nog_niet )
+		.zetNummer( 2 )
 		.schaak( false )
+		.vanNaar( vanNaar4 )
+		.boStelling( boStelling4 )
 		.build();
 	assertThat( partij.getPlies().getPly( 0 ), is( ply1 ) );
 	assertThat( partij.getPlies().getPly( 1 ), is( ply2 ) );
@@ -1381,32 +1407,40 @@ public void testModula2Partij_b()
 	VanNaar vanNaar4 = null;
 
 	Ply ply1 = Ply.builder()
-		.boStelling( boStelling1 )
-		.vanNaar( vanNaar1 )
-		.zetNummer( 1 )
+		//.id is voor JPA
+		.plies( getPartij().getPlies() )
 		.einde( Einde.Nog_niet )
+		.zetNummer( 1 )
 		.schaak( false )
+		.vanNaar( vanNaar1 )
+		.boStelling( boStelling1 )
 		.build();
 	Ply ply2 = Ply.builder()
-		.boStelling( boStelling2 )
-		.vanNaar( vanNaar2 )
-		.zetNummer( 2 )
+		//.id is voor JPA
+		.plies( getPartij().getPlies() )
 		.einde( Einde.Nog_niet )
+		.zetNummer( 2 )
 		.schaak( false )
+		.vanNaar( vanNaar2 )
+		.boStelling( boStelling2 )
 		.build();
 	Ply ply3 = Ply.builder()
-		.boStelling( boStelling3 )
-		.vanNaar( vanNaar3 )
-		.zetNummer( 2 )
+		//.id is voor JPA
+		.plies( getPartij().getPlies() )
 		.einde( Einde.Nog_niet )
+		.zetNummer( 2 )
 		.schaak( false )
+		.vanNaar( vanNaar3 )
+		.boStelling( boStelling3)
 		.build();
 	Ply ply4 = Ply.builder()
-		.boStelling( boStelling4 )
-		.vanNaar( vanNaar4 )
-		.zetNummer( 3 )
+		//.id is voor JPA
+		.plies( getPartij().getPlies() )
 		.einde( Einde.Nog_niet )
+		.zetNummer( 3 )
 		.schaak( false )
+		.vanNaar( vanNaar4 )
+		.boStelling( boStelling4 )
 		.build();
 	assertThat( partij.getPlies().getPly( 0 ), is( ply1 ) );
 	assertThat( partij.getPlies().getPly( 1 ), is( ply2 ) );

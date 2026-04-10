@@ -7,6 +7,7 @@ import static pu.chessdatabase.dbs.Resultaat.*;
 import org.apache.commons.lang3.tuple.Triple;
 
 import pu.chessdatabase.bo.BoStelling;
+import pu.chessdatabase.bo.speel.Plies;
 import pu.chessdatabase.bo.speel.Ply;
 import pu.chessdatabase.bo.speel.VanNaar;
 
@@ -49,11 +50,11 @@ public static byte [] createPageWithAll( byte aValue )
 	}
 	return entries;
 }
-public static Ply createOnePly()
+public static Ply createOnePly( Plies aPlies)
 {
-	return createOnePly( new VanNaar( "a1", "a2" ) );
+	return createOnePly( aPlies, new VanNaar( "a1", "a2" ) );
 }
-public static Ply createOnePly( VanNaar aVanNaar )
+public static Ply createOnePly( Plies aPlies, VanNaar aVanNaar )
 {
 	BoStelling boStelling = BoStelling.alfaBuilder()
 		.wk( "a1" )
@@ -64,23 +65,25 @@ public static Ply createOnePly( VanNaar aVanNaar )
 		.resultaat( Gewonnen )
 		.aantalZetten( 29 )
 		.build();
-	return createOnePly( boStelling, aVanNaar );
+	return createOnePly( aPlies, boStelling, aVanNaar );
 }
-public static Ply createOnePly( BoStelling aBoStelling )
+public static Ply createOnePly( Plies aPlies, BoStelling aBoStelling )
 {
-	return createOnePly( aBoStelling, new VanNaar( "a1", "a2" ) );
+	return createOnePly( aPlies, aBoStelling, new VanNaar( "a1", "a2" ) );
 }
-public static Ply createOnePly( BoStelling aBoStelling, VanNaar aVanNaar )
+public static Ply createOnePly( Plies aPlies, BoStelling aBoStelling, VanNaar aVanNaar )
 {
 	return Ply.builder()
-		.boStelling( aBoStelling )
+		//.id is voor JPA
+		.plies( aPlies )
 		.einde( Nog_niet )
+		.zetNummer( 1 )
 		.schaak( false )
 		.vanNaar( aVanNaar )
-		.zetNummer( 1 )
+		.boStelling( aBoStelling )
 		.build();
 }
-public static Triple<Ply, Ply, Ply> createThreeDifferentPlies()
+public static Triple<Ply, Ply, Ply> createThreeDifferentPlies( Plies aPlies )
 {
 	BoStelling boStelling = BoStelling.alfaBuilder()
 		.wk( "a1" )
@@ -91,30 +94,36 @@ public static Triple<Ply, Ply, Ply> createThreeDifferentPlies()
 		.resultaat( Gewonnen )
 		.aantalZetten( 29 )
 		.build();
-	return createThreeDifferentPlies( boStelling );
+	return createThreeDifferentPlies( aPlies, boStelling );
 }
-public static Triple<Ply, Ply, Ply> createThreeDifferentPlies( BoStelling aBoStelling )
+public static Triple<Ply, Ply, Ply> createThreeDifferentPlies( Plies aPlies, BoStelling aBoStelling )
 {
 	Ply firstPly = Ply.builder()
-		.boStelling( aBoStelling )
+		//.id is voor JPA
+		.plies( aPlies )
 		.einde( Nog_niet )
+		.zetNummer( 17 )
 		.schaak( false )
 		.vanNaar( new VanNaar( "a1", "a2" ) )
-		.zetNummer( 17 )
+		.boStelling( aBoStelling )
 		.build();
 	Ply secondPly = Ply.builder()
-		.boStelling( aBoStelling )
+		//.id is voor JPA
+		.plies( aPlies )
 		.einde( Mat )
+		.zetNummer( 27 )
 		.schaak( false )
 		.vanNaar( new VanNaar( "b2", "c3" ) )
-		.zetNummer( 27 )
+		.boStelling( aBoStelling )
 		.build();
 	Ply thirdPly = Ply.builder()
-		.boStelling( aBoStelling )
+		//.id is voor JPA
+		.plies( aPlies )
 		.einde( Mat )
+		.zetNummer( 39 )
 		.schaak( false )
 		.vanNaar( new VanNaar( "b2", "c3" ) )
-		.zetNummer( 39 )
+		.boStelling( aBoStelling )
 		.build();
 	return Triple.of( firstPly, secondPly, thirdPly );
 }
