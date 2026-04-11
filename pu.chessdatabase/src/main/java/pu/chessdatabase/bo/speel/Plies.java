@@ -144,7 +144,7 @@ public Ply addPly( BoStelling aBoStelling, Einde aEindeType )
 		.plies( this )
 		.einde( aEindeType )
 		.zetNummer( zetNummer )
-		//,schaak @@Waarom niet??
+		//.schaak @@Waarom niet??
 		//.vanNaar( VanNaar.ILLEGAL_VAN_NAAR ) // Liever null want daar kun je gemakkelijk op testen
 		.boStelling( aBoStelling )
 		.build();
