@@ -417,21 +417,6 @@ public String currentZetNummerToString()
 	return zetNummerToString( getPlies().getCurrentPly().getZetNummer() );
 }
 /**
- * -------- Partij omzetten naar strings ---------------------------------
- */
-public PartijReport getPartijReport()
-{
-	PartijReport partijReport = new PartijReport();
-	partijReport.setErZijnZetten( false );
-	if ( isBegonnen() )
-	{
-		partijReport.setErZijnZetten( true );
-		partijReport.setZetten( createZetten() );
-		partijReport.setVooruit( createVooruit() );
-	}
-	return partijReport;
-}
-/**
  * -------- Hele zet omzetten naar string ( 55. Ke1-e2+  Ke7-d8+) -------
  */
 ZetDocument createZetDocument( int aPlyNummer )
@@ -459,7 +444,7 @@ ZetDocument createZetDocument( int aPlyNummer )
 		.zwartZet( zwartZet )
 		.build();
 }
-List<ZetDocument> createZetten()
+public List<ZetDocument> createZetten()
 {
 	List<ZetDocument> zetten = new ArrayList<>();
 	int startPly = 0;
@@ -480,31 +465,6 @@ List<ZetDocument> createZetten()
 		zetten.add( createZetDocument( x ) );
 	}
 	return zetten;
-}
-/**
- *   Bereken begin van vooruitzetten 
- */
-VooruitRecord createVooruit()
-{
-	VooruitRecord vooruitRecord = VooruitRecord.getDefaultVooruitRecord();
-	if ( getPlies().getCurrentPlyNumber() >= 0 )
-	{
-		vooruitRecord.setErIsVooruit( true );
-		int currentPlyNumber = getPlies().getCurrentPlyNumber();
-		if ( getPlies().getFirstPly().getBoStelling().getAanZet() == Wit )
-		{
-			vooruitRecord.setStart( ( currentPlyNumber - 1 ) / 2 + 1 );
-		}
-		else
-		{
-			vooruitRecord.setStart( ( currentPlyNumber     ) / 2 + 1 );
-		}
-		/* Zou je dit niet precies anderom moeten doen, dus == ZWART?
-		 * De test is nu of de laatste stelling Wit aan zet heeft, maar wit heeft nog niet gezet!
-		 */
-		vooruitRecord.setHalverwege( getPlies().getCurrentPly().getBoStelling().getAanZet() == Zwart );
-	}
-	return vooruitRecord;
 }
 /**
  * -------- Gegenereerde zet omzetten naar string ( 55. Ke1-e2+ (+100) -------
