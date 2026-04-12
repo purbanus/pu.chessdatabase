@@ -78,7 +78,7 @@ public static Ply createOnePly( Plies aPlies, BoStelling aBoStelling, VanNaar aV
 		.plies( aPlies )
 		.einde( Nog_niet )
 		.zetNummer( 1 )
-		.schaak( false )
+		.plySchaak( false )
 		.vanNaar( aVanNaar )
 		.boStelling( aBoStelling )
 		.build();
@@ -103,7 +103,7 @@ public static Triple<Ply, Ply, Ply> createThreeDifferentPlies( Plies aPlies, BoS
 		.plies( aPlies )
 		.einde( Nog_niet )
 		.zetNummer( 17 )
-		.schaak( false )
+		.plySchaak( false )
 		.vanNaar( new VanNaar( "a1", "a2" ) )
 		.boStelling( aBoStelling )
 		.build();
@@ -112,7 +112,7 @@ public static Triple<Ply, Ply, Ply> createThreeDifferentPlies( Plies aPlies, BoS
 		.plies( aPlies )
 		.einde( Mat )
 		.zetNummer( 27 )
-		.schaak( false )
+		.plySchaak( false )
 		.vanNaar( new VanNaar( "b2", "c3" ) )
 		.boStelling( aBoStelling )
 		.build();
@@ -121,7 +121,7 @@ public static Triple<Ply, Ply, Ply> createThreeDifferentPlies( Plies aPlies, BoS
 		.plies( aPlies )
 		.einde( Mat )
 		.zetNummer( 39 )
-		.schaak( false )
+		.plySchaak( false )
 		.vanNaar( new VanNaar( "b2", "c3" ) )
 		.boStelling( aBoStelling )
 		.build();

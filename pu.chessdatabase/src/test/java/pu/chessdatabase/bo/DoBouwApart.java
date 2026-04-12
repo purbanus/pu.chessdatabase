@@ -32,7 +32,7 @@ public void buildKDKT()
 	config.switchConfig( "KDKT", false );
 	bouw.bouwDatabase();
 }
-@Test
+//@Test
 public void buildKDKT2()
 {
 	config.switchConfig( "KDKT", false );

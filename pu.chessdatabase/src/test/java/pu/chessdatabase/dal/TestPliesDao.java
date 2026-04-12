@@ -60,7 +60,7 @@ public void checkPlies( Plies aPlies )
 	assertThat( ply.getEinde(), is( Nog_niet ) );
 	assertThat( ply.getZetNummer(), is( 1 ) );
 	assertThat( ply.getVanNaar(), is( new VanNaar( 17, 85 ) ) );
-	assertThat( ply.isSchaak(), is( false ) );
+	assertThat( ply.isPlySchaak(), is( false ) );
 	assertThat( ply.getBoStelling(), is( boStelling ) );
 
 	ply = aPlies.getPlies().get( 1 );
@@ -68,7 +68,7 @@ public void checkPlies( Plies aPlies )
 	assertThat( ply.getEinde(), is( Nog_niet ) );
 	assertThat( ply.getZetNummer(), is( 2 ) );
 	assertThat( ply.getVanNaar(), is( new VanNaar( 17, 85 ) ) );
-	assertThat( ply.isSchaak(), is( false ) );
+	assertThat( ply.isPlySchaak(), is( false ) );
 	assertThat( ply.getBoStelling(), is( boStelling ) );
 }
 //@Test
@@ -159,7 +159,7 @@ public void testSavePlies()
 		.plies( plies )
 		.einde( Nog_niet )
 		.zetNummer( 1 )
-		.schaak( false )
+		.plySchaak( false )
 		.vanNaar( new VanNaar( "b2", "e5") )
 		.boStelling( boStelling1 )
 		.build()
@@ -169,7 +169,7 @@ public void testSavePlies()
 		.plies( plies )
 		.einde( Nog_niet )
 		.zetNummer( 1 )
-		.schaak( false )
+		.plySchaak( false )
 		.vanNaar( new VanNaar( "h8", "g8") )
 		.boStelling( boStelling2 )
 		.build()
@@ -179,7 +179,7 @@ public void testSavePlies()
 		.plies( plies )
 		.einde( Nog_niet )
 		.zetNummer( 2 )
-		.schaak( false )
+		.plySchaak( false )
 		.vanNaar( null )
 		.boStelling( boStelling3 )
 		.build()
