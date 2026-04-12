@@ -7,6 +7,10 @@ import pu.chessdatabase.dal.FlatDocument;
 import pu.chessdatabase.dbs.Resultaat;
 import pu.chessdatabase.service.BoStellingKey;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,6 +32,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Embeddable
 public class BoStelling implements Cloneable
 {
 public static class AlfaBuilder
@@ -81,16 +86,33 @@ public static Kleur getVeldKleur( int aVeld )
 	int kol = aVeld % 16;
 	return ( rij + kol ) % 2 == 0 ? Zwart : Wit;
 }
-
-private final boolean StellingType = true;
+@Column( nullable = false )
 private int wk;
+
+@Column( nullable = false )
 private int zk;
+
+@Column( nullable = false )
 private int s3;
+
+@Column( nullable = false )
 private int s4;
+
+@Column( nullable = false )
 private int s5;
+
+@Column( nullable = false )
+@Enumerated( EnumType.STRING )
 private Kleur aanZet;
+
+@Column( nullable = false )
+@Enumerated( EnumType.STRING )
 private Resultaat resultaat;
+
+@Column( nullable = false )
 private int aantalZetten;
+
+@Column( nullable = false )
 private boolean schaak;
 
 @Override

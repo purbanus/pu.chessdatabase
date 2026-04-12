@@ -2,6 +2,8 @@ package pu.chessdatabase.bo.speel;
 
 import org.apache.commons.lang3.StringUtils;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Embeddable
 public class VanNaar
 {
 public static class AlfaBuilder
@@ -27,7 +30,9 @@ public static AlfaBuilder alfaBuilder()
 {
 	return new AlfaBuilder();
 }
+@Column( nullable = true )
 private Integer van;
+@Column( nullable = true )
 private Integer naar;
 public VanNaar( String aVan, String aNaar )
 {

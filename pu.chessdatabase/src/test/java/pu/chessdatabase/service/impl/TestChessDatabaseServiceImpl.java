@@ -149,9 +149,7 @@ public void testDoNewGame()
 	
 	Ply ply = TestHelper.createOnePly( getPartij().getPlies(), (VanNaar) null );
 	ply.setId( 501 );
-	Ply currentPly = getPartij().getPlies().getCurrentPly();
 	assertThat( getPartij().getPlies().getCurrentPly(), is( ply ) );
-	assertEquals( ply, currentPly );
 
 	LocalDateTime started = LocalDateTime.now();
 	Plies plies = Plies.builder()

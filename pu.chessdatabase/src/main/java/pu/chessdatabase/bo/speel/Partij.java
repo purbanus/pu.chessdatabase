@@ -314,7 +314,7 @@ public BoStelling zet( VanNaar aVanNaar )
 	{
 		getPlies().clearPliesFromNextPly();
 		currentPly.setVanNaar( aVanNaar );
-		currentPly.setSchaak( boStellingNaar.isSchaak() );
+		currentPly.setPlySchaak( boStellingNaar.isSchaak() );
 		getPlies().addPly( boStellingNaar, isEindStelling( boStellingNaar ) );
 	}
 	return boStellingNaar;
@@ -358,7 +358,7 @@ String plyToString( Ply aPly )
 	String van = veldToAlfa( aPly.getVanNaar().getVan() );
 	sb.append( van ).append( isSlagZet( aPly.getBoStelling(), aPly.getVanNaar() ) ? "x" : "-" );
 	String naar = veldToAlfa( aPly.getVanNaar().getNaar() );
-	sb.append( naar ).append( aPly.isSchaak() ? "+" : " " );
+	sb.append( naar ).append( aPly.isPlySchaak() ? "+" : " " );
 	sb.append( aPly.getEinde() == Mat ? "#" : "" );
 	sb.append( aPly.getEinde() == Pat ? "=" : "" );
 	return sb.toString();
@@ -520,7 +520,7 @@ public List<GegenereerdeZetDocument> getGegenereerdeZetten()
 			.plies( getPlies() )
 			.einde( Nog_niet ) // @@NOG klopt dit??
 			.zetNummer( zetNummer )
-			.schaak( getGen().isSchaak( boStellingNaar ) )
+			.plySchaak( getGen().isSchaak( boStellingNaar ) )
 			.vanNaar( stellingToVanNaar( boStellingVan, boStellingNaar ) )
 			.boStelling( boStellingVan )
 			.build();

@@ -88,7 +88,6 @@ void switchConfig( ConfigImpl aNewConfig, boolean aSwitchVM )
 	}
 	staticStukList = getStukList();
 	staticStukken = getStukken();
-
 }
 public void switchConfig( String aConfigString, boolean aSwitchVM )
 {
