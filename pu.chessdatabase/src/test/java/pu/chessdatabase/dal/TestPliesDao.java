@@ -66,7 +66,7 @@ public void checkPlies( Plies aPlies )
 	ply = aPlies.getPlies().get( 1 );
 	assertThat( ply.getId(), is( 2 ) );
 	assertThat( ply.getEinde(), is( Nog_niet ) );
-	assertThat( ply.getZetNummer(), is( 2 ) );
+	assertThat( ply.getZetNummer(), is( 1 ) );
 	assertThat( ply.getVanNaar(), is( new VanNaar( 17, 85 ) ) );
 	assertThat( ply.isPlySchaak(), is( false ) );
 	assertThat( ply.getBoStelling(), is( boStelling ) );
@@ -158,7 +158,7 @@ public void testSavePlies()
 		//.id is voor JPA
 		.plies( plies )
 		.einde( Nog_niet )
-		.zetNummer( 1 )
+		.plyNummer( 1 )
 		.plySchaak( false )
 		.vanNaar( new VanNaar( "b2", "e5") )
 		.boStelling( boStelling1 )
@@ -168,7 +168,7 @@ public void testSavePlies()
 		//.id is voor JPA
 		.plies( plies )
 		.einde( Nog_niet )
-		.zetNummer( 1 )
+		.plyNummer( 2 )
 		.plySchaak( false )
 		.vanNaar( new VanNaar( "h8", "g8") )
 		.boStelling( boStelling2 )
@@ -178,7 +178,7 @@ public void testSavePlies()
 		//.id is voor JPA
 		.plies( plies )
 		.einde( Nog_niet )
-		.zetNummer( 2 )
+		.plyNummer( 3 )
 		.plySchaak( false )
 		.vanNaar( null )
 		.boStelling( boStelling3 )
