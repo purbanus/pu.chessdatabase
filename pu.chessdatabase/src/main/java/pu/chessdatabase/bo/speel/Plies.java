@@ -1,7 +1,5 @@
 package pu.chessdatabase.bo.speel;
 
-import static pu.chessdatabase.bo.Kleur.*;
-
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -122,28 +120,18 @@ public void addPly( Ply aPly )
 	aPly.setPlies( this );
 	getPlies().add( aPly );
 	setBegonnen( true );
-	setVooruit();
+	//setVooruit();
+	setCurrentPlyNumber( aPly.getPlyNummer() );
 }
 public Ply addPly( BoStelling aBoStelling, Einde aEindeType )
 {
-	int zetNummer;
-	if ( hasPlies() )
-	{
-		zetNummer = getCurrentPly().getZetNummer();
-		if ( aBoStelling.getAanZet() == Wit )
-		{
-			zetNummer++;
-		}
-	}
-	else
-	{
-		zetNummer = 1;
-	}
+	int plyNummer;
+	plyNummer = getPlies().size();
 	Ply newPly = Ply.builder()
 		//.id is voor JPA
 		.plies( this )
 		.einde( aEindeType )
-		.zetNummer( zetNummer )
+		.plyNummer( plyNummer )
 		//.schaak @@Waarom niet??
 		//.vanNaar( VanNaar.ILLEGAL_VAN_NAAR ) // Liever null want daar kun je gemakkelijk op testen
 		.boStelling( aBoStelling )
