@@ -22,10 +22,10 @@ SELECT
 , plies.begonnen AS PLIES_BEGONNEN
 , ply.id AS PLY_ID
 , ply.einde AS PLY_EINDE
-, ply.zet_nummer AS PLY_ZETNUMMER
+, ply.ply_nummer AS PLY_PLYNUMMER
 , ply.van AS PLY_VAN
 , ply.naar AS PLY_NAAR
-, ply.schaak AS PLY_SCHAAK
+, ply.ply_schaak AS PLYPLY_SCHAAK
 , ply.wk AS PLY_WK
 , ply.zk AS PLY_ZK
 , ply.s3 AS PLY_S3
@@ -34,6 +34,7 @@ SELECT
 , ply.aan_zet AS PLY_AANZET
 , ply.resultaat AS PLY_RESULTAAT
 , ply.aantal_zetten AS PLY_AANTAL_ZETTEN
+, ply.schaak AS PLY_SCHAAK
 from plies
 join ply
 	on plies.id = ply.plies_id
@@ -51,10 +52,10 @@ SELECT
 , plies.begonnen AS PLIES_BEGONNEN
 , ply.id AS PLY_ID
 , ply.einde AS PLY_EINDE
-, ply.zet_nummer AS PLY_ZETNUMMER
+, ply.ply_nummer AS PLY_PLYNUMMER
 , ply.van AS PLY_VAN
 , ply.naar AS PLY_NAAR
-, ply.schaak AS PLY_SCHAAK
+, ply.ply_schaak AS PLYPLY_SCHAAK
 , ply.wk AS PLY_WK
 , ply.zk AS PLY_ZK
 , ply.s3 AS PLY_S3
@@ -63,6 +64,7 @@ SELECT
 , ply.aan_zet AS PLY_AANZET
 , ply.resultaat AS PLY_RESULTAAT
 , ply.aantal_zetten AS PLY_AANTAL_ZETTEN
+, ply.schaak AS PLY_SCHAAK
 from plies
 join ply
 	on plies.id = ply.plies_id
