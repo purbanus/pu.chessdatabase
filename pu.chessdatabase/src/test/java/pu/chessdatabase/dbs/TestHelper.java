@@ -77,7 +77,7 @@ public static Ply createOnePly( Plies aPlies, BoStelling aBoStelling, VanNaar aV
 		//.id is voor JPA
 		.plies( aPlies )
 		.einde( Nog_niet )
-		.zetNummer( 1 )
+		.plyNummer( 0 )
 		.plySchaak( false )
 		.vanNaar( aVanNaar )
 		.boStelling( aBoStelling )
@@ -102,7 +102,7 @@ public static Triple<Ply, Ply, Ply> createThreeDifferentPlies( Plies aPlies, BoS
 		//.id is voor JPA
 		.plies( aPlies )
 		.einde( Nog_niet )
-		.zetNummer( 17 )
+		.plyNummer( 0 )
 		.plySchaak( false )
 		.vanNaar( new VanNaar( "a1", "a2" ) )
 		.boStelling( aBoStelling )
@@ -111,7 +111,7 @@ public static Triple<Ply, Ply, Ply> createThreeDifferentPlies( Plies aPlies, BoS
 		//.id is voor JPA
 		.plies( aPlies )
 		.einde( Mat )
-		.zetNummer( 27 )
+		.plyNummer( 1 )
 		.plySchaak( false )
 		.vanNaar( new VanNaar( "b2", "c3" ) )
 		.boStelling( aBoStelling )
@@ -120,7 +120,7 @@ public static Triple<Ply, Ply, Ply> createThreeDifferentPlies( Plies aPlies, BoS
 		//.id is voor JPA
 		.plies( aPlies )
 		.einde( Mat )
-		.zetNummer( 39 )
+		.plyNummer( 2 )
 		.plySchaak( false )
 		.vanNaar( new VanNaar( "b2", "c3" ) )
 		.boStelling( aBoStelling )
