@@ -518,8 +518,7 @@ public List<GegenereerdeZetDocument> getGegenereerdeZetten()
 			.vanNaar( stellingToVanNaar( boStellingVan, boStellingNaar ) )
 			.boStelling( boStellingVan )
 			.build();
-		zetten.add( getGegenereerdeZetDocument( ply, boStellingNaar, zetNummer ) );
-		zetNummer++;
+		zetten.add( getGegenereerdeZetDocument( ply, boStellingNaar, zetNummer++ ) );
 	}
 	return zetten;
 }
