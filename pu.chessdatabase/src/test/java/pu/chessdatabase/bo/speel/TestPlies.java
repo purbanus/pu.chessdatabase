@@ -49,7 +49,7 @@ public void testClear()
 	plies.addPly( ply );
 	plies.addPly( ply );
 	assertThat( plies.getSize(), is( 2 ) );
-	assertThat( plies.getCurrentPlyNumber(), is( 1 ) );
+	assertThat( plies.getCurrentPlyNumber(), is( 0 ) );
 	assertThat( plies.getLastPlyNumber(), is( 1 ) );
 	plies.clear();
 	assertThat( plies.getSize(), is( 0 ) );
@@ -66,6 +66,7 @@ public void testAddPly()
 	assertThat( plies.getLastPlyNumber(), is( 0 ) );
 	assertThat( plies.isBegonnen(), is( true ) );
 	
+	ply.setPlyNummer( 1 );
 	plies.addPly( ply );
 	assertThat( plies.getSize(), is( 2 ) );
 	assertThat( plies.getCurrentPlyNumber(), is( 1 ) );
@@ -146,13 +147,13 @@ public void testGetPly()
 	assertThat( newFirstPly, is( firstPly ) );
 	assertThat( newFirstPly.getBoStelling(), is( boStelling ) );
 	assertThat( newFirstPly.getEinde(), is( Nog_niet ) );
-	assertThat( newFirstPly.getZetNummer(), is( 17 ) );
+	assertThat( newFirstPly.getPlyNummer(), is( 0 ) );
 	
 	Ply newSecondPly = plies.getPly( 1 );
 	assertThat( newSecondPly, is( secondPly ) );
 	assertThat( newSecondPly.getBoStelling(), is( boStelling ) );
 	assertThat( newSecondPly.getEinde(), is( Mat ) );
-	assertThat( newSecondPly.getZetNummer(), is( 27 ) );
+	assertThat( newSecondPly.getPlyNummer(), is( 1 ) );
 }
 @Test
 public void testGetCurrentPreviousAndLastPly()
