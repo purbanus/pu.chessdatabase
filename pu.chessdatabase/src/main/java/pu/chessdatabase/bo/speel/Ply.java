@@ -1,11 +1,11 @@
 package pu.chessdatabase.bo.speel;
 
+import static pu.chessdatabase.bo.Kleur.*;
+
 import org.springframework.transaction.annotation.Transactional;
 
 import pu.chessdatabase.bo.BoStelling;
-import pu.chessdatabase.bo.Kleur;
 import pu.chessdatabase.dal.FlatDocument;
-import pu.chessdatabase.dbs.Resultaat;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -46,32 +46,12 @@ public static Ply fromFlatDocument( FlatDocument aFlatDocument )
 		.id( aFlatDocument.getPlyId() )
 		//.plies(xxx) @@zit niet in FlatDocument
 		.einde( Einde.valueOf( aFlatDocument.getEinde() ) )
-		.zetNummer( aFlatDocument.getZetNummer() )
+		.plyNummer( aFlatDocument.getPlyNummer() )
 		.plySchaak( aFlatDocument.isSchaak() )
 		.vanNaar( new VanNaar( aFlatDocument.getVan(), aFlatDocument.getNaar() ) )
 		.boStelling( BoStelling.fromFlatDocument( aFlatDocument ) )
 		.build();
 }
-//public static class Builder
-//{
-//	private Ply ply = new Ply();
-//	public Builder id( int aId ) { ply.setId( aId ); return this; }
-//	public Builder plies( Plies aPlies ) { ply.setPlies( aPlies ); return this; }
-//	public Builder einde( Einde aEinde ) { ply.setEinde( aEinde ); return this; }
-//	public Builder zetNummer( int aZetNummer ) { ply.setZetNummer( aZetNummer ); return this; }
-//	public Builder schaak( boolean aSchaak ) { ply.setSchaak( aSchaak ); return this; }
-//	public Builder vanNaar( VanNaar aVanNaar ) { ply.setVanNaar( aVanNaar ); return this; }
-//	public Builder boStelling( BoStelling aBoStelling ) { ply.setBoStelling( aBoStelling ); return this; }
-//	public Ply build()
-//	{
-//		return ply;
-//	}
-//}
-//public static Builder builder()
-//{
-//	return new Builder();
-//}
-
 @Id
 @GeneratedValue(strategy = GenerationType.AUTO)
 private Integer id;
@@ -81,7 +61,7 @@ private Integer id;
 private Einde einde;
 
 @Column( nullable = false )
-private int zetNummer; // Liep in Modula van 1 tot 130!
+private int plyNummer;
 
 //@@NOG Dit nog eens goed doordenken: waarom is het niet het schaak van de ONDERHAVIGE ply?
 //Dit moet je niet doen, het is het schaak in de VORIGE ply dat geldt
@@ -90,7 +70,7 @@ private int zetNummer; // Liep in Modula van 1 tot 130!
 //	return getBoStelling().isSchaak();
 //}
 @Column( nullable = false )
-private boolean plySchaak = false;
+private boolean plySchaak;
 
 @Column( nullable = true )
 private VanNaar vanNaar;
@@ -112,4 +92,21 @@ private BoStelling boStelling;
 @ToString.Exclude
 private Plies plies;
 
+public int getZetNummer()
+{
+	if ( ! getPlies().hasPlies() )
+	{
+		return -1;
+	}
+	int zetNummer;
+	if ( getPlies().getFirstPly().getBoStelling().getAanZet() == Wit )
+	{
+		zetNummer = getPlyNummer() / 2 + 1;	
+	}
+	else
+	{
+		zetNummer = ( getPlyNummer() + 1 ) / 2 + 1;	
+	}
+	return zetNummer;
+}
 }
