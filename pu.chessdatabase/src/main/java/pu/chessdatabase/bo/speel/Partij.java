@@ -130,7 +130,7 @@ public BoStelling newGame( BoStelling aStartStelling )
 		.configString( getConfig().getConfig() )
 		.userName( DEFAULT_USER_NAME )
 		.started( LocalDateTime.now().truncatedTo( ChronoUnit.SECONDS ) )
-		.currentPlyNumber( -1 ) // Is met @Builder.Default al -1
+		.currentPlyNummer( -1 ) // Is met @Builder.Default al -1
 		.begonnen( false ) // Is met @Builder.Default al false
 		.plies( new ArrayList<>() )
 		.build()
@@ -232,7 +232,7 @@ public BoStelling zetVooruit()
 {
 	if ( isBegonnen() )
 	{
-		if ( ! getPlies().isAtLastPlyNumber() )
+		if ( ! getPlies().isAtLastPlyNummer() )
 		{
 			getPlies().setVooruit();
 		}
@@ -457,7 +457,7 @@ public List<ZetDocument> createZetten()
 		);
 		startPly = 1;
 	}
-	for ( int x = startPly; x < getPlies().getLastPlyNumber(); x += 2 )
+	for ( int x = startPly; x < getPlies().getLastPlyNummer(); x += 2 )
 	{
 		zetten.add( createZetDocument( x ) );
 	}
