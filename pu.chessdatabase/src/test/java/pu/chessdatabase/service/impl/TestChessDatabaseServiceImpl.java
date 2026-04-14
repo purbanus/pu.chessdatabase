@@ -145,7 +145,7 @@ public void testDoNewGame()
 	assertThat( getPartij().getPlies(), is( notNullValue() ) );
 	assertThat( getPartij().getPlies().getPlies(), is( notNullValue() ) );
 	assertThat( getPartij().getPlies().getPlies().size(), is( 1 ) );
-	assertThat( getPartij().getPlies().getCurrentPlyNumber(), is( 0 ) );
+	assertThat( getPartij().getPlies().getCurrentPlyNummer(), is( 0 ) );
 	
 	Ply ply = TestHelper.createOnePly( getPartij().getPlies(), (VanNaar) null );
 	ply.setId( 501 );
@@ -156,7 +156,7 @@ public void testDoNewGame()
 		.id( 500 )
 		.configString( "KDKT" )
 		.userName( Partij.DEFAULT_USER_NAME )
-		.currentPlyNumber( 0 )
+		.currentPlyNummer( 0 )
 		.begonnen( true )
 		.plies( List.of( ply ) )
 		.build();
