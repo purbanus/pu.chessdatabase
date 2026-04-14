@@ -12,7 +12,6 @@ import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.bo.speel.Einde.*;
 import static pu.chessdatabase.dbs.Resultaat.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -160,7 +159,7 @@ public void testNewGame()
 		//.id is voor JPA
 		.plies( getPartij().getPlies() )
 		.einde( Einde.Nog_niet )
-		.zetNummer( 1 )
+		.plyNummer( 0 )
 		.plySchaak( false )
 		.vanNaar( null )
 		.boStelling( newBoStelling )
@@ -328,7 +327,7 @@ public void testZetNaarBegin()
 		.build();
 	assertThat( actualNaarBeginStelling, is( expectedNaarBeginStelling ) );
 	
-	assertThat( partij.getPlies().getCurrentPlyNumber(), is( 0 ) );
+	assertThat( partij.getPlies().getCurrentPlyNummer(), is( 0 ) );
 }
 @Test
 public void testZetTerug()
@@ -368,7 +367,7 @@ public void testZetTerug()
 		.build();
 	assertThat( actualTerugStelling, is( expectedTerugStelling ) );
 	
-	assertThat( partij.getPlies().getCurrentPlyNumber(), is( 2 ) );
+	assertThat( partij.getPlies().getCurrentPlyNummer(), is( 2 ) );
 }
 @Test
 public void testZetVooruit()
@@ -399,7 +398,7 @@ public void testZetVooruit()
 	assertThat( partij.getStand(), is( actualVooruitStelling ) );
 	assertThat( actualVooruitStelling, is( expectedVooruitStelling ) );
 	
-	assertThat( partij.getPlies().getCurrentPlyNumber(), is( 1 ) );
+	assertThat( partij.getPlies().getCurrentPlyNummer(), is( 1 ) );
 }
 @Test
 public void testZetNaarEinde()
@@ -434,7 +433,7 @@ public void testZetNaarEinde()
 	assertThat( partij.getStand(), is( actualVooruitStelling ) );
 	assertThat( actualVooruitStelling, is( expectedVooruitStelling ) );
 	
-	assertThat( partij.getPlies().getCurrentPlyNumber(), is( 3 ) );
+	assertThat( partij.getPlies().getCurrentPlyNummer(), is( 3 ) );
 }
 @Test
 public void testZet()
@@ -476,12 +475,12 @@ public void testZet()
 	
 	assertThat( partij.zet( vanNaar ), is( boStellingNaar ) );
 	assertThat( partij.getPlies().getFirstPly().getVanNaar(), is( vanNaar ) );
-	assertThat( partij.getPlies().getCurrentPlyNumber(), is( 1 ) );
-	assertThat( partij.getPlies().getLastPlyNumber(), is( 1 ) );
+	assertThat( partij.getPlies().getCurrentPlyNummer(), is( 1 ) );
+	assertThat( partij.getPlies().getLastPlyNummer(), is( 1 ) );
 	Ply secondPly = partij.getPlies().getPly( 1 );
 	assertThat( secondPly.getBoStelling(), is( boStellingNaar ) );
 	assertThat( secondPly.getEinde(), is( Nog_niet ) );
-	assertThat( secondPly.getZetNummer(), is( 1 ) );
+	assertThat( secondPly.getPlyNummer(), is( 1 ) );
 }
 @Test
 public void testZetMetClearPliesVoorZet()
@@ -523,8 +522,8 @@ public void testZetMetClearPliesVoorZet()
 		assertThat( partij.getPlies().getPly( x ), is( notNullValue() ) );
 	}
 	assertThat( partij.getPlies().getSize(), is( 2 ) );
-	assertThat( partij.getPlies().getCurrentPlyNumber(), is( 1 ) );
-	assertThat( partij.getPlies().getLastPlyNumber(), is( 1 ) );
+	assertThat( partij.getPlies().getCurrentPlyNummer(), is( 1 ) );
+	assertThat( partij.getPlies().getLastPlyNummer(), is( 1 ) );
 }
 @Test
 public void testZetMetZwart()
@@ -552,17 +551,18 @@ public void testZetMetZwart()
 	BoStelling newBoStelling = partij.newGame( boStellingVan );
 	assertThat( partij.getPlies().isBegonnen(), is ( true ) );
 	Ply firstPly = partij.getPlies().getFirstPly();
+	assertThat( firstPly.getPlyNummer(), is( 0 ) );
 	assertThat( firstPly.getBoStelling(), is( newBoStelling ) );
 	assertThat( partij.vanCurrentPlyNaarToStelling( vanNaar ), is( boStellingNaar ) );
 	
 	assertThat( partij.zet( vanNaar ), is( boStellingNaar ) );
 	assertThat( firstPly.getVanNaar(), is( vanNaar ) );
-	assertThat( partij.getPlies().getCurrentPlyNumber(), is( 1 ) );
-	assertThat( partij.getPlies().getLastPlyNumber(), is( 1 ) );
+	assertThat( partij.getPlies().getCurrentPlyNummer(), is( 1 ) );
+	assertThat( partij.getPlies().getLastPlyNummer(), is( 1 ) );
 	Ply secondPly = partij.getPlies().getPly( 1 );
 	assertThat( secondPly.getBoStelling(), is( boStellingNaar ) );
 	assertThat( secondPly.getEinde(), is( Nog_niet ) );
-	assertThat( secondPly.getZetNummer(), is( 2 ) );
+	assertThat( secondPly.getPlyNummer(), is( 1 ) );
 }
 @Test
 public void testIsSlagZet()
@@ -610,17 +610,18 @@ public void testZetStelling()
 	VanNaar vanNaar = new VanNaar( 0x77, 0x76 );
 	BoStelling newBoStelling = partij.newGame( boStellingVan );
 	Ply firstPly = partij.getPlies().getFirstPly();
+	assertThat( firstPly.getPlyNummer(), is( 0 ) );
 	assertThat( firstPly.getBoStelling(), is( newBoStelling ) );
 	assertThat( partij.vanCurrentPlyNaarToStelling( vanNaar ), is( boStellingNaar ) );
 	
 	assertThat( partij.zetStelling( boStellingNaar ), is( boStellingNaar ) );
 	assertThat( firstPly.getVanNaar(), is( vanNaar ) );
-	assertThat( partij.getPlies().getCurrentPlyNumber(), is( 1 ) );
-	assertThat( partij.getPlies().getLastPlyNumber(), is( 1 ) );
+	assertThat( partij.getPlies().getCurrentPlyNummer(), is( 1 ) );
+	assertThat( partij.getPlies().getLastPlyNummer(), is( 1 ) );
 	Ply secondPly = partij.getPlies().getPly( 1 );
 	assertThat( secondPly.getBoStelling(), is( boStellingNaar ) );
 	assertThat( secondPly.getEinde(), is( Nog_niet ) );
-	assertThat( secondPly.getZetNummer(), is( 2 ) );
+	assertThat( secondPly.getPlyNummer(), is( 1 ) );
 }
 @Test
 public void testBedenk()
@@ -650,12 +651,12 @@ public void testBedenk()
 	
 	assertThat( partij.bedenk(), is( boStellingNaar ) );
 	assertThat( firstPly.getVanNaar(), is( vanNaar ) );
-	assertThat( partij.getPlies().getCurrentPlyNumber(), is( 1 ) );
-	assertThat( partij.getPlies().getLastPlyNumber(), is( 1 ) );
+	assertThat( partij.getPlies().getCurrentPlyNummer(), is( 1 ) );
+	assertThat( partij.getPlies().getLastPlyNummer(), is( 1 ) );
 	Ply secondPly = partij.getPlies().getPly( 1 );
 	assertThat( secondPly.getBoStelling(), is( boStellingNaar ) );
 	assertThat( secondPly.getEinde(), is( Nog_niet ) );
-	assertThat( secondPly.getZetNummer(), is( 1 ) );
+	assertThat( secondPly.getPlyNummer(), is( 1 ) );
 }
 @Test
 public void testWatStaatErOp()
@@ -688,7 +689,7 @@ public void testPlyToString()
 		//.id is voor JPA
 		.plies( getPartij().getPlies() )
 		.einde( Einde.Nog_niet )
-		.zetNummer( 1 )
+		.plyNummer( 1 )
 		.plySchaak( false )
 		.vanNaar( vanNaar )
 		.boStelling( boStelling )
@@ -707,7 +708,7 @@ public void testPlyToString()
 		//.id is voor JPA
 		.plies( getPartij().getPlies() )
 		.einde( Einde.Nog_niet )
-		.zetNummer( 1 )
+		.plyNummer( 1 )
 		.plySchaak( true )
 		.vanNaar( vanNaar )
 		.boStelling( boStelling )
@@ -727,7 +728,7 @@ public void testPlyToString()
 		//.id is voor JPA
 		.plies( getPartij().getPlies() )
 		.einde( Einde.Nog_niet )
-		.zetNummer( 1 )
+		.plyNummer( 1 )
 		.plySchaak( true )
 		.vanNaar( vanNaar )
 		.boStelling( boStelling )
@@ -747,7 +748,7 @@ public void testPlyToString()
 		//.id is voor JPA
 		.plies( getPartij().getPlies() )
 		.einde( Einde.Nog_niet )
-		.zetNummer( 1 )
+		.plyNummer( 1 )
 		.plySchaak( true )
 		.vanNaar( vanNaar )
 		.boStelling( boStelling )
@@ -869,7 +870,8 @@ public void testCreateZetDocument()
 		.witZet( "Db2-b8+" )
 		.zwartZet( "..." )
 		.build();
-	assertThat( partij.createZetDocument( 0 ), is( zetDocument1 ) );
+	// Je mag createZetDocument niet meer aanroepen met een ply waarin Zwart aan zet is
+	/* Exception exception = */ assertThrows( RuntimeException.class, () -> partij.createZetDocument( 0 ) );
 	assertThat( partij.createZetDocument( 1 ), is( zetDocument2 ) );
 
 }
@@ -951,7 +953,7 @@ public void testGegenereerdeZetDocument()
 		//.id is voor JPA
 		.plies( getPartij().getPlies() )
 		.einde( Nog_niet )
-		.zetNummer( 15 )
+		.plyNummer( 15 )
 		.plySchaak( false )
 		.vanNaar( vanNaar )
 		.boStelling( boStellingVan )
@@ -963,7 +965,7 @@ public void testGegenereerdeZetDocument()
 		.matInHoeveel( "Mat in 29" )
 		.build();
 	BoStelling boStellingNaar= partij.vanNaarToStelling( ply, vanNaar );
-	assertThat( partij.getGegenereerdeZetDocument( ply, boStellingNaar ), is( gegenereerdeZetDocument ) );
+	assertThat( partij.getGegenereerdeZetDocument( ply, boStellingNaar, 16 ), is( gegenereerdeZetDocument ) );
 
 	boStellingVan = BoStelling.builder()
 		.wk( 0x00 )
@@ -978,7 +980,7 @@ public void testGegenereerdeZetDocument()
 		//.id is voor JPA
 		.plies( getPartij().getPlies() )
 		.einde( Nog_niet )
-		.zetNummer( 17 )
+		.plyNummer( 17 )
 		.plySchaak( true )
 		.vanNaar( vanNaar )
 		.boStelling( boStellingVan )
@@ -990,7 +992,7 @@ public void testGegenereerdeZetDocument()
 		.matInHoeveel( "..." )
 		.build();
 	boStellingNaar = partij.vanNaarToStelling( ply, vanNaar );
-	assertThat( partij.getGegenereerdeZetDocument( ply, boStellingNaar ), is( gegenereerdeZetDocument ) );
+	assertThat( partij.getGegenereerdeZetDocument( ply, boStellingNaar, 18 ), is( gegenereerdeZetDocument ) );
 }
 @Test
 public void testGeGegenereerdeZetten()
@@ -1110,7 +1112,7 @@ public void testModula2Partij_1()
 		//.id is voor JPA
 		.plies( getPartij().getPlies() )
 		.einde( Einde.Nog_niet )
-		.zetNummer( 1 )
+		.plyNummer( 0 )
 		.plySchaak( false )
 		.vanNaar( vanNaar1 )
 		.boStelling( boStelling1 )
@@ -1119,7 +1121,7 @@ public void testModula2Partij_1()
 		//.id is voor JPA
 		.plies( getPartij().getPlies() )
 		.einde( Einde.Nog_niet )
-		.zetNummer( 1 )
+		.plyNummer( 1 )
 		.plySchaak( false )
 		.vanNaar( vanNaar2 )
 		.boStelling( boStelling2 )
@@ -1128,7 +1130,7 @@ public void testModula2Partij_1()
 		//.id is voor JPA
 		.plies( getPartij().getPlies() )
 		.einde( Einde.Nog_niet )
-		.zetNummer( 2 )
+		.plyNummer( 2 )
 		.plySchaak( false )
 		.vanNaar( vanNaar3 )		
 		.boStelling( boStelling3 )
@@ -1137,7 +1139,7 @@ public void testModula2Partij_1()
 		//.id is voor JPA
 		.plies( getPartij().getPlies() )
 		.einde( Einde.Nog_niet )
-		.zetNummer( 2 )
+		.plyNummer( 3 )
 		.plySchaak( false )
 		.vanNaar( vanNaar4 )
 		.boStelling( boStelling4 )
@@ -1231,7 +1233,7 @@ public void testModula2Partij_b()
 		//.id is voor JPA
 		.plies( getPartij().getPlies() )
 		.einde( Einde.Nog_niet )
-		.zetNummer( 1 )
+		.plyNummer( 0 )
 		.plySchaak( false )
 		.vanNaar( vanNaar1 )
 		.boStelling( boStelling1 )
@@ -1240,7 +1242,7 @@ public void testModula2Partij_b()
 		//.id is voor JPA
 		.plies( getPartij().getPlies() )
 		.einde( Einde.Nog_niet )
-		.zetNummer( 2 )
+		.plyNummer( 1 )
 		.plySchaak( false )
 		.vanNaar( vanNaar2 )
 		.boStelling( boStelling2 )
@@ -1249,7 +1251,7 @@ public void testModula2Partij_b()
 		//.id is voor JPA
 		.plies( getPartij().getPlies() )
 		.einde( Einde.Nog_niet )
-		.zetNummer( 2 )
+		.plyNummer( 2 )
 		.plySchaak( false )
 		.vanNaar( vanNaar3 )
 		.boStelling( boStelling3)
@@ -1258,7 +1260,7 @@ public void testModula2Partij_b()
 		//.id is voor JPA
 		.plies( getPartij().getPlies() )
 		.einde( Einde.Nog_niet )
-		.zetNummer( 3 )
+		.plyNummer( 3 )
 		.plySchaak( false )
 		.vanNaar( vanNaar4 )
 		.boStelling( boStelling4 )
@@ -1281,6 +1283,7 @@ public void testModula2Partij_b()
 		.build();
 
 	assertThat( zetten.size(), is( 2 ) );
+	// Je mag 
 	assertThat( zetten.get( 0 ), is( zetDocument1 ) );
 	assertThat( zetten.get( 1 ), is( zetDocument2 ) );
 }
