@@ -50,7 +50,7 @@ public static Plies fromFlatDocument( FlatDocument aFlatDocument )
 		.configString( aFlatDocument.getConfigString() )
 		.userName( aFlatDocument.getUserName() )
 		.started( timeStampToLocalDateTime( aFlatDocument.getStarted() ) )
-		.currentPlyNumber( aFlatDocument.getCurrentPlyNumber() )
+		.currentPlyNummer( aFlatDocument.getCurrentPlyNummer() )
 		.begonnen( aFlatDocument.isBegonnen() )
 		.plies( new ArrayList<>() )
 		.build();
@@ -72,7 +72,7 @@ private LocalDateTime started;
 @Setter( AccessLevel.PRIVATE )
 @Column( nullable = false )
 @Builder.Default
-private int currentPlyNumber = -1;
+private int currentPlyNummer = -1;
 
 @Setter( AccessLevel.PRIVATE ) 
 @Column( nullable = false )
@@ -96,13 +96,13 @@ public Plies( String aConfigString )
 	configString = aConfigString;
 	// @@HIGH Waarom doet hij niet wat hieboven staat?
 	plies = new ArrayList<>();
-	currentPlyNumber = -1;
+	currentPlyNummer = -1;
 }
 public int getSize()
 {
 	return getPlies().size();
 }
-public int getLastPlyNumber()
+public int getLastPlyNummer()
 {
 	return getPlies().size() - 1;
 }
@@ -113,11 +113,11 @@ public void setStarted( LocalDateTime aLocalDateTime )
 public void clear()
 {
 	getPlies().clear();
-	setCurrentPlyNumber( -1 );
+	setCurrentPlyNummer( -1 );
 }
 public void addPly( Ply aPly )
 {
-	setCurrentPlyNumber( getPlies().size());
+	setCurrentPlyNummer( getPlies().size());
 	aPly.setPlies( this );
 	getPlies().add( aPly );
 	setBegonnen( true );
@@ -138,21 +138,21 @@ public Ply addPly( BoStelling aBoStelling, Einde aEindeType )
 	addPly( newPly );
 	return newPly;
 }
-public boolean hasPly( int aPlyNumber )
+public boolean hasPly( int aPlyNummer )
 {
-	return aPlyNumber >= 0 && aPlyNumber < getPlies().size();
+	return aPlyNummer >= 0 && aPlyNummer < getPlies().size();
 }
-public Ply getPly( int aPlyNumber )
+public Ply getPly( int aPlyNummer )
 {
-	if ( aPlyNumber > getLastPlyNumber() )
+	if ( aPlyNummer > getLastPlyNummer() )
 	{
 		throw new RuntimeException( "Fout in createZetDocument: Plynummer > laatste zet" );
 	}
-	if ( aPlyNumber < 0 )
+	if ( aPlyNummer < 0 )
 	{
 		throw new RuntimeException( "Fout in createZetDocument: Plynummer negatief" );
 	}
-	return getPlies().get(  aPlyNumber );
+	return getPlies().get(  aPlyNummer );
 }
 public Ply getFirstPly()
 {
@@ -164,23 +164,23 @@ public Ply getFirstPly()
 }
 public Ply getCurrentPly()
 {
-	if ( getCurrentPlyNumber() < 0 )
+	if ( getCurrentPlyNummer() < 0 )
 	{
 		throw new RuntimeException( "Fout in getCurrentPly: huidige Plynummer negatief" );
 	}
-	return getPlies().get( currentPlyNumber );
+	return getPlies().get( currentPlyNummer );
 }
 public Ply getPreviousPly()
 {
-	if ( getCurrentPlyNumber() < 0 )
+	if ( getCurrentPlyNummer() < 0 )
 	{
 		throw new RuntimeException( "Fout in getPreviousPly: huidige plynummer negatief" );
 	}
-	if ( getCurrentPlyNumber() == 0 )
+	if ( getCurrentPlyNummer() == 0 )
 	{
 		throw new RuntimeException( "Fout in getPreviousPly: er is geen vorige ply" );
 	}
-	return getPlies().get( getCurrentPlyNumber() - 1 );
+	return getPlies().get( getCurrentPlyNummer() - 1 );
 }
 public Ply getLastPly()
 {
@@ -203,13 +203,13 @@ public boolean hasPlies()
 {
 	return getPlies().size() > 0;
 }
-public boolean isAtLastPlyNumber()
+public boolean isAtLastPlyNummer()
 {
-	return getCurrentPlyNumber() == getPlies().size() - 1;
+	return getCurrentPlyNummer() == getPlies().size() - 1;
 }
 public boolean isNaarBeginMag()
 {
-	return isBegonnen() && getCurrentPlyNumber() > 0;
+	return isBegonnen() && getCurrentPlyNummer() > 0;
 }
 public void setToBegin()
 {
@@ -217,15 +217,15 @@ public void setToBegin()
 	{
 		throw new RuntimeException( "Fout in setToBegin: er is geen begin want de partij is nog niet begonnen" );
 	}
-	if ( getCurrentPlyNumber() <= 0 )
+	if ( getCurrentPlyNummer() <= 0 )
 	{
 		throw new RuntimeException( "Fout in setToBegin: we zijn al aan het begin" );
 	}
-	setCurrentPlyNumber( 0 );
+	setCurrentPlyNummer( 0 );
 }
 public boolean isTerugMag()
 {
-	return isBegonnen() && getCurrentPlyNumber() > 0;
+	return isBegonnen() && getCurrentPlyNummer() > 0;
 }
 public void setTerug()
 {
@@ -233,11 +233,11 @@ public void setTerug()
 	{
 		throw new RuntimeException( "Fout in setTerug: er is geen zet terug want de partij is nog niet begonnen" );
 	}
-	if ( getCurrentPlyNumber() <= 0 )
+	if ( getCurrentPlyNummer() <= 0 )
 	{
 		throw new RuntimeException( "Fout in setTerug: er is geen zet terug want de partij is nog aan het begin" );
 	}
-	currentPlyNumber--;
+	currentPlyNummer--;
 }
 public boolean isVooruitMag()
 {
@@ -249,11 +249,11 @@ public void setVooruit()
 	{
 		throw new RuntimeException( "Fout in setVooruit: er is geen zet vooruit want de partij is nog niet begonnen" );
 	}
-	currentPlyNumber++;
+	currentPlyNummer++;
 }
 public boolean isNaarEindeMag()
 {
-	return isBegonnen() && getCurrentPlyNumber() < getLastPlyNumber();
+	return isBegonnen() && getCurrentPlyNummer() < getLastPlyNummer();
 }
 public void setNaarEinde()	
 {
@@ -261,26 +261,26 @@ public void setNaarEinde()
 	{
 		throw new RuntimeException( "Fout in setToEnd: de partij is nog niet begonnen" );
 	}
-	if ( getCurrentPlyNumber() >= getLastPlyNumber() )
+	if ( getCurrentPlyNummer() >= getLastPlyNummer() )
 	{
 		throw new RuntimeException( "Fout in setNaarEinde: we zijn al op de laatst gespeelde zet" );
 	}
-	setCurrentPlyNumber( getLastPlyNumber() );
+	setCurrentPlyNummer( getLastPlyNummer() );
 }
 public void clearPliesFromNextPly()
 {
-	int lastPlyNumber = getLastPlyNumber();
-	for ( int x = getCurrentPlyNumber() + 1; x <= lastPlyNumber; x++ )
+	int lastPlyNummer = getLastPlyNummer();
+	for ( int x = getCurrentPlyNummer() + 1; x <= lastPlyNummer; x++ )
 	{
-		getPlies().remove( getCurrentPlyNumber() + 1 );
+		getPlies().remove( getCurrentPlyNummer() + 1 );
 	}
 }
 public Einde getCurrentEinde()
 {
 	return getCurrentPly().getEinde();
 }
-void setCurrentPlyNumberForTestingOnlhy( int aCurrentPlyNumber )
+void setCurrentPlyNummerForTestingOnlhy( int aCurrentPlyNummer )
 {
-	currentPlyNumber = aCurrentPlyNumber;
+	currentPlyNummer = aCurrentPlyNummer;
 }
 }
