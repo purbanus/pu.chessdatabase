@@ -130,7 +130,7 @@ public BoStelling newGame( BoStelling aStartStelling )
 		.configString( getConfig().getConfig() )
 		.userName( DEFAULT_USER_NAME )
 		.started( LocalDateTime.now().truncatedTo( ChronoUnit.SECONDS ) )
-		.currentPlyNumber( -1 ) // Is met @Builder.Default al -1
+		.currentPlyNummer( -1 ) // Is met @Builder.Default al -1
 		.begonnen( false ) // Is met @Builder.Default al false
 		.plies( new ArrayList<>() )
 		.build()
@@ -201,7 +201,7 @@ BoStelling vanNaarToStelling( BoStelling aBoStellingVan, VanNaar aVanNaar )
 			}
 		}
 	}
-	throw new RuntimeException( "Er kon geen stelling gevonden worden voor van=" + Integer.toHexString( aVanNaar.getVan() ) + " naar=" + Integer.toHexString( aVanNaar.getNaar() ) );
+	throw new RuntimeException( "Er kon geen stelling gevonden worden voor " + aVanNaar );
 }
 /**
  * -------- Kontrole op legale zet -----------------
@@ -232,7 +232,7 @@ public BoStelling zetVooruit()
 {
 	if ( isBegonnen() )
 	{
-		if ( ! getPlies().isAtLastPlyNumber() )
+		if ( ! getPlies().isAtLastPlyNummer() )
 		{
 			getPlies().setVooruit();
 		}
@@ -421,22 +421,19 @@ public String currentZetNummerToString()
  */
 ZetDocument createZetDocument( int aPlyNummer )
 {
-	// Als de eerste zet zwart is maken we puntje puntje puntje plus de  ply hierna
 	Ply ply = getPlies().getPly( aPlyNummer );
-	// Dit geldt toch alleen bij plynummer 0? Ja, maar alleen bij ply 0 kunnen we aangeroepen worden 
-	// met zwart aan zet. Bij alle andere aanropjes is altijd wit aan zet.
 	if ( ply.getBoStelling().getAanZet() == Zwart )
 	{
-		return ZetDocument.builder()
-			.zetNummer( ply.getZetNummer() )
-			.witZet( "..." )
-			.zwartZet( plyToString( ply ) )
-			.build();
+		throw new RuntimeException( "Je mag createZetDocument niet meer aanroepen met een ply waarin Zwart aan zet is"+ "" );
 	}
-	String zwartZet = "...";
+	String zwartZet;
 	if ( getPlies().hasPly( aPlyNummer + 1 ) )
 	{
 		zwartZet = plyToString( getPlies().getPly( aPlyNummer + 1 ) );
+	}
+	else
+	{
+		zwartZet = "...";
 	}
 	return ZetDocument.builder()
 		.zetNummer( ply.getZetNummer() )
@@ -460,7 +457,7 @@ public List<ZetDocument> createZetten()
 		);
 		startPly = 1;
 	}
-	for ( int x = startPly; x < getPlies().getLastPlyNumber(); x += 2 )
+	for ( int x = startPly; x < getPlies().getLastPlyNummer(); x += 2 )
 	{
 		zetten.add( createZetDocument( x ) );
 	}
@@ -469,7 +466,7 @@ public List<ZetDocument> createZetten()
 /**
  * -------- Gegenereerde zet omzetten naar string ( 55. Ke1-e2+ (+100) -------
  */
-GegenereerdeZetDocument getGegenereerdeZetDocument( Ply aPly, BoStelling aBoStellingNaar )
+GegenereerdeZetDocument getGegenereerdeZetDocument( Ply aPly, BoStelling aBoStellingNaar, int aZetNummer )
 {
 	int matInHoeveel = aBoStellingNaar.getAantalZetten() - 1;
 	String matInHoeveelString;
@@ -482,7 +479,7 @@ GegenereerdeZetDocument getGegenereerdeZetDocument( Ply aPly, BoStelling aBoStel
 		matInHoeveelString = "Mat in " + matInHoeveel;
 	}
 	return GegenereerdeZetDocument.builder()
-		.zetNummer( aPly.getZetNummer() + 1 )
+		.zetNummer( aZetNummer )
 		.zet( plyToString( aPly ) )
 		.resultaat( getGegenereerdeZetResultaat( aBoStellingNaar.getResultaat() ).toString() )
 		.matInHoeveel( aBoStellingNaar.getResultaat() == Remise ? "..." : matInHoeveelString )
@@ -512,19 +509,19 @@ public List<GegenereerdeZetDocument> getGegenereerdeZetten()
 	BoStelling boStellingVan = getPlies().getCurrentPly().getBoStelling();
 	List<BoStelling> gegenereerdeZetten = getGen().genereerZettenGesorteerd( boStellingVan );
 	List<GegenereerdeZetDocument> zetten = new ArrayList<>();
-	int zetNummer = 0;
+	int zetNummer = 1;
 	for ( BoStelling boStellingNaar : gegenereerdeZetten )
 	{
 		Ply ply = Ply.builder()
 			// .id is voor JPA
 			.plies( getPlies() )
 			.einde( Nog_niet ) // @@NOG klopt dit??
-			.zetNummer( zetNummer )
+			//.plyNummer( zetNummer )
 			.plySchaak( getGen().isSchaak( boStellingNaar ) )
 			.vanNaar( stellingToVanNaar( boStellingVan, boStellingNaar ) )
 			.boStelling( boStellingVan )
 			.build();
-		zetten.add( getGegenereerdeZetDocument( ply, boStellingNaar ) );
+		zetten.add( getGegenereerdeZetDocument( ply, boStellingNaar, zetNummer ) );
 		zetNummer++;
 	}
 	return zetten;

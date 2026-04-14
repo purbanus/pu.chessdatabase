@@ -65,6 +65,10 @@ public VanNaar( String aVanNaar )
 @Override
 public String toString()
 {
+	if ( van == null || naar == null )
+	{
+		return  " van=" + van + "naar=" + naar;
+	}
 	return Partij.veldToAlfa( van ) + "-" + Partij.veldToAlfa( naar );
 }
 }

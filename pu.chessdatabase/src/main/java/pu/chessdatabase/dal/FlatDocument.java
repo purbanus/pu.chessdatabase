@@ -14,11 +14,12 @@ private final String userName;
 // Geen LocalDateTime gebruiken: geeft een ClassCastException
 // zelfs met mijn eigen Converter
 private final Timestamp started;
-private final int currentPlyNumber;
+private final int currentPlyNummer;
 private final boolean begonnen;
+private final boolean plySchaak;
 private final int plyId;
 private final String einde;
-private final int zetNummer;
+private final int plyNummer;
 @Column( nullable = true )
 private final Integer van;
 @Column( nullable = true )

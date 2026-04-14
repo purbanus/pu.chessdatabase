@@ -41,7 +41,7 @@ public void checkPlies( Plies aPlies )
 	assertThat( aPlies.getConfigString(), is( "KDKT" ) );
 	assertThat( aPlies.getUserName(), is( Partij.DEFAULT_USER_NAME ) );
 	assertThat( aPlies.getStarted(), is( LocalDateTime.of( 2025, 5, 14, 13, 15, 0, 0 ) ) );
-	assertThat( aPlies.getCurrentPlyNumber(), is( 2 ) );
+	assertThat( aPlies.getCurrentPlyNummer(), is( 2 ) );
 	assertThat( aPlies.isBegonnen(), is( true ) );
 	assertThat( aPlies.getPlies().size(), is( 2 ) );
 	
@@ -58,7 +58,7 @@ public void checkPlies( Plies aPlies )
 	Ply ply = aPlies.getPlies().get( 0 );
 	assertThat( ply.getId(), is( 1 ) );
 	assertThat( ply.getEinde(), is( Nog_niet ) );
-	assertThat( ply.getZetNummer(), is( 1 ) );
+	assertThat( ply.getPlyNummer(), is( 0 ) );
 	assertThat( ply.getVanNaar(), is( new VanNaar( 17, 85 ) ) );
 	assertThat( ply.isPlySchaak(), is( false ) );
 	assertThat( ply.getBoStelling(), is( boStelling ) );
@@ -66,7 +66,7 @@ public void checkPlies( Plies aPlies )
 	ply = aPlies.getPlies().get( 1 );
 	assertThat( ply.getId(), is( 2 ) );
 	assertThat( ply.getEinde(), is( Nog_niet ) );
-	assertThat( ply.getZetNummer(), is( 2 ) );
+	assertThat( ply.getPlyNummer(), is( 1 ) );
 	assertThat( ply.getVanNaar(), is( new VanNaar( 17, 85 ) ) );
 	assertThat( ply.isPlySchaak(), is( false ) );
 	assertThat( ply.getBoStelling(), is( boStelling ) );
@@ -120,7 +120,7 @@ public void testSavePlies()
 		.configString( config.getConfig() )
 		.userName( Partij.DEFAULT_USER_NAME )
 //		.started( LocalDateTime.now() )
-		.currentPlyNumber( 3 )
+		.currentPlyNummer( 3 )
 		.begonnen( true )
 		.build();
 	plies.setStarted( LocalDateTime.now() );
@@ -158,7 +158,7 @@ public void testSavePlies()
 		//.id is voor JPA
 		.plies( plies )
 		.einde( Nog_niet )
-		.zetNummer( 1 )
+		.plyNummer( 1 )
 		.plySchaak( false )
 		.vanNaar( new VanNaar( "b2", "e5") )
 		.boStelling( boStelling1 )
@@ -168,7 +168,7 @@ public void testSavePlies()
 		//.id is voor JPA
 		.plies( plies )
 		.einde( Nog_niet )
-		.zetNummer( 1 )
+		.plyNummer( 2 )
 		.plySchaak( false )
 		.vanNaar( new VanNaar( "h8", "g8") )
 		.boStelling( boStelling2 )
@@ -178,7 +178,7 @@ public void testSavePlies()
 		//.id is voor JPA
 		.plies( plies )
 		.einde( Nog_niet )
-		.zetNummer( 2 )
+		.plyNummer( 3 )
 		.plySchaak( false )
 		.vanNaar( null )
 		.boStelling( boStelling3 )
