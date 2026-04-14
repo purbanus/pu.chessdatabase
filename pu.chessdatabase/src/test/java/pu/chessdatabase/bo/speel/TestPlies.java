@@ -49,12 +49,12 @@ public void testClear()
 	plies.addPly( ply );
 	plies.addPly( ply );
 	assertThat( plies.getSize(), is( 2 ) );
-	assertThat( plies.getCurrentPlyNumber(), is( 1 ) );
-	assertThat( plies.getLastPlyNumber(), is( 1 ) );
+	assertThat( plies.getCurrentPlyNummer(), is( 1 ) );
+	assertThat( plies.getLastPlyNummer(), is( 1 ) );
 	plies.clear();
 	assertThat( plies.getSize(), is( 0 ) );
-	assertThat( plies.getCurrentPlyNumber(), is( -1 ) );
-	assertThat( plies.getLastPlyNumber(), is( -1 ) );
+	assertThat( plies.getCurrentPlyNummer(), is( -1 ) );
+	assertThat( plies.getLastPlyNummer(), is( -1 ) );
 }
 @Test
 public void testAddPly()
@@ -62,14 +62,15 @@ public void testAddPly()
 	Ply ply = new Ply();
 	plies.addPly( ply );
 	assertThat( plies.getSize(), is( 1 ) );
-	assertThat( plies.getCurrentPlyNumber(), is( 0 ) );
-	assertThat( plies.getLastPlyNumber(), is( 0 ) );
+	assertThat( plies.getCurrentPlyNummer(), is( 0 ) );
+	assertThat( plies.getLastPlyNummer(), is( 0 ) );
 	assertThat( plies.isBegonnen(), is( true ) );
 	
+	ply.setPlyNummer( 1 );
 	plies.addPly( ply );
 	assertThat( plies.getSize(), is( 2 ) );
-	assertThat( plies.getCurrentPlyNumber(), is( 1 ) );
-	assertThat( plies.getLastPlyNumber(), is( 1 ) );
+	assertThat( plies.getCurrentPlyNummer(), is( 1 ) );
+	assertThat( plies.getLastPlyNummer(), is( 1 ) );
 	assertThat( plies.isBegonnen(), is( true ) );
 }
 @Test
@@ -84,8 +85,8 @@ public void testAddPlyWithBoStellingAndEinde()
 		.build();
 	plies.addPly( boStellingMetWitAanZet, Nog_niet );
 	assertThat( plies.getSize(), is( 1 ) );
-	assertThat( plies.getCurrentPlyNumber(), is( 0 ) );
-	assertThat( plies.getLastPlyNumber(), is( 0 ) );
+	assertThat( plies.getCurrentPlyNummer(), is( 0 ) );
+	assertThat( plies.getLastPlyNummer(), is( 0 ) );
 	Ply firstPly = plies.getFirstPly();
 	assertThat( firstPly.getBoStelling(), is( boStellingMetWitAanZet ) );
 	assertThat( firstPly.getEinde(), is( Nog_niet ) );
@@ -146,23 +147,23 @@ public void testGetPly()
 	assertThat( newFirstPly, is( firstPly ) );
 	assertThat( newFirstPly.getBoStelling(), is( boStelling ) );
 	assertThat( newFirstPly.getEinde(), is( Nog_niet ) );
-	assertThat( newFirstPly.getZetNummer(), is( 17 ) );
+	assertThat( newFirstPly.getPlyNummer(), is( 0 ) );
 	
 	Ply newSecondPly = plies.getPly( 1 );
 	assertThat( newSecondPly, is( secondPly ) );
 	assertThat( newSecondPly.getBoStelling(), is( boStelling ) );
 	assertThat( newSecondPly.getEinde(), is( Mat ) );
-	assertThat( newSecondPly.getZetNummer(), is( 27 ) );
+	assertThat( newSecondPly.getPlyNummer(), is( 1 ) );
 }
 @Test
 public void testGetCurrentPreviousAndLastPly()
 {
-	plies.setCurrentPlyNumberForTestingOnlhy( -5 );
+	plies.setCurrentPlyNummerForTestingOnlhy( -5 );
 	assertThrows( RuntimeException.class, () -> plies.getCurrentPly() );
 	assertThrows( RuntimeException.class, () -> plies.getPreviousPly() );
 	assertThrows( RuntimeException.class, () -> plies.getLastPly() );
 
-	plies.setCurrentPlyNumberForTestingOnlhy( 0 );
+	plies.setCurrentPlyNummerForTestingOnlhy( 0 );
 	assertThrows( RuntimeException.class, () -> plies.getPreviousPly() );
 	
 	plies = new Plies( getConfig().getConfig() );
@@ -209,7 +210,7 @@ public void testHasPlies()
 	assertThat( plies.hasPlies(), is( true ) );
 }
 @Test
-public void testIsAtLastPlyNumber()
+public void testIsAtLastPlyNummer()
 {
 	assertThat( plies.hasPlies(), is( false ) );
 	plies.addPly( new Ply() );
@@ -256,9 +257,9 @@ public void testSetTerug()
 	Ply thirdPly = threePlies.getRight();
 
 	plies.addPly( firstPly );
-	plies.setCurrentPlyNumberForTestingOnlhy( -1 );
+	plies.setCurrentPlyNummerForTestingOnlhy( -1 );
 	assertFalse( plies.isTerugMag() );
-	plies.setCurrentPlyNumberForTestingOnlhy( 0 );
+	plies.setCurrentPlyNummerForTestingOnlhy( 0 );
 	assertFalse( plies.isTerugMag() );
 	plies.addPly( secondPly );
 	assertTrue( plies.isTerugMag() );
@@ -304,24 +305,24 @@ public void testClearPliesFromNextPly()
 	plies.addPly( secondPly );
 	plies.addPly( thirdPly );
 	assertThat( plies.getSize(), is( 3 ) );
-	assertThat( plies.getCurrentPlyNumber(), is( 2 ) );
+	assertThat( plies.getCurrentPlyNummer(), is( 2 ) );
 	assertThat( plies.getCurrentPly(), is( thirdPly ) );
-	assertThat( plies.getLastPlyNumber(), is( 2 ) );
+	assertThat( plies.getLastPlyNummer(), is( 2 ) );
 	assertThat( plies.getLastPly(), is( thirdPly ) );
 
 	plies.setTerug();
 	plies.setTerug();
 	assertThat( plies.getSize(), is( 3 ) );
-	assertThat( plies.getCurrentPlyNumber(), is( 0 ) );
+	assertThat( plies.getCurrentPlyNummer(), is( 0 ) );
 	assertThat( plies.getCurrentPly(), is( firstPly ) );
-	assertThat( plies.getLastPlyNumber(), is( 2 ) );
+	assertThat( plies.getLastPlyNummer(), is( 2 ) );
 	assertThat( plies.getLastPly(), is( thirdPly ) );
 	
 	plies.clearPliesFromNextPly();
 	assertThat( plies.getSize(), is( 1 ) );
-	assertThat( plies.getCurrentPlyNumber(), is( 0 ) );
+	assertThat( plies.getCurrentPlyNummer(), is( 0 ) );
 	assertThat( plies.getCurrentPly(), is( firstPly ) );
-	assertThat( plies.getLastPlyNumber(), is( 0 ) );
+	assertThat( plies.getLastPlyNummer(), is( 0 ) );
 	assertThat( plies.getLastPly(), is( firstPly ) );
 }
 @Test
