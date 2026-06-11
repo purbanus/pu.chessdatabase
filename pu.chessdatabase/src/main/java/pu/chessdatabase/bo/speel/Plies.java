@@ -102,11 +102,6 @@ public Plies( String aConfigString )
 	plies = new ArrayList<>();
 	currentPlyNummer = -1;
 }
-public int getCurrentPlyNummer()
-{
-	//@@NOG KEN WEER WEG!!
-	return currentPlyNummer;
-}
 public int getSize()
 {
 	return getPlies().size();
