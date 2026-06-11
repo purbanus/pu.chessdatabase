@@ -67,6 +67,21 @@ public static BoStelling fromFlatDocument( FlatDocument aFlatDocument )
 		.aanZet( Kleur.valueOf( aFlatDocument.getAanZet() ) )
 		.resultaat( Resultaat.valueOf( aFlatDocument.getResultaat() ) )
 		.aantalZetten( aFlatDocument.getAantalZetten() )
+		.schaak( aFlatDocument.isSchaak() )
+		.build();
+}
+public static BoStelling fromFlatDocumentForPlies( FlatDocument aFlatDocument )
+{
+	return BoStelling.builder()
+		.wk( aFlatDocument.getPliesWk() )
+		.zk( aFlatDocument.getPliesZk() )
+		.s3( aFlatDocument.getPliesS3() )
+		.s4( aFlatDocument.getPliesS4() )
+		.s5( aFlatDocument.getPliesS5() )
+		.aanZet( Kleur.valueOf( aFlatDocument.getPliesAanZet() ) )
+		.resultaat( Resultaat.valueOf( aFlatDocument.getPliesResultaat() ) )
+		.aantalZetten( aFlatDocument.getPliesAantalZetten() )
+		.schaak( aFlatDocument.isPliesSchaak() )
 		.build();
 }
 public static final BoStelling NULL_STELLING = BoStelling.builder()
