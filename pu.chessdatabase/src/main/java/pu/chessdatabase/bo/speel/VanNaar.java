@@ -30,10 +30,10 @@ public static AlfaBuilder alfaBuilder()
 {
 	return new AlfaBuilder();
 }
-@Column( nullable = true )
-private Integer van;
-@Column( nullable = true )
-private Integer naar;
+@Column( nullable = false )
+private int van;
+@Column( nullable = false )
+private int naar;
 public VanNaar( String aVan, String aNaar )
 {
 	super();
@@ -65,10 +65,10 @@ public VanNaar( String aVanNaar )
 @Override
 public String toString()
 {
-	if ( van == null || naar == null )
-	{
-		return  " van=" + van + "naar=" + naar;
-	}
+//	if ( van == null || naar == null )
+//	{
+//		return  " van=" + van + "naar=" + naar;
+//	}
 	return Partij.veldToAlfa( van ) + "-" + Partij.veldToAlfa( naar );
 }
 }
