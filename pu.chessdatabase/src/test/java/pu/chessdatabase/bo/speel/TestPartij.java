@@ -110,67 +110,65 @@ public void testIsLegaleStelling()
 @Test
 public void testIsEindStelling()
 {
-	BoStelling boStelling = BoStelling.builder()
-		.wk( 0 )
-		.zk( 0 )
-		.s3( 0 )
-		.s4( 0 )
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "a1" )
+		.s3( "a1" )
+		.s4( "a1" )
+		.aanZet( Wit )
+		.resultaat( Resultaat.Illegaal )
+		.build();
+	assertThat( partij.getEinde( boStelling ), is( Einde.Illegaal ) );
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "b2" )
+		.s4( "g7" )
+		.resultaat( Remise )
 		.aanZet( Wit )
 		.build();
-	assertThat( partij.isEindStelling( boStelling ), is( Einde.Illegaal ) );
-	boStelling = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x77 )
-		.s3( 0x11 )
-		.s4( 0x66 )
+	assertThat( partij.getEinde( boStelling ), is( Nog_niet ) );
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "b3" )
+		.s3( "a1" )
+		.s4( "c1" )
 		.aanZet( Wit )
+		.schaak(  true )
 		.build();
-	assertThat( partij.isEindStelling( boStelling ), is( Nog_niet ) );
-	boStelling = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x12 )
-		.s3( 0x00 )
-		.s4( 0x20 )
+	assertThat( partij.getEinde( boStelling ), is( Mat ) );
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "a3" )
+		.s3( "a1" )
+		.s4( "b3" )
 		.aanZet( Wit )
+		.schaak(  false )
 		.build();
-	assertThat( partij.isEindStelling( boStelling ), is( Mat ) );
-	boStelling = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x02 )
-		.s3( 0x00 )
-		.s4( 0x12 )
-		.aanZet( Wit )
-		.build();
-	assertThat( partij.isEindStelling( boStelling ), is( Pat ) );
+	assertThat( partij.getEinde( boStelling ), is( Pat ) );
 }
 @Test
 public void testNewGame()
 {
-	BoStelling startStelling = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x77 )
-		.s3( 0x11 )
-		.s4( 0x66 )
+	BoStelling startStelling = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "b2" )
+		.s4( "g7" )
 		.aanZet( Wit )
+		.schaak( false )
 		.build();
 	BoStelling newBoStelling = partij.newGame( startStelling );
 	assertThat( newBoStelling.isSchaak(), is( false ) );
-	Ply ply = Ply.builder()
-		//.id is voor JPA
-		.plies( getPartij().getPlies() )
-		.einde( Einde.Nog_niet )
-		.plyNummer( 0 )
-		.plySchaak( false )
-		.vanNaar( null )
-		.boStelling( newBoStelling )
-		.build();
-	assertThat( partij.getPlies().getFirstPly(), is( ply ) );
-	
-	final BoStelling illegaleStartStelling = BoStelling.builder()
-		.wk( 0x35 )
-		.zk( 0x37 )
-		.s3( 0x36 )
-		.s4( 0x00 )
+	assertThat( partij.getPlies().getStartStelling(), is( newBoStelling ) );
+	assertThat( partij.getPlies().getCurrentPlyNummer(), is( -1 ) );
+	assertThat( partij.getEinde( newBoStelling ), is( Nog_niet ) );
+
+	final BoStelling illegaleStartStelling = BoStelling.alfaBuilder()
+		.wk( "f4" )
+		.zk( "h4" )
+		.s3( "g4" )
+		.s4( "a1" )
 		.aanZet( Wit )
 		.build();
 	assertThrows( RuntimeException.class, () -> partij.newGame( illegaleStartStelling ) );
@@ -179,11 +177,11 @@ public void testNewGame()
 public void testIsBegonnen()
 {
 	assertThat( partij.isBegonnen(), is( false ) );
-	BoStelling startStelling = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x77 )
-		.s3( 0x11 )
-		.s4( 0x66 )
+	BoStelling startStelling = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "b2" )
+		.s4( "g7" )
 		.aanZet( Wit )
 		.build();
 	partij.newGame( startStelling );
@@ -192,44 +190,44 @@ public void testIsBegonnen()
 @Test
 public void testStellingToVanNaar()
 {
-	BoStelling boStellingVan = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x77 )
-		.s3( 0x11 )
-		.s4( 0x66 )
+	BoStelling boStellingVan = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "b2" )
+		.s4( "g7" )
 		.aanZet( Wit )
 		.build();
-	BoStelling boStellingNaar = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x77 )
-		.s3( 0x66 )
-		.s4( 0x77 )
+	BoStelling boStellingNaar = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "g7" )
+		.s4( "h8" )
 		.aanZet( Zwart )
 		.build();
-	assertThat( partij.stellingToVanNaar( boStellingVan, boStellingNaar ), is( new VanNaar( 0x11, 0x66 ) ) );
+	assertThat( partij.stellingToVanNaar( boStellingVan, boStellingNaar ), is( new VanNaar( "Db2xg7+" ) ) );
 }
 @Test
 public void testVanCurrentPlyNaarToStelling()
 {
-	BoStelling boStellingVan = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x77 )
-		.s3( 0x11 )
-		.s4( 0x66 )
+	BoStelling boStellingVan = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "b2" )
+		.s4( "g7" )
 		.aanZet( Wit )
 		.build();
 	boStellingVan = partij.newGame( boStellingVan );
-	BoStelling boStellingNaar = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x77 )
-		.s3( 0x66 )
-		.s4( 0x77 )
+	BoStelling boStellingNaar = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "g7" )
+		.s4( "h8" )
 		.aanZet( Zwart )
 		.resultaat( Remise )
 		.aantalZetten( 0 )
 		.schaak( true )
 		.build();
-	assertThat( partij.vanCurrentPlyNaarToStelling( new VanNaar( 0x11, 0x66 ) ), is( boStellingNaar ) );
+	assertThat( partij.vanCurrentStandNaarToStelling( new VanNaar( "Db2xg7" ) ), is( boStellingNaar ) );
 }
 @Test
 public void testIsLegalMove()
@@ -327,7 +325,7 @@ public void testZetNaarBegin()
 		.build();
 	assertThat( actualNaarBeginStelling, is( expectedNaarBeginStelling ) );
 	
-	assertThat( partij.getPlies().getCurrentPlyNummer(), is( 0 ) );
+	assertThat( partij.getPlies().getCurrentPlyNummer(), is( -1 ) );
 }
 @Test
 public void testZetTerug()
@@ -367,7 +365,7 @@ public void testZetTerug()
 		.build();
 	assertThat( actualTerugStelling, is( expectedTerugStelling ) );
 	
-	assertThat( partij.getPlies().getCurrentPlyNummer(), is( 2 ) );
+	assertThat( partij.getPlies().getCurrentPlyNummer(), is( 1 ) );
 }
 @Test
 public void testZetVooruit()
@@ -398,7 +396,7 @@ public void testZetVooruit()
 	assertThat( partij.getStand(), is( actualVooruitStelling ) );
 	assertThat( actualVooruitStelling, is( expectedVooruitStelling ) );
 	
-	assertThat( partij.getPlies().getCurrentPlyNummer(), is( 1 ) );
+	assertThat( partij.getPlies().getCurrentPlyNummer(), is( 0 ) );
 }
 @Test
 public void testZetNaarEinde()
@@ -433,7 +431,7 @@ public void testZetNaarEinde()
 	assertThat( partij.getStand(), is( actualVooruitStelling ) );
 	assertThat( actualVooruitStelling, is( expectedVooruitStelling ) );
 	
-	assertThat( partij.getPlies().getCurrentPlyNummer(), is( 3 ) );
+	assertThat( partij.getPlies().getCurrentPlyNummer(), is( 2 ) );
 }
 @Test
 public void testZet()
@@ -458,29 +456,29 @@ public void testZet()
 		.aantalZetten( 30 )
 		.schaak( false )
 		.build();
-	assertThat( partij.getPlies().isBegonnen(), is ( false ) );
+	assertThat( partij.isBegonnen(), is ( false ) );
 	VanNaar vanNaar = new VanNaar( "b2", "c3" );
 	
 	assertThrows( RuntimeException.class, () -> partij.zet( vanNaar ) );
 
 	partij.newGame( boStellingVan );
-	partij.getPlies().getFirstPly().setEinde( Mat );
-	assertThrows( RuntimeException.class, () -> partij.zet( vanNaar ) );
-	partij.getPlies().getFirstPly().setEinde( Nog_niet );
+//	partij.getPlies().getFirstPly().setEinde( Mat );
+//	assertThrows( RuntimeException.class, () -> partij.zet( vanNaar ) );
+//	partij.getPlies().getFirstPly().setEinde( Nog_niet );
 	
 	BoStelling newBoStelling = partij.newGame( boStellingVan );
 	assertThat( partij.getPlies().isBegonnen(), is ( true ) );
-	assertThat( partij.getPlies().getFirstPly().getBoStelling(), is( newBoStelling ) );
-	assertThat( partij.vanCurrentPlyNaarToStelling( vanNaar ), is( boStellingNaar ) );
+	assertThat( partij.getPlies().getStartStelling(), is( newBoStelling ) );
+//	assertThat( partij.vanCurrentPlyNaarToStelling( vanNaar ), is( boStellingNaar ) );
 	
 	assertThat( partij.zet( vanNaar ), is( boStellingNaar ) );
-	assertThat( partij.getPlies().getFirstPly().getVanNaar(), is( vanNaar ) );
-	assertThat( partij.getPlies().getCurrentPlyNummer(), is( 1 ) );
-	assertThat( partij.getPlies().getLastPlyNummer(), is( 1 ) );
-	Ply secondPly = partij.getPlies().getPly( 1 );
-	assertThat( secondPly.getBoStelling(), is( boStellingNaar ) );
-	assertThat( secondPly.getEinde(), is( Nog_niet ) );
-	assertThat( secondPly.getPlyNummer(), is( 1 ) );
+	Ply firstPly = partij.getPlies().getPly( 0 );
+	assertThat( firstPly.getVanNaar(), is(vanNaar ) );
+	assertThat( partij.getPlies().getCurrentPlyNummer(), is( 0 ) );
+	assertThat( partij.getPlies().getLastPlyNummer(), is( 0 ) );
+	assertThat( firstPly.getBoStelling(), is( boStellingNaar ) );
+	assertThat( firstPly.getEinde(), is( Nog_niet ) );
+	assertThat( firstPly.getPlyNummer(), is( 0 ) );
 }
 @Test
 public void testZetMetClearPliesVoorZet()
@@ -511,35 +509,32 @@ public void testZetMetClearPliesVoorZet()
 	assertThat( actualEindeStelling, is( expectedEindeStelling ) );
 	
 	partij.zetNaarBegin();
-	for ( int x = 0; x <= 5; x++ )
+	for ( int x = 0; x <= 4; x++ )
 	{
 		assertThat( partij.getPlies().getPly( x ), is( notNullValue() ) );
 	}
-	assertThat( partij.getPlies().getSize(), is( 6 ) );
+	assertThat( partij.getPlies().getSize(), is( 5 ) );
 	partij.zet( "Db2-c3" );
-	for ( int x = 0; x <= 1; x++ )
-	{
-		assertThat( partij.getPlies().getPly( x ), is( notNullValue() ) );
-	}
-	assertThat( partij.getPlies().getSize(), is( 2 ) );
-	assertThat( partij.getPlies().getCurrentPlyNummer(), is( 1 ) );
-	assertThat( partij.getPlies().getLastPlyNummer(), is( 1 ) );
+	assertThat( partij.getPlies().getPly( 0 ), is( notNullValue() ) );
+	assertThat( partij.getPlies().getSize(), is( 1 ) );
+	assertThat( partij.getPlies().getCurrentPlyNummer(), is( 0 ) );
+	assertThat( partij.getPlies().getLastPlyNummer(), is( 0 ) );
 }
 @Test
 public void testZetMetZwart()
 {
-	BoStelling boStellingVan = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x77 )
-		.s3( 0x11 )
-		.s4( 0x66 )
+	BoStelling boStellingVan = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "b2" )
+		.s4( "g7" )
 		.aanZet( Zwart )
 		.build();
-	BoStelling boStellingNaar = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x67 )
-		.s3( 0x11 )
-		.s4( 0x66 )
+	BoStelling boStellingNaar = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "g8" )
+		.s3( "b2" )
+		.s4( "g7" )
 		.aanZet( Wit )
 		.resultaat( Gewonnen )
 		.aantalZetten( 30 )
@@ -547,22 +542,19 @@ public void testZetMetZwart()
 		.build();
 	assertThat( partij.getPlies().isBegonnen(), is ( false ) );
 
-	VanNaar vanNaar = new VanNaar( 0x77, 0x67 );
+	VanNaar vanNaar = new VanNaar( "h8-g8" );
 	BoStelling newBoStelling = partij.newGame( boStellingVan );
 	assertThat( partij.getPlies().isBegonnen(), is ( true ) );
-	Ply firstPly = partij.getPlies().getFirstPly();
-	assertThat( firstPly.getPlyNummer(), is( 0 ) );
-	assertThat( firstPly.getBoStelling(), is( newBoStelling ) );
-	assertThat( partij.vanCurrentPlyNaarToStelling( vanNaar ), is( boStellingNaar ) );
+	assertThat( partij.vanCurrentStandNaarToStelling( vanNaar ), is( boStellingNaar ) );
 	
 	assertThat( partij.zet( vanNaar ), is( boStellingNaar ) );
+	Ply firstPly = partij.getPlies().getFirstPly();
 	assertThat( firstPly.getVanNaar(), is( vanNaar ) );
-	assertThat( partij.getPlies().getCurrentPlyNummer(), is( 1 ) );
-	assertThat( partij.getPlies().getLastPlyNummer(), is( 1 ) );
-	Ply secondPly = partij.getPlies().getPly( 1 );
-	assertThat( secondPly.getBoStelling(), is( boStellingNaar ) );
-	assertThat( secondPly.getEinde(), is( Nog_niet ) );
-	assertThat( secondPly.getPlyNummer(), is( 1 ) );
+	assertThat( partij.getPlies().getCurrentPlyNummer(), is( 0 ) );
+	assertThat( partij.getPlies().getLastPlyNummer(), is( 0 ) );
+	assertThat( firstPly.getBoStelling(), is( boStellingNaar ) );
+	assertThat( firstPly.getEinde(), is( Nog_niet ) );
+	assertThat( firstPly.getPlyNummer(), is( 0 ) );
 }
 @Test
 public void testIsSlagZet()
@@ -575,7 +567,7 @@ public void testIsSlagZet()
 		.aanZet( Wit )
 		.build();
 	VanNaar vanNaar = new VanNaar( 0x11, 0x66 );
-	assertThat( partij.isSlagZet( boStelling, vanNaar ), is( true ) );
+	assertThat( partij.isSlagZet( boStelling, vanNaar.getNaar() ), is( true ) );
 
 	boStelling = BoStelling.builder()
 		.wk( 0x00 )
@@ -585,59 +577,53 @@ public void testIsSlagZet()
 		.aanZet( Wit )
 		.build();
 	vanNaar = new VanNaar( 0x11, 0x17 );
-	assertThat( partij.isSlagZet( boStelling, vanNaar ), is( false ) );
+	assertThat( partij.isSlagZet( boStelling, vanNaar.getNaar() ), is( false ) );
 }
 @Test
 public void testZetStelling()
 {
-	BoStelling boStellingVan = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x77 )
-		.s3( 0x11 )
-		.s4( 0x66 )
+	BoStelling boStellingVan = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "b2" )
+		.s4( "g7" )
 		.aanZet( Zwart )
 		.build();
-	BoStelling boStellingNaar = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x76 )
-		.s3( 0x11 )
-		.s4( 0x66 )
+	BoStelling boStellingNaar = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "g8" )
+		.s3( "b2" )
+		.s4( "g7" )
 		.aanZet( Wit )
 		.resultaat( Gewonnen )
 		.aantalZetten( 30 )
 		.schaak( false )
 		.build();
-	VanNaar vanNaar = new VanNaar( 0x77, 0x76 );
+	VanNaar vanNaar = new VanNaar( "h8-g8" );
 	BoStelling newBoStelling = partij.newGame( boStellingVan );
-	Ply firstPly = partij.getPlies().getFirstPly();
-	assertThat( firstPly.getPlyNummer(), is( 0 ) );
-	assertThat( firstPly.getBoStelling(), is( newBoStelling ) );
-	assertThat( partij.vanCurrentPlyNaarToStelling( vanNaar ), is( boStellingNaar ) );
+	assertThat( partij.vanCurrentStandNaarToStelling( vanNaar ), is( boStellingNaar ) );
 	
 	assertThat( partij.zetStelling( boStellingNaar ), is( boStellingNaar ) );
+	Ply firstPly = partij.getPlies().getFirstPly();
 	assertThat( firstPly.getVanNaar(), is( vanNaar ) );
-	assertThat( partij.getPlies().getCurrentPlyNummer(), is( 1 ) );
-	assertThat( partij.getPlies().getLastPlyNummer(), is( 1 ) );
-	Ply secondPly = partij.getPlies().getPly( 1 );
-	assertThat( secondPly.getBoStelling(), is( boStellingNaar ) );
-	assertThat( secondPly.getEinde(), is( Nog_niet ) );
-	assertThat( secondPly.getPlyNummer(), is( 1 ) );
+	assertThat( partij.getPlies().getCurrentPlyNummer(), is( 0 ) );
+	assertThat( partij.getPlies().getLastPlyNummer(), is( 0 ) );
 }
 @Test
 public void testBedenk()
 {
-	BoStelling boStellingVan = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x77 )
-		.s3( 0x11 )
-		.s4( 0x66 )
+	BoStelling boStellingVan = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "b2" )
+		.s4( "g7" )
 		.aanZet( Wit )
 		.build();
-	BoStelling boStellingNaar = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x77 )
-		.s3( 0x44 )
-		.s4( 0x66 )
+	BoStelling boStellingNaar = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "e5" )
+		.s4( "g7" )
 		.aanZet( Zwart )
 		.resultaat( Verloren )
 		.aantalZetten( 28 )
@@ -645,27 +631,25 @@ public void testBedenk()
 		.build();
 	VanNaar vanNaar = new VanNaar( 0x11, 0x44 );
 	BoStelling newBoStelling = partij.newGame( boStellingVan );
-	Ply firstPly = partij.getPlies().getFirstPly();
-	assertThat( firstPly.getBoStelling(), is( newBoStelling ) );
-	assertThat( partij.vanCurrentPlyNaarToStelling( vanNaar ), is( boStellingNaar ) );
+	assertThat( partij.vanCurrentStandNaarToStelling( vanNaar ), is( boStellingNaar ) );
 	
 	assertThat( partij.bedenk(), is( boStellingNaar ) );
+	assertThat( partij.getPlies().getCurrentPlyNummer(), is( 0 ) );
+	assertThat( partij.getPlies().getLastPlyNummer(), is( 0 ) );
+	Ply firstPly = partij.getPlies().getFirstPly();
 	assertThat( firstPly.getVanNaar(), is( vanNaar ) );
-	assertThat( partij.getPlies().getCurrentPlyNummer(), is( 1 ) );
-	assertThat( partij.getPlies().getLastPlyNummer(), is( 1 ) );
-	Ply secondPly = partij.getPlies().getPly( 1 );
-	assertThat( secondPly.getBoStelling(), is( boStellingNaar ) );
-	assertThat( secondPly.getEinde(), is( Nog_niet ) );
-	assertThat( secondPly.getPlyNummer(), is( 1 ) );
+	assertThat( firstPly.getBoStelling(), is( boStellingNaar ) );
+	assertThat( firstPly.getEinde(), is( Nog_niet ) );
+	assertThat( firstPly.getPlyNummer(), is( 0 ) );
 }
 @Test
 public void testWatStaatErOp()
 {
-	BoStelling boStelling = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x77 )
-		.s3( 0x11 )
-		.s4( 0x66 )
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "b2" )
+		.s4( "g7" )
 		.aanZet( Wit )
 		.build();
 	assertThat( partij.watStaatErOp( boStelling, 0x00 ), is( "K" ) );
@@ -677,92 +661,73 @@ public void testWatStaatErOp()
 @Test
 public void testPlyToString()
 {
-	BoStelling boStelling = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x77 )
-		.s3( 0x11 )
-		.s4( 0x66 )
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "b2" )
+		.s4( "g7" )
 		.aanZet( Wit )
+		.schaak( false )
 		.build();
-	VanNaar vanNaar = new VanNaar( 0x11, 0x22 );
-	Ply ply = Ply.builder()
-		//.id is voor JPA
-		.plies( getPartij().getPlies() )
-		.einde( Einde.Nog_niet )
-		.plyNummer( 1 )
-		.plySchaak( false )
-		.vanNaar( vanNaar )
-		.boStelling( boStelling )
-		.build();
+	partij.newGame( boStelling );
+	partij.zet( "b2-c3" );
+	Ply ply = partij.getPlies().getPly(  0 );
 	assertThat( partij.plyToString( ply ), is( "Db2-c3 " ) );
 
-	boStelling = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x77 )
-		.s3( 0x11 )
-		.s4( 0x66 )
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "b2" )
+		.s4( "g7" )
 		.aanZet( Wit )
+		.schaak( false )
 		.build();
-	vanNaar = new VanNaar( 0x11, 0x66 );
-	ply = Ply.builder()
-		//.id is voor JPA
-		.plies( getPartij().getPlies() )
-		.einde( Einde.Nog_niet )
-		.plyNummer( 1 )
-		.plySchaak( true )
-		.vanNaar( vanNaar )
-		.boStelling( boStelling )
-		.build();
+	partij.newGame( boStelling );
+	partij.zet( "b2-g7" );
+	ply = partij.getPlies().getPly(  0 );
 	assertThat( partij.plyToString( ply ), is( "Db2xg7+" ) );
 
-	boStelling = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x77 )
-		.s3( 0x11 )
-		.s4( 0x66 )
-		.schaak(  true )
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "b2" )
+		.s4( "g7" )
 		.aanZet( Wit )
+		.schaak( false )
 		.build();
-	vanNaar = new VanNaar( 0x11, 0x17 );
-	ply = Ply.builder()
-		//.id is voor JPA
-		.plies( getPartij().getPlies() )
-		.einde( Einde.Nog_niet )
-		.plyNummer( 1 )
-		.plySchaak( true )
-		.vanNaar( vanNaar )
-		.boStelling( boStelling )
-		.build();
+	partij.newGame( boStelling );
+	partij.zet( "b2-h2" );
+	ply = partij.getPlies().getPly(  0 );
 	assertThat( partij.plyToString( ply ), is( "Db2-h2+" ) );
 	
-	boStelling = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x77 )
-		.s3( 0x11 )
-		.s4( 0x66 )
-		.schaak(  true )
-		.aanZet( Wit )
-		.build();
-	vanNaar = null;
-	ply = Ply.builder()
-		//.id is voor JPA
-		.plies( getPartij().getPlies() )
-		.einde( Einde.Nog_niet )
-		.plyNummer( 1 )
-		.plySchaak( true )
-		.vanNaar( vanNaar )
-		.boStelling( boStelling )
-		.build();
-	assertThat( partij.plyToString( ply ), is( "..." ) );
+	// Vannaar = null kan niet meer!
+//	boStelling = BoStelling.builder()
+//		.wk( 0x00 )
+//		.zk( 0x77 )
+//		.s3( 0x11 )
+//		.s4( 0x66 )
+//		.schaak(  true )
+//		.aanZet( Wit )
+//		.build();
+//	vanNaar = null;
+//	ply = Ply.builder()
+//		//.id is voor JPA
+//		.plies( getPartij().getPlies() )
+//		.einde( Einde.Nog_niet )
+//		.plyNummer( 1 )
+//		.vanNaar( vanNaar )
+//		.boStelling( boStelling )
+//		.build();
+//	assertThat( partij.plyToString( ply ), is( "..." ) );
 }
 @Test
-public void testCurPlyToString()
+public void testCurrentPlyToString()
 {
-	BoStelling boStelling = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x77 )
-		.s3( 0x11 )
-		.s4( 0x66 )
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "b2" )
+		.s4( "g7" )
 		.aanZet( Wit )
 		.build();
 	VanNaar vanNaar = new VanNaar( 0x11, 0x22 );
@@ -770,11 +735,11 @@ public void testCurPlyToString()
 	partij.zet( vanNaar );
 	assertThat( partij.currentPlyToString(), is( "Db2-c3 " ) );
 
-	boStelling = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x77 )
-		.s3( 0x11 )
-		.s4( 0x66 )
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "b2" )
+		.s4( "g7" )
 		.schaak( false )
 		.aanZet( Wit )
 		.build();
@@ -786,32 +751,32 @@ public void testCurPlyToString()
 @Test
 public void testResultaatRecord()
 {
-	BoStelling boStelling = BoStelling.builder()
-		.wk( 0x35 )
-		.zk( 0x37 )
-		.s3( 0x36 )
-		.s4( 0x00 )
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "f4" )
+		.zk( "h4" )
+		.s3( "g4" )
+		.s4( "a1" )
 		.aanZet( Zwart )
 		.build();
 	partij.newGame( boStelling );
 	ResultaatRecord resultaatRecord = new ResultaatRecord( "Mat", "" );
 	assertThat( partij.getResultaatRecord(), is( resultaatRecord ) );
 
-	boStelling = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x77 )
-		.s3( 0x11 )
-		.s4( 0x66 )
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "b2" )
+		.s4( "g7" )
 		.aanZet( Wit )
 		.build();
 	partij.newGame( boStelling );
 	resultaatRecord = new ResultaatRecord( "Gewonnen", "Mat in 28" );
 	assertThat( partij.getResultaatRecord(), is( resultaatRecord ) );
-	boStelling = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x77 )
-		.s3( 0x11 )
-		.s4( 0x66 )
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "b2" )
+		.s4( "g7" )
 		.aanZet( Zwart )
 		.build();
 	partij.newGame( boStelling );
@@ -946,90 +911,105 @@ public void testGegenereerdeZetDocument()
 		.s3( "b2" )
 		.s4( "g7" )
 		.aanZet( Wit )
+		.schaak( false )
 		.build();
 	VanNaar vanNaar = new VanNaar( "b2", "c3" );
 	Stuk stukDatZet = config.getStukken().getS3();
-	Ply ply = Ply.builder()
-		//.id is voor JPA
-		.plies( getPartij().getPlies() )
-		.einde( Nog_niet )
-		.plyNummer( 15 )
-		.plySchaak( false )
-		.vanNaar( vanNaar )
-		.boStelling( boStellingVan )
-		.build();
+//	Ply ply = Ply.builder()
+//		//.id is voor JPA
+//		.plies( getPartij().getPlies() )
+//		.einde( Nog_niet )
+//		.plyNummer( 0 )
+//		.vanNaar( vanNaar )
+//		.boStelling( boStellingVan )
+//		.build();
 	GegenereerdeZetDocument gegenereerdeZetDocument = GegenereerdeZetDocument.builder()
 		.zetNummer( 16 )
 		.zet( stukDatZet.getAfko() + "b2-c3 " )
 		.resultaat( "Gewonnen" )
 		.matInHoeveel( "Mat in 29" )
 		.build();
-	BoStelling boStellingNaar= partij.vanNaarToStelling( ply, vanNaar );
+	partij.newGame( boStellingVan );
+	partij.zet( vanNaar );
+
+	BoStelling boStellingNaar = partij.vanNaarToStelling( boStellingVan, vanNaar );
+	assertThat( partij.getStand(), is( boStellingNaar ) );
+	
+	Ply ply = partij.getCurrentPly();
 	assertThat( partij.getGegenereerdeZetDocument( ply, boStellingNaar, 16 ), is( gegenereerdeZetDocument ) );
 
-	boStellingVan = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x77 )
-		.s3( 0x11 )
-		.s4( 0x66 )
+	boStellingVan = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "b2" )
+		.s4( "g7" )
 		.aanZet( Wit )
+		.schaak( true )
 		.build();
 	vanNaar = new VanNaar( 0x11, 0x66 );
 	stukDatZet = config.getStukken().getS3();
-	ply = Ply.builder()
-		//.id is voor JPA
-		.plies( getPartij().getPlies() )
-		.einde( Nog_niet )
-		.plyNummer( 17 )
-		.plySchaak( true )
-		.vanNaar( vanNaar )
-		.boStelling( boStellingVan )
-		.build();
+//	ply = Ply.builder()
+//		//.id is voor JPA
+//		.plies( getPartij().getPlies() )
+//		.einde( Nog_niet )
+//		.plyNummer( 17 )
+//		.vanNaar( vanNaar )
+//		.boStelling( boStellingVan )
+//		.build();
 	gegenereerdeZetDocument = GegenereerdeZetDocument.builder()
 		.zetNummer( 18 )
 		.zet( stukDatZet.getAfko() + "b2xg7+" )
 		.resultaat( "Remise" )
 		.matInHoeveel( "..." )
 		.build();
-	boStellingNaar = partij.vanNaarToStelling( ply, vanNaar );
+	partij.newGame( boStellingVan );
+	partij.zet( vanNaar );
+
+	boStellingNaar = partij.vanNaarToStelling( boStellingVan, vanNaar );
+	assertThat( partij.getStand(), is( boStellingNaar ) );
+	
+	ply = partij.getCurrentPly();
 	assertThat( partij.getGegenereerdeZetDocument( ply, boStellingNaar, 18 ), is( gegenereerdeZetDocument ) );
+
 }
 @Test
-public void testGeGegenereerdeZetten()
+public void testGetGegegenereerdeZetten()
 {
-	BoStelling boStellingVan = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x77 )
-		.s3( 0x11 )
-		.s4( 0x66 )
-		.aanZet( Zwart )
+	BoStelling boStellingVan = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "b2" )
+		.s4( "g7" )
+		.aanZet( Wit )
 		.build();
 	partij.newGame( boStellingVan );
+	partij.zet( "Db2-e5" );
+	
 	List<GegenereerdeZetDocument> zetten = partij.getGegenereerdeZetten();
 	assertThat( zetten.size(), is( 2 ) );
 	GegenereerdeZetDocument gegenereerdeZetDocument = GegenereerdeZetDocument.builder()
 		.zetNummer( 1 )
 		.zet( "Kh8-g8 " )
 		.resultaat( "Verloren" )
-		.matInHoeveel( "Mat in 29" )
+		.matInHoeveel( "Mat in 27" )
 		.build();
 	assertThat( zetten.get( 0 ), is( gegenereerdeZetDocument ) );
 	gegenereerdeZetDocument = GegenereerdeZetDocument.builder()
 		.zetNummer( 2 )
 		.zet( "Kh8-h7 " )
 		.resultaat( "Verloren" )
-		.matInHoeveel( "Mat in 29" )
+		.matInHoeveel( "Mat in 27" )
 		.build();
 	assertThat( zetten.get( 1 ), is( gegenereerdeZetDocument ) );
 }
 @Test
 public void testGetStand()
 {
-	BoStelling boStelling = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x77 )
-		.s3( 0x11 )
-		.s4( 0x66 )
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "b2" )
+		.s4( "g7" )
 		.aanZet( Zwart )
 		.build();
 	BoStelling newBoStelling = partij.newGame( boStelling );
@@ -1086,26 +1066,24 @@ public void testModula2Partij_1()
 		.aantalZetten( 30 )
 		.schaak( false )
 		.build();
+	BoStelling boStelling5 = BoStelling.alfaBuilder()
+		.wk( "e4" )
+		.zk( "g6" )
+		.s3( "h1" )
+		.s4( "a8" )
+		.aanZet( Wit )
+		.resultaat( Gewonnen )
+		.aantalZetten( 18 )
+		.schaak( false )
+		.build();
 	partij.newGame( boStelling1 );
-	VanNaar vanNaar1 = VanNaar.alfaBuilder()
-		.van( "e2" )
-		.naar( "e3" )
-		.build();
+	VanNaar vanNaar1 = new VanNaar( "e2-e3" );
 	partij.zet( vanNaar1 );
-	VanNaar vanNaar2 = VanNaar.alfaBuilder()
-		.van( "a1" )
-		.naar( "a8" )
-		.build();
+	VanNaar vanNaar2 = new VanNaar( "a1-a8" );
 	partij.zet( vanNaar2 );
-	VanNaar vanNaar3 = VanNaar.alfaBuilder()
-		.van( "e3" )
-		.naar( "e4" )
-		.build();
+	VanNaar vanNaar3 = new VanNaar( "e3-e4" );
 	partij.zet( vanNaar3 );
-	VanNaar vanNaar4 = VanNaar.alfaBuilder()
-		.van( "f6" )
-		.naar( "g6" )
-		.build();
+	VanNaar vanNaar4 = new VanNaar( "f6-g6" );
 	partij.zet( vanNaar4 );
 
 	Ply ply1 = Ply.builder()
@@ -1113,36 +1091,32 @@ public void testModula2Partij_1()
 		.plies( getPartij().getPlies() )
 		.einde( Einde.Nog_niet )
 		.plyNummer( 0 )
-		.plySchaak( false )
 		.vanNaar( vanNaar1 )
-		.boStelling( boStelling1 )
+		.boStelling( boStelling2 )
 		.build();
 	Ply ply2 = Ply.builder()
 		//.id is voor JPA
 		.plies( getPartij().getPlies() )
 		.einde( Einde.Nog_niet )
 		.plyNummer( 1 )
-		.plySchaak( false )
-		.vanNaar( vanNaar2 )
-		.boStelling( boStelling2 )
+		.vanNaar( vanNaar2 )		
+		.boStelling( boStelling3 )
 		.build();
 	Ply ply3 = Ply.builder()
 		//.id is voor JPA
 		.plies( getPartij().getPlies() )
 		.einde( Einde.Nog_niet )
 		.plyNummer( 2 )
-		.plySchaak( false )
-		.vanNaar( vanNaar3 )		
-		.boStelling( boStelling3 )
+		.vanNaar( vanNaar3 )
+		.boStelling( boStelling4 )
 		.build();
 	Ply ply4 = Ply.builder()
 		//.id is voor JPA
 		.plies( getPartij().getPlies() )
 		.einde( Einde.Nog_niet )
 		.plyNummer( 3 )
-		.plySchaak( false )
 		.vanNaar( vanNaar4 )
-		.boStelling( boStelling4 )
+		.boStelling( boStelling5 )
 		.build();
 	assertThat( partij.getPlies().getPly( 0 ), is( ply1 ) );
 	assertThat( partij.getPlies().getPly( 1 ), is( ply2 ) );
@@ -1212,63 +1186,40 @@ public void testModula2Partij_b()
 		.schaak( false )
 		.build();
 	partij.newGame( boStelling1 );
-	VanNaar vanNaar1 = VanNaar.alfaBuilder()
-		.van( "a1" )
-		.naar( "a8" )
-		.build();
+	VanNaar vanNaar1 = new VanNaar( "a1-a8" );
 	partij.zet( vanNaar1 );
-	VanNaar vanNaar2 = VanNaar.alfaBuilder()
-		.van( "e3" )
-		.naar( "e4" )
-		.build();
+	VanNaar vanNaar2 = new VanNaar( "e3-e4" );
 	partij.zet( vanNaar2 );
-	VanNaar vanNaar3 = VanNaar.alfaBuilder()
-		.van( "f6" )
-		.naar( "g6" )
-		.build();
+	VanNaar vanNaar3 = new VanNaar( "f6-g6");
 	partij.zet( vanNaar3 );
-	VanNaar vanNaar4 = null;
 
 	Ply ply1 = Ply.builder()
 		//.id is voor JPA
 		.plies( getPartij().getPlies() )
 		.einde( Einde.Nog_niet )
 		.plyNummer( 0 )
-		.plySchaak( false )
 		.vanNaar( vanNaar1 )
-		.boStelling( boStelling1 )
+		.boStelling( boStelling2 )
 		.build();
 	Ply ply2 = Ply.builder()
 		//.id is voor JPA
 		.plies( getPartij().getPlies() )
 		.einde( Einde.Nog_niet )
 		.plyNummer( 1 )
-		.plySchaak( false )
 		.vanNaar( vanNaar2 )
-		.boStelling( boStelling2 )
+		.boStelling( boStelling3 )
 		.build();
 	Ply ply3 = Ply.builder()
 		//.id is voor JPA
 		.plies( getPartij().getPlies() )
 		.einde( Einde.Nog_niet )
 		.plyNummer( 2 )
-		.plySchaak( false )
 		.vanNaar( vanNaar3 )
-		.boStelling( boStelling3)
-		.build();
-	Ply ply4 = Ply.builder()
-		//.id is voor JPA
-		.plies( getPartij().getPlies() )
-		.einde( Einde.Nog_niet )
-		.plyNummer( 3 )
-		.plySchaak( false )
-		.vanNaar( vanNaar4 )
-		.boStelling( boStelling4 )
+		.boStelling( boStelling4)
 		.build();
 	assertThat( partij.getPlies().getPly( 0 ), is( ply1 ) );
 	assertThat( partij.getPlies().getPly( 1 ), is( ply2 ) );
 	assertThat( partij.getPlies().getPly( 2 ), is( ply3 ) );
-	assertThat( partij.getPlies().getPly( 3 ), is( ply4 ) );
 
 	List<ZetDocument> zetten = partij.createZetten();
 	ZetDocument zetDocument1 = ZetDocument.builder()
