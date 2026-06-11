@@ -48,6 +48,7 @@ public static Plies fromFlatDocument( FlatDocument aFlatDocument )
 	return builder()
 		.id( aFlatDocument.getPliesId() )
 		.configString( aFlatDocument.getConfigString() )
+		.startStelling( BoStelling.fromFlatDocumentForPlies( aFlatDocument ) )
 		.userName( aFlatDocument.getUserName() )
 		.started( timeStampToLocalDateTime( aFlatDocument.getStarted() ) )
 		.currentPlyNummer( aFlatDocument.getCurrentPlyNummer() )
@@ -62,6 +63,9 @@ private Integer id;
 
 @Column( nullable = false )
 private String configString;
+
+@Column( nullable = false )
+private BoStelling startStelling;
 
 @Column( nullable = false )
 private String userName;
@@ -98,6 +102,11 @@ public Plies( String aConfigString )
 	plies = new ArrayList<>();
 	currentPlyNummer = -1;
 }
+public int getCurrentPlyNummer()
+{
+	//@@NOG KEN WEER WEG!!
+	return currentPlyNummer;
+}
 public int getSize()
 {
 	return getPlies().size();
@@ -122,7 +131,7 @@ public void addPly( Ply aPly )
 	getPlies().add( aPly );
 	setBegonnen( true );
 }
-public Ply addPly( BoStelling aBoStelling, Einde aEindeType )
+public Ply addPly( BoStelling aBoStelling, VanNaar aVanNaar, Einde aEindeType )
 {
 	int plyNummer;
 	plyNummer = getPlies().size();
@@ -131,8 +140,7 @@ public Ply addPly( BoStelling aBoStelling, Einde aEindeType )
 		.plies( this )
 		.einde( aEindeType )
 		.plyNummer( plyNummer )
-		//.schaak @@NOG Waarom niet??
-		//.vanNaar( VanNaar.ILLEGAL_VAN_NAAR ) // Liever null want daar kun je gemakkelijk op testen
+		.vanNaar( aVanNaar )
 		.boStelling( aBoStelling )
 		.build();
 	addPly( newPly );
@@ -146,11 +154,11 @@ public Ply getPly( int aPlyNummer )
 {
 	if ( aPlyNummer > getLastPlyNummer() )
 	{
-		throw new RuntimeException( "Fout in createZetDocument: Plynummer > laatste zet" );
+		throw new RuntimeException( "Fout in getPly: Plynummer > laatste zet" );
 	}
 	if ( aPlyNummer < 0 )
 	{
-		throw new RuntimeException( "Fout in createZetDocument: Plynummer negatief" );
+		throw new RuntimeException( "Fout in getPly: Plynummer negatief" );
 	}
 	return getPlies().get(  aPlyNummer );
 }
@@ -164,13 +172,36 @@ public Ply getFirstPly()
 }
 public Ply getCurrentPly()
 {
+	// @@NOG Dit is een zwaktebod. Je kunt beter alle referenties naar getCurrentPly afgaan
+	//       en daar beslissen wat te doen. Onthoud: er IS geen ply!
+	//       MEE EENS dus afgesterd. Nu oveeral waar dit een foute test oplevert:
+	//       - kijken hoe erg het is
+	//       - die situatie voorkomen
 	if ( getCurrentPlyNummer() < 0 )
 	{
+//		return Ply.builder()
+//			.plies( this )
+//			.einde( Einde.Nog_niet )
+//			.plyNummer( -1 )
+//			.vanNaar( null )
+//			.boStelling( getStartStelling() )
+//			.build();
 		throw new RuntimeException( "Fout in getCurrentPly: huidige Plynummer negatief" );
 	}
-	return getPlies().get( currentPlyNummer );
+	return getPlies().get( getCurrentPlyNummer() );
 }
-public Ply getPreviousPly()
+//public BoStelling getCurrentStand()
+//{
+//	if ( getCurrentPlyNummer() < 0 )
+//	{
+//		return getStartStelling();
+//	}
+//	return getPlies().get( currentPlyNummer ).getBoStelling();
+//}
+public boolean hasPreviousPly()
+{
+	return getCurrentPlyNummer() > 0;
+}public Ply getPreviousPly()
 {
 	if ( getCurrentPlyNummer() < 0 )
 	{
@@ -207,6 +238,21 @@ public boolean isAtLastPlyNummer()
 {
 	return getCurrentPlyNummer() == getPlies().size() - 1;
 }
+public BoStelling getStand()
+{
+	if ( ! isBegonnen() )
+	{
+		throw new RuntimeException( "De partij is nog niet begonnen, dus er is nog geen stand" );
+	}
+	if ( hasPlies() && getCurrentPlyNummer() >= 0 )
+	{
+		return getCurrentPly().getBoStelling();
+	}
+	else
+	{
+		return getStartStelling();
+	}
+}
 public boolean isNaarBeginMag()
 {
 	return isBegonnen() && getCurrentPlyNummer() > 0;
@@ -221,7 +267,7 @@ public void setToBegin()
 	{
 		throw new RuntimeException( "Fout in setToBegin: we zijn al aan het begin" );
 	}
-	setCurrentPlyNummer( 0 );
+	setCurrentPlyNummer( -1 );
 }
 public boolean isTerugMag()
 {
@@ -277,6 +323,10 @@ public void clearPliesFromNextPly()
 }
 public Einde getCurrentEinde()
 {
+	if ( getCurrentPlyNummer() < 0 )
+	{
+		return Einde.Nog_niet;
+	}
 	return getCurrentPly().getEinde();
 }
 void setCurrentPlyNummerForTestingOnlhy( int aCurrentPlyNummer )
