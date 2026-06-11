@@ -148,8 +148,8 @@
 
 <p>
 	${doc.aanZet} aan zet, 
-	<#if doc.resultaat.res1??>${doc.resultaat.res1}</#if>, 
-	<#if doc.resultaat.res2??>${doc.resultaat.res2}</#if>
+	<#if doc.resultaat.resultaat??>${doc.resultaat.resultaat}</#if>, 
+	<#if doc.resultaat.matIn??>${doc.resultaat.matIn}</#if>
 	<input hidden id="wkStuk" type="text" name="s3Stuk" value="${doc.wkStuk}" />
 	<input hidden id="zkStuk" type="text" name="s3Stuk" value="${doc.zkStuk}" />
 	<input hidden id="s3Stuk" type="text" name="s3Stuk" value="${doc.s3Stuk}" />
