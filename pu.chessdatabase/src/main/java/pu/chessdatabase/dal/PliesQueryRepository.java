@@ -16,11 +16,19 @@ public interface PliesQueryRepository extends CrudRepository<Plies, Integer>
 SELECT
   plies.id AS PLIES_ID
 , plies.config_string AS PLIES_CONFIG_STRING
+, plies.schaak AS PLIES_SCHAAK
+, plies.wk AS PLIES_WK
+, plies.zk AS PLIES_ZK
+, plies.s3 AS PLIES_S3
+, plies.s4 AS PLIES_S4
+, plies.s5 AS PLIES_S5
+, plies.aan_zet AS PLIES_AANZET
+, plies.resultaat AS PLIES_RESULTAAT
+, plies.aantal_zetten AS PLIES_AANTAL_ZETTEN
 , plies.user_name AS PLIES_USER_NAME
 , plies.started AS PLIES_STARTED
 , plies.current_ply_nummer AS PLIES_CURRENT_PLY_NUMMER
 , plies.begonnen AS PLIES_BEGONNEN
-, ply.ply_schaak AS PLYPLY_SCHAAK
 , ply.id AS PLY_ID
 , ply.einde AS PLY_EINDE
 , ply.ply_nummer AS PLY_PLYNUMMER
@@ -46,11 +54,19 @@ List<Tuple> getPliesTuplesById( @Param( "id" ) int aId );
 SELECT
   plies.id AS PLIES_ID
 , plies.config_string AS PLIES_CONFIG_STRING
+, plies.schaak AS PLIES_SCHAAK
+, plies.wk AS PLIES_WK
+, plies.zk AS PLIES_ZK
+, plies.s3 AS PLIES_S3
+, plies.s4 AS PLIES_S4
+, plies.s5 AS PLIES_S5
+, plies.aan_zet AS PLIES_AANZET
+, plies.resultaat AS PLIES_RESULTAAT
+, plies.aantal_zetten AS PLIES_AANTAL_ZETTEN
 , plies.user_name AS PLIES_USER_NAME
 , plies.started AS PLIES_STARTED
 , plies.current_ply_nummer AS PLIES_CURRENT_PLY_NUMMER
 , plies.begonnen AS PLIES_BEGONNEN
-, ply.ply_schaak AS PLYPLY_SCHAAK
 , ply.id AS PLY_ID
 , ply.einde AS PLY_EINDE
 , ply.ply_nummer AS PLY_PLYNUMMER

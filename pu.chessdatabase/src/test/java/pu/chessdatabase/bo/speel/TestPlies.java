@@ -74,16 +74,21 @@ public void testAddPly()
 	assertThat( plies.isBegonnen(), is( true ) );
 }
 @Test
-public void testAddPlyWithBoStellingAndEinde()
+public void testAddPlyWithBoStellingVanNaarAndEinde()
 {
+	VanNaar vanNaar = VanNaar.alfaBuilder()
+		.van( "b2" )
+		.naar( "g7" )
+		.build();
 	BoStelling boStellingMetWitAanZet = BoStelling.alfaBuilder()
 		.wk( "a1" )
 		.zk( "h8" )
 		.s3( "b2" )
 		.s4( "g7" )
 		.aanZet( Wit )
+		.schaak(  true )
 		.build();
-	plies.addPly( boStellingMetWitAanZet, Nog_niet );
+	plies.addPly( boStellingMetWitAanZet, vanNaar, Nog_niet );
 	assertThat( plies.getSize(), is( 1 ) );
 	assertThat( plies.getCurrentPlyNummer(), is( 0 ) );
 	assertThat( plies.getLastPlyNummer(), is( 0 ) );
@@ -94,13 +99,13 @@ public void testAddPlyWithBoStellingAndEinde()
 
 	BoStelling boStellingMetZwartAanZet = boStellingMetWitAanZet.clone();
 	boStellingMetZwartAanZet.setAanZet( Zwart );
-	plies.addPly( boStellingMetZwartAanZet, Mat );
+	plies.addPly( boStellingMetZwartAanZet, vanNaar, Mat );
 	Ply secondPly = plies.getSecondPly();
 	assertThat( secondPly.getBoStelling(), is( boStellingMetZwartAanZet ) );
 	assertThat( secondPly.getEinde(), is( Mat ) );
-	assertThat( secondPly.getZetNummer(), is( 1 ) );
+	assertThat( secondPly.getZetNummer(), is( 2 ) );
 
-	plies.addPly( boStellingMetWitAanZet, Nog_niet );
+	plies.addPly( boStellingMetWitAanZet, vanNaar, Nog_niet );
 	Ply thirdPly = plies.getLastPly();
 	assertThat( thirdPly.getBoStelling(), is( boStellingMetWitAanZet ) );
 	assertThat( thirdPly.getEinde(), is( Nog_niet ) );
@@ -238,7 +243,8 @@ public void testSetToBeginAndEnd()
 	assertFalse( plies.isNaarEindeMag() );
 	plies.setToBegin();
 	assertTrue( plies.isNaarEindeMag() );
-	assertThat( plies.getCurrentPly(), is( firstPly ) );
+	assertThat( plies.getCurrentPlyNummer(), is( -1 ) );
+	assertThrows( RuntimeException.class, () -> plies.getCurrentPly() );
 	
 	assertTrue( plies.isNaarEindeMag() );
 	plies.setNaarEinde();

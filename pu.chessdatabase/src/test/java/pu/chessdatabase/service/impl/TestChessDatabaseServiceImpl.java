@@ -144,28 +144,16 @@ public void testDoNewGame()
 	
 	assertThat( getPartij().getPlies(), is( notNullValue() ) );
 	assertThat( getPartij().getPlies().getPlies(), is( notNullValue() ) );
-	assertThat( getPartij().getPlies().getPlies().size(), is( 1 ) );
-	assertThat( getPartij().getPlies().getCurrentPlyNummer(), is( 0 ) );
+	assertThat( getPartij().getPlies().getPlies().size(), is( 0 ) );
+	assertThat( getPartij().getPlies().getCurrentPlyNummer(), is( -1 ) );
+	assertThat( getPartij().getPlies().getStartStelling().getBoStellingKey(), is( newGameResponse.getBoStellingKey() ) );
 	
-	Ply ply = TestHelper.createOnePly( getPartij().getPlies(), (VanNaar) null );
-	ply.setId( 501 );
-	assertThat( getPartij().getPlies().getCurrentPly(), is( ply ) );
-
 	LocalDateTime started = LocalDateTime.now();
-	Plies plies = Plies.builder()
-		.id( 500 )
-		.configString( "KDKT" )
-		.userName( Partij.DEFAULT_USER_NAME )
-		.currentPlyNummer( 0 )
-		.begonnen( true )
-		.plies( List.of( ply ) )
-		.build();
-	plies.setStarted( started );
+	getPartij().getPlies().setStarted( started );
+
 	// Check de database
 	Plies gotPlies = dao.getLatestPlies( Partij.DEFAULT_USER_NAME ); 
-	assertThat( gotPlies, is( notNullValue() ) );
-	gotPlies.setStarted( started );
-	assertThat( gotPlies, is( plies ) );
+	assertThat( gotPlies, is( nullValue() ) );
 }
 
 }

@@ -60,7 +60,7 @@ public void checkPlies( Plies aPlies )
 	assertThat( ply.getEinde(), is( Nog_niet ) );
 	assertThat( ply.getPlyNummer(), is( 0 ) );
 	assertThat( ply.getVanNaar(), is( new VanNaar( 17, 85 ) ) );
-	assertThat( ply.isPlySchaak(), is( false ) );
+	assertThat( ply.isSchaak(), is( false ) );
 	assertThat( ply.getBoStelling(), is( boStelling ) );
 
 	ply = aPlies.getPlies().get( 1 );
@@ -68,7 +68,7 @@ public void checkPlies( Plies aPlies )
 	assertThat( ply.getEinde(), is( Nog_niet ) );
 	assertThat( ply.getPlyNummer(), is( 1 ) );
 	assertThat( ply.getVanNaar(), is( new VanNaar( 17, 85 ) ) );
-	assertThat( ply.isPlySchaak(), is( false ) );
+	assertThat( ply.isSchaak(), is( false ) );
 	assertThat( ply.getBoStelling(), is( boStelling ) );
 }
 //@Test
@@ -116,14 +116,6 @@ public void testGetLatestPliesWithInvalidUser()
 @Transactional
 public void testSavePlies()
 {
-	Plies plies = Plies.builder()
-		.configString( config.getConfig() )
-		.userName( Partij.DEFAULT_USER_NAME )
-//		.started( LocalDateTime.now() )
-		.currentPlyNummer( 3 )
-		.begonnen( true )
-		.build();
-	plies.setStarted( LocalDateTime.now() );
 	BoStelling boStelling1 = BoStelling.alfaBuilder()
 		.wk( "a1" )
 		.zk( "h8" )
@@ -133,6 +125,7 @@ public void testSavePlies()
 		.aanZet( Wit )
 		.resultaat( Gewonnen )
 		.aantalZetten( 30 )
+		.schaak( false )
 		.build();
 	BoStelling boStelling2 = BoStelling.alfaBuilder()
 		.wk( "a1" )
@@ -143,6 +136,7 @@ public void testSavePlies()
 		.aanZet( Zwart )
 		.resultaat( Verloren )
 		.aantalZetten( 29 )
+		.schaak( false )
 		.build();
 	BoStelling boStelling3 = BoStelling.alfaBuilder()
 		.wk( "a1" )
@@ -153,13 +147,21 @@ public void testSavePlies()
 		.aanZet( Wit )
 		.resultaat( Gewonnen )
 		.aantalZetten( 29 )
+		.schaak( false )
+		.build();
+	Plies plies = Plies.builder()
+		.configString( config.getConfig() )
+		.userName( Partij.DEFAULT_USER_NAME )
+		.started( LocalDateTime.now() )
+		.currentPlyNummer( 3 )
+		.begonnen( true )
+		.startStelling( boStelling1 )
 		.build();
 	plies.addPly( Ply.builder()
 		//.id is voor JPA
 		.plies( plies )
 		.einde( Nog_niet )
 		.plyNummer( 1 )
-		.plySchaak( false )
 		.vanNaar( new VanNaar( "b2", "e5") )
 		.boStelling( boStelling1 )
 		.build()
@@ -169,7 +171,6 @@ public void testSavePlies()
 		.plies( plies )
 		.einde( Nog_niet )
 		.plyNummer( 2 )
-		.plySchaak( false )
 		.vanNaar( new VanNaar( "h8", "g8") )
 		.boStelling( boStelling2 )
 		.build()
@@ -179,8 +180,7 @@ public void testSavePlies()
 		.plies( plies )
 		.einde( Nog_niet )
 		.plyNummer( 3 )
-		.plySchaak( false )
-		.vanNaar( null )
+		.vanNaar( new VanNaar( "a1", "a2" ) )
 		.boStelling( boStelling3 )
 		.build()
 		);
@@ -188,7 +188,24 @@ public void testSavePlies()
 	
 	Plies gotPlies = dao.getLatestPlies( Partij.DEFAULT_USER_NAME );
 	assertNotNull( plies );
-	assertThat( gotPlies, is( plies ) );
+	assertThat( plies.getPlies().size(), is( gotPlies.getPlies().size() ) );
+	// gotPlies is een andere Plies-instance dan plies, dus al die Plys hebben een andere instance van Plies.
+	gotPlies.getPlies().get( 0 ).setPlies( plies );
+	gotPlies.getPlies().get( 1 ).setPlies( plies );
+	gotPlies.getPlies().get( 2 ).setPlies( plies );
+	assertThat( plies.getPlies().get( 0 ), is( gotPlies.getPlies().get( 0 ) ) );
+	assertThat( plies.getPlies().get( 1 ), is( gotPlies.getPlies().get( 1 ) ) );
+	assertThat( plies.getPlies().get( 2 ), is( gotPlies.getPlies().get( 2 ) ) );
+	//assertThat( plies.getPlies(), is( gotPlies.getPlies() ) );
+	//Hieruit blijkt dat gotPlies een PersistentBag heeft voor plies, en plies een ArrayList. 
+	//Dus dit gaat niet door assertThat( gotPlies, is( plies ) );
+	assertThat( plies.getId(), is( gotPlies.getId() ) );
+	assertThat( plies.getConfigString(), is( gotPlies.getConfigString() ) );
+	assertThat( plies.getStartStelling(), is( gotPlies.getStartStelling() ) );
+	assertThat( plies.getUserName(), is( gotPlies.getUserName() ) );
+	//assertThat( plies.getStarted(), is( gotPlies.getStarted() ) );
+	assertThat( plies.getCurrentPlyNummer(), is( gotPlies.getCurrentPlyNummer() ) );
+	assertThat( plies.isBegonnen(), is( gotPlies.isBegonnen() ) );
 }
 	
 }

@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ResultaatRecord
 {
-private String res1;
-private String res2;
+private String resultaat; // Mat, Pat, Gewonnen, Verloren, Illegaal
+private String matIn;
 }

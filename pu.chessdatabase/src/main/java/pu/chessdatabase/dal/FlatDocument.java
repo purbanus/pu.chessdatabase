@@ -10,13 +10,21 @@ public class FlatDocument
 {
 private final int pliesId;
 private final String configString;
+private final boolean pliesSchaak;
+private final int pliesWk;
+private final int pliesZk;
+private final int pliesS3;
+private final int pliesS4;
+private final int pliesS5;
+private final String pliesAanZet;
+private final String pliesResultaat;
+private final int pliesAantalZetten;
 private final String userName;
 // Geen LocalDateTime gebruiken: geeft een ClassCastException
 // zelfs met mijn eigen Converter
 private final Timestamp started;
 private final int currentPlyNummer;
 private final boolean begonnen;
-private final boolean plySchaak;
 private final int plyId;
 private final String einde;
 private final int plyNummer;
