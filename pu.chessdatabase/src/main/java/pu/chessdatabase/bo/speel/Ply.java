@@ -47,7 +47,6 @@ public static Ply fromFlatDocument( FlatDocument aFlatDocument )
 		//.plies(xxx) @@zit niet in FlatDocument
 		.einde( Einde.valueOf( aFlatDocument.getEinde() ) )
 		.plyNummer( aFlatDocument.getPlyNummer() )
-		.plySchaak( aFlatDocument.isSchaak() )
 		.vanNaar( new VanNaar( aFlatDocument.getVan(), aFlatDocument.getNaar() ) )
 		.boStelling( BoStelling.fromFlatDocument( aFlatDocument ) )
 		.build();
@@ -63,16 +62,7 @@ private Einde einde;
 @Column( nullable = false )
 private int plyNummer;
 
-//@@NOG Dit nog eens goed doordenken: waarom is het niet het schaak van de ONDERHAVIGE ply?
-//Dit moet je niet doen, het is het schaak in de VORIGE ply dat geldt
-//public boolean isSchaak()
-//{
-//	return getBoStelling().isSchaak();
-//}
 @Column( nullable = false )
-private boolean plySchaak;
-
-@Column( nullable = true )
 private VanNaar vanNaar;
 
 @Column( nullable = false )
@@ -92,6 +82,10 @@ private BoStelling boStelling;
 @ToString.Exclude
 private Plies plies;
 
+public boolean isSchaak()
+{
+	return getBoStelling().isSchaak();
+}
 public int getZetNummer()
 {
 	if ( ! getPlies().hasPlies() )
@@ -101,12 +95,23 @@ public int getZetNummer()
 	int zetNummer;
 	if ( getPlies().getFirstPly().getBoStelling().getAanZet() == Wit )
 	{
-		zetNummer = getPlyNummer() / 2 + 1;
+		zetNummer = ( getPlyNummer() + 1 ) / 2 + 1;
 	}
 	else
 	{
-		zetNummer = ( getPlyNummer() + 1 ) / 2 + 1;
+		zetNummer = getPlyNummer() / 2 + 1;
 	}
 	return zetNummer;
+}
+public BoStelling getPreviousStelling()
+{
+	if ( getPlyNummer() > 0 )
+	{
+		return getPlies().getPly( getPlyNummer() - 1 ).getBoStelling();
+	}
+	else
+	{
+		return getPlies().getStartStelling();
+	}
 }
 }
