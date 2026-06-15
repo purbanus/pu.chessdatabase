@@ -243,6 +243,23 @@ public void testAlfaBuilderMets5OpWk()
 	assertThat( boStelling.toString(), is( boStringText ) );
 }
 @Test
+public void testAlfaVelden()
+{
+	BoStelling boStelling  = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "c1" )
+		.s3( "b2" )
+		.s4( "d3" )
+		.s5( "a2" )
+		.aanZet( Wit )
+		.build();
+	assertThat( boStelling.getWkAlfa(), is( "a1" ) );
+	assertThat( boStelling.getZkAlfa(), is( "c1" ) );
+	assertThat( boStelling.getS3Alfa(), is( "b2" ) );
+	assertThat( boStelling.getS4Alfa(), is( "d3" ) );
+	assertThat( boStelling.getS5Alfa(), is( "a2" ) );
+}
+@Test
 public void testMetGeslagenStuk()
 {
 	config.switchConfig( "KDKT" );
