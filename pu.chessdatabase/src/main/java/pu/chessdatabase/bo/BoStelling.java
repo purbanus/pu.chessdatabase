@@ -84,17 +84,6 @@ public static BoStelling fromFlatDocumentForPlies( FlatDocument aFlatDocument )
 		.schaak( aFlatDocument.isPliesSchaak() )
 		.build();
 }
-public static final BoStelling NULL_STELLING = BoStelling.builder()
-	.wk( 0 )
-	.zk( 0 )
-	.s3( 0 )
-	.s4( 0 )
-	.s5( 0 )
-	.aanZet( Wit )
-	.resultaat( Illegaal )
-	.aantalZetten( 0 )
-	.schaak( false )
-	.build();
 public static Kleur getVeldKleur( int aVeld )
 {
 	int rij = aVeld / 16;
@@ -175,6 +164,26 @@ public String getS4String()
 public String getS5String()
 {
 	return Config.getStaticStukken().getS5().getStukString();
+}
+public String getWkAlfa()
+{
+	return Gen.veldToAlfa( wk );
+}
+public String getZkAlfa()
+{
+	return Gen.veldToAlfa( zk );
+}
+public String getS3Alfa()
+{
+	return Gen.veldToAlfa( s3 );
+}
+public String getS4Alfa()
+{
+	return Gen.veldToAlfa( s4 );
+}
+public String getS5Alfa()
+{
+	return Gen.veldToAlfa( s5 );
 }
 @Override
 public String toString()

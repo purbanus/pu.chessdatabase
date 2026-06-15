@@ -22,6 +22,42 @@ import pu.chessdatabase.dbs.Resultaat;
 
 import lombok.Data;
 
+/**
+ * De belangrijkste struktuur is Plies. Een aantal voorbeelden:
+
+Voorbeeld a):  Wit begint
+
+1. Ke2-e3 Ta1-a8
+2. Ke3-e4 Kf6-g6
+
+Plies ziet er als volgt uit:
+
+                 Stelling         ZetNr       Van/naar
+Startstelling	Ke2Dh1Kf6Ta1 waz
+Plies[0]		Ke3Dh1Kf6Ta1 zaz     1         e2 e3 
+Plies[1]		Ke3Dh1Kf6Ta8 waz     1         a1 a8 
+Plies[2]		Ke4Dh1Kf6Ta8 zaz     2         e3 e4 
+Plies[3]		Ke3Dh1Kg6Ta8 waz     2         f6 g6 
+  ... 
+
+Voorbeeld b):  Zwart begint
+
+1.   ...  Ta1-a8
+2. Ke3-e4 Kf6-g6
+
+Plies ziet er als volgt uit:
+
+                 Stelling          ZetNr     Van/naar
+Startstelling	Ke3Dh1Kf6Ta1 zaz               
+Plies[0]		Ke3Dh1Kf6Ta8 waz     1        a1 a8 
+Plies[1]		Ke4Dh1Kf6Ta8 zaz     2        e3 e4 
+Plies[2]		Ke3Dh1Kg6Ta8 waz     2        f6 g6 
+ ... 
+Met andere woorden, in een Ply zit de zet die gedaan is, plus de stelling 
+die daaruit resulteeert. Het zetnummer is gewoon het nummer dat afgedrukt moet worden.
+ */
+
+
 @Component
 @Data
 public class Partij
@@ -275,7 +311,7 @@ public BoStelling bedenk()
 /**
  * ------------ Voer een zet uit -----------------------
  */
-void checkPartijVoorZet( BoStelling boStellingNaar )
+void checkPartijVoorZet( BoStelling aBoStelling )
 {
 	if ( ! isBegonnen() )
 	{
@@ -286,15 +322,10 @@ void checkPartijVoorZet( BoStelling boStellingNaar )
 	{
 		throw new RuntimeException( "De partij is geeindigd in " + einde + ". Je kunt geen zetten meer doen." );
 	}
-	if ( boStellingNaar == null )
+	if ( aBoStelling == null )
 	{
 		throw new RuntimeException( "Er kon geen stelling bepaald worden waarnaartoe de ze leidt" );
 	}
-}
-
-public BoStelling zet( String aVanNaar )
-{
-	return zet( new VanNaar( aVanNaar ) );
 }
 /**
  * ------------ Voer een zet uit nav een stelling -----------------------
@@ -303,6 +334,10 @@ public BoStelling zetStelling( BoStelling aBoStelling )
 {
 	VanNaar vanNaar = stellingToVanNaar( getPlies().getStand(), aBoStelling );
 	return zet( vanNaar );
+}
+public BoStelling zet( String aVanNaar )
+{
+	return zet( new VanNaar( aVanNaar ) );
 }
 public BoStelling zet( VanNaar aVanNaar )
 {
@@ -417,13 +452,7 @@ String zetNummerToString( int aZetNummer )
 {
 	return String.format("%1$3s", aZetNummer );
 }
-/**
- * ------- Huidige zetnummer omzetten in string -----------------------
- */
-public String currentZetNummerToString()
-{
-	return zetNummerToString( getPlies().getCurrentPly().getZetNummer() );
-}
+
 /**
  * -------- Hele zet omzetten naar string ( 55. Ke1-e2+  Ke7-d8+) -------
  */
@@ -528,7 +557,7 @@ public List<GegenereerdeZetDocument> getGegenereerdeZetten()
 			// .id is voor JPA
 			.plies( getPlies() )
 			.einde( Nog_niet ) // @@NOG klopt dit??
-			.plyNummer( getPlies().getLastPlyNummer() + 1 )
+			.plyNummer( getPlies().getCurrentPlyNummer() + 1 )
 			.vanNaar( stellingToVanNaar( boStellingVan, boStellingNaar ) )
 			.boStelling( boStellingNaar )
 			.build();
