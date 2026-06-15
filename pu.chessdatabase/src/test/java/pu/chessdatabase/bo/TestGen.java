@@ -409,57 +409,83 @@ public void testAddZet()
 	BoStelling resultaatStelling;
 	
 	// Gewone zet
-	stelling = BoStelling.builder()
-		.wk( 0x11 )
-		.zk( 0x27 )
-		.s3( 0x76 )
-		.s4( 0x33 )
+	stelling = BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "h3" )
+		.s3( "g8" )
+		.s4( "d4" )
+		.s5( "b2" )
+		.aanZet( Wit )
+		.build();
+	gegenereerdeZetten = new ArrayList<>();
+	gen.addZet( stelling, gen.getStukken().getS3(), Gen.alfaToVeld( "h8" ), Gewoon, Gen.alfaToVeld( "b2" ), Gen.alfaToVeld( "g8" ), gegenereerdeZetten );
+	assertThat( gegenereerdeZetten.size(), is( 1 ) );
+	resultaatStelling = gegenereerdeZetten.get( 0 );
+	assertThat( resultaatStelling.getWkAlfa(), is( "b2" ) );
+	assertThat( resultaatStelling.getZkAlfa(), is( "h3" ) );
+	assertThat( resultaatStelling.getS3Alfa(), is( "h8" ) );
+	assertThat( resultaatStelling.getS4Alfa(), is( "d4" ) );
+	assertThat( resultaatStelling.getS5Alfa(), is( "b2" ) );
+	assertThat( resultaatStelling.getAanZet(), is( Zwart ) );
+
+	// Koningszet want die heeft s5 geslagen
+	stelling = BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "h3" )
+		.s3( "g8" )
+		.s4( "d4" )
+		.s5( "b2" )
+		.aanZet( Wit )
+		.build();
+	gegenereerdeZetten = new ArrayList<>();
+	gen.addZet( stelling, gen.getStukken().getWk(), Gen.alfaToVeld( "c3" ), Gewoon, Gen.alfaToVeld( "b2" ), Gen.alfaToVeld( "b2" ), gegenereerdeZetten );
+	assertThat( gegenereerdeZetten.size(), is( 1 ) );
+	resultaatStelling = gegenereerdeZetten.get( 0 );
+	assertThat( resultaatStelling.getWkAlfa(), is( "c3" ) );
+	assertThat( resultaatStelling.getZkAlfa(), is( "h3" ) );
+	assertThat( resultaatStelling.getS3Alfa(), is( "g8" ) );
+	assertThat( resultaatStelling.getS4Alfa(), is( "d4" ) );
+	assertThat( resultaatStelling.getS5Alfa(), is( "c3" ) );
+	assertThat( resultaatStelling.getAanZet(), is( Zwart ) );
+	
+	// Slagzet
+	stelling = BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "h3" )
+		.s3( "g8" )
+		.s4( "g3" )
+		.s5( "b2" )
 		.aanZet( Zwart )
 		.build();
 	gegenereerdeZetten = new ArrayList<>();
-	gen.addZet( stelling, gen.getStukken().getS3(), 0x77, Gewoon, 0x11, 0x76, gegenereerdeZetten );
+	gen.addZet( stelling, gen.getStukken().getS4(), Gen.alfaToVeld( "g8" ), Slagzet, Gen.alfaToVeld( "b2" ), Gen.alfaToVeld( "g3" ), gegenereerdeZetten );
 	assertThat( gegenereerdeZetten.size(), is( 1 ) );
 	resultaatStelling = gegenereerdeZetten.get( 0 );
-	assertThat( resultaatStelling.getWk(), is( 0x11 ) );
-	assertThat( resultaatStelling.getZk(), is( 0x27 ) );
-	assertThat( resultaatStelling.getS3(), is( 0x77 ) );
-	assertThat( resultaatStelling.getS4(), is( 0x33 ) );
+	assertThat( resultaatStelling.getWkAlfa(), is( "b2" ) );
+	assertThat( resultaatStelling.getZkAlfa(), is( "h3" ) );
+	assertThat( resultaatStelling.getS3Alfa(), is( "b2" ) );
+	assertThat( resultaatStelling.getS4Alfa(), is( "g8" ) );
+	assertThat( resultaatStelling.getS5Alfa(), is( "b2" ) );
 	assertThat( resultaatStelling.getAanZet(), is( Wit ) );
 
-	// Slagzet
-	stelling = BoStelling.builder()
-		.wk( 0x11 )
-		.zk( 0x27 )
-		.s3( 0x76 )
-		.s4( 0x33 )
-		.aanZet( Wit )
-		.build();
-	gegenereerdeZetten = new ArrayList<>();
-	gen.addZet( stelling, gen.getStukken().getS4(), 0x76, Slagzet, 0x11, 0x76, gegenereerdeZetten );
-	assertThat( gegenereerdeZetten.size(), is( 1 ) );
-	resultaatStelling = gegenereerdeZetten.get( 0 );
-	assertThat( resultaatStelling.getWk(), is( 0x11 ) );
-	assertThat( resultaatStelling.getZk(), is( 0x27 ) );
-	assertThat( resultaatStelling.getS3(), is( 0x11 ) );
-	assertThat( resultaatStelling.getS4(), is( 0x76 ) );
-	assertThat( resultaatStelling.getAanZet(), is( Zwart ) );
-
 	// Geslagen stukken meeverplaatsen
-	stelling = BoStelling.builder()
-		.wk( 0x11 )
-		.zk( 0x27 )
-		.s3( 0x11 )
-		.s4( 0x33 )
+	stelling = BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "h3" )
+		.s3( "b2" )
+		.s4( "d4" )
+		.s5( "b2" )
 		.aanZet( Wit )
 		.build();
 	gegenereerdeZetten = new ArrayList<>();
-	gen.addZet( stelling, gen.getStukken().getWk(), 0x12, Gewoon, 0x11, 0x11, gegenereerdeZetten );
+	gen.addZet( stelling, gen.getStukken().getWk(), Gen.alfaToVeld( "c2" ), Gewoon, Gen.alfaToVeld( "b2" ), Gen.alfaToVeld( "b2" ), gegenereerdeZetten );
 	assertThat( gegenereerdeZetten.size(), is( 1 ) );
 	resultaatStelling = gegenereerdeZetten.get( 0 );
-	assertThat( resultaatStelling.getWk(), is( 0x12 ) );
-	assertThat( resultaatStelling.getZk(), is( 0x27 ) );
-	assertThat( resultaatStelling.getS3(), is( 0x12 ) );
-	assertThat( resultaatStelling.getS4(), is( 0x33 ) );
+	assertThat( resultaatStelling.getWkAlfa(), is( "c2" ) );
+	assertThat( resultaatStelling.getZkAlfa(), is( "h3" ) );
+	assertThat( resultaatStelling.getS3Alfa(), is( "c2" ) );
+	assertThat( resultaatStelling.getS4Alfa(), is( "d4" ) );
+	assertThat( resultaatStelling.getS5Alfa(), is( "c2" ) );
 	assertThat( resultaatStelling.getAanZet(), is( Zwart ) );
 }
 
