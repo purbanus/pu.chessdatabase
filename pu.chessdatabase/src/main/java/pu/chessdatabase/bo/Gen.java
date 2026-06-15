@@ -390,7 +390,7 @@ void addZet( final BoStelling aBoStelling, Stuk aStuk, int aNaar, ZetSoort aZets
 				boStelling.setS3( boStelling.getZk() );
 			}
 		}
-		if ( getConfig().getAantalStukken() >= 4 && boStelling.getS4() == aNaar )
+		if ( boStelling.getS4() == aNaar )
 		{
 			Stuk geslagenStuk = getStukken().getS4();
 			if ( geslagenStuk.getKoningsNummer() == 0 )
@@ -402,7 +402,7 @@ void addZet( final BoStelling aBoStelling, Stuk aStuk, int aNaar, ZetSoort aZets
 				boStelling.setS4( boStelling.getZk() );
 			}
 		}
-		if ( getConfig().getAantalStukken() >= 5 && boStelling.getS5() == aNaar )
+		if ( boStelling.getS5() == aNaar )
 		{
 			Stuk geslagenStuk = getStukken().getS5();
 			if ( geslagenStuk.getKoningsNummer() == 0 )
@@ -422,11 +422,11 @@ void addZet( final BoStelling aBoStelling, Stuk aStuk, int aNaar, ZetSoort aZets
 		{
 			boStelling.setS3( aNaar );
 		}
-		if ( getConfig().getAantalStukken() >= 4 && boStelling.getS4() == aKoningsVeld )
+		if ( boStelling.getS4() == aKoningsVeld )
 		{
 			boStelling.setS4( aNaar );
 		}
-		if ( getConfig().getAantalStukken() >= 5 && boStelling.getS5() == aKoningsVeld )
+		if ( boStelling.getS5() == aKoningsVeld )
 		{
 			boStelling.setS5( aNaar );
 		}
