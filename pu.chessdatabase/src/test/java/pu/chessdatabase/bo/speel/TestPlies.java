@@ -224,7 +224,7 @@ public void testIsAtLastPlyNummer()
 @Test
 public void testSetToBeginAndEnd()
 {
-	assertThrows( RuntimeException.class, () -> plies.setToBegin() );
+	assertThrows( RuntimeException.class, () -> plies.setNaarBegin() );
 	assertFalse( plies.isNaarBeginMag() );
 	assertThrows( RuntimeException.class, () -> plies.setNaarEinde() );
 	assertFalse( plies.isNaarEindeMag() );
@@ -235,13 +235,16 @@ public void testSetToBeginAndEnd()
 	Ply thirdPly = threePlies.getRight();
 
 	plies.addPly( firstPly );
+	assertTrue( plies.isNaarBeginMag() );
+	plies.setNaarBegin();
+	plies.setVooruit();
 	plies.addPly( secondPly );
 	plies.addPly( thirdPly );
 	assertThat( plies.getCurrentPly(), is( thirdPly ) );
 
 	assertTrue( plies.isNaarBeginMag() );
 	assertFalse( plies.isNaarEindeMag() );
-	plies.setToBegin();
+	plies.setNaarBegin();
 	assertTrue( plies.isNaarEindeMag() );
 	assertThat( plies.getCurrentPlyNummer(), is( -1 ) );
 	assertThrows( RuntimeException.class, () -> plies.getCurrentPly() );
@@ -263,10 +266,11 @@ public void testSetTerug()
 	Ply thirdPly = threePlies.getRight();
 
 	plies.addPly( firstPly );
-	plies.setCurrentPlyNummerForTestingOnlhy( -1 );
-	assertFalse( plies.isTerugMag() );
+	assertTrue( plies.isTerugMag() );
+	plies.setTerug();
+	plies.setVooruit();
 	plies.setCurrentPlyNummerForTestingOnlhy( 0 );
-	assertFalse( plies.isTerugMag() );
+	assertTrue( plies.isTerugMag() );
 	plies.addPly( secondPly );
 	assertTrue( plies.isTerugMag() );
 	plies.addPly( thirdPly );
@@ -290,13 +294,17 @@ public void testSetVooruit()
 	assertTrue( plies.isVooruitMag() );
 	plies.addPly( secondPly );
 	plies.addPly( thirdPly );
-	assertTrue( plies.isVooruitMag() );
+	assertFalse( plies.isVooruitMag() ); // Want die ply is Mat
 	assertThat( plies.getCurrentPly(), is( thirdPly ) );
 	plies.setTerug();
-	assertTrue( plies.isVooruitMag() );
+	assertFalse( plies.isVooruitMag() ); // Want die ply is ook Mat
 	assertThat( plies.getCurrentPly(), is( secondPly ) );
-	plies.setVooruit();
+	plies.setTerug();
 	assertTrue( plies.isVooruitMag() );
+	assertThat( plies.getCurrentPly(), is( firstPly ) );
+	plies.setVooruit();
+	plies.setVooruit();
+	assertFalse( plies.isVooruitMag() );
 	assertThat( plies.getCurrentPly(), is( thirdPly ) );
 }
 @Test

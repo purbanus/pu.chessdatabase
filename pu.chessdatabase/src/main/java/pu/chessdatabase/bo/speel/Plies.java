@@ -1,5 +1,7 @@
 package pu.chessdatabase.bo.speel;
 
+import static pu.chessdatabase.bo.speel.Einde.*;
+
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -250,39 +252,31 @@ public BoStelling getStand()
 }
 public boolean isNaarBeginMag()
 {
-	return isBegonnen() && getCurrentPlyNummer() > 0;
+	return hasPlies();
 }
-public void setToBegin()
+public void setNaarBegin()
 {
-	if ( ! isBegonnen() )
+	if ( ! hasPlies() )
 	{
-		throw new RuntimeException( "Fout in setToBegin: er is geen begin want de partij is nog niet begonnen" );
-	}
-	if ( getCurrentPlyNummer() <= 0 )
-	{
-		throw new RuntimeException( "Fout in setToBegin: we zijn al aan het begin" );
+		throw new RuntimeException( "Fout in setToBegin: er is geen begin want de partij heeft nog geen zetten" );
 	}
 	setCurrentPlyNummer( -1 );
 }
 public boolean isTerugMag()
 {
-	return isBegonnen() && getCurrentPlyNummer() > 0;
+	return hasPlies();
 }
 public void setTerug()
 {
-	if ( ! isBegonnen() )
+	if ( ! hasPlies() )
 	{
-		throw new RuntimeException( "Fout in setTerug: er is geen zet terug want de partij is nog niet begonnen" );
-	}
-	if ( getCurrentPlyNummer() <= 0 )
-	{
-		throw new RuntimeException( "Fout in setTerug: er is geen zet terug want de partij is nog aan het begin" );
+		throw new RuntimeException( "Fout in setTerug: er is geen zet terug want de partij heeft nog geen zetten" );
 	}
 	currentPlyNummer--;
 }
 public boolean isVooruitMag()
 {
-	return isBegonnen();
+	return isBegonnen() && getCurrentEinde() == Nog_niet;
 }
 public void setVooruit()
 {
