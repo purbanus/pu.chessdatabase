@@ -248,7 +248,7 @@ boolean isLegalMove( BoStelling aBoStelling, VanNaar aVanNaar )
  */
 public BoStelling zetNaarBegin()
 {
-	getPlies().setToBegin();
+	getPlies().setNaarBegin();
 	return getStand();
 }
 public BoStelling zetTerug()
