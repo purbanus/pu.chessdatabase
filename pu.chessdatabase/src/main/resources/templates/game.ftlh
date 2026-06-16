@@ -170,22 +170,22 @@
 	<#if doc.naarBeginMag>
 		<a class="left" href='<@spring.url "/zet-naar-begin" />'><span>&lt;&lt;</span></a>
 	<#else>
-		<span class="prevnextdisabled">&lt&lt</span
+		<span class="prevnextdisabled">&lt&lt</span>
 	</#if>
 	<#if doc.terugMag>
-		<a              href='<@spring.url "/zet-terug" />'><span>a &lt;</span></a>
+		<a              href='<@spring.url "/zet-terug" />'><span>&lt;</span></a>
 	<#else>
-		<span class="prevnextdisabled">b &lt</span
+		<span class="prevnextdisabled">&lt</span>
 	</#if>
 	<#if doc.vooruitMag>
-		<a              href='<@spring.url "/zet-vooruit" />'><span>a &gt;</span></a>
+		<a              href='<@spring.url "/zet-vooruit" />'><span>&gt;</span></a>
 	<#else>
-		<span class="prevnextdisabled">b &gt</span
+		<span class="prevnextdisabled">&gt</span>
 	</#if>
 	<#if doc.naarEindeMag>
 		<a              href='<@spring.url "/zet-naar-einde" />'><span>&gt;&gt;</span></a>
 	<#else>
-		<span class="prevnextdisabled">&gt&gt</span
+		<span class="prevnextdisabled">&gt&gt</span>
 	</#if>
 </div>
 
