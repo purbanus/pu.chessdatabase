@@ -33,10 +33,10 @@ public void buildKDKT()
 	bouw.bouwDatabase();
 }
 //@Test
-public void buildKDKT2()
+public void buildTestKDKT()
 {
 	config.switchConfig( "KDKT", false );
-	dbs.setDatabaseName( "dbs/KDKT2.DBS" );
+	dbs.setDatabaseName( "dbs/Pipo4" );
 	bouw.bouwDatabase();
 }
 //@Test
@@ -55,6 +55,12 @@ public void buildKLLK()
 public void buildKDK()
 {
 	config.switchConfig( "KDK", false );
+	bouw.bouwDatabase();
+}
+//@Test
+public void buildTestKDK()
+{
+	config.switchConfig( "TestKDK", false );
 	bouw.bouwDatabase();
 }
 //@Test
