@@ -83,6 +83,7 @@ public RedirectView doNewGame( @ModelAttribute NewGameResponse aGameResponse, Mo
 		+ "&zk=" + partijDocument.getZk()
 		+ "&s3=" + partijDocument.getS3()
 		+ "&s4=" + partijDocument.getS4()
+		+ "&s5=" + partijDocument.getS5()
 		+ "&aanZet=" + partijDocument.getAanZet()
 	);
 }
@@ -123,6 +124,7 @@ public RedirectView doZet( @ModelAttribute ZetResponse aZetResponse, Model aMode
 		+ "&zk=" + partijDocument.getZk()
 		+ "&s3=" + partijDocument.getS3()
 		+ "&s4=" + partijDocument.getS4()
+		+ "&s5=" + partijDocument.getS5()
 		+ "&aanZet=" + partijDocument.getAanZet()
 	);
 }
@@ -138,6 +140,7 @@ public RedirectView zetNaarBegin( Model aModel )
 		+ "&zk=" + partijDocument.getZk()
 		+ "&s3=" + partijDocument.getS3()
 		+ "&s4=" + partijDocument.getS4()
+		+ "&s5=" + partijDocument.getS5()
 		+ "&aanZet=" + partijDocument.getAanZet()
 	);
 }
@@ -153,6 +156,7 @@ public RedirectView zetTerug( Model aModel )
 		+ "&zk=" + partijDocument.getZk()
 		+ "&s3=" + partijDocument.getS3()
 		+ "&s4=" + partijDocument.getS4()
+		+ "&s5=" + partijDocument.getS5()
 		+ "&aanZet=" + partijDocument.getAanZet()
 	);
 }
@@ -168,6 +172,7 @@ public RedirectView zetVooruit( Model aModel )
 		+ "&zk=" + partijDocument.getZk()
 		+ "&s3=" + partijDocument.getS3()
 		+ "&s4=" + partijDocument.getS4()
+		+ "&s5=" + partijDocument.getS5()
 		+ "&aanZet=" + partijDocument.getAanZet()
 	);
 }
@@ -183,6 +188,7 @@ public RedirectView zetNaarEinde( Model aModel )
 		+ "&zk=" + partijDocument.getZk()
 		+ "&s3=" + partijDocument.getS3()
 		+ "&s4=" + partijDocument.getS4()
+		+ "&s5=" + partijDocument.getS5()
 		+ "&aanZet=" + partijDocument.getAanZet()
 	);
 }
