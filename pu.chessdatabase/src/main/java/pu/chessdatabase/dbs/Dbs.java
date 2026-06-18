@@ -132,17 +132,10 @@ public static void iterateOverKleurEnResultaat( IterateOverKleurEnResultaatFunct
 
 @Autowired private VM vm;
 @Autowired private VMStellingIterator vmStellingIterator;
-
-//Range<Integer> Veld = Range.of( 0, 0x77 );
-//Range<Integer> OKtant = Range.of( 1, OKTANTEN );
-//Range<Integer> ResultaatRange = Range.of( 0, 3 );
-
 Range veldRange = new Range( 0, 0x77 );
 Range oktantRange = new Range( 1, OKTANTEN );
 Range resultaatRange = new Range( 0, 3 );
-
 int[][] transformatieTabel = new int [OKTANTEN + 1][veldRange.getMaximum() + 1];
-
 public Dbs()
 {
 	createTransformatieTabel();
@@ -155,7 +148,6 @@ public void setReport( int aReportFrequency, ReportFunction aReportFunction, boo
 {
 	vmStellingIterator.setReport( aReportFrequency, aReportFunction, aDoAllPositions );
 }
-
 /**
  * ------- Naam geven -------------------
  */
@@ -377,6 +369,7 @@ void markeerWitPass( PassFunction aPassFunction )
  */
 void markeerZwartPass( PassFunction aPassFunction )
 {
+	// @@NOG Deze doet het dus niet
 	vmStellingIterator.iterateOverWkZk( Zwart, aPassFunction );
 }
 /**

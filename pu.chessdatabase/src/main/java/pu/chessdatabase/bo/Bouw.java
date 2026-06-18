@@ -63,9 +63,9 @@ int getReportFrequency()
 {
 	switch ( getConfig().getAantalStukken() )
 	{
-		case 3: return (int) dbs.getDatabaseSize() / 10;
-		case 4: return (int) dbs.getDatabaseSize() / 10;
-		case 5: return (int) dbs.getDatabaseSize() / 100;
+		case 3: return (int) dbs.getDatabaseSize() / 2;
+		case 4: return (int) dbs.getDatabaseSize() / 4;
+		case 5: return (int) dbs.getDatabaseSize() / 16;
 	}
 	throw new RuntimeException( "Ongeldig aantal stukken in Config: " + getConfig().getAantalStukken() );
 }

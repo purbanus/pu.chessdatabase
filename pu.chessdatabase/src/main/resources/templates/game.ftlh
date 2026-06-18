@@ -136,6 +136,7 @@
 					&zk=${doc.zk}
 					&s3=${doc.s3}
 					&s4=${doc.s4}
+					&s5=${doc.s5}
 					&aanZet=${doc.aanZet}" />'>
 					${zet.zet}
 				</a>
@@ -154,11 +155,13 @@
 	<input hidden id="zkStuk" type="text" name="s3Stuk" value="${doc.zkStuk}" />
 	<input hidden id="s3Stuk" type="text" name="s3Stuk" value="${doc.s3Stuk}" />
 	<input hidden id="s4Stuk" type="text" name="s4Stuk" value="${doc.s4Stuk}" />
+	<input hidden id="s5Stuk" type="text" name="s5Stuk" value="${doc.s5Stuk}" />
 	<form action='<@spring.url "/do-zet" />' method="post">
 		<input hidden id="wk" type="text" name="wk" value="${doc.wk}" />
 		<input hidden id="zk" type="text" name="zk" value="${doc.zk}" />
 		<input hidden id="s3" type="text" name="s3" value="${doc.s3}" />
 		<input hidden id="s4" type="text" name="s4" value="${doc.s4}" />
+		<input hidden id="s5" type="text" name="s5" value="${doc.s5}" />
 		<input hidden id="aanZet" type="text" name="aanZet" value="${doc.aanZet}" />
 		
 		<label for="nieuweZet">Nieuwe zet:</label><Input id="nieuweZet type="text" name="nieuweZet" />

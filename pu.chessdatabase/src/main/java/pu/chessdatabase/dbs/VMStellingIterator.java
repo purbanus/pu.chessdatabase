@@ -130,7 +130,7 @@ public void iterateOverPiecesOnlyWhite( BoStelling aBoStelling, VMStelling aVmSt
 		boStelling.setS3( Dbs.CVT_STUK[s3] );
 		if ( getConfig().getAantalStukken() == 3 )
 		{
-			callForAllPiecesOnlyWhite( boStelling, vmStelling, aPassFunction );
+			callForAllPieces( boStelling, vmStelling, aPassFunction, true );
 		}
 		else
 		{
@@ -140,7 +140,7 @@ public void iterateOverPiecesOnlyWhite( BoStelling aBoStelling, VMStelling aVmSt
 				boStelling.setS4( Dbs.CVT_STUK[s4] );
 				if ( getConfig().getAantalStukken() == 4 )
 				{
-					callForAllPiecesOnlyWhite( boStelling, vmStelling, aPassFunction );
+					callForAllPieces( boStelling, vmStelling, aPassFunction, true );
 				}
 				else
 				{
@@ -148,7 +148,7 @@ public void iterateOverPiecesOnlyWhite( BoStelling aBoStelling, VMStelling aVmSt
 					{
 						vmStelling.setS5( s5 );
 						boStelling.setS5( Dbs.CVT_STUK[s5] );
-						callForAllPiecesOnlyWhite( aBoStelling, aVmStelling, aPassFunction );
+						callForAllPieces( boStelling, vmStelling, aPassFunction, true );
 					}
 				}
 			}
@@ -183,7 +183,7 @@ public void iterateOverAllPieces( PassFunction aPassFunction )
 					boStelling.setS3( Dbs.CVT_STUK[s3] );
 					if ( getConfig().getAantalStukken() == 3 )
 					{
-						callForAllPieces( boStelling, vmStelling, aPassFunction );
+						callForAllPieces( boStelling, vmStelling, aPassFunction, false );
 					}
 					else
 					{
@@ -193,7 +193,7 @@ public void iterateOverAllPieces( PassFunction aPassFunction )
 							boStelling.setS4( Dbs.CVT_STUK[s4] );
 							if ( getConfig().getAantalStukken() == 4 )
 							{
-								callForAllPieces( boStelling, vmStelling, aPassFunction );
+								callForAllPieces( boStelling, vmStelling, aPassFunction, false );
 							}
 							else
 							{
@@ -201,7 +201,7 @@ public void iterateOverAllPieces( PassFunction aPassFunction )
 								{
 									vmStelling.setS5( s5 );
 									boStelling.setS5( Dbs.CVT_STUK[s5] );
-									callForAllPieces( boStelling, vmStelling, aPassFunction );
+									callForAllPieces( boStelling, vmStelling, aPassFunction, false );
 								}
 							}
 						}
@@ -213,15 +213,25 @@ public void iterateOverAllPieces( PassFunction aPassFunction )
 	reportFunction.doReport( stellingTeller, tellingen );
 }
 List<BoStelling> stellingen = new ArrayList<>();
-void callForAllPieces( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
+void callForAllPieces( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction, boolean aCountDouble )
 {
 	BoStelling gotBoStelling = dbs.getDirect( aVmStelling, aBoStelling );
 	if ( HOU_STELLINGEN_BIJ )
 	{
 		stellingen.add( gotBoStelling );
 	}
-	tellingen [gotBoStelling.getAanZet().ordinal()][gotBoStelling.getResultaat().ordinal()]++;
+	if ( aCountDouble )
+	{
+		tellingen [Wit.ordinal()][gotBoStelling.getResultaat().ordinal()]++;
+		tellingen [Zwart.ordinal()][gotBoStelling.getResultaat().ordinal()]++;
+		stellingTeller++;
+	}
+	else
+	{
+		tellingen [gotBoStelling.getAanZet().ordinal()][gotBoStelling.getResultaat().ordinal()]++;
+	}
 	stellingTeller++;
+	
 	if ( getReportFunction() != null && stellingTeller % reportFrequency == 0 )
 	{
 		reportFunction.doReport( stellingTeller, tellingen );
@@ -231,26 +241,27 @@ void callForAllPieces( BoStelling aBoStelling, VMStelling aVmStelling, PassFunct
 		aPassFunction.doPass( gotBoStelling );
 	}
 }
-void callForAllPiecesOnlyWhite( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
-{
-	BoStelling gotBoStelling = dbs.getDirect( aVmStelling, aBoStelling );
-	if ( HOU_STELLINGEN_BIJ )
-	{
-		stellingen.add( gotBoStelling );
-	}
-	tellingen [Wit.ordinal()][gotBoStelling.getResultaat().ordinal()]++;
-	tellingen [Zwart.ordinal()][gotBoStelling.getResultaat().ordinal()]++;
-	stellingTeller++;
-	stellingTeller++;
-	if ( getReportFunction() != null && stellingTeller % reportFrequency == 0 )
-	{
-		reportFunction.doReport( stellingTeller, tellingen );
-	}
-	if ( gotBoStelling.getResultaat() == Remise || isDoAllPositions() )
-	{
-		aPassFunction.doPass( gotBoStelling );
-	}
-}
+//void callForAllPiecesOnlyWhite( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
+//{
+//	BoStelling gotBoStelling = dbs.getDirect( aVmStelling, aBoStelling );
+//	if ( houStellingenBij )
+//	{
+//		stellingen.add( gotBoStelling );
+//	}
+//	// @@@@@NOG Wat is dit voor onzin???????
+//	tellingen [Wit.ordinal()][gotBoStelling.getResultaat().ordinal()]++;
+//	tellingen [Zwart.ordinal()][gotBoStelling.getResultaat().ordinal()]++;
+//	stellingTeller++;
+//	stellingTeller++;
+//	if ( getReportFunction() != null && stellingTeller % reportFrequency == 0 )
+//	{
+//		reportFunction.doReport( stellingTeller, tellingen );
+//	}
+//	if ( gotBoStelling.getResultaat() == Remise || isDoAllPositions() )
+//	{
+//		aPassFunction.doPass( gotBoStelling );
+//	}
+//}
 public void addResultaat( BoStelling aBoStelling )
 {
 	int kleurOrdinal = aBoStelling.getAanZet().ordinal();

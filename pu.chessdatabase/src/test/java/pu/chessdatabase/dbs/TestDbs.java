@@ -694,12 +694,6 @@ public void testDelete()
 {
 	// Dit is verder in TestVM al getest
 }
-void set0x0b( BoStelling aBoStelling )
-{
-	aBoStelling.setResultaat( Gewonnen );
-	aBoStelling.setAantalZetten( 0x0b );
-	dbs.put( aBoStelling );
-}
 void set0x8b( BoStelling aBoStelling )
 {
 	aBoStelling.setResultaat( Gewonnen );
@@ -709,15 +703,18 @@ void set0x8b( BoStelling aBoStelling )
 @Test
 public void testMarkeerWitPassMet0x0b()
 {
-	dbs.setReport( (int)dbs.getDatabaseSize() / 10, this:: doReport );
+	dbs.setReport( (int)dbs.getDatabaseSize() / 10, this::doReport );
 
+	// Dit is een pass over alle witstellingen maar die alles dubbel telt
 	dbs.markeerWitPass( this::set0x0b );
 	dbs.flush();
+	assertThat( vmStellingIterator.getStellingTeller(), is( 10 * 64 * 64 * 64 * 2 ) );
 	
+	vmStellingIterator.clearTellingen();
 	// De even pagina's moeten nu allmaal 0x0b zijn, oftewel alle pagina's met wit aan zet
+	// Dit is eveneens een pass over alle witstellingen maar die alles dubbel telt4
 	vmStellingIterator.iterateOverWkZkWit( this::checkMarkeerPassMet0x0b );
-	 // Maal twee want we runnen twee keer een pass over alle witstellingen en die telt alles dubbel
-	assertThat( vmStellingIterator.getStellingTeller(), is( 10 * 64 * 64 * 64 * 2 * 2 ) );
+	assertThat( vmStellingIterator.getStellingTeller(), is( 10 * 64 * 64 * 64 * 2 ) );
 }
 void checkMarkeerPassMet0x0b( BoStelling aBoStelling )
 {
@@ -734,14 +731,27 @@ void checkMarkeerPassMet0x0b( BoStelling aBoStelling )
 @Test
 public void testMarkeerWitPassMet0x8b()
 {
-	dbs.setReport( (int)dbs.getDatabaseSize() / 10, this:: doReport );
+	dbs.setReport( (int)dbs.getDatabaseSize() / 10, this::doReport );
+
+	// Alles in de database is nu 0x00 (Remise)
 	
+	// markeerWitPass runt over alle witstellingen maar telt alles dubbel
 	dbs.markeerWitPass( this::set0x8b );
 	dbs.flush();
+	assertThat( vmStellingIterator.getStellingTeller(), is( 10 * 64 * 64 * 64 * 2 ) );
+	vmStellingIterator.clearTellingen();
 	
 	// De even pagina's moeten nu allmaal 0x8b zijn, oftewel alle pagina's met wit aan zet, maar dan wordt alles dubbel geteld
+
+	// iterateOverWkZkWit runt ook over alle witstellingen maar telt alles dubbel
 	vmStellingIterator.iterateOverWkZkWit( this::checkMarkeerPassMet0x8b );
-	assertThat( vmStellingIterator.getStellingTeller(), is( 10 * 64 * 64 * 64 * 2 * 2 ) );
+	assertThat( vmStellingIterator.getStellingTeller(), is( 10 * 64 * 64 * 64 * 2 ) );
+}
+void set0x0b( BoStelling aBoStelling )
+{
+	aBoStelling.setResultaat( Gewonnen );
+	aBoStelling.setAantalZetten( 0x0b );
+	dbs.put( aBoStelling );
 }
 void checkMarkeerPassMet0x8b( BoStelling aBoStelling )
 {
@@ -756,21 +766,23 @@ void checkMarkeerPassMet0x8b( BoStelling aBoStelling )
 	assertThat( TestHelper.isAll( page, (byte)0x00 ), is( true ) );
 }
 
+@Test
+public void testMarkeerZwartPass()
+{
+	dbs.setReport( (int)dbs.getDatabaseSize() / 10, this::doReport );
+
+	dbs.markeerZwartPass( this::set0x11 );
+	dbs.flush();
+	
+	// De even pagina's moeten nu allmaal 0x11 zijn, oftewel alle pagina's met zwart aan zet
+	vmStellingIterator.iterateOverWkZk( this::checkMarkeerPassMet0x11 );
+}
 void set0x11( BoStelling aBoStelling )
 {
 	aBoStelling.setResultaat( Gewonnen );
 	aBoStelling.setAantalZetten( 0x11 );
 	dbs.put( aBoStelling );
 }
-//@Test
-//public void testMarkeerZwartPass()
-//{
-//	dbs.markeerZwartPass( this::set0x11 );
-//	dbs.flush();
-//	
-//	// De even pagina's moeten nu allmaal 0x11 zijn, oftewel alle pagina's met zwart aan zet
-//	vmStellingIterator.iterateOverWkZk( this::checkMarkeerPassMet0x11 );
-//}
 void checkMarkeerPassMet0x11( VMStelling vmStelling )
 {
 	byte [] page;
@@ -794,12 +806,14 @@ public void testMarkeerWitEnZwartPass()
 
 	dbs.markeerWitEnZwartPass( this::set0x34 );
 	dbs.flush();
+	assertThat( vmStellingIterator.getStellingTeller(), is( 10 * 64 * 64 * 64 * 2 ) );
+	vmStellingIterator.clearTellingen();
 
 	// Alle pagina's moeten nu 0x34 zijn
-
 	vmStellingIterator.iterateOverWkZk( this::checkMarkeerPassMet0x34 );
-	// Maal twee want we runnen over alle wit- en zwartstellingen. Die iterateOverWkZk telt niet!
-	assertThat( vmStellingIterator.getStellingTeller(), is( 10 * 64 * 64 * 64 * 2 ) );
+	
+	// Die iterateOverWkZk telt niets!
+	assertThat( vmStellingIterator.getStellingTeller(), is( 0 ) );
 
 }
 void checkMarkeerPassMet0x34( VMStelling vmStelling )
@@ -812,10 +826,12 @@ public void testPass()
 {
 	dbs.setReport( (int)dbs.getDatabaseSize() / 10, this:: doReport );
 	dbs.pass( MarkeerWit, this::set0x0b );
+	assertThat( vmStellingIterator.getStellingTeller(), is( 10 * 64 * 64 * 64 * 2) );
+	vmStellingIterator.clearTellingen();
 //	dbs.pass( MARKEER_ZWART, this::set0x0b );
 	dbs.pass( MarkeerWitEnZwart, this::set0x0b );
 	// Die markeer-methodes zijn hierboven al getest, we checken hier alleen of de aanroepjes goed gaan
-	assertThat( vmStellingIterator.getStellingTeller(), is( 10 * 64 * 64 * 64 * 2 * 2 ) );
+	assertThat( vmStellingIterator.getStellingTeller(), is( 10 * 64 * 64 * 64 * 2 ) );
 }
 /*
 public static final int [] OktTabel = {

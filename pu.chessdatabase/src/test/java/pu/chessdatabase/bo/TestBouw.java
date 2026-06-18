@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.dbs.Dbs;
+import pu.chessdatabase.dbs.PassType;
 import pu.chessdatabase.dbs.VM;
 import pu.chessdatabase.dbs.VMStellingIterator;
 
@@ -79,7 +80,8 @@ public void testReportNewPass()
 	assertThat( vmStellingIterator.getStellingTeller(), is( 0 ) ); 
 	// Niet mogelijk assertThat( vmStellingIterator.getReportFunction(), is( bouw::showTellers ) ); 
 	assertThat( vmStellingIterator.getReportFunction(), is( notNullValue() ) );
-	assertThat( vmStellingIterator.getReportFrequency(), is( 64 * 64 * 64 * 2 ) ); 
+	// Dit is de databaseSize / 4 (64 * 64 * 64 * 10 * 2 / 4), zie Bouw,getReportFrequency
+	assertThat( vmStellingIterator.getReportFrequency(), is( 64 * 64 * 64 * 5 ) ); 
 }
 //@Test
 public void testTelAlles()
@@ -88,13 +90,43 @@ public void testTelAlles()
 	{
 		System.out.println( "methode testTelAlles\n" );
 	}
+	doTestTelAlles( "KDK" );
+	doTestTelAlles( "TestKDKT" );
+	doTestTelAlles( "KDKTT" );
+}
+void doTestTelAlles( String aConfigString )
+{
+	System.out.println( "\nTel alles in " + aConfigString + "\n" );
+	getConfig().switchConfig( aConfigString );
+	
+	bouw.pass_0( false );
+	dbs.open();
+	bouw.telAndPrintAlles( true );
+}
+//@Test
+public void testMatStellingen()
+{
+	if ( DO_PRINT )
+	{
+		System.out.println( "methode testMatStellingen\n" );
+	}
 	getConfig().switchConfig( "KDK" );
 
-	bouw.pass_0( DO_PRINT );
+	bouw.pass_0( false );
 	dbs.open();
-	bouw.telAndPrintAlles( DO_PRINT );
-}
+	bouw.telAndPrintAlles( true );
+	vmStellingIterator.clearTellingen();
+	vmStellingIterator.setDoAllPositions( true );
+	dbs.pass( MarkeerWitEnZwart, this::printMatStelling );
 
+}
+private void printMatStelling( BoStelling aBoStelling )
+{
+	if ( aBoStelling.getResultaat() == Verloren && aBoStelling.getAanZet() == Zwart )
+	{
+		System.out.println( aBoStelling );
+	}
+}
 @Test
 public void testIsIllegaal()
 {
@@ -126,6 +158,26 @@ public void testIsIllegaal()
 	// Dit is VMStelling(WK=2, ZK=2, s3=10, s4=9, AanZet=false)
 	gotBoStelling = dbs.get( boStelling );
 	assertThat( gotBoStelling.getResultaat(), is( Remise ) );
+}
+//@Test
+public void telIllegaleStellingen()
+{
+	config.switchConfig( "KDKTT" );
+	bouw.illegaleStellingen.clear();
+	bouw.passNumber = 0;
+	dbs.create();
+
+	bouw.reportNewPass( "Markeren illegale stellingen", true );
+	dbs.pass( PassType.MarkeerWit, bouw::isIllegaal );
+	bouw.telAndPrintAlles( true );
+	
+//	System.out.println( "Aantal Illegale stellingen: " + bouw.illegaleStellingen.size() );
+//	System.out.println( "\nIllegale stellingen\n" );
+//	System.out.println(   bouw.illegaleStellingen );
+//
+//	System.out.println( "Aantal niet-Illegale stellingen: " + bouw.changes.size() );
+//	System.out.println( "\nNiet-Illegale stellingen\n" );
+//	System.out.println(   bouw.changes );
 }
 @Test
 public void testSchaakjes()
@@ -202,18 +254,18 @@ public void testSchaakjes()
 //@Test
 public void testPassSchaakjes()
 {
-	// BELANGRIJK!! Als je deze runt moet je in VMStellingIterator HOU_STELLINGEN_BIJ = true doen
+	// Voor deze test moet je HOU_STELLINGEN_BIJ in VMStellingIterator op true zetten
 	getConfig().switchConfig( "TESTKDK", false );
 	bouw.reportNewPass( "Reserveren schijfruimte\n", DO_PRINT );
 	dbs.create();
 
 	bouw.reportNewPass( "Markeren illegale stellingen", DO_PRINT );
 	dbs.pass( MarkeerWit, bouw::isIllegaal );
-	assertThat(vmStellingIterator.getStellingen().size(), is( 10 * 64 * 64 ) ); // NIet * 2 want we hebben alleen witstellingen
+	assertThat(vmStellingIterator.getStellingTeller(), is( 10 * 64 * 64 * 2 ) );
 	
 	bouw.reportNewPass( "Markeren illegale stellingen", DO_PRINT );
 	dbs.pass( MarkeerWit, bouw::schaakjes );
-	assertThat(vmStellingIterator.getStellingen().size(), is( 10 * 64 * 64 ) ); // NIet * 2 want we hebben alleen witstellingen
+	assertThat(vmStellingIterator.getStellingTeller(), is( 10 * 64 * 64 * 2 ) );
 
 	Map<String, BoStelling> stellingLookup = new HashMap<>();
 	for ( BoStelling boStelling : vmStellingIterator.getStellingen() )
