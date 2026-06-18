@@ -114,6 +114,15 @@ Map<String, String> createStukVelden()
 			stukVelden.put( "s4", "a3" );
 			break;
 		}
+		case "KDKTT":
+		{
+			stukVelden.put( "wk", "a1" );
+			stukVelden.put( "zk", "h8" );
+			stukVelden.put( "s3", "b2" );
+			stukVelden.put( "s4", "g7" );
+			stukVelden.put( "s5", "g8" );
+			break;
+		}
 		default:
 		{
 			throw new RuntimeException( "Ongeldige configuratie in newGame()" );
