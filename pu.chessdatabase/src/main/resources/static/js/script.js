@@ -24,7 +24,12 @@ $(document).ready(function()
 	var s4Symbol = lookup.get( s4Stuk );
 	var s4 = document.getElementById( "s4" ).getAttribute( "value" );
 	document.getElementById( s4 ).textContent = s4Symbol;
-	
+
+	var s5Stuk = document.getElementById( "s5Stuk" ).getAttribute( "value" );
+	var s5Symbol = lookup.get( s5Stuk );
+	var s5 = document.getElementById( "s5" ).getAttribute( "value" );
+	document.getElementById( s5 ).textContent = s5Symbol;
+
 	var wkStuk = document.getElementById( "wkStuk" ).getAttribute( "value" );
 	var wkSymbol = lookup.get( wkStuk );
 	var wk = document.getElementById( "wk" ).getAttribute( "value" );
