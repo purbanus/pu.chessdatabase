@@ -159,6 +159,66 @@ public void testIsIllegaal()
 	gotBoStelling = dbs.get( boStelling );
 	assertThat( gotBoStelling.getResultaat(), is( Remise ) );
 }
+//@Test // Deze test duurt ruim 3 minuten
+public void testIsIllegaal5Stukken()
+{
+	config.switchConfig( "TestKDKTT" );
+	dbs.create();
+	bouw.pass_0();
+	
+	// Bug van 18-06-2026
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "a8" )
+		.s4( "h8" )
+		.s5( "h8" )
+		.aanZet( Zwart )
+		.build();
+	assertThat( gen.isGeometrischIllegaal( boStelling ), is( false ) );
+	BoStelling gotBoStelling = dbs.get( boStelling );
+	assertThat( gotBoStelling.getResultaat(), is( Remise ) );
+}
+@Test // Deze test duurt zo'n 15 seconden
+public void testIsIllegaal5Stukken_2()
+{
+	config.switchConfig( "TestKDKTT" );
+	dbs.create();
+	bouw.reportNewPass( "Markeren illegale stellingen", false );
+	dbs.pass( PassType.MarkeerWit, bouw::isIllegaal );
+	
+	// Bug van 18-06-2026
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "a8" )
+		.s4( "h8" )
+		.s5( "h8" )
+		.aanZet( Zwart )
+		.build();
+	assertThat( gen.isGeometrischIllegaal( boStelling ), is( false ) );
+	BoStelling gotBoStelling = dbs.get( boStelling );
+	assertThat( gotBoStelling.getResultaat(), is( Remise ) );
+}
+@Test 
+public void testIsIllegaal5Stukken_3()
+{
+	config.switchConfig( "TestKDKTT" );
+	
+	// Bug van 18-06-2026
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "a8" )
+		.s4( "h8" )
+		.s5( "h8" )
+		.aanZet( Zwart )
+		.build();
+	assertThat( gen.isGeometrischIllegaal( boStelling ), is( false ) );
+	BoStelling gotBoStelling = dbs.get( boStelling );
+	assertThat( gotBoStelling.getResultaat(), is( Remise ) );
+}
+
 //@Test
 public void telIllegaleStellingen()
 {
