@@ -186,6 +186,22 @@ public void testIsGeomIllegaal5Stukken()
 	// @@NOG Bij 5 stukken
 }
 @Test
+public void testBug2026_06_18()
+{
+	config.switchConfig( "KDKTT" );
+	// Er staan 2 zwarte stukken op hetzelfde veld. Die zijn allebeigeslagen
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "a8" )
+		.s4( "h8" )
+		.s5( "h8" )
+		.aanZet( Zwart )
+		.build();
+	assertThat( gen.isGeometrischIllegaal( boStelling ), is( false ) );
+}
+
+@Test
 public void testIsKKSchaak()
 {
 	//Zie Gen.java voor een (paar) coordinaten, na Notatie
