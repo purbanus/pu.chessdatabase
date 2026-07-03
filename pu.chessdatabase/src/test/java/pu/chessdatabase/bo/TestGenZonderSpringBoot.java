@@ -23,17 +23,23 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.dbs.Dbs;
 import pu.chessdatabase.dbs.Resultaat;
+import pu.chessdatabase.dbs.VM;
 
 import lombok.Data;
 
-@SpringBootTest
 @Data
-public class TestGen
+public class TestGenZonderSpringBoot
 {
 private static final String DATABASE_NAME = "dbs/Pipo";
-@Autowired private Gen gen;
-@Autowired private Dbs dbs;
-@Autowired private Config config;
+private Gen gen = new Gen();
+private VM vm = new VM();
+private Dbs dbs = new Dbs( vm );
+private Config config = new Config( vm );
+{
+	vm.setConfig( config );
+	gen.setConfig( config );
+	gen.setDbs( dbs );
+}
 String savedConfigString;
 @BeforeEach
 public void setup()

@@ -154,32 +154,42 @@ END IsGeomIllegaal;
  */
 public boolean isGeometrischIllegaal( BoStelling aBoStelling )
 {
-	if ( aBoStelling.getWk() == aBoStelling.getZk() ) return true;
-	if ( ( aBoStelling.getWk() == aBoStelling.getS3() ) && ( getStukken().getS3().getKleur() != Wit   ) ) return true;
-	if ( ( aBoStelling.getZk() == aBoStelling.getS3() ) && ( getStukken().getS3().getKleur() != Zwart ) ) return true;
+	int wk = aBoStelling.getWk();
+	int zk = aBoStelling.getZk();
+	int s3 = aBoStelling.getS3();
+	int s4 = aBoStelling.getS4();
+	int s5 = aBoStelling.getS5();
+	boolean s3IsGeslagen = s3 == wk || s3==zk;
+	boolean s4IsGeslagen = s4 == wk || s4==zk;
+	boolean s5IsGeslagen = s5 == wk || s5==zk;
+	
+	if ( wk == zk ) return true;
+	if ( ( wk == s3 ) && ( getStukken().getS3().getKleur() != Wit   ) ) return true;
+	if ( ( zk == s3 ) && ( getStukken().getS3().getKleur() != Zwart ) ) return true;
 	if ( getConfig().getAantalStukken() >= 4 )
 	{
-		if ( aBoStelling.getS3() == aBoStelling.getS4() ) return true;
-		if ( ( aBoStelling.getWk() == aBoStelling.getS4() ) && ( getStukken().getS4().getKleur() != Wit   ) ) return true;
-		if ( ( aBoStelling.getZk() == aBoStelling.getS4() ) && ( getStukken().getS4().getKleur() != Zwart ) ) return true;
+		if ( s3 == s4 && ! s3IsGeslagen && ! s4IsGeslagen ) return true;
+		if ( ( wk == s4 ) && ( getStukken().getS4().getKleur() != Wit   ) ) return true;
+		if ( ( zk == s4 ) && ( getStukken().getS4().getKleur() != Zwart ) ) return true;
 		if ( getStukken().getS3().getStukType() == Loper && getStukken().getS4().getStukType() == Loper
-			&& aBoStelling.getVeldKleur( aBoStelling.getS3() ) == aBoStelling.getVeldKleur( aBoStelling.getS4() ) )
+			&& aBoStelling.getVeldKleur( s3 ) == aBoStelling.getVeldKleur( s4 ) )
 		{
 			return true;
 		}
 	}
 	if ( getConfig().getAantalStukken() >= 5 )
 	{
-		if ( ( aBoStelling.getS3() == aBoStelling.getS5() ) || ( aBoStelling.getS4() == aBoStelling.getS5() ) ) return true;
-		if ( ( aBoStelling.getWk() == aBoStelling.getS5() ) && ( getStukken().getS5().getKleur() != Wit   ) ) return true;
-		if ( ( aBoStelling.getZk() == aBoStelling.getS5() ) && ( getStukken().getS5().getKleur() != Zwart ) ) return true;
+		if ( s3 == s5 && ! s3IsGeslagen && ! s5IsGeslagen ) return true;
+		if ( s4 == s5 && ! s4IsGeslagen && ! s5IsGeslagen ) return true;
+		if ( ( wk == s5 ) && ( getStukken().getS5().getKleur() != Wit   ) ) return true;
+		if ( ( zk == s5 ) && ( getStukken().getS5().getKleur() != Zwart ) ) return true;
 		if ( getStukken().getS3().getStukType() == Loper && getStukken().getS5().getStukType() == Loper
-			&& aBoStelling.getVeldKleur( aBoStelling.getS3() ) == aBoStelling.getVeldKleur( aBoStelling.getS5() ) )
+			&& aBoStelling.getVeldKleur( s3 ) == aBoStelling.getVeldKleur( s5 ) )
 		{
 			return true;
 		}
 		if ( getStukken().getS4().getStukType() == Loper && getStukken().getS5().getStukType() == Loper
-			&& aBoStelling.getVeldKleur( aBoStelling.getS4() ) == aBoStelling.getVeldKleur( aBoStelling.getS5() ) )
+			&& aBoStelling.getVeldKleur( s4 ) == aBoStelling.getVeldKleur( s5 ) )
 		{
 			return true;
 		}
