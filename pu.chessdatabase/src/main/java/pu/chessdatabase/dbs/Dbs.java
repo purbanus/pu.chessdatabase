@@ -140,6 +140,11 @@ public Dbs()
 {
 	createTransformatieTabel();
 }
+public Dbs( VM aVm )
+{
+	this();
+	vm = aVm;
+}
 public void setReport( int aReportFrequency, ReportFunction aReportFunction )
 {
 	setReport( aReportFrequency, aReportFunction, false );
