@@ -7,8 +7,9 @@ package pu.chessdatabase.bo;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
-
+import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.dbs.PassType.*;
+import static pu.chessdatabase.dbs.Resultaat.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,6 +98,22 @@ public void testGrootsteAantalZetten()
 	assertThat( grootsten.size(), is (96 ) );
 	assertThat( grootstenMinEen.size(), is (1119 ) );
 }
-
+@Test
+public void testBug2026_06_18()
+{
+	config.switchConfig( "KDKTT" );
+	
+	// Bug van 18-06-2026
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "a8" )
+		.s4( "h8" )
+		.s5( "h8" )
+		.aanZet( Zwart )
+		.build();
+	BoStelling gotBoStelling = dbs.get( boStelling );
+	assertThat( gotBoStelling.getResultaat(), is( Remise ) );
+}
 
 }
