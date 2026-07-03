@@ -24,9 +24,9 @@ public class Bouw
 public static final long MEG = 1048576;
 public static final boolean HOU_STELLINGEN_BIJ = false;
 
-@Autowired private Dbs dbs;
-@Autowired private Gen gen;
-@Autowired private Config config;
+private final Dbs dbs;
+private final Gen gen;
+private final Config config;
 private VMStellingIterator vmStellingIterator;
 
 List<BoStelling> illegaleStellingen = new ArrayList<>();
@@ -37,11 +37,14 @@ List<BoStelling> changes = new ArrayList<>();
 int passNumber;
 boolean passNchanges;
 
-public Bouw( VMStellingIterator VMStellingIterator )
+public Bouw( VMStellingIterator aVMStellingIterator, Dbs aDbs, Gen aGen, Config aConfig)
 {
 	passNchanges = true;
 	passNumber = 0;
-	vmStellingIterator = VMStellingIterator;
+	vmStellingIterator = aVMStellingIterator;
+	this.dbs = aDbs;
+	this.gen = aGen;
+	this.config = aConfig;
 }
 void reportNewPass( String aPassText )
 {
