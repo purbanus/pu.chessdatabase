@@ -69,7 +69,7 @@ public void buildKTK()
 	config.switchConfig( "KTK", false );
 	bouw.bouwDatabase();
 }
-@Test
+//@Test
 // Als je deze activeert, zet dan HOU_STELLINGEN_BIJ op false, anders loop je uit het geheugen
 public void buildKDKTT()
 {
