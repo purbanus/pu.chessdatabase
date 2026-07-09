@@ -4,11 +4,11 @@ package pu.chessdatabase.dbs;
 //BELANGRIJK
 //In Eclipse kan hij de volgende twee imports niet vinden. Deze moet je dus met de hand toevoegen
 //===================================================================================================================== 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-
-import static pu.chessdatabase.bo.Kleur.*;
-import static pu.chessdatabase.dbs.Lokatie.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static pu.chessdatabase.bo.Kleur.Wit;
+import static pu.chessdatabase.dbs.Lokatie.InRam;
+import static pu.chessdatabase.dbs.Lokatie.OpSchijf;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,16 +21,17 @@ import lombok.Data;
 
 @Data
 @SpringBootTest
-public class TestPageDescriptorTable
+public class TestSerialPageDescriptorTable
 {
 @Autowired private Config config;
 private PageDescriptorTable pageDescriptorTable;
+private PageSizeCalculator pageSizeCalculator = new PageSizeCalculator();
 private Cache cache;
 @BeforeEach
 public void setup()
 {
-	pageDescriptorTable = new PageDescriptorTable( config.getAantalStukken() );
-	cache = new Cache( config.getAantalStukken() );
+	pageDescriptorTable = PageDescriptorTable.create( pageSizeCalculator, config.getAantalStukken() );
+	cache = Cache.create(pageSizeCalculator, config.getAantalStukken(), null );
 }
 @Test
 public void testGetSetPageDescriptor()
@@ -68,7 +69,7 @@ long address = 0L;
 public void testInitializePageDescriptorTable()
 {
 //	StopWatch timer = new StopWatch();
-	getPageDescriptorTable().initializePageDescriptorTable();
+	// getPageDescriptorTable().initializePageDescriptorTable(); // Dit is al gebeurd vuh de xetup
 	getPageDescriptorTable().iterateOverAllPageDescriptors( this::testPageDescriptor );
 //	System.out.println( "initializePageDescriptorTabel duurde " + timer.getElapsedNs() + (" = ") + timer.getLapTimeMs() );
 }

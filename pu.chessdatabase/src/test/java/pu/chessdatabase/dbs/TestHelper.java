@@ -3,6 +3,7 @@ package pu.chessdatabase.dbs;
 import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.bo.speel.Einde.*;
 import static pu.chessdatabase.dbs.Resultaat.*;
+import static pu.chessdatabase.dbs.CacheType.*;
 
 import org.apache.commons.lang3.tuple.Triple;
 
@@ -15,6 +16,7 @@ import pu.chessdatabase.bo.speel.VanNaar;
 // Hulpmethodes bij testen
 //=================================================================================================
 
+// @@NOG Hier een niormake class van maken (geen static methodes) met instan e vars pageSizeCalculator en aantalStukken
 public class TestHelper
 {
 public static boolean isAllZero( byte [] aPage )
@@ -37,18 +39,27 @@ public static boolean isAll( byte [] aPage, byte aValue )
 	}
 	return true;
 }
-public static byte [] createPageWithAllOnes()
+public static byte [] createPageWithAllOnes( PageSizeCalculator aPageSizeCalculator,  int aAantalStukken )
 {
-	return createPageWithAll( (byte)1 );
+	return createPageWithAll( aPageSizeCalculator, aAantalStukken, (byte)1 );
 }
-public static byte [] createPageWithAll( byte aValue )
+public static byte [] createPageWithAll( PageSizeCalculator aPageSizeCalculator, int aAantalStukken, byte aValue )
 {
-	byte [] entries = new byte [Cache.getStaticPageSize()];
+	byte [] entries = new byte [ aPageSizeCalculator.getPageSize( aAantalStukken )];
 	for ( int x = 0; x < entries.length; x++ )
 	{
 		entries[x] = aValue;
 	}
 	return entries;
+}
+public static byte [] createBlockOfBytes( int aNumberOfBytes, byte aValue )
+{
+	byte [] bytes = new byte [aNumberOfBytes];
+	for ( int x = 0; x < bytes.length; x++ )
+	{
+		bytes[x] = aValue;
+	}
+	return bytes;
 }
 public static Ply createOnePly( Plies aPlies)
 {

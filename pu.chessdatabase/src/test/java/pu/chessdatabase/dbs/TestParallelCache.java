@@ -9,6 +9,8 @@ import static org.hamcrest.Matchers.*;
 
 import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.dbs.Lokatie.*;
+import static pu.chessdatabase.dbs.CacheType.*;
+import static pu.chessdatabase.dbs.VM.*;
 
 import java.io.IOException;
 
@@ -20,27 +22,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.Config;
+import pu.chessdatabase.bo.Kleur;
 import pu.services.MatrixFormatter;
+import pu.services.StopWatch;
 
 import lombok.Data;
 
 @SpringBootTest
 @Data
-public class TestCache
+public class TestParallelCache
 {
 @Autowired private VM vm;
 @Autowired private Config config;
 
-private static final String DATABASE_NAME = "dbs/Pipo";
+private static final String PREFIX_DATABASE_NAME = "dbs/Pipo";
 
 private MockCache cache;
-
+private PageSizeCalculator pageSizeCalculator = new PageSizeCalculator( Parallel );
 String savedConfigString;
 @BeforeEach
 public void setup()
 {
 	savedConfigString = config.getConfig();
 	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
+	vm.setPageSizeCalculator( pageSizeCalculator );
 	vm.create();
 	cache = new MockCache( vm.getCache() );
 }
@@ -48,14 +53,14 @@ public void setup()
 public void destroy()
 {
 	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
-	assertThat( vm.getDatabaseName(), startsWith( DATABASE_NAME ) );
+	assertThat( vm.getDatabaseName(), startsWith( PREFIX_DATABASE_NAME ) );
 	vm.delete();
 	config.switchConfig( savedConfigString );
 }
 
 private void writePageWithAll( long aPageNumber, int aCacheNumber, byte aValue )
 {
-	byte [] page = TestHelper.createPageWithAll( aValue );
+	byte [] page = TestHelper.createPageWithAll( getPageSizeCalculator(), config.getAantalStukken(), aValue );
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( InRam )
 		.cacheNummer( aCacheNumber )
@@ -70,8 +75,17 @@ private void writePageWithAll( long aPageNumber, int aCacheNumber, byte aValue )
 	getCache().setCacheEntry( pageDescriptor, cacheEntry );
 	getCache().pageOut( pageDescriptor );
 }
+//private void writeDatabaseWithAll( byte aValue )
+//{
+//	int index = 0;
+//	for ( CacheEntry cacheEntry : getCache().getCacheEntries() )
+//	{
+//		writePageWithAll( index, aValue, aValue );
+//		index++;
+//	}
+//}
 //@Test
-public void testShowCache()
+public void showCache()
 {
 	MatrixFormatter matrixFormatter = new MatrixFormatter();
 	matrixFormatter.setDefaultAlignment( MatrixFormatter.ALIGN_RIGHT );
@@ -79,7 +93,7 @@ public void testShowCache()
 	matrixFormatter.addDetail( new String [] { "Number", "PD.Lokatie", "PD.cachenummer", "PD.Schijfadres", "Page, eerste 10", "Vuil", "Generatie" } );
 	matrixFormatter.addHeader( StringUtils.repeat( '-', 90 ) );
 	int index = -1;
-	for ( CacheEntry cacheEntry : getCache().getCache() )
+	for ( CacheEntry cacheEntry : getCache().getCacheEntries() )
 	{
 		index++;
 		if ( cacheEntry == null )
@@ -133,159 +147,41 @@ public void testShowCache()
 	System.out.println( matrixFormatter.getOutput() );
 }
 @Test
-public void testGetPageSize()
+public void testGetCacheSize()
 {
-	// Hier niet de lokale cache gebruiken maar die uit VM, want die is geconfigSwithed
-	getConfig().switchConfig( "KDK" );
-	assertThat( vm.getCache().getPageSize(), is( 64 ) );
-	getConfig().switchConfig( "KDKT" );
-	assertThat( vm.getCache().getPageSize(), is( 4096 ) );
-	getConfig().switchConfig( "KDKTT" );
-	assertThat( vm.getCache().getPageSize(), is( 262144 ) );
+	assertThat( getCache().getCacheSize(), is( ParallelCache.CACHE_SIZE ) );
 }
 @Test
 public void testInitializeCache()
 {
-	getCache().initializeCache();
-	for ( CacheEntry cacheEntry : getCache().getCache() )
+	//getCache().initializeCache(); // gebeurt al in de setup, via vm.open)_
+	assertThat( getCache().getCacheEntries().size(), is( ParallelCache.CACHE_SIZE ) );
+	long address = 0L;
+	int index = 0;
+	for ( CacheEntry cacheEntry : getCache().getCacheEntries() )
 	{
-		assertThat( cacheEntry.getPageDescriptor(), is( nullValue() ) );
+		PageDescriptor pageDescriptor = PageDescriptor.builder()
+			.cacheNummer( index )
+			.schijfAdres( address )
+			.waar( OpSchijf )
+			.build();
+		assertThat( cacheEntry.getPageDescriptor(), is( pageDescriptor ) );
 		assertThat( TestHelper.isAllZero( cacheEntry.getPage() ), is( true ) );
 		assertThat( cacheEntry.getGeneratie(), is( 0L ) );
 		assertThat( cacheEntry.isVuil(), is( false ) );
-	}
-}
-@Test
-public void testGetFreeCacheEntry()
-{
-	int index = 0;
-	for ( CacheEntry cacheEntry : getCache().getCache() )
-	{
-		cacheEntry.setVuil( true );
-		cacheEntry.setGeneratie( index + 100 );
+		
+		address += getPageSizeCalculator().getPageSize( getConfig().getAantalStukken() );
 		index++;
 	}
-	PageDescriptor pageDescriptor01 = PageDescriptor.builder()
-		.cacheNummer( 1 )
-		.build();
-	PageDescriptor pageDescriptor10 = PageDescriptor.builder()
-		.cacheNummer( 10 )
-		.build();
-	PageDescriptor pageDescriptor20 = PageDescriptor.builder()
-		.cacheNummer( 20 )
-		.build();
-	PageDescriptor pageDescriptor25 = PageDescriptor.builder()
-		.cacheNummer( 25 )
-		.build();
-	CacheEntry cacheEntry = getCache().getCacheEntry( pageDescriptor01 );
-	cacheEntry.setVuil( false );
-	cacheEntry.setGeneratie( 10 );
-	assertThat( getCache().getFreeCacheEntry(), is( 1 ) );
-
-	cacheEntry = getCache().getCacheEntry( pageDescriptor10 );
-	cacheEntry.setVuil( false );
-	cacheEntry.setGeneratie( 5 );
-	assertThat( getCache().getFreeCacheEntry(), is( 10 ) );
-
-	cacheEntry = getCache().getCacheEntry( pageDescriptor01 );
-	cacheEntry.setVuil( true );
-	cacheEntry = getCache().getCacheEntry( pageDescriptor10 );
-	cacheEntry.setVuil( true );
-	assertThat( getCache().getFreeCacheEntry(), is( 10 ) );
-
-	cacheEntry = getCache().getCacheEntry( pageDescriptor20 );
-	cacheEntry.setVuil( true );
-	cacheEntry.setGeneratie( 3 );
-	cacheEntry = getCache().getCacheEntry( pageDescriptor25 );
-	cacheEntry.setVuil( true );
-	cacheEntry.setGeneratie( 15 );
-	assertThat( getCache().getFreeCacheEntry(), is( 20 ) );
 }
-@Test
-public void testGetSetPage()
-{
-	long pageNumber = 3L;
-	int cacheNumber = 15;
-	byte value = (byte)0x70;
-
-	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( OpSchijf )
-		.cacheNummer( cacheNumber )
-		.schijfAdres( pageNumber * getCache().getPageSize() )
-		.build();
-	byte [] page = TestHelper.createPageWithAll( value );
-	getCache().setPage( pageDescriptor, page );
-	
-	byte [] gotPage = getCache().getPage( pageDescriptor );
-	assertThat( TestHelper.isAll( gotPage, value ), is( true ) );
-	assertThat( gotPage, is( page ) );
-}
-//@Test
-//public void testGetPageData()
-//{
-//	long pageNumber = 3L;
-//	int cacheNumber = 15;
-//	byte value = (byte)0x60;
-//
-//	PageDescriptor pageDescriptor = PageDescriptor.builder()
-//		.waar( OpSchijf )
-//		.cacheNummer( cacheNumber )
-//		.schijfAdres( pageNumber * getCache().getPageSize() )
-//		.build();
-//	byte [] page = TestHelper.createPageWithAll( value );
-//	getCache().setPage( pageDescriptor, page );
-//	
-//	byte [] pageData = getCache().getPageData( pageDescriptor );
-//	assertThat( TestHelper.isAll( pageData, value ), is( true ) );
-//}
-@Test
-public void testIsSetVuil()
-{
-	long pageNumber = 3L;
-	int cacheNumber = 15;
-
-	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( OpSchijf )
-		.cacheNummer( cacheNumber )
-		.schijfAdres( pageNumber * getCache().getPageSize() )
-		.build();
-	getCache().setVuil( pageDescriptor, false );
-	assertThat( getCache().isVuil( pageDescriptor ), is( false ) );
-	getCache().setVuil( pageDescriptor, true );
-	assertThat( getCache().isVuil( pageDescriptor ), is( true ) );
-}
-@Test
-public void testGetSetCacheEntry()
-{
-	long pageNumber = 3L;
-	int cacheNumber = 15;
-	byte value = (byte)0x40;
-	long generatie = 215L;
-	
-	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( OpSchijf )
-		.cacheNummer( cacheNumber )
-		.schijfAdres( pageNumber * getCache().getPageSize() )
-		.build();
-	byte [] page = TestHelper.createPageWithAll( value );
-	CacheEntry cacheEntry = CacheEntry.builder()
-		.pageDescriptor( pageDescriptor )
-		.page( page )
-		.generatie( generatie )
-		.vuil( true )
-		.build();
-	getCache().setCacheEntry( pageDescriptor, cacheEntry );
-	CacheEntry gotCacheEntry = getCache().getCacheEntry( pageDescriptor );
-	assertThat( gotCacheEntry.isVuil(), is( true ) );
-	assertThat( TestHelper.isAll( gotCacheEntry.getPage(), value ), is( true ) );
-	assertThat( gotCacheEntry.getGeneratie(), is( generatie ) );
-	assertThat( gotCacheEntry.isVuil(), is( true ) );
-}
+// @Test
+// public void testGetFreeCacheEntry()
+// Bestaat niet in ParallelCache
 @Test
 public void testGetRawPageData()
 {
 	long pageNumber = 5L;
-	int cacheNumber = 15;
+	int cacheNumber = 5;
 	byte value = (byte)0x80;
 
 	writePageWithAll( pageNumber, cacheNumber, value );
@@ -298,75 +194,59 @@ public void testGetRawPageData()
 	getCache().getRawPageData( pageDescriptor );
 	assertThat( TestHelper.isAll( getCache().getPage( pageDescriptor ), value ), is( true ) );
 }
+// @Test
+// public void testPageIn() throws IOException
+// Bestaat niet in ParallelCache
+
+//===================================================================================================
+// Metodes uit AbstractCache
+//===================================================================================================
+
 @Test
-public void testPutRawPageData()
+public void testGetPageSize()
+{
+	// Hier niet de lokale cache gebruiken maar die uit VM, want die is geconfigSwitched
+	getConfig().switchConfig( "KDK" );
+	assertThat( vm.getCache().getPageSize(), is( 64 * 64 * 2 ) );
+	getConfig().switchConfig( "KDKT" );
+	assertThat( vm.getCache().getPageSize(), is( 64 * 64 * 64 * 2 ) );
+	getConfig().switchConfig( "KDKTT" );
+	assertThat( vm.getCache().getPageSize(), is( 64 * 64 * 64 * 64 * 2  ) );
+}
+@Test
+public void testGetDatabaseSize()
+{
+	// Hier niet de lokale cache gebruiken maar die uit VM, want die is geconfigSwitched
+	getConfig().switchConfig( "KDK" );
+	assertThat( vm.getCache().getDatabaseSize(), is( 10 * 64 * 2 * 64L ) );
+	getConfig().switchConfig( "KDKT" );
+	assertThat( vm.getCache().getDatabaseSize(), is(10 * 64 * 2 * 64 * 64L ) );
+	getConfig().switchConfig( "KDKTT" );
+	assertThat( vm.getCache().getDatabaseSize(), is(10 * 64 * 2 * 64 * 64 * 64L ) );
+}
+@Test
+public void testGetPage()
 {
 	long pageNumber = 3L;
-	int cacheNumber = 15;
-	byte value = (byte)0x70;
+	int cacheNumber = 3;
+	byte value = (byte)0x60;
 
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( OpSchijf )
 		.cacheNummer( cacheNumber )
 		.schijfAdres( pageNumber * getCache().getPageSize() )
 		.build();
-	byte [] page = TestHelper.createPageWithAll( value );
+	byte [] page = TestHelper.createPageWithAll( getPageSizeCalculator(), config.getAantalStukken(), value );
 	getCache().setPage( pageDescriptor, page );
-	getCache().putRawPageData( pageDescriptor );
 	
-	getCache().getRawPageData( pageDescriptor );
-	assertThat( TestHelper.isAll( getCache().getPage( pageDescriptor ), value ), is( true ) );
-}
-@Test
-public void testPageOut()
-{
-	long pageNumber = 15L;
-	int cacheNumber = 15;
-	byte value = (byte)0x60;
-
-	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( InRam )
-		.cacheNummer( cacheNumber )
-		.schijfAdres( pageNumber * getCache().getPageSize() )
-		.build();
-	byte [] page = TestHelper.createPageWithAll( value );
-	CacheEntry cacheEntry = CacheEntry.builder()
-		.page( page )
-		.pageDescriptor( pageDescriptor )
-		.vuil( true )
-		.generatie( 1 )
-		.build();
-	getCache().setCacheEntry( pageDescriptor, cacheEntry );
-	
-	//showCache( vm );
-	getCache().pageOut( pageDescriptor );
-	page = new byte [getCache().getPageSize()];
-	getCache().getCacheEntry( pageDescriptor ).setPage( page );
-	getCache().getRawPageData( pageDescriptor );
-	assertThat( TestHelper.isAll( getCache().getPage( pageDescriptor ), value ), is( true ) );
-}
-@Test
-public void testPageIn() throws IOException
-{
-	long pageNumber = 10L;
-	int cacheNumber = 17;
-	byte value = (byte)0x40;
-
-	writePageWithAll( pageNumber, cacheNumber, value );
-	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( InRam )
-		.cacheNummer( cacheNumber )
-		.schijfAdres( pageNumber * getCache().getPageSize() )
-		.build();
-	//showCache( vm );
-	getCache().pageIn( pageDescriptor );
-	assertThat( TestHelper.isAll( getCache().getPage( pageDescriptor ), value ), is( true ) );
+	byte [] pageData = getCache().getPage( pageDescriptor );
+	assertThat( TestHelper.isAll( pageData, value ), is( true ) );
 }
 @Test
 public void testGetPageFromDatabase()
 {
-	long pageNumber = 12L;
-	int cacheNumber = 29;
+	long pageNumber = 9L;
+	int cacheNumber = 9;
 	byte value = (byte)0x30;
 	setCache( getCache() );
 	
@@ -388,15 +268,33 @@ public void testGetPageFromDatabase()
 
 	byte [] page = getCache().getPageFromDatabase( pageDescriptor );
 	assertThat( TestHelper.isAll( page, value ), is( true ) );
-	// De pageDescriptor is veranderd, hij wijst nu naar cachenummer 0
-	assertThat( pageDescriptor.getCacheNummer(), is( 0 ) );
+	assertThat( pageDescriptor.getCacheNummer(), is( 9 ) );
 	assertThat( getCache().isVuil( pageDescriptor ), is( false ) );
+}
+@Test
+public void testGetSetPage()
+{
+	long pageNumber = 3L;
+	int cacheNumber = 3;
+	byte value = (byte)0x70;
+
+	PageDescriptor pageDescriptor = PageDescriptor.builder()
+		.waar( OpSchijf )
+		.cacheNummer( cacheNumber )
+		.schijfAdres( pageNumber * getCache().getPageSize() )
+		.build();
+	byte [] page = TestHelper.createPageWithAll( getPageSizeCalculator(), config.getAantalStukken(), value );
+	getCache().setPage( pageDescriptor, page );
+	
+	byte [] gotPage = getCache().getPage( pageDescriptor );
+	assertThat( TestHelper.isAll( gotPage, value ), is( true ) );
+	assertThat( gotPage, is( page ) );
 }
 @Test
 public void testGetPageNotDirtyAndInRam()
 {
 	long pageNumber = 7L;
-	int cacheNumber = 20;
+	int cacheNumber = 7;
 	byte value = (byte)0x2f;
 
 	writePageWithAll( pageNumber, cacheNumber, value );
@@ -422,31 +320,223 @@ public void testGetPageNotDirtyAndInRam()
 	assertThat( getCache().isVuil( pageDescriptor ), is( false ) );
 }
 @Test
+public void testIsSetVuil()
+{
+	long pageNumber = 3L;
+	int cacheNumber = 3;
+
+	PageDescriptor pageDescriptor = PageDescriptor.builder()
+		.waar( OpSchijf )
+		.cacheNummer( cacheNumber )
+		.schijfAdres( pageNumber * getCache().getPageSize() )
+		.build();
+	getCache().setVuil( pageDescriptor, false );
+	assertThat( getCache().isVuil( pageDescriptor ), is( false ) );
+	getCache().setVuil( pageDescriptor, true );
+	assertThat( getCache().isVuil( pageDescriptor ), is( true ) );
+}
+@Test
+public void testGetSetCacheEntry()
+{
+	long pageNumber = 3L;
+	int cacheNumber = 3;
+	byte value = (byte)0x40;
+	long generatie = 215L;
+	
+	PageDescriptor pageDescriptor = PageDescriptor.builder()
+		.waar( OpSchijf )
+		.cacheNummer( cacheNumber )
+		.schijfAdres( pageNumber * getCache().getPageSize() )
+		.build();
+	byte [] page = TestHelper.createPageWithAll(getPageSizeCalculator(), config.getAantalStukken(),  value );
+	CacheEntry cacheEntry = CacheEntry.builder()
+		.pageDescriptor( pageDescriptor )
+		.page( page )
+		.generatie( generatie )
+		.vuil( true )
+		.build();
+	getCache().setCacheEntry( pageDescriptor, cacheEntry );
+	CacheEntry gotCacheEntry = getCache().getCacheEntry( pageDescriptor );
+	assertThat( gotCacheEntry.isVuil(), is( true ) );
+	assertThat( TestHelper.isAll( gotCacheEntry.getPage(), value ), is( true ) );
+	assertThat( gotCacheEntry.getGeneratie(), is( generatie ) );
+	assertThat( gotCacheEntry.isVuil(), is( true ) );
+}
+@Test
+public void testPutRawPageData()
+{
+	long pageNumber = 3L;
+	int cacheNumber = 3;
+	byte value = (byte)0x70;
+
+	PageDescriptor pageDescriptor = PageDescriptor.builder()
+		.waar( OpSchijf )
+		.cacheNummer( cacheNumber )
+		.schijfAdres( pageNumber * getCache().getPageSize() )
+		.build();
+	byte [] page = TestHelper.createPageWithAll( getPageSizeCalculator(), config.getAantalStukken(), value );
+	getCache().setPage( pageDescriptor, page );
+	getCache().putRawPageData( pageDescriptor );
+	
+	getCache().getRawPageData( pageDescriptor );
+	assertThat( TestHelper.isAll( getCache().getPage( pageDescriptor ), value ), is( true ) );
+}
+@Test
+public void testPageOut()
+{
+	long pageNumber = 5L;
+	int cacheNumber = 5;
+	byte value = (byte)0x60;
+
+	PageDescriptor pageDescriptor = PageDescriptor.builder()
+		.waar( InRam )
+		.cacheNummer( cacheNumber )
+		.schijfAdres( pageNumber * getCache().getPageSize() )
+		.build();
+	byte [] page = TestHelper.createPageWithAll( getPageSizeCalculator(), config.getAantalStukken(), value );
+	CacheEntry cacheEntry = CacheEntry.builder()
+		.page( page )
+		.pageDescriptor( pageDescriptor )
+		.vuil( true )
+		.generatie( 1 )
+		.build();
+	getCache().setCacheEntry( pageDescriptor, cacheEntry );
+	
+	//showCache( vm );
+	getCache().pageOut( pageDescriptor );
+	page = new byte [getCache().getPageSize()];
+	getCache().getCacheEntry( pageDescriptor ).setPage( page );
+	getCache().getRawPageData( pageDescriptor );
+	assertThat( TestHelper.isAll( getCache().getPage( pageDescriptor ), value ), is( true ) );
+}
+@Test
 public void testGetPositionWithinPage()
 {
-	VMStelling vmStelling = VMStelling.builder()
-		.wk( 0x04 )
-		.zk( 0x31 )
-		.s3( 0x00 )
-		.s4( 0x07 )
-		.s5( 0x09 )
+	VMStelling vmStelling = VMStelling.alfaBuilder()
+		.wk( "e1" )
+		.zk( "b7" )
+		.s3( "a1" )
+		.s4( "h1" )
+		.s5( "b2" )
 		.aanZet( Wit )
 		.build();
 	// Hier niet de lokale cache gebruiken maar die uit VM, want die is geconfigSwithed
 	getConfig().switchConfig( "KDK" );
-	assertThat( vm.getCache().getPositionWithinPage( vmStelling), is( 0 ) );
+	assertThat( vm.getCache().getPositionWithinPage( vmStelling), is( 6272 ) );
 	getConfig().switchConfig( "KDKT" );
-	assertThat( vm.getCache().getPositionWithinPage( vmStelling ), is( 7 ) );
+	assertThat( vm.getCache().getPositionWithinPage( vmStelling ), is( 401415 ) );
 	getConfig().switchConfig( "KDKTT" );
-	assertThat( vm.getCache().getPositionWithinPage( vmStelling), is( 7 * 64 + 9 ) );
+	assertThat( vm.getCache().getPositionWithinPage( vmStelling), is( 25690569 ) );
+}
+@Test
+public void testGetAllPositionsWithinPage3Stukken()
+{
+	getConfig().switchConfig( "KDK" );
+	VMStelling vmStelling = VMStelling.builder()
+		.wk( 0x00 )
+		.zk( 0x00 )
+		.s3( 0x00 )
+		.s4( 0x00 )
+		.s5( 0x00 )
+		.aanZet( Wit )
+		.build();
+	int pos = 0;
+	for ( int zk = 0; zk < MAX_STUK; zk++ )
+	{
+		vmStelling.setZk( zk );
+		for ( Kleur aanZet : Kleur.values() )
+		{
+			vmStelling.setAanZet( aanZet );
+			for ( int s3 = 0; s3 < MAX_STUK; s3++ )
+			{
+				vmStelling.setS3( s3 );
+				assertThat( vm.getCache().getPositionWithinPage( vmStelling), is( pos ) );
+				pos++;
+			}
+		}
+	}
+}
+@Test
+public void testGetAllPositionsWithinPage4Stukken()
+{
+	getConfig().switchConfig( "KDKT" );
+	VMStelling vmStelling = VMStelling.builder()
+		.wk( 0x00 )
+		.zk( 0x00 )
+		.s3( 0x00 )
+		.s4( 0x00 )
+		.s5( 0x00 )
+		.aanZet( Wit )
+		.build();
+	int pos = 0;
+	for ( int zk = 0; zk < MAX_STUK; zk++ )
+	{
+		vmStelling.setZk( zk );
+		for ( Kleur aanZet : Kleur.values() )
+		{
+			vmStelling.setAanZet( aanZet );
+			for ( int s3 = 0; s3 < MAX_STUK; s3++ )
+			{
+				vmStelling.setS3( s3 );
+				for ( int s4 = 0; s4 < MAX_STUK; s4++ )
+				{
+					vmStelling.setS4( s4 );
+					assertThat( vm.getCache().getPositionWithinPage( vmStelling), is( pos ) );
+					pos++;
+				}
+			}
+		}
+	}
+}
+@Test
+public void testGetAllPositionsWithinPage5Stukken()
+{
+	StopWatch timer = new StopWatch();
+	getConfig().switchConfig( "KDKTT" );
+	VMStelling vmStelling = VMStelling.builder()
+		.wk( 0x00 )
+		.zk( 0x00 )
+		.s3( 0x00 )
+		.s4( 0x00 )
+		.s5( 0x00 )
+		.aanZet( Wit )
+		.build();
+	int pos = 0;
+	for ( int zk = 0; zk < MAX_STUK; zk++ )
+	{
+		vmStelling.setZk( zk );
+		for ( Kleur aanZet : Kleur.values() )
+		{
+			vmStelling.setAanZet( aanZet );
+			for ( int s3 = 0; s3 < MAX_STUK; s3++ )
+			{
+				vmStelling.setS3( s3 );
+				for ( int s4 = 0; s4 < MAX_STUK; s4++ )
+				{
+					vmStelling.setS4( s4 );
+					for ( int s5 = 0; s5 < MAX_STUK; s5++ )
+					{
+						vmStelling.setS5( s5 );
+						if ( pos == 1 && vm.getCache().getPositionWithinPage( vmStelling ) == 64 )
+						{
+							System.out.println( "gottit" );
+						}
+						assertThat( vm.getCache().getPositionWithinPage( vmStelling ), is( pos ) );
+						pos++;
+					}
+				}
+			}
+		}
+	}
+	System.out.println( "testGetAllPositionsWithinPage5Stukken duurde " + timer.getElapsedMs() );
 }
 @Test
 public void testGetSetData()
 {
 	long pageNumber = 9L;
-	int cacheNumber = 20;
-	byte value = (byte)0x25;
-	byte newValue = (byte)0x77;
+	int cacheNumber = 9;
+	byte value = (byte)0x25;    //  37 dec
+	byte newValue = (byte)0x77; // 119 dec
 	int positionWithinPage = 10;
 
 	writePageWithAll( pageNumber, cacheNumber, value );
@@ -468,22 +558,35 @@ public void testGetSetData()
 	getCache().setData( pageDescriptor, positionWithinPage, newValue );
 	assertThat( getCache().getData( pageDescriptor, positionWithinPage ), is( newValue ) );
 	
-	VMStelling vmStelling = VMStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x77 )
-		.s3( 0x02 )
-		.s4( 0x66 )
-		.s5( 0x71 )
+	VMStelling vmStelling = VMStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "c1" )
+		.s4( "g7" )
+		.s5( "h8" )
 		.aanZet( Wit )
 		.build();
 	getCache().setData( pageDescriptor, vmStelling, newValue );
 	assertThat( getCache().getData( pageDescriptor, vmStelling ), is( newValue ) );
 }
 @Test
+public void testBug20260708()
+{
+	VMStelling vmStelling = VMStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "c1" )
+		.s4( "g7" )
+		.s5( "h8" )
+		.aanZet( Wit )
+		.build();
+	assertThat( getCache().getPositionWithinPage( vmStelling ), is( 516278 ) );
+}
+@Test
 public void testGetDataWithNoGetPage()
 {
-	long pageNumber = 9L;
-	int cacheNumber = 21;
+	long pageNumber = 7L;
+	int cacheNumber = 7;
 	byte value = (byte)0x25;
 	byte newValue = (byte)0x00;
 	int positionWithinPage = 10;
@@ -495,7 +598,8 @@ public void testGetDataWithNoGetPage()
 		.cacheNummer( cacheNumber )
 		.schijfAdres( pageNumber * getCache().getPageSize() )
 		.build();
-	byte [] page = getCache().getCache().get( 20 ).getPage();
+	// @@NOG Maar hier gebeurt toch wel een getPage????
+	byte [] page = getCache().getCacheEntries().get( cacheNumber ).getPage();
 	CacheEntry cacheEntry = CacheEntry.builder()
 		.page( page )
 		.pageDescriptor( pageDescriptor )
@@ -504,7 +608,7 @@ public void testGetDataWithNoGetPage()
 		.build();
 	getCache().setCacheEntry( pageDescriptor, cacheEntry );
 	
-	//getCache().setData( pageDescriptor, positionWithinPage, newValue );
+	getCache().setData( pageDescriptor, positionWithinPage, newValue );
 	assertThat( getCache().getData( pageDescriptor, positionWithinPage ), is( newValue ) );
 	
 }
@@ -517,7 +621,7 @@ public void testFlushWithNothingChanged()
 @Test
 public void testFlushWithSomePagesPresentButNoneVuil()
 {
-	byte [] page = TestHelper.createPageWithAllOnes();
+	byte [] page = TestHelper.createPageWithAllOnes( getPageSizeCalculator(), config.getAantalStukken() );
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( InRam )
 		.cacheNummer( 1 )
@@ -533,7 +637,7 @@ public void testFlushWithSomePagesPresentButNoneVuil()
 	
 	pageDescriptor = PageDescriptor.builder()
 		.waar( InRam )
-		.cacheNummer( 15 )
+		.cacheNummer( 5 )
 		.schijfAdres( 4096L )
 		.build();
 	cacheEntry = CacheEntry.builder()
@@ -550,7 +654,7 @@ public void testFlushWithSomePagesPresentButNoneVuil()
 @Test
 public void testFlushWithSomePagesPresentAndVuil()
 {
-	byte [] page = TestHelper.createPageWithAllOnes();
+	byte [] page = TestHelper.createPageWithAllOnes( getPageSizeCalculator(), config.getAantalStukken() );
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( InRam )
 		.cacheNummer( 1 )
@@ -566,7 +670,7 @@ public void testFlushWithSomePagesPresentAndVuil()
 	
 	pageDescriptor = PageDescriptor.builder()
 		.waar( InRam )
-		.cacheNummer( 15 )
+		.cacheNummer( 5 )
 		.schijfAdres( 4096L )
 		.build();
 	cacheEntry = CacheEntry.builder()

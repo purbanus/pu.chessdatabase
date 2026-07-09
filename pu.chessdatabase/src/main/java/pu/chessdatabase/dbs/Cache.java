@@ -1,292 +1,37 @@
 package pu.chessdatabase.dbs;
 
-import static pu.chessdatabase.dbs.Lokatie.*;
+import pu.chessdatabase.dbs.CacheType.*;
 
-import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+public interface Cache
+{
+public abstract RandomAccessFile getDatabase();
+public abstract void setDatabase( RandomAccessFile aRandomAccessFile );
+public abstract int getPageSize();
+public abstract long getDatabaseSize();
+public abstract byte [] getPage( PageDescriptor aPageDescriptor );
+public abstract byte [] getPageFromDatabase( PageDescriptor aPageDescriptor );
+public abstract int getPositionWithinPage( VMStelling aVmStelling );
+public abstract void setVuil( PageDescriptor aPageDescriptor, boolean aVuil );
+public abstract byte getData( PageDescriptor aPageDescriptor, VMStelling aVmStelling );
+public abstract void setData( PageDescriptor aPageDescriptor, VMStelling aVmStelling, byte aData );
+public abstract void pageOut( PageDescriptor aPageDescriptor );
+public abstract CacheEntry getCacheEntry( PageDescriptor aPageDescriptor );
+// Alleen om te testen!!
+public abstract void setCacheEntry( PageDescriptor aPageDescriptor, CacheEntry aCacheEntry );
+public abstract void flush();
 
-@Data
-
-class Cache
+public static Cache create( PageSizeCalculator aPageSizeCalculator, int aAantalStukken, RandomAccessFile aDatabase )
 {
-private static final int PAGE_SIZE_3_STUKKEN = 64;               // Bytes per page
-private static final int PAGE_SIZE_4_STUKKEN = 64*64;            // Bytes per page
-private static final int PAGE_SIZE_5_STUKKEN = 64*64*64;         // Bytes per page
-static final Map<Integer, Integer> PAGE_SIZE_LOOKUP = new HashMap<>();
-static
-{
-	PAGE_SIZE_LOOKUP.put( 3, PAGE_SIZE_3_STUKKEN );
-	PAGE_SIZE_LOOKUP.put( 4, PAGE_SIZE_4_STUKKEN );
-	PAGE_SIZE_LOOKUP.put( 5, PAGE_SIZE_5_STUKKEN );
-}
-public static int getStaticPageSize()
-{
-	return PAGE_SIZE_LOOKUP.get( getStaticAantalStukken() );
-}
-
-private static final long DATABASE_SIZE_3_STUKKEN = 10 * 64 * 2 * PAGE_SIZE_3_STUKKEN;
-private static final long DATABASE_SIZE_4_STUKKEN = 10 * 64 * 2 * PAGE_SIZE_4_STUKKEN;
-private static final long DATABASE_SIZE_5_STUKKEN = 10 * 64 * 2 * PAGE_SIZE_5_STUKKEN;
-private static final Map<Integer, Long> DATABASE_SIZE_LOOKUP = new HashMap<>();
-static
-{
-	DATABASE_SIZE_LOOKUP.put( 3, DATABASE_SIZE_3_STUKKEN );
-	DATABASE_SIZE_LOOKUP.put( 4, DATABASE_SIZE_4_STUKKEN );
-	DATABASE_SIZE_LOOKUP.put( 5, DATABASE_SIZE_5_STUKKEN );
-}
-public static long getStaticDatabaseSize()
-{
-	return DATABASE_SIZE_LOOKUP.get( getStaticAantalStukken() );
-}
-static final int CACHE_SIZE     = 30;                 // Aantal pagina"s
-private static int staticAantalStukken;
-public static int getStaticAantalStukken()
-{
-	return staticAantalStukken;
-}
-private final int aantalStukken;
-private RandomAccessFile database = null;
-private List<CacheEntry> cache = new ArrayList<>();
-@Getter( AccessLevel.PACKAGE ) 
-@Setter( AccessLevel.PRIVATE ) 
-private long generatieTeller;
-Cache( int aAantalStukken )
-{
-	super();
-	aantalStukken = aAantalStukken;
-	staticAantalStukken = aAantalStukken;
-	initializeCache();
-	setGeneratieTeller( 1L );
-}
-Cache( int aAantalStukken, RandomAccessFile aDatabase )
-{
-	this( aAantalStukken );
-	database = aDatabase;
-}
-public int getPageSize()
-{
-	return PAGE_SIZE_LOOKUP.get( getAantalStukken() );
-}
-public long getDatabaseSize()
-{
-	return DATABASE_SIZE_LOOKUP.get( getAantalStukken() );
-}
-
-private void initializeCache()
-{
-	for ( int x = 0; x < CACHE_SIZE; x++ )
+	if ( aPageSizeCalculator.getCacheType() == CacheType.Serial )
 	{
-		CacheEntry cacheEntry = CacheEntry.builder()
-			.pageDescriptor( null )
-			.page( new byte[getPageSize()] )
-			.vuil( false )
-			.generatie( 0 )
-			.build();
-		getCache().add( cacheEntry );
-		cacheEntry.clearPage();
+		return new SerialCache( aPageSizeCalculator, aAantalStukken, aDatabase );
 	}
-}
-private int getFreeCacheEntry()
-{
-    //---- laagste generatienummers -------
-    long LaagsteGeneratie        = Long.MAX_VALUE;
-    long LaagsteSchoneGeneratie  = Long.MAX_VALUE;
-    int LaagsteGeneratieNr      = Integer.MAX_VALUE;
-    int LaagsteSchoneGeneratieNr= Integer.MAX_VALUE;
-    int index = -1;
-    for ( CacheEntry cacheEntry : cache ) 
-    {
-    	index++;
-        if ( cacheEntry.getGeneratie() < LaagsteGeneratie )
-        {
-            LaagsteGeneratie  = cacheEntry.getGeneratie();
-            LaagsteGeneratieNr = index;
-        }
-        if ( ! cacheEntry.isVuil() && ( cacheEntry.getGeneratie() < LaagsteSchoneGeneratie ) )
-        {
-            LaagsteSchoneGeneratie  = cacheEntry.getGeneratie();
-            LaagsteSchoneGeneratieNr = index;
-        }
-    }
-    //----- bij voorkeur schone cache entry nemen ------
-    if ( LaagsteSchoneGeneratieNr != Integer.MAX_VALUE )
-    {
-        return LaagsteSchoneGeneratieNr;
-    }
-    else
-    {
-    	return LaagsteGeneratieNr;
-    }
-}
-// @@NOG private maken want wordt alleen in tests gebruikt. Helaas ook in TestVM, dus nog ff niet
-byte [] getPage( PageDescriptor aPageDescriptor )
-{
-	if ( aPageDescriptor.getCacheNummer() >= CACHE_SIZE )
+	else
 	{
-		System.out.println( "Got him! Hij is " + aPageDescriptor.getCacheNummer() );
+		return new ParallelCache( aPageSizeCalculator, aAantalStukken, aDatabase );
 	}
-	return getCache().get( aPageDescriptor.getCacheNummer() ).getPage();
-}
-@SuppressWarnings( "unused" )
-private void setPage( PageDescriptor aPageDescriptor, byte [] aPage )
-{
-	getCache().get( aPageDescriptor.getCacheNummer() ).setPage( aPage );
-}
-private boolean isVuil( PageDescriptor aPageDescriptor )
-{
-	return getCache().get( aPageDescriptor.getCacheNummer() ).isVuil();
-}
-void setVuil( PageDescriptor aPageDescriptor, boolean aVuil )
-{
-	getCache().get( aPageDescriptor.getCacheNummer() ).setVuil( aVuil );
-}
-CacheEntry getCacheEntry( PageDescriptor aPageDescriptor )
-{
-	return getCache().get( aPageDescriptor.getCacheNummer() );
-}
-void setCacheEntry( PageDescriptor aPageDescriptor, CacheEntry aCacheEntry )
-{
-	getCache().set( aPageDescriptor.getCacheNummer(), aCacheEntry );
-}
-
-private void getRawPageData( PageDescriptor aPageDescriptor )
-{
-    try
-	{
-		getDatabase().seek( aPageDescriptor.getSchijfAdres() );
-		int pageSize = getPageSize();
-		int aantal = getDatabase().read( getPage( aPageDescriptor ), 0, pageSize );
-		if ( aantal != pageSize )
-		{
-			throw new RuntimeException( "Ernstig: VM.GetPage heeft " + aantal + " records gelezen. Dat zouden er " + pageSize + " moeten zijn" );
-		}
-	}
-	catch ( IOException e )
-	{
-		throw new RuntimeException( e );
-	}
-}
-private void putRawPageData( PageDescriptor aPageDescriptor )
-{
-	try
-	{
-		getDatabase().seek( aPageDescriptor.getSchijfAdres() );
-	    //getDatabase().write( Cache[aPageDescriptor.getCacheNummer()].getPage().getPage(), 0, PAGE_SIZE );
-	    getDatabase().write( getPage( aPageDescriptor ), 0, getPageSize() );
-	    // @@HIGH moet hier niet vuil=false gedaan worden?
-	}
-	catch ( IOException e )
-	{
-		throw new RuntimeException( e );
-	}
-}
-/**
- *------------ Pagina schrijven naar de schijf ------
- */
-void pageOut( PageDescriptor aPageDescriptor )
-{
-    if ( aPageDescriptor != null && isVuil( aPageDescriptor ) )
-    {
-        putRawPageData( aPageDescriptor );
-        setVuil( aPageDescriptor, false );
-    }
-}
-/**
- * ----------- Pagina ophalen van de schijf ---------
- */
-private void pageIn( PageDescriptor aPageDescriptor )
-{
-    if ( aPageDescriptor.getWaar() == OpSchijf )
-    {
-    	aPageDescriptor.setCacheNummer( getFreeCacheEntry() );
-    }
-    CacheEntry cacheEntry = getCacheEntry( aPageDescriptor );
-    
-    //-------- Update oude page descriptor -------
-    PageDescriptor oudePageDescriptor = cacheEntry.getPageDescriptor();
-    if ( oudePageDescriptor != null )
-    {
-        pageOut( oudePageDescriptor );
-        oudePageDescriptor.setWaar( OpSchijf );
-        oudePageDescriptor.setCacheNummer( Integer.MAX_VALUE );
-    }
-
-    //-------- Ophalen nieuwe pagina -------------
- 	getRawPageData( aPageDescriptor );
-
-    //-------- Update cache ----------------------
-    cacheEntry.setPageDescriptor( aPageDescriptor );
-    cacheEntry.setVuil( false );
-    cacheEntry.setGeneratie( generatieTeller++ );
-
-    //-------- Update Page descriptor ------------
-    aPageDescriptor.setWaar( InRam );
-}
-/**
- *  ------- Haal pagina op uit de cache ---------
- */
-byte [ ] getPageFromDatabase( PageDescriptor aPageDescriptor )
-{
-	if ( aPageDescriptor.getWaar() == OpSchijf )
-	{
-		pageIn( aPageDescriptor );
-	}
-	return getPage( aPageDescriptor );
-}
-int getPositionWithinPage( VMStelling aVmStelling )
-{
-	if ( getAantalStukken() == 3 )
-	{
-		return aVmStelling.getS3();
-	}
-	else if ( getAantalStukken() == 4 )
-	{
-		return ( aVmStelling.getS3() << 6 ) + aVmStelling.getS4();
-	}
-	else if ( getAantalStukken() == 5 )
-	{
-		return ( aVmStelling.getS3() << 12 ) + ( aVmStelling.getS4() << 6 ) + aVmStelling.getS5();
-	}
-	throw new RuntimeException( "Ongeldig aantal stukken in Cache: " + getAantalStukken() );
-}
-byte getData( PageDescriptor aPageDescriptor, VMStelling aVmStelling )
-{
-    return getData( aPageDescriptor, getPositionWithinPage( aVmStelling ) );
-}
-byte getData( PageDescriptor aPageDescriptor, int aPositionWithinPage )
-{
-    return getPage( aPageDescriptor )[aPositionWithinPage];
-}
-void setData( PageDescriptor aPageDescriptor, VMStelling aVmStelling, byte aData )
-{
-    setData( aPageDescriptor, getPositionWithinPage( aVmStelling ), aData );
-}
-void setData( PageDescriptor aPageDescriptor, int aPositionWithinPage, byte aData )
-{
-	// @@HIGH Zou het niet beter zijn om hier CacheEntry te gebruiken, voor de performance?
-    getPage( aPageDescriptor )[aPositionWithinPage] = aData;
-	setVuil( aPageDescriptor, true );
-}
-void flush()
-{
-	for ( CacheEntry cacheEntry : getCache() )
-	{
-		if ( cacheEntry.getPageDescriptor() != null && cacheEntry.getPageDescriptor().getCacheNummer() != Integer.MAX_VALUE )
-		{
-			pageOut( cacheEntry.getPageDescriptor() );
-			cacheEntry.setGeneratie( 0 );
-		}
-	}
-	setGeneratieTeller( 1 );
 }
 
 }
