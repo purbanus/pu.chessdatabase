@@ -37,6 +37,7 @@ private static final boolean DO_PRINT = false;
 @Autowired private Gen gen;
 @Autowired private Config config;
 @Autowired private VMStellingIterator vmStellingIterator;
+PageSizeCalculator pageSizeCalculator = new PageSizeCalculator();
 
 String savedConfigString;
 @BeforeEach
@@ -44,6 +45,7 @@ public void setup()
 {
 	savedConfigString = config.getConfig();
 	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
+	vm.setPageSizeCalculator( pageSizeCalculator );
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 }
 @AfterEach
@@ -783,15 +785,33 @@ void set0x11( BoStelling aBoStelling )
 	aBoStelling.setAantalZetten( 0x11 );
 	dbs.put( aBoStelling );
 }
-void checkMarkeerPassMet0x11( VMStelling vmStelling )
+void checkMarkeerPassMet0x11( VMStelling aVmStelling )
 {
 	byte [] page;
-	vmStelling.setAanZet( Wit );
-	page = vm.getPage( vmStelling );
+	aVmStelling.setAanZet( Wit );
+	page = vm.getPage( aVmStelling );
+	if ( ! TestHelper.isAll( page, (byte)0x00 ) )
+	{
+		System.out.println( "Hebbes!" );
+		System.out.println( aVmStelling );
+		printPage( page );
+	}
 	assertThat( TestHelper.isAll( page, (byte)0x00 ), is( true ) );
-	vmStelling.setAanZet( Zwart );
-	page = vm.getPage( vmStelling );
+	aVmStelling.setAanZet( Zwart );
+	page = vm.getPage( aVmStelling );
 	assertThat( TestHelper.isAll( page, (byte)0x11 ), is( true ) );
+}
+private void printPage( byte [] aPage )
+{
+	System.out.println( "Page length: " + aPage.length );
+	for ( int row = 0; row < aPage.length; row += 64 )
+	{
+		for ( int col = 0; col < 64; col++ )
+		{
+			//System.out.print( aPage[row + col] + " " );
+		}
+		//System.out.println();
+	}
 }
 void set0x34( BoStelling aBoStelling )
 {
