@@ -149,5 +149,17 @@ public void testToString()
 	assertThat( vmStelling.toString().length(), is( vmStringText.length() ) );
 	assertThat( vmStelling.toString(), is( vmStringText ) );
 }
-
+@Test
+public void testBug20260708()
+{
+	VMStelling vmStelling = VMStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "c1" )
+		.s4( "g7" )
+		.s5( "h8" )
+		.aanZet( Wit )
+		.build();
+	System.out.println( vmStelling.toString() );
+}
 }
