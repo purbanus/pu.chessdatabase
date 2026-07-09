@@ -31,14 +31,15 @@ public static final String DATABASE_NAME = "dbs/Pipo";
 private static final String DATABASE_NAME_4 = DATABASE_NAME + "4";
 @Autowired private VM vm;
 @Autowired private Config config;
-
+PageSizeCalculator pageSizeCalculator = new PageSizeCalculator();
 String savedConfigString;
 @BeforeEach
 public void setup()
 {
 	savedConfigString = config.getConfig();
 	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
-	vm.create(); // Doet ook Open, dus initialiseert de tabellen
+	vm.setPageSizeCalculator( getPageSizeCalculator() );
+	vm.create(); // Doet  ook Open, dus initialiseert de tabellen
 }
 @AfterEach
 public void destroy()
@@ -104,7 +105,7 @@ private void writePage0WithAllOnes()
 }
 private void writePageWithAll( long aPageNumber, int aCacheNumber, byte aValue )
 {
-	byte [] page = TestHelper.createPageWithAll( aValue );
+	byte [] page = TestHelper.createPageWithAll( getPageSizeCalculator(), config.getAantalStukken(), aValue );
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( InRam )
 		.cacheNummer( aCacheNumber )
@@ -121,7 +122,7 @@ private void writePageWithAll( long aPageNumber, int aCacheNumber, byte aValue )
 }
 private void checkIfAllDatabaseEntriesAreZero() throws IOException
 {
-	PageDescriptorTable pageDescriptorTable = new PageDescriptorTable( getConfig().getAantalStukken() );
+	PageDescriptorTable pageDescriptorTable = PageDescriptorTable.create( getPageSizeCalculator(), getConfig().getAantalStukken() );
 	pageDescriptorTable.iterateOverAllPageDescriptors( this::checkIfDatabaseEntryIsZero );
 }
 void checkIfDatabaseEntryIsZero( VMStelling aVmStelling )
@@ -256,7 +257,7 @@ public void testFreeRecord()
 	int cacheNumber = 21;
 	byte value = (byte)0xe0;
 
-	byte [] page = TestHelper.createPageWithAll( value );
+	byte [] page = TestHelper.createPageWithAll( getPageSizeCalculator(), config.getAantalStukken(), value );
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( InRam )
 		.cacheNummer( cacheNumber )
