@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.map.HashedMap;
+import org.apache.commons.lang3.ArrayUtils;
 
 import lombok.Data;
 
@@ -24,7 +25,9 @@ public MockCache( Cache aCache )
 }
 private void initializeMethods()
 {
-	Method [] methods = getDelegate().getClass().getDeclaredMethods();
+	Method [] baseMmethods = getDelegate().getClass().getDeclaredMethods();
+	Method [] superMethods = getDelegate().getClass().getSuperclass().getDeclaredMethods();
+	Method [] methods = ArrayUtils.addAll( baseMmethods, superMethods );
 	for ( Method method : methods )
 	{
 		String methodName = method.getName();
@@ -78,7 +81,7 @@ Object callMethod( String aMethodName, Object...aParams )
 	}
 	catch ( InvocationTargetException e )
 	{
-		throw new RuntimeException( e );
+		throw new RuntimeException( e.getTargetException() );
 	}
 	catch ( SecurityException e )
 	{
@@ -95,17 +98,25 @@ RandomAccessFile getDatabase()
 	return (RandomAccessFile) callMethod( "getDatabase" );
 }
 @SuppressWarnings( "unchecked" )
-List<CacheEntry> getCache()
+List<CacheEntry> getCacheEntries()
 {
-	return (List<CacheEntry>) callMethod( "getCache" );
+	return (List<CacheEntry>) callMethod( "getCacheEntries" );
 }
 long getGeneratieTeller()
 {
 	return (long) callMethod( "getGeneratieTeller" );
 }
+int getCacheSize()
+{
+	return (int) callMethod( "getCacheSize" );
+}
 int getPageSize()
 {
 	return (int) callMethod( "getPageSize" );
+}
+int getDatabaseSize()
+{
+	return (int) callMethod( "getDatabaseSize" );
 }
 void initializeCache()
 {
@@ -139,9 +150,9 @@ void setCacheEntry( PageDescriptor aPageDescriptor, CacheEntry aCacheEntry )
 {
 	callMethod( "setCacheEntry", aPageDescriptor, aCacheEntry );
 }
-void getRawPageData( PageDescriptor aPageDescriptor )
+byte [] getRawPageData( PageDescriptor aPageDescriptor )
 {
-	callMethod( "getRawPageData", aPageDescriptor );
+	return (byte []) callMethod( "getRawPageData", aPageDescriptor );
 }
 void putRawPageData( PageDescriptor aPageDescriptor )
 {
