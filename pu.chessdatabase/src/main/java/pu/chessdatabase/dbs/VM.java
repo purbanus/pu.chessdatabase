@@ -33,7 +33,10 @@ Doel   : Implementeren van een virtual memory systeem voor de chess
 @Data
 public class VM
 {
-static final int VELD_MAX = 64;
+public static final int MAX_WK = 10;
+public static final int MAX_STUK = 64;
+public static final int MAX_AANZET = 2;
+
 public static final int VERLIES_OFFSET   = 0x80;
 public static final int VM_SCHAAK        = 0x80;
 public static final int VM_REMISE        = 0x00;
@@ -68,27 +71,6 @@ private static final String [] RepZK = {
 /*------ Aan zet -----------------*/
 @SuppressWarnings( "unused" )
 private static final String [] RepAZ = { "W", "Z" };
-
-public Range wkVeldRange = new Range( 0, 9 );
-public Range stukVeldRange = new Range( 0, 63 );
-
-@Autowired private Config config;
-@Getter( AccessLevel.PACKAGE ) 
-@Setter( AccessLevel.PACKAGE ) 
-private PageDescriptorTable pageDescriptorTable/* = new PageDescriptorTable( config.getAantalStukken() )*/;
-@Getter( AccessLevel.PACKAGE ) 
-@Setter( AccessLevel.PACKAGE ) 
-private Cache cache;
-
-@EqualsAndHashCode.Exclude // @@NOG Waarom??
-private String databaseName = null;
-@Getter( AccessLevel.PACKAGE ) 
-@Setter( AccessLevel.PRIVATE ) 
-private File databaseFile;
-@Getter( AccessLevel.PUBLIC ) 
-@Setter( AccessLevel.PRIVATE ) 
-private boolean open = false;
-
 /**
  * ------- Veld naar alfa ----------------------------------
  */
@@ -123,10 +105,37 @@ public static int alfaToVeld( String aAlfaVeld )
 	return capAlfaVeld.charAt( 0 ) - 'A' + 8 * ( capAlfaVeld.charAt( 1 ) - '1' );
 }
 
+public Range wkVeldRange = new Range( 0, 9 );
+public Range stukVeldRange = new Range( 0, 63 );
+
+// Die ctor pakt config niet op
+@Autowired private Config config;
+@Getter( AccessLevel.PACKAGE ) 
+@Setter( AccessLevel.PACKAGE ) 
+private PageDescriptorTable pageDescriptorTable/* = new PageDescriptorTable( config.getAantalStukken() )*/;
+@Getter( AccessLevel.PACKAGE ) 
+@Setter( AccessLevel.PACKAGE ) 
+private Cache cache;
+
+//@EqualsAndHashCode.Exclude // @@NOG Waarom??
+private String databaseName = null;
+@Getter( AccessLevel.PACKAGE ) 
+@Setter( AccessLevel.PRIVATE ) 
+private File databaseFile;
+@Getter( AccessLevel.PUBLIC ) 
+@Setter( AccessLevel.PRIVATE ) 
+private boolean open = false;
+private PageSizeCalculator pageSizeCalculator;
 public VM()
 {
 	setDatabaseFile( null );
+	setPageSizeCalculator( new PageSizeCalculator() );
 }
+//public VM(Config aConfig)
+//{
+//	setDatabaseFile( null );
+//	config = aConfig;
+//}
 RandomAccessFile getDatabase()
 {
 	return getCache().getDatabase();
@@ -280,8 +289,8 @@ public void open()
 	{
 		throw new RuntimeException( e );
 	}
-    setCache( new Cache( config.getAantalStukken(), database ) );
-	setPageDescriptorTable( new PageDescriptorTable( config.getAantalStukken() ) );
+    setCache( Cache.create( getPageSizeCalculator(), config.getAantalStukken(), database ) );
+	setPageDescriptorTable( PageDescriptorTable.create( getPageSizeCalculator(), config.getAantalStukken() ) );
 	setOpen( true );
 }
 /**
