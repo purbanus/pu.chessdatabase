@@ -31,6 +31,7 @@ import lombok.Data;
 public class TestBouwOverProductie
 {
 public static final boolean DO_PRINT = false;
+@Autowired private Gen gen;
 @Autowired private Dbs dbs;
 @Autowired private Bouw bouw;
 @Autowired private Config config;
@@ -98,6 +99,55 @@ public void testGrootsteAantalZetten()
 	assertThat( grootsten.size(), is (96 ) );
 	assertThat( grootstenMinEen.size(), is (1119 ) );
 }
+@Test
+public void testTelAllesKDKAanHetEinde()
+{
+//	if ( DO_PRINT )
+	{
+		System.out.println( "methode testTelAlles\n" );
+	}
+	doTestTelAllesAanHetEinde( "TestKDK" );
+	doTestTelAllesAanHetEinde( "KDK" );
+}
+@Test
+public void testTelAllesKDKTAanHetEinde()
+{
+//	if ( DO_PRINT )
+	{
+		System.out.println( "methode testTelAlles\n" );
+	}
+	//doTestTelAllesAanHetEinde( "KDK" );
+	doTestTelAllesAanHetEinde( "TestKDKT" );
+	doTestTelAllesAanHetEinde( "KDKT" );
+	//doTestTelAllesAanHetEinde( "KDKTT" );
+}
+void doTestTelAllesAanHetEinde( String aConfigString )
+{
+	System.out.println( "\nTel alles in " + aConfigString + "\n" );
+	getConfig().switchConfig( aConfigString );
+	
+	dbs.open();
+	bouw.telAndPrintAlles( true );
+}
+@Test 
+public void testIsIllegaal5Stukken_3()
+{
+	config.switchConfig( "TestKDKTT" );
+	
+	// Bug van 18-06-2026
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "a8" )
+		.s4( "h8" )
+		.s5( "h8" )
+		.aanZet( Zwart )
+		.build();
+	assertThat( gen.isGeometrischIllegaal( boStelling ), is( false ) );
+	BoStelling gotBoStelling = dbs.get( boStelling );
+	assertThat( gotBoStelling.getResultaat(), is( Remise ) );
+}
+
 @Test
 public void testBug2026_06_18()
 {

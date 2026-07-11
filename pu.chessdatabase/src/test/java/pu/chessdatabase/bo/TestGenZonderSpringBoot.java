@@ -4,12 +4,16 @@ package pu.chessdatabase.bo;
 //BELANGRIJK
 //In Eclipse kan hij de volgende twee imports niet vinden. Deze moet je dus met de hand toevoegen
 //===================================================================================================================== 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
-
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.Matchers.startsWith;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.bo.ZetSoort.*;
+import static pu.chessdatabase.dbs.Constants.*;
 import static pu.chessdatabase.dbs.Resultaat.*;
 
 import java.util.ArrayList;
@@ -18,8 +22,6 @@ import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.dbs.Dbs;
 import pu.chessdatabase.dbs.Resultaat;
@@ -30,7 +32,6 @@ import lombok.Data;
 @Data
 public class TestGenZonderSpringBoot
 {
-private static final String DATABASE_NAME = "dbs/Pipo";
 private Gen gen = new Gen();
 private VM vm = new VM();
 private Dbs dbs = new Dbs( vm );
@@ -46,13 +47,14 @@ public void setup()
 {
 	savedConfigString = config.getConfig();
 	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
+	dbs.setDatabaseName( DATABASE_NAME_PIPO4 );
 	dbs.create();
 }
 @AfterEach
 public void destroy()
 {
-	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
-	assertThat( dbs.getDatabaseName(), startsWith( DATABASE_NAME ) );
+	assertThat( dbs.getDatabaseName(), startsWith( DATABASE_NAME_PIPO ) );
+	assertThat( config.getAantalStukken(), is( lessThanOrEqualTo( 4 ) ) );
 	dbs.delete();
 	config.switchConfig( savedConfigString );
 }
@@ -105,6 +107,7 @@ public void testAlfaToVeld()
 public void testIsGeomIllegaal3Stukken()
 {
 	getConfig().switchConfig( "TESTKDK", false );
+	dbs.setDatabaseName( "dbs/TestPipo3" );
 
 	// Gewoon goed
 	BoStelling boStelling = BoStelling.builder()
@@ -170,7 +173,8 @@ public void testIsGeomIllegaal4Stukken()
 		.build();
 	assertThat( gen.isGeometrischIllegaal( boStelling ), is( true ) );
 	
-	config.switchConfig( "KLLK" );
+	config.switchConfig( "TestKLLK" );
+	dbs.setDatabaseName( "dbs/TestPipo4" );
 	boStelling = BoStelling.builder()
 		.wk( 5 )
 		.zk( 6 )
@@ -194,7 +198,8 @@ public void testIsGeomIllegaal5Stukken()
 @Test
 public void testBug2026_06_18()
 {
-	config.switchConfig( "KDKTT" );
+	config.switchConfig( "TestKDKTT" );
+	dbs.setDatabaseName( "dbs/TestPipo5" );
 	// Er staan 2 zwarte stukken op hetzelfde veld. Die zijn allebeigeslagen
 	BoStelling boStelling = BoStelling.alfaBuilder()
 		.wk( "a1" )
@@ -205,6 +210,8 @@ public void testBug2026_06_18()
 		.aanZet( Zwart )
 		.build();
 	assertThat( gen.isGeometrischIllegaal( boStelling ), is( false ) );
+	config.switchConfig( "TestKDKT" );
+	dbs.setDatabaseName( DATABASE_NAME_PIPO4 );
 }
 
 @Test
@@ -341,6 +348,7 @@ public void testCheckSchaakDoorStuk()
 public void testIsSchaak3Stukken()
 {
 	getConfig().switchConfig( "TESTKDK", false );
+	dbs.setDatabaseName( "dbs/TestPipo3" ); 
 	
 	// Check aStukVeld == aStelling.getWk(), d.w.z. s3 is geslagen door zwart
 	BoStelling boStelling = BoStelling.alfaBuilder()
@@ -374,6 +382,7 @@ public void testIsSchaak3Stukken()
 public void testIsSchaak4Stukken()
 {
 	getConfig().switchConfig( "TESTKDKT", false );
+	dbs.setDatabaseName( "dbs/TestPipo4" );
 	
 	// Check aStukVeld == aStelling.getZK(), d.w.z. s4 is geslagen door wit
 	BoStelling stelling = BoStelling.alfaBuilder()
@@ -423,7 +432,6 @@ public void testIsSchaak5Stukken()
 @Test
 public void testAddZet()
 {
-	dbs.setDatabaseName( DATABASE_NAME );
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 
 	BoStelling stelling;
@@ -515,7 +523,6 @@ public void testAddZet()
 public void testGenZetPerStuk()
 {
 	// @@NOG NOG varianten met 3 en 5 stukken
-	dbs.setDatabaseName( DATABASE_NAME );
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 
 	BoStelling boStelling;
@@ -596,7 +603,6 @@ public void testGenZetPerStuk()
 public void testGenereerZetten()
 {
 	// @@NOG NOG varianten met 3 en 5 stukken
-	dbs.setDatabaseName( DATABASE_NAME );
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 
 	BoStelling boStelling;
@@ -726,7 +732,6 @@ public void testStellingComparator()
 @Test
 public void testGenZetSort()
 {
-	dbs.setDatabaseName( DATABASE_NAME );
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 
 	BoStelling stelling;
