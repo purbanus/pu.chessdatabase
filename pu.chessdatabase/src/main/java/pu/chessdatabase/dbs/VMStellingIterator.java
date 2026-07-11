@@ -61,6 +61,14 @@ public void setReport( int aReportFrequency, ReportFunction aReportFunction, boo
 	doAllPositions = aDoAllPositions;
 	clearTellingen();
 }
+void report()
+{
+	if ( reportFunction != null )
+	{
+		reportFunction.doReport( stellingTeller, tellingen );
+	}
+
+}
 public void iterateOverWkZk( VMSimpleIteratorFunction aVmSimpleIteratorFunction )
 {
 	// @@HIGH Moet je hier niet over AanZet itereren?
@@ -78,7 +86,7 @@ public void iterateOverWkZk( VMSimpleIteratorFunction aVmSimpleIteratorFunction 
 			}
 		}
 	}
-	reportFunction.doReport( stellingTeller, tellingen );
+	report();
 }
 public void iterateOverWkZkWit( PassFunction aPassFunction )
 {
@@ -97,7 +105,7 @@ public void iterateOverWkZkWit( PassFunction aPassFunction )
 			iterateOverPiecesOnlyWhite( boStelling, vmStelling, aPassFunction );
 		}
 	}
-	reportFunction.doReport( stellingTeller, tellingen );
+	report();
 
 }
 public void iterateOverWkZk( Kleur aKleur, PassFunction aPassFunction )
@@ -210,7 +218,7 @@ public void iterateOverAllPieces( PassFunction aPassFunction )
 			}
 		}
 	}
-	reportFunction.doReport( stellingTeller, tellingen );
+	report();
 }
 List<BoStelling> stellingen = new ArrayList<>();
 void callForAllPieces( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction, boolean aCountDouble )
@@ -232,9 +240,9 @@ void callForAllPieces( BoStelling aBoStelling, VMStelling aVmStelling, PassFunct
 	}
 	stellingTeller++;
 	
-	if ( getReportFunction() != null && stellingTeller % reportFrequency == 0 )
+	if ( stellingTeller % reportFrequency == 0 )
 	{
-		reportFunction.doReport( stellingTeller, tellingen );
+		report();
 	}
 	if ( gotBoStelling.getResultaat() == Remise || isDoAllPositions() )
 	{
@@ -253,9 +261,9 @@ void callForAllPieces( BoStelling aBoStelling, VMStelling aVmStelling, PassFunct
 //	tellingen [Zwart.ordinal()][gotBoStelling.getResultaat().ordinal()]++;
 //	stellingTeller++;
 //	stellingTeller++;
-//	if ( getReportFunction() != null && stellingTeller % reportFrequency == 0 )
+//	if ( stellingTeller % reportFrequency == 0 )
 //	{
-//		reportFunction.doReport( stellingTeller, tellingen );
+//		report();
 //	}
 //	if ( gotBoStelling.getResultaat() == Remise || isDoAllPositions() )
 //	{
