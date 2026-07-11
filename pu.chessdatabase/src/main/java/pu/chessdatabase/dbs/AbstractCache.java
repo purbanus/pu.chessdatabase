@@ -16,6 +16,7 @@ import lombok.Setter;
 @Data
 public abstract class AbstractCache implements Cache
 {
+public static final boolean REPORT_FLUSH = false; 
 private final int aantalStukken;
 private RandomAccessFile database = null;
 private List<CacheEntry> cacheEntries = new ArrayList<>();
@@ -163,13 +164,26 @@ void setData( PageDescriptor aPageDescriptor, int aPositionWithinPage, byte aDat
 @Override
 public void flush()
 {
+	if ( REPORT_FLUSH )
+	{
+		System.out.print( "Flush called" );
+	}
+	int teller = 0;
 	for ( CacheEntry cacheEntry : getCacheEntries() )
 	{
 		if ( cacheEntry.getPageDescriptor() != null && cacheEntry.getPageDescriptor().getCacheNummer() != Integer.MAX_VALUE )
 		{
 			pageOut( cacheEntry.getPageDescriptor() );
 			cacheEntry.setGeneratie( 0 );
+			if ( REPORT_FLUSH )
+			{
+				teller++;
+			}
 		}
+	}
+	if ( REPORT_FLUSH )
+	{
+		System.out.println( " , pageOut in flush " + teller + " keer" );
 	}
 	setGeneratieTeller( 1 );
 }
