@@ -19,7 +19,7 @@ public TestKDK()
 	getStukDefinities().add( new StukDefinitie( Dame,   Wit ) );
 	getStukDefinities().add( new StukDefinitie( Geen,   Wit ) );
 	getStukDefinities().add( new StukDefinitie( Geen,   Wit ) );
-	databaseName = "dbs/Pipo3";
+	databaseName = "dbs/TestKDK.DBS";
 	setStukken( new Stukken( this ) );
 }
 @Override
