@@ -96,7 +96,7 @@ void telAlles( boolean aDoPrint)
 {
 	if ( aDoPrint )
 	{
-		System.out.println( "Tellen van alle stellingen" );
+		reportNewPass( "Tellen van alle stellingen" );
 	}
 	vmStellingIterator.clearTellingen();
 	dbs.pass( PassType.MarkeerWitEnZwart, this::tel );

@@ -81,4 +81,41 @@ public void testGenereerZetten()
 	assertThat( Gen.veldToAlfa( genZRec.get( 21 ).getS3() ), is( "b1" ) );
 	assertThat( Gen.veldToAlfa( genZRec.get( 22 ).getS3() ), is( "c1" ) );
 }
+@Test
+public void testIsGeomIllegaal4Stukken()
+{
+	config.switchConfig( "TestKLLK" );
+	dbs.setDatabaseName( "dbs/TestPipo4" );
+	BoStelling boStelling = BoStelling.builder()
+		.wk( 5 )
+		.zk( 6 )
+		.s3( 7 )
+		.s4( 0x10 )
+		.build();
+	assertThat( gen.isGeometrischIllegaal( boStelling ), is( true ) );
+	boStelling = BoStelling.builder()
+		.wk( 5 )
+		.zk( 6 )
+		.s3( 7 )
+		.s4( 0x11 )
+		.build();
+	assertThat( gen.isGeometrischIllegaal( boStelling ), is( false ) );
+}
+@Test
+public void testBug2026_06_18()
+{
+	config.switchConfig( "TestKDKTT" );
+	dbs.setDatabaseName( "dbs/TestPipo5" );
+	// Er staan 2 zwarte stukken op hetzelfde veld. Die zijn allebeigeslagen
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "h8" )
+		.s3( "a8" )
+		.s4( "h8" )
+		.s5( "h8" )
+		.aanZet( Zwart )
+		.build();
+	assertThat( gen.isGeometrischIllegaal( boStelling ), is( false ) );
+}
+
 }

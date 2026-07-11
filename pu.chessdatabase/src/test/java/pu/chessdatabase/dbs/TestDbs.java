@@ -7,6 +7,7 @@ package pu.chessdatabase.dbs;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static pu.chessdatabase.bo.Kleur.*;
+import static pu.chessdatabase.dbs.Constants.*;
 import static pu.chessdatabase.dbs.PassType.*;
 import static pu.chessdatabase.dbs.Resultaat.*;
 
@@ -29,8 +30,8 @@ import lombok.Data;
 @Data
 public class TestDbs
 {
-private static final String DATABASE_NAME = "dbs/Pipo";
 private static final boolean DO_PRINT = false;
+
 @Autowired private Dbs dbs;
 @Autowired private Bouw bouw;
 @Autowired private VM vm;
@@ -51,8 +52,8 @@ public void setup()
 @AfterEach
 public void destroy()
 {
-	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
-	assertThat( dbs.getDatabaseName(), startsWith( DATABASE_NAME ) );
+	assertThat( dbs.getDatabaseName(), startsWith( PREFIX_TEST_DATABASE ) );
+	assertThat( config.getAantalStukken(), is( lessThanOrEqualTo( 4 ) ) );
 	dbs.delete();
 	config.switchConfig( savedConfigString );
 }
@@ -674,7 +675,7 @@ public void testSetDatabaseName()
 {
 	dbs.setDatabaseName( "Mamaloe" );
 	assertThat( dbs.getDatabaseName(), is( "Mamaloe" ) );
-	dbs.setDatabaseName( DATABASE_NAME );
+	dbs.setDatabaseName( DATABASE_NAME_PIPO );
 }
 @Test
 public void testCreate()

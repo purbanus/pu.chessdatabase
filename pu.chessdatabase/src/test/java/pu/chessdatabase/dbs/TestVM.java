@@ -8,6 +8,7 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static pu.chessdatabase.bo.Kleur.*;
+import static pu.chessdatabase.dbs.Constants.*;
 import static pu.chessdatabase.dbs.Lokatie.*;
 
 import java.io.File;
@@ -27,8 +28,6 @@ import lombok.Data;
 @Data
 public class TestVM
 {
-public static final String DATABASE_NAME = "dbs/Pipo";
-private static final String DATABASE_NAME_4 = DATABASE_NAME + "4";
 @Autowired private VM vm;
 @Autowired private Config config;
 PageSizeCalculator pageSizeCalculator = new PageSizeCalculator();
@@ -44,8 +43,8 @@ public void setup()
 @AfterEach
 public void destroy()
 {
-	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
-	assertThat( vm.getDatabaseName(), startsWith( DATABASE_NAME ) );
+	assertThat( vm.getDatabaseName(), anyOf( startsWith( PREFIX_TEST_DATABASE ), startsWith( DATABASE_NAME_PIPO ) ) );
+	assertThat( config.getAantalStukken(), is( lessThanOrEqualTo( 4 ) ) );
 	vm.delete();
 	config.switchConfig( savedConfigString );
 }
@@ -286,7 +285,7 @@ public void testFreeRecord()
 @Test
 public void testCloseWithNoDatabesePresent()
 {
-	assertThat( vm.getDatabaseName(), startsWith( DATABASE_NAME ) );
+	assertThat( vm.getDatabaseName(), startsWith( PREFIX_TEST_DATABASE ) );
 	vm.delete();
 	vm.close();
 	// @@NOG Tests maken
@@ -308,17 +307,24 @@ public void testOpen()
 public void testCreateFile()
 {
 	// @@HIGH config-afhankelijke tests
-	assertThat( vm.getDatabaseName(), startsWith( DATABASE_NAME ) );
-	vm.delete();
-	vm.createFile( DATABASE_NAME_4 );
-	File file = new File( DATABASE_NAME_4 );
+	assertThat( vm.getDatabaseName(), startsWith( PREFIX_TEST_DATABASE ) );
+	//vm.delete();
+	vm.createFile( DATABASE_NAME_PIPO4 );
+	File file = new File( DATABASE_NAME_PIPO4 );
 	assertThat( file.exists(), is( true ) );
 }
 @Test
 public void testCreate() throws IOException
 {
 	// @@HIGH config-afhankelijke tests
-	File file = new File( DATABASE_NAME_4 );
+	File file = new File( DATABASE_NAME_PIPO4 );
+	if ( file.exists() )
+	{
+		file.delete();
+	}
+	vm.setDatabaseName( DATABASE_NAME_PIPO4 );
+	vm.create();
+
 	assertThat( file.exists(), is( true ) );
 	assertThat( file.length(), is( 5242880L  ) );
 	checkIfAllDatabaseEntriesAreZero();
@@ -327,13 +333,47 @@ public void testCreate() throws IOException
 public void testDelete()
 {
 	// @@HIGH config-afhankelijke tests
-	File file = new File( DATABASE_NAME_4 );
-	assertThat( file.exists(), is( true ) );
-	assertThat( vm.getDatabaseName(), is( DATABASE_NAME_4 ) );
+	
+	File file = new File( DATABASE_NAME_PIPO4 );
+	vm.setDatabaseName( DATABASE_NAME_PIPO4 );
+	if ( ! file.exists() )
+	{
+		vm.create();
+	}
+	assertTrue( file.exists() );
+	assertThat( vm.getDatabaseName(), is( DATABASE_NAME_PIPO4 ) );
 	vm.delete();
 
-	file = new File( DATABASE_NAME_4 );
-	assertThat( file.exists(), is( false ) );
+	file = new File( DATABASE_NAME_PIPO4 );
+	assertFalse( file.exists() );
 }
+@Test
+public void testDatabasesWeCannotDelete()
+{
+	vm.setDatabaseName( "dbs/bizarplunk" );
+	vm.create();
+	assertThrows( RuntimeException.class, () -> vm.delete() );
+	// Met de hand weggooien
+	File file = new File( "dbs.bizarplunk" );
+	file.delete();
+	
+	vm.setDatabaseName( "dbs/TestKDK.DBS" );
+	file = new File( "dbs/TestKDK.DBS" );
+	assertTrue( file.exists() );
+	vm.delete();
+	
+	vm.setDatabaseName( "dbs/Pipo17" );
+	file = new File( "dbs/Pipo17" );
+	assertFalse( file.exists() );
+	vm.create();
+	vm.delete();
+	assertFalse( file.exists() );
 
+	config.switchConfig( "TestKDKTT" );
+	file = new File( "dbs/TestKDKTT.DBS" );
+	assertTrue( file.exists() );
+	assertThrows( RuntimeException.class, () -> vm.delete() );
+	
+	config.switchConfig( "TestKDK", false );
+}
 }

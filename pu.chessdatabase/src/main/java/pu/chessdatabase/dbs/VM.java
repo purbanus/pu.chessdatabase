@@ -1,5 +1,6 @@
 package pu.chessdatabase.dbs;
 
+import static pu.chessdatabase.dbs.Constants.*;
 import static pu.chessdatabase.dbs.Lokatie.*;
 
 import java.io.File;
@@ -15,7 +16,6 @@ import pu.services.Range;
 
 import lombok.AccessLevel;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -71,6 +71,7 @@ private static final String [] RepZK = {
 /*------ Aan zet -----------------*/
 @SuppressWarnings( "unused" )
 private static final String [] RepAZ = { "W", "Z" };
+
 /**
  * ------- Veld naar alfa ----------------------------------
  */
@@ -152,7 +153,14 @@ public long getDatabaseSize()
 public void switchConfig()
 {
 	setDatabaseName( null );
-	open();
+	if ( getDatabaseFile() == null || ! getDatabaseFile().exists() )
+	{
+		create();
+	}
+	else
+	{
+		open();
+	}
 }
 public String getDatabaseName()
 {
@@ -337,12 +345,18 @@ void initializeDatabasePage( VMStelling aVmStelling )
 void delete()
 {
 	close();
-	if ( ! ( getDatabaseFile() == null ) && ! ( getDatabaseFile().getName().startsWith( "Pipo" ) ) )
-	{
-		throw new RuntimeException( "Poging om een database te verwijderen <> Pipo" );
-	}
 	if ( getDatabaseFile() != null )
 	{
+		if ( ! ( getDatabaseFile().getName().startsWith( PREFIX_TEST_DATABASE ) ) 
+		  && ! ( getDatabaseFile().getName().startsWith( DATABASE_NAME_PIPO ) ) 
+		)
+		{
+			throw new RuntimeException( "Poging om een database te verwijderen <> " + PREFIX_TEST_DATABASE + "*: " + getDatabaseFile().getName() );
+		}
+		if ( getDatabaseFile().getName().endsWith( "KDKTT.DBS" ) )
+		{
+			throw new RuntimeException( "Poging om een KDKTT database te verwijderen" );
+		}
 		getDatabaseFile().delete();
 	}
 	setDatabaseFile( null );

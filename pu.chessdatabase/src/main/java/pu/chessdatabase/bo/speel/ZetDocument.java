@@ -10,4 +10,5 @@ public class ZetDocument
 private int zetNummer;
 private String witZet;
 private String zwartZet;
+private boolean currrentZet;
 }

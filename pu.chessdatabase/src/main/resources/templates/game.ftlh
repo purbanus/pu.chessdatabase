@@ -206,7 +206,7 @@
 	<#list doc.zetten as zet>
 		<tr class=${zet?itemParity}>
 			<td class="number">${zet.zetNummer}</td>
-			<td class="string">${zet.witZet}</td>
+			<td class="currentZet">${zet.witZet}</td>
 			<td class="string">${zet.zwartZet}</td>
 		</tr>
 	</#list>

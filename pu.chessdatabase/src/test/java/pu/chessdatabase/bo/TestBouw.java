@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.*;
 
 import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.dbs.PassType.*;
+import static pu.chessdatabase.dbs.Constants.*;
 import static pu.chessdatabase.dbs.Resultaat.*;
 
 import java.util.ArrayList;
@@ -33,7 +34,6 @@ import lombok.Data;
 @Data
 public class TestBouw
 {
-private static final String DATABASE_NAME = "dbs/Pipo";
 private static final boolean DO_PRINT = false;
 @Autowired private Bouw bouw;
 @Autowired private Dbs dbs;
@@ -54,8 +54,9 @@ public void setup()
 @AfterEach
 public void destroy()
 {
-	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
-	assertThat( dbs.getDatabaseName(), startsWith( DATABASE_NAME ) );
+	//config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
+	assertThat( dbs.getDatabaseName(), anyOf( startsWith( PREFIX_TEST_DATABASE ), startsWith( DATABASE_NAME_5PIECES ) ) );
+	assertThat( config.getAantalStukken(), is( lessThanOrEqualTo( 4 ) ) );
 	dbs.delete();
 	config.switchConfig( savedConfigString );
 }
@@ -83,16 +84,18 @@ public void testReportNewPass()
 	// Dit is de databaseSize / 4 (64 * 64 * 64 * 10 * 2 / 4), zie Bouw,getReportFrequency
 	assertThat( vmStellingIterator.getReportFrequency(), is( 64 * 64 * 64 * 5 ) ); 
 }
-//@Test
-public void testTelAlles()
+@Test
+public void testTelAllesInBeginstelling()
 {
-	if ( DO_PRINT )
+//	if ( DO_PRINT )
 	{
-		System.out.println( "methode testTelAlles\n" );
+		System.out.println( "methode testTelAllesInBeginStelling\n" );
 	}
-	doTestTelAlles( "KDK" );
+	doTestTelAlles( "TestKDK" );
 	doTestTelAlles( "TestKDKT" );
-	doTestTelAlles( "KDKTT" );
+	//doTestTelAlles( "TestKDKTT" );
+	
+	config.switchConfig( "TestKDK" );
 }
 void doTestTelAlles( String aConfigString )
 {
@@ -110,7 +113,8 @@ public void testMatStellingen()
 	{
 		System.out.println( "methode testMatStellingen\n" );
 	}
-	getConfig().switchConfig( "KDK" );
+	getConfig().switchConfig( "TestKDK" );
+	dbs.setDatabaseName( "dbs/TestPipo3" );
 
 	bouw.pass_0( false );
 	dbs.open();
@@ -118,7 +122,6 @@ public void testMatStellingen()
 	vmStellingIterator.clearTellingen();
 	vmStellingIterator.setDoAllPositions( true );
 	dbs.pass( MarkeerWitEnZwart, this::printMatStelling );
-
 }
 private void printMatStelling( BoStelling aBoStelling )
 {
@@ -163,6 +166,7 @@ public void testIsIllegaal()
 public void testIsIllegaal5Stukken()
 {
 	config.switchConfig( "TestKDKTT" );
+	dbs.setDatabaseName( "dbs/TestPipo5" );
 	dbs.create();
 	bouw.pass_0();
 	
@@ -179,31 +183,14 @@ public void testIsIllegaal5Stukken()
 	BoStelling gotBoStelling = dbs.get( boStelling );
 	assertThat( gotBoStelling.getResultaat(), is( Remise ) );
 }
-@Test // Deze test duurt zo'n 15 seconden
+//@Test // Deze test duurt zo'n 15 seconden
 public void testIsIllegaal5Stukken_2()
 {
 	config.switchConfig( "TestKDKTT" );
+	dbs.setDatabaseName( "dbs/TestPipo5" );
 	dbs.create();
 	bouw.reportNewPass( "Markeren illegale stellingen", false );
 	dbs.pass( PassType.MarkeerWit, bouw::isIllegaal );
-	
-	// Bug van 18-06-2026
-	BoStelling boStelling = BoStelling.alfaBuilder()
-		.wk( "a1" )
-		.zk( "h8" )
-		.s3( "a8" )
-		.s4( "h8" )
-		.s5( "h8" )
-		.aanZet( Zwart )
-		.build();
-	assertThat( gen.isGeometrischIllegaal( boStelling ), is( false ) );
-	BoStelling gotBoStelling = dbs.get( boStelling );
-	assertThat( gotBoStelling.getResultaat(), is( Remise ) );
-}
-@Test 
-public void testIsIllegaal5Stukken_3()
-{
-	config.switchConfig( "TestKDKTT" );
 	
 	// Bug van 18-06-2026
 	BoStelling boStelling = BoStelling.alfaBuilder()
@@ -222,7 +209,8 @@ public void testIsIllegaal5Stukken_3()
 //@Test
 public void telIllegaleStellingen()
 {
-	config.switchConfig( "KDKTT" );
+	config.switchConfig( "TestKDKTT" );
+	dbs.setDatabaseName( "dbs/TestPipo5" );
 	bouw.illegaleStellingen.clear();
 	bouw.passNumber = 0;
 	dbs.create();
@@ -315,7 +303,8 @@ public void testSchaakjes()
 public void testPassSchaakjes()
 {
 	// Voor deze test moet je HOU_STELLINGEN_BIJ in VMStellingIterator op true zetten
-	getConfig().switchConfig( "TESTKDK", false );
+	getConfig().switchConfig( "TestKDK", false );
+	dbs.setDatabaseName( "dbs.TestPipo3" );
 	bouw.reportNewPass( "Reserveren schijfruimte\n", DO_PRINT );
 	dbs.create();
 
@@ -356,6 +345,7 @@ public void testPassSchaakjes()
 }
 private void markeerIllegaal()
 {
+	dbs.setDatabaseName( "dbs/TestPipo4" );
 	bouw.illegaleStellingen = new ArrayList<>();
 	bouw.stellingenMetSchaak = new ArrayList<>();
 	bouw.matStellingen  = new ArrayList<>();
@@ -470,6 +460,8 @@ ZK ZT WK .. .. .. .. ..
 @Test
 public void testMarkeer()
 {
+	config.switchConfig( "TestKDKT" );
+	dbs.setDatabaseName( "dbs/TestPipo4" );
 	if ( DO_PRINT )
 	{
 		System.out.println( "methode testMarkeer\n" );

@@ -476,6 +476,7 @@ ZetDocument createZetDocument( int aPlyNummer )
 		.zetNummer( ply.getZetNummer() )
 		.witZet( plyToString( ply ) )
 		.zwartZet( zwartZet )
+		.currrentZet( aPlyNummer == getPlies().getCurrentPlyNummer() )
 		.build();
 }
 public List<ZetDocument> createZetten()
@@ -553,6 +554,7 @@ public List<GegenereerdeZetDocument> getGegenereerdeZetten()
 	int zetNummer = 1;
 	for ( BoStelling boStellingNaar : gegenereerdeZetten )
 	{
+		boStellingNaar.setSchaak( getGen().isSchaak( boStellingNaar ) );
 		Ply ply = Ply.builder()
 			// .id is voor JPA
 			.plies( getPlies() )

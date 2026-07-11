@@ -19,7 +19,7 @@ public TestKDKT()
 	getStukDefinities().add( new StukDefinitie( Dame,   Wit ) );
 	getStukDefinities().add( new StukDefinitie( Toren,  Zwart ) );
 	getStukDefinities().add( new StukDefinitie( Geen,   Wit ) );
-	databaseName = "dbs/Pipo4";
+	databaseName = "dbs/TestKDKT.DBS";
 	setStukken( new Stukken( this ) );
 }
 @Override

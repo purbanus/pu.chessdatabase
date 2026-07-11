@@ -26,17 +26,29 @@ public void destroy()
 {
 	config.switchConfig( savedConfigString );
 }
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 3 stukken
+
+//@Test
+public void buildKDK()
+{
+	config.switchConfig( "KDK", false );
+	bouw.bouwDatabase();
+}
+//@Test
+public void buildKTK()
+{
+	config.switchConfig( "KTK", false );
+	bouw.bouwDatabase();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 4 stukken
+
 //@Test
 public void buildKDKT()
 {
 	config.switchConfig( "KDKT", false );
-	bouw.bouwDatabase();
-}
-//@Test
-public void buildTestKDKT()
-{
-	config.switchConfig( "KDKT", false );
-	dbs.setDatabaseName( "dbs/Pipo4" );
 	bouw.bouwDatabase();
 }
 //@Test
@@ -51,12 +63,19 @@ public void buildKLLK()
 	config.switchConfig( "KLLK", false );
 	bouw.bouwDatabase();
 }
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 5 stukken
+
 //@Test
-public void buildKDK()
+// Als je deze activeert, zet dan HOU_STELLINGEN_BIJ op false, anders loop je uit het geheugen
+public void buildKDKTT()
 {
-	config.switchConfig( "KDK", false );
+	config.switchConfig( "KDKTT", false );
 	bouw.bouwDatabase();
 }
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Bouw van de testdatabases
+
 //@Test
 public void buildTestKDK()
 {
@@ -64,16 +83,15 @@ public void buildTestKDK()
 	bouw.bouwDatabase();
 }
 //@Test
-public void buildKTK()
+public void buildTestKDKT()
 {
-	config.switchConfig( "KTK", false );
+	config.switchConfig( "TestKDKT", false );
 	bouw.bouwDatabase();
 }
 //@Test
-// Als je deze activeert, zet dan HOU_STELLINGEN_BIJ op false, anders loop je uit het geheugen
-public void buildKDKTT()
+public void buildTestKDKTT()
 {
-	config.switchConfig( "KDKTT", false );
+	config.switchConfig( "TestKDKTT", false );
 	bouw.bouwDatabase();
 }
 }

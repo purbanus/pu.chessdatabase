@@ -8,9 +8,10 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
 import static pu.chessdatabase.bo.Kleur.*;
+import static pu.chessdatabase.dbs.CacheType.*;
+import static pu.chessdatabase.dbs.Constants.*;
 import static pu.chessdatabase.dbs.Lokatie.*;
 import static pu.chessdatabase.dbs.VM.*;
-import static pu.chessdatabase.dbs.CacheType.*;
 
 import java.io.IOException;
 
@@ -34,9 +35,6 @@ public class TestSerialCache
 {
 @Autowired private VM vm;
 @Autowired private Config config;
-
-private static final String PREFIX_DATABASE_NAME = "dbs/Pipo";
-
 private MockCache cache;
 private PageSizeCalculator pageSizeCalculator = new PageSizeCalculator( Serial );
 String savedConfigString;
@@ -52,8 +50,7 @@ public void setup()
 @AfterEach
 public void destroy()
 {
-	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
-	assertThat( vm.getDatabaseName(), startsWith( PREFIX_DATABASE_NAME ) );
+	assertThat( vm.getDatabaseName(), startsWith( PREFIX_TEST_DATABASE ) );
 	vm.delete();
 	config.switchConfig( savedConfigString );
 }
@@ -244,23 +241,27 @@ public void testPageIn() throws IOException
 public void testGetPageSize()
 {
 	// Hier niet de lokale cache gebruiken maar die uit VM, want die is geconfigSwitched
-	getConfig().switchConfig( "KDK" );
+	getConfig().switchConfig( "TestKDK" );
 	assertThat( vm.getCache().getPageSize(), is( 64 ) );
-	getConfig().switchConfig( "KDKT" );
+	getConfig().switchConfig( "TestKDKT" );
 	assertThat( vm.getCache().getPageSize(), is( 4096 ) );
-	getConfig().switchConfig( "KDKTT" );
+	getConfig().switchConfig( "TestKDKTT" );
 	assertThat( vm.getCache().getPageSize(), is( 262144 ) );
+
+	getConfig().switchConfig( "TestKDKT" );
 }
 @Test
 public void testGetDatabaseSize()
 {
 	// Hier niet de lokale cache gebruiken maar die uit VM, want die is geconfigSwitched
-	getConfig().switchConfig( "KDK" );
+	getConfig().switchConfig( "TestKDK" );
 	assertThat( vm.getCache().getDatabaseSize(), is( 10 * 64 * 2 * 64L ) );
-	getConfig().switchConfig( "KDKT" );
+	getConfig().switchConfig( "TestKDKT" );
 	assertThat( vm.getCache().getDatabaseSize(), is(10 * 64 * 2 * 64 * 64L ) );
-	getConfig().switchConfig( "KDKTT" );
+	getConfig().switchConfig( "TestKDKTT" );
 	assertThat( vm.getCache().getDatabaseSize(), is(10 * 64 * 2 * 64 * 64 * 64L ) );
+	
+	getConfig().switchConfig( "TestKDKT" );
 }
 @Test
 public void testGetPage()
@@ -460,17 +461,20 @@ public void testGetPositionWithinPage()
 		.aanZet( Wit )
 		.build();
 	// Hier niet de lokale cache gebruiken maar die uit VM, want die is geconfigSwithed
-	getConfig().switchConfig( "KDK" );
+	getConfig().switchConfig( "TestKDK" );
 	assertThat( vm.getCache().getPositionWithinPage( vmStelling), is( 0 ) );
-	getConfig().switchConfig( "KDKT" );
+	getConfig().switchConfig( "TestKDKT" );
 	assertThat( vm.getCache().getPositionWithinPage( vmStelling ), is( 7 ) );
-	getConfig().switchConfig( "KDKTT" );
+	getConfig().switchConfig( "TestKDKTT" );
 	assertThat( vm.getCache().getPositionWithinPage( vmStelling), is( 7 * 64 + 9 ) );
+	
+	getConfig().switchConfig( "TestKDKT" );
+
 }
 @Test
 public void testGetAllPositionsWithinPage3Stukken()
 {
-	getConfig().switchConfig( "KDK" );
+	getConfig().switchConfig( "TestKDK" );
 	VMStelling vmStelling = VMStelling.builder()
 		.wk( 0x00 )
 		.zk( 0x00 )
@@ -490,7 +494,7 @@ public void testGetAllPositionsWithinPage3Stukken()
 @Test
 public void testGetAllPositionsWithinPage4Stukken()
 {
-	getConfig().switchConfig( "KDKT" );
+	getConfig().switchConfig( "TestKDKT" );
 	VMStelling vmStelling = VMStelling.builder()
 		.wk( 0x00 )
 		.zk( 0x00 )
@@ -515,7 +519,7 @@ public void testGetAllPositionsWithinPage4Stukken()
 public void testGetAllPositionsWithinPage5Stukken()
 {
 	StopWatch timer = new StopWatch();
-	getConfig().switchConfig( "KDKTT" );
+	getConfig().switchConfig( "TestKDKTT" );
 	VMStelling vmStelling = VMStelling.builder()
 		.wk( 0x00 )
 		.zk( 0x00 )
@@ -544,6 +548,7 @@ public void testGetAllPositionsWithinPage5Stukken()
 		}
 	}
 	System.out.println( "testGetAllPositionsWithinPage5Stukken duurde " + timer.getElapsedMs() );
+	getConfig().switchConfig( "TestKDKT" );
 }
 
 @Test

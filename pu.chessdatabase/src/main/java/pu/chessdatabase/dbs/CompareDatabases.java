@@ -21,6 +21,7 @@ private void run( String aConfigString1, String aConfigString2 )
 	vm1.getPageDescriptorTable().iterateOverAllPageDescriptors( this::compareDeDatabases );
 	System.out.println( "Compare " + aConfigString1 + " klaar, duurde " + timer.getElapsedMs() );
 	System.out.printf( "Aantal stellingen: %d waarvan ongelijk: %d\n", aantalStellingen, aantalStellingenOngelijk );
+	System.out.printf( "Databases: %s %s\n", vm1.getDatabaseName(), vm2.getDatabaseName() );
 }
 VM setupVm( String aConfigName )
 {
@@ -34,6 +35,7 @@ VM setupVm( String aConfigName )
 }
 int aantalStellingen = 0;
 int aantalStellingenOngelijk = 0;
+int aantalStellingenGeprint = 0;
 void compareDeDatabases( VMStelling aVmStelling )
 {
 	VMStelling vmStelling = aVmStelling.clone();
@@ -60,7 +62,6 @@ void compareDeDatabases( VMStelling aVmStelling )
 						vmStelling.setS5( s5 );
 						compareStelling( vmStelling );
 					}
-
 				}
 			}
 		}
@@ -73,7 +74,11 @@ void compareStelling( VMStelling aVmStelling )
 	int vm2Rec = vm2.get( aVmStelling );
 	if ( vm1Rec != vm2Rec )
 	{
-		//System.err.println( "Stellingen ongelijk: " + vmStelling + "vm1Rec = " + vm1Rec + " vm2Rec = " + vm2Rec );
+		if ( aantalStellingenGeprint < 500 )
+		{
+			System.err.println( "Stelling ongelijk: " + aVmStelling + "real = " + vm1Rec + " test = " + vm2Rec );
+			aantalStellingenGeprint++;
+		}
 		aantalStellingenOngelijk++;
 	}
 }

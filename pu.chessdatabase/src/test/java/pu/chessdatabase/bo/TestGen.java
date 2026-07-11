@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.bo.ZetSoort.*;
+import static pu.chessdatabase.dbs.Constants.*;
 import static pu.chessdatabase.dbs.Resultaat.*;
 
 import java.util.ArrayList;
@@ -30,7 +31,6 @@ import lombok.Data;
 @Data
 public class TestGen
 {
-private static final String DATABASE_NAME = "dbs/Pipo";
 @Autowired private Gen gen;
 @Autowired private Dbs dbs;
 @Autowired private Config config;
@@ -40,13 +40,14 @@ public void setup()
 {
 	savedConfigString = config.getConfig();
 	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
+	dbs.setDatabaseName( DATABASE_NAME_PIPO4 );
 	dbs.create();
 }
 @AfterEach
 public void destroy()
 {
-	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
-	assertThat( dbs.getDatabaseName(), startsWith( DATABASE_NAME ) );
+	assertThat( dbs.getDatabaseName(), startsWith( PREFIX_TEST_DATABASE ) );
+	assertThat( config.getAantalStukken(), is( lessThanOrEqualTo( 4 ) ) );
 	dbs.delete();
 	config.switchConfig( savedConfigString );
 }
@@ -163,42 +164,11 @@ public void testIsGeomIllegaal4Stukken()
 		.s4( 8 )
 		.build();
 	assertThat( gen.isGeometrischIllegaal( boStelling ), is( true ) );
-	
-	config.switchConfig( "KLLK" );
-	boStelling = BoStelling.builder()
-		.wk( 5 )
-		.zk( 6 )
-		.s3( 7 )
-		.s4( 0x10 )
-		.build();
-	assertThat( gen.isGeometrischIllegaal( boStelling ), is( true ) );
-	boStelling = BoStelling.builder()
-		.wk( 5 )
-		.zk( 6 )
-		.s3( 7 )
-		.s4( 0x11 )
-		.build();
-	assertThat( gen.isGeometrischIllegaal( boStelling ), is( false ) );
 }
 @Test
 public void testIsGeomIllegaal5Stukken()
 {
 	// @@NOG Bij 5 stukken
-}
-@Test
-public void testBug2026_06_18()
-{
-	config.switchConfig( "KDKTT" );
-	// Er staan 2 zwarte stukken op hetzelfde veld. Die zijn allebeigeslagen
-	BoStelling boStelling = BoStelling.alfaBuilder()
-		.wk( "a1" )
-		.zk( "h8" )
-		.s3( "a8" )
-		.s4( "h8" )
-		.s5( "h8" )
-		.aanZet( Zwart )
-		.build();
-	assertThat( gen.isGeometrischIllegaal( boStelling ), is( false ) );
 }
 
 @Test
@@ -417,7 +387,7 @@ public void testIsSchaak5Stukken()
 @Test
 public void testAddZet()
 {
-	dbs.setDatabaseName( DATABASE_NAME );
+	dbs.setDatabaseName( DATABASE_NAME_PIPO4);
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 
 	BoStelling stelling;
@@ -509,7 +479,7 @@ public void testAddZet()
 public void testGenZetPerStuk()
 {
 	// @@NOG NOG varianten met 3 en 5 stukken
-	dbs.setDatabaseName( DATABASE_NAME );
+	dbs.setDatabaseName( DATABASE_NAME_PIPO4 );
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 
 	BoStelling boStelling;
@@ -590,7 +560,7 @@ public void testGenZetPerStuk()
 public void testGenereerZetten()
 {
 	// @@NOG NOG varianten met 3 en 5 stukken
-	dbs.setDatabaseName( DATABASE_NAME );
+	dbs.setDatabaseName( DATABASE_NAME_PIPO4 );
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 
 	BoStelling boStelling;
@@ -720,7 +690,7 @@ public void testStellingComparator()
 @Test
 public void testGenZetSort()
 {
-	dbs.setDatabaseName( DATABASE_NAME );
+	dbs.setDatabaseName( DATABASE_NAME_PIPO4 );
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 
 	BoStelling stelling;

@@ -19,6 +19,7 @@ import pu.chessdatabase.bo.configuraties.StukDefinitie;
 import pu.chessdatabase.bo.configuraties.TestKDK;
 import pu.chessdatabase.bo.configuraties.TestKDKT;
 import pu.chessdatabase.bo.configuraties.TestKDKTT;
+import pu.chessdatabase.bo.configuraties.TestKLLK;
 import pu.chessdatabase.dbs.VM;
 
 import lombok.AccessLevel;
@@ -73,6 +74,7 @@ Map<String, ConfigImpl> getConfigImplRegistry()
 		configImplRegistry.put( "KDKTT", new KDKTT() );
 		configImplRegistry.put( "TESTKDK", new TestKDK() );
 		configImplRegistry.put( "TESTKDKT", new TestKDKT() );
+		configImplRegistry.put( "TESTKLLK", new TestKLLK() );
 		configImplRegistry.put( "TESTKDKTT", new TestKDKTT() );
 	}
 	return configImplRegistry;
