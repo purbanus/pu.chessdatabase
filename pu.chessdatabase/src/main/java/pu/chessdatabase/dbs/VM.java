@@ -1,8 +1,7 @@
 package pu.chessdatabase.dbs;
 
-import static pu.chessdatabase.dbs.Constants.DATABASE_NAME_PIPO;
-import static pu.chessdatabase.dbs.Constants.PREFIX_TEST_DATABASE;
-import static pu.chessdatabase.dbs.Lokatie.InRam;
+import static pu.chessdatabase.dbs.Constants.*;
+import static pu.chessdatabase.dbs.Lokatie.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
