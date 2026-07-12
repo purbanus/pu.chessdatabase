@@ -121,7 +121,7 @@ private Cache cache;
 //@EqualsAndHashCode.Exclude // @@NOG Waarom??
 private String databaseName = null;
 @Getter( AccessLevel.PACKAGE ) 
-@Setter( AccessLevel.PRIVATE ) 
+@Setter( AccessLevel.PACKAGE ) 
 private File databaseFile;
 @Getter( AccessLevel.PUBLIC ) 
 @Setter( AccessLevel.PRIVATE ) 
@@ -347,15 +347,9 @@ void delete()
 	close();
 	if ( getDatabaseFile() != null )
 	{
-		if ( ! ( getDatabaseFile().getName().startsWith( PREFIX_TEST_DATABASE ) ) 
-		  && ! ( getDatabaseFile().getName().startsWith( DATABASE_NAME_PIPO ) ) 
-		)
+		if ( ! ( getDatabaseName().startsWith( PREFIX_TEST_DATABASE ) ) ) 
 		{
-			throw new RuntimeException( "Poging om een database te verwijderen <> " + PREFIX_TEST_DATABASE + "*: " + getDatabaseFile().getName() );
-		}
-		if ( getDatabaseFile().getName().endsWith( "KDKTT.DBS" ) )
-		{
-			throw new RuntimeException( "Poging om een KDKTT database te verwijderen" );
+			throw new RuntimeException( "Poging om een database te verwijderen <> " + PREFIX_TEST_DATABASE + "*: " + getDatabaseName() );
 		}
 		getDatabaseFile().delete();
 	}
