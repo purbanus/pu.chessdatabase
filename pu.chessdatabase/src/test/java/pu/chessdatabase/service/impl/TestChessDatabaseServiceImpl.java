@@ -46,7 +46,7 @@ String savedConfigString;
 public void setup()
 {
 	savedConfigString = config.getConfig();
-	config.switchConfig( "KDKT" );
+	config.switchConfig( Config.KDKT );
 }
 @AfterEach
 public void destroy()
@@ -108,14 +108,14 @@ public void testCreateStukVelden()
 	assertThat( stukVelden.get( "s3" ), is( "b2" ) );
 	assertThat( stukVelden.get( "s4" ), is( "g7" ) );
 
-	config.switchConfig(  "KLPK" );
+	config.switchConfig(  Config.KLPK );
 	stukVelden = service.createStukVelden();
 	assertThat( stukVelden.get( "wk" ), is( "a1" ) );
 	assertThat( stukVelden.get( "zk" ), is( "h8" ) );
 	assertThat( stukVelden.get( "s3" ), is( "b2" ) );
 	assertThat( stukVelden.get( "s4" ), is( "g7" ) );
 
-	config.switchConfig(  "KDK" );
+	config.switchConfig(  Config.KDK );
 	stukVelden = service.createStukVelden();
 	assertThat( stukVelden.get( "wk" ), is( "a1" ) );
 	assertThat( stukVelden.get( "zk" ), is( "e4" ) );

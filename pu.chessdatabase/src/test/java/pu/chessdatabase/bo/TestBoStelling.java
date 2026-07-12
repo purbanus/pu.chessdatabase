@@ -86,7 +86,7 @@ public void testToString()
 		.aanZet( Wit )
 		.build();
 
-	config.switchConfig( "KDKT" );
+	config.switchConfig( Config.KDKT );
 	String boStringText = MessageFormat.format( BO_TO_STRING, 
 		config.getStukken().getWk().getStukString(),
 		config.getStukken().getZk().getStukString(),
@@ -98,7 +98,7 @@ public void testToString()
 	assertThat( boStelling.toString().length(), is( boStringText.length() ) );
 	assertThat( boStelling.toString(), is( boStringText ) );
 	
-	config.switchConfig( "KLPK" );
+	config.switchConfig( Config.KLPK );
 	boStringText = MessageFormat.format( BO_TO_STRING, 
 		config.getStukken().getWk().getStukString(),
 		config.getStukken().getZk().getStukString(),
@@ -110,7 +110,7 @@ public void testToString()
 	assertThat( boStelling.toString().length(), is( boStringText.length() ) );
 	assertThat( boStelling.toString(), is( boStringText ) );
 
-	config.switchConfig( "KLLK" );
+	config.switchConfig( Config.KLLK );
 	boStringText = MessageFormat.format( BO_TO_STRING, 
 		config.getStukken().getWk().getStukString(),
 		config.getStukken().getZk().getStukString(),
@@ -149,7 +149,7 @@ public void testClone()
 //		.s5( "h8" )
 //		.aanZet( WIT )
 //		.build();
-//	config.switchConfig( "KDKT" );
+//	config.switchConfig( Config.KDKT );
 //	String boStringText = MessageFormat.format( BO_TO_STRING, 
 //		Config.getStaticStukken().getWk().getStukString(),
 //		config.getStukken().getZk().getStukString(),
@@ -205,7 +205,7 @@ public void testAlfaBuilderMets5OpWk()
 		.s5( "a1" )
 		.aanZet( Wit )
 		.build();
-	config.switchConfig( "KDKT" );
+	config.switchConfig( Config.KDKT );
 	String boStringText = MessageFormat.format( BO_TO_STRING, 
 		Config.getStaticStukken().getWk().getStukString(),
 		config.getStukken().getZk().getStukString(),
@@ -262,7 +262,7 @@ public void testAlfaVelden()
 @Test
 public void testMetGeslagenStuk()
 {
-	config.switchConfig( "KDKT" );
+	config.switchConfig( Config.KDKT );
 
 	String localToString = """
 		WK=a1 ZK=c1 S3=a1 S4=d3 S5=a1 AanZet={5} Resultaat=null AantalZetten=0 Schaak=false

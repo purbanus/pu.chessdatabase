@@ -46,15 +46,13 @@ String savedConfigString;
 public void setup()
 {
 	savedConfigString = config.getConfig();
-	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
-	dbs.setDatabaseName( DATABASE_NAME_PIPO4 );
+	config.switchConfig( Config.PIPOKDKT );
 	dbs.create();
 }
 @AfterEach
 public void destroy()
 {
 	assertThat( dbs.getDatabaseName(), startsWith( DATABASE_NAME_PIPO ) );
-	assertThat( config.getAantalStukken(), is( lessThanOrEqualTo( 4 ) ) );
 	dbs.delete();
 	config.switchConfig( savedConfigString );
 }
@@ -106,8 +104,7 @@ public void testAlfaToVeld()
 @Test
 public void testIsGeomIllegaal3Stukken()
 {
-	getConfig().switchConfig( "TESTKDK", false );
-	dbs.setDatabaseName( "dbs/TestPipo3" );
+	getConfig().switchConfig( Config.PIPOKDK );
 
 	// Gewoon goed
 	BoStelling boStelling = BoStelling.builder()
@@ -173,8 +170,7 @@ public void testIsGeomIllegaal4Stukken()
 		.build();
 	assertThat( gen.isGeometrischIllegaal( boStelling ), is( true ) );
 	
-	config.switchConfig( "TestKLLK" );
-	dbs.setDatabaseName( "dbs/TestPipo4" );
+	config.switchConfig( Config.PIPOKLLK );
 	boStelling = BoStelling.builder()
 		.wk( 5 )
 		.zk( 6 )
@@ -198,8 +194,7 @@ public void testIsGeomIllegaal5Stukken()
 @Test
 public void testBug2026_06_18()
 {
-	config.switchConfig( "TestKDKTT" );
-	dbs.setDatabaseName( "dbs/TestPipo5" );
+	config.switchConfig( Config.PIPOKDKTT );
 	// Er staan 2 zwarte stukken op hetzelfde veld. Die zijn allebeigeslagen
 	BoStelling boStelling = BoStelling.alfaBuilder()
 		.wk( "a1" )
@@ -210,8 +205,6 @@ public void testBug2026_06_18()
 		.aanZet( Zwart )
 		.build();
 	assertThat( gen.isGeometrischIllegaal( boStelling ), is( false ) );
-	config.switchConfig( "TestKDKT" );
-	dbs.setDatabaseName( DATABASE_NAME_PIPO4 );
 }
 
 @Test
@@ -347,8 +340,7 @@ public void testCheckSchaakDoorStuk()
 @Test
 public void testIsSchaak3Stukken()
 {
-	getConfig().switchConfig( "TESTKDK", false );
-	dbs.setDatabaseName( "dbs/TestPipo3" ); 
+	getConfig().switchConfig( Config.PIPOKDK );
 	
 	// Check aStukVeld == aStelling.getWk(), d.w.z. s3 is geslagen door zwart
 	BoStelling boStelling = BoStelling.alfaBuilder()
@@ -381,8 +373,7 @@ public void testIsSchaak3Stukken()
 @Test
 public void testIsSchaak4Stukken()
 {
-	getConfig().switchConfig( "TESTKDKT", false );
-	dbs.setDatabaseName( "dbs/TestPipo4" );
+	getConfig().switchConfig( Config.PIPOKDKT );
 	
 	// Check aStukVeld == aStelling.getZK(), d.w.z. s4 is geslagen door wit
 	BoStelling stelling = BoStelling.alfaBuilder()
@@ -597,7 +588,6 @@ public void testGenZetPerStuk()
 	bord = new Bord( getConfig().getAantalStukken(), getConfig().getStukken(), boStelling );	//gen.printBord();
 	gegenereerdeZetten = gen.genereerZettenPerStuk( boStelling, gen.getStukken().getWk(), boStelling.getWk(), boStelling.getWk(), bord );
 	assertThat( gegenereerdeZetten.size(), is( 5 ) );
-
 }
 @Test
 public void testGenereerZetten()

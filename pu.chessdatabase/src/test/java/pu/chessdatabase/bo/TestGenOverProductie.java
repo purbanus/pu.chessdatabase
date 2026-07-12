@@ -31,7 +31,7 @@ String savedConfigString;
 public void setup()
 {
 	savedConfigString = config.getConfig();
-	config.switchConfig( "KDKT" ); // Dit opent de database
+	config.switchConfig( Config.KDKT ); // Dit opent de database
 }
 @AfterEach
 public void destroy()
@@ -84,8 +84,7 @@ public void testGenereerZetten()
 @Test
 public void testIsGeomIllegaal4Stukken()
 {
-	config.switchConfig( "TestKLLK" );
-	dbs.setDatabaseName( "dbs/TestPipo4" );
+	config.switchConfig( Config.PIPOKLLK );
 	BoStelling boStelling = BoStelling.builder()
 		.wk( 5 )
 		.zk( 6 )
@@ -104,8 +103,7 @@ public void testIsGeomIllegaal4Stukken()
 @Test
 public void testBug2026_06_18()
 {
-	config.switchConfig( "TestKDKTT" );
-	dbs.setDatabaseName( "dbs/TestPipo5" );
+	config.switchConfig( Config.PIPOKDKTT );
 	// Er staan 2 zwarte stukken op hetzelfde veld. Die zijn allebeigeslagen
 	BoStelling boStelling = BoStelling.alfaBuilder()
 		.wk( "a1" )

@@ -12,7 +12,9 @@ import static pu.chessdatabase.dbs.Constants.*;
 import static pu.chessdatabase.dbs.Lokatie.*;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,15 +38,13 @@ String savedConfigString;
 public void setup()
 {
 	savedConfigString = config.getConfig();
-	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
+	config.switchConfig( Config.PIPOKDKT );
 	vm.setPageSizeCalculator( getPageSizeCalculator() );
-	vm.create(); // Doet  ook Open, dus initialiseert de tabellen
 }
 @AfterEach
 public void destroy()
 {
 	assertThat( vm.getDatabaseName(), anyOf( startsWith( PREFIX_TEST_DATABASE ), startsWith( DATABASE_NAME_PIPO ) ) );
-	assertThat( config.getAantalStukken(), is( lessThanOrEqualTo( 4 ) ) );
 	vm.delete();
 	config.switchConfig( savedConfigString );
 }
@@ -348,7 +348,7 @@ public void testDelete()
 	assertFalse( file.exists() );
 }
 @Test
-public void testDatabasesWeCannotDelete()
+public void testDatabasesWeCannotDelete() throws FileNotFoundException
 {
 	vm.setDatabaseName( "dbs/bizarplunk" );
 	vm.create();
@@ -358,22 +358,33 @@ public void testDatabasesWeCannotDelete()
 	file.delete();
 	
 	vm.setDatabaseName( "dbs/TestKDK.DBS" );
+	vm.create();
 	file = new File( "dbs/TestKDK.DBS" );
 	assertTrue( file.exists() );
-	vm.delete();
-	
-	vm.setDatabaseName( "dbs/Pipo17" );
-	file = new File( "dbs/Pipo17" );
-	assertFalse( file.exists() );
-	vm.create();
-	vm.delete();
-	assertFalse( file.exists() );
-
-	config.switchConfig( "TestKDKTT" );
-	file = new File( "dbs/TestKDKTT.DBS" );
-	assertTrue( file.exists() );
+	vm.setDatabaseFile( file );
+	vm.setDatabase( new RandomAccessFile( file, "rw" ) );
 	assertThrows( RuntimeException.class, () -> vm.delete() );
 	
-	config.switchConfig( "TestKDK", false );
+	vm.setDatabaseName( "dbs/PipoKDK.DBS" );
+	vm.create();
+	file = new File( "dbs/PipoKDK.DBS" );
+	assertTrue( file.exists() );
+	vm.setDatabaseFile( file );
+	vm.setDatabase( new RandomAccessFile( file, "rw" ) );
+	assertDoesNotThrow( () -> vm.delete() );
+	
+	vm.setDatabaseName( "dbs/Pipo17" );
+	vm.create();
+	file = new File( "dbs/Pipo17" );
+	assertTrue( file.exists() );
+	assertDoesNotThrow( () -> vm.delete() );
+	assertFalse( file.exists() );
+
+	config.switchConfig( Config.PIPOKDKTT );
+	vm.create();
+	file = new File( "dbs/PipoKDKTT.DBS" );
+	assertTrue( file.exists() );
+	assertDoesNotThrow( () -> vm.delete() );
 }
+
 }

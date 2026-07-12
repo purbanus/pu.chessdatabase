@@ -30,6 +30,10 @@ import pu.chessdatabase.bo.configuraties.KTK;
 import pu.chessdatabase.bo.configuraties.StukDefinitie;
 import pu.chessdatabase.bo.configuraties.TestKDK;
 import pu.chessdatabase.bo.configuraties.TestKDKT;
+import pu.chessdatabase.bo.configuraties.TestKDKTT;
+import pu.chessdatabase.bo.configuraties.TestKLLK;
+import pu.chessdatabase.bo.configuraties.TestKLPK;
+import pu.chessdatabase.bo.configuraties.TestKTK;
 import pu.chessdatabase.dbs.VM;
 
 import lombok.Data;
@@ -56,7 +60,7 @@ public void testCurrentConfig()
 {
 	assertThat( getConfig().getConfig(), is( "KLPK" ) );
 
-	getConfig().switchConfig( "kdkt" );
+	getConfig().switchConfig( Config.KDKT );
 	assertThat( getConfig().getConfig(), is( "KDKT" ) );
 }
 @Test
@@ -70,18 +74,22 @@ public void testGetConfigImplRegistry()
 	assertThat( configImplRegistry.get( "KLLK" ), is( new KLLK() ) );
 	assertThat( configImplRegistry.get( "KDKTT" ), is( new KDKTT() ) );
 	assertThat( configImplRegistry.get( "TESTKDK" ), is( new TestKDK() ) );
+	assertThat( configImplRegistry.get( "TESTKTK" ), is( new TestKTK() ) );
 	assertThat( configImplRegistry.get( "TESTKDKT" ), is( new TestKDKT() ) );
-	getConfig().switchConfig( "KLLK" );
+	assertThat( configImplRegistry.get( "TESTKLLK" ), is( new TestKLLK() ) );
+	assertThat( configImplRegistry.get( "TESTKLPK" ), is( new TestKLPK() ) );
+	assertThat( configImplRegistry.get( "TESTKDKTT" ), is( new TestKDKTT() ) );
+	getConfig().switchConfig( Config.KLLK );
 	assertThat( getConfig().getConfigImplRegistry().get( "KDKT" ), is( new KDKT() ) );
-	assertThat( getConfig().getConfigImplRegistry().get( "KLPK" ), is( new KLPK() ) );
 	assertThat( getConfig().getConfigImplRegistry().get( "KLLK" ), is( new KLLK() ) );
+	assertThat( getConfig().getConfigImplRegistry().get( "KLPK" ), is( new KLPK() ) );
 	assertThat( getConfig().getConfigImplRegistry().get( "TESTKDKT" ), is( new TestKDKT() ) );
 }
 @Test
 public void testSwitchConfig()
 {
 	assertThrows( RuntimeException.class, () -> config.switchConfig( "PipoKoeie" ) );
-	getConfig().switchConfig( "KLLK" );
+	getConfig().switchConfig( Config.KLLK );
 	assertThat( getConfig().getConfig(), is( "KLLK" ) );
 	assertThat( getConfig().getConfigImpl(), is( new KLLK() ) );
 	assertThat( getVm().getDatabaseName(), is( "dbs/KLLK.DBS" ) );
@@ -90,7 +98,7 @@ public void testSwitchConfig()
 @Test
 public void testGetStukList()
 {
-	getConfig().switchConfig( "klpk" );
+	getConfig().switchConfig( Config.KLPK );
 	List<Stuk> expectedStukken = new ArrayList<>();
 	expectedStukken.add( Stuk.builder()
 		.id( "wk" )
@@ -132,13 +140,13 @@ public void testGetStukList()
 @Test
 public void testGetStukken()
 {
-	getConfig().switchConfig( "klpk" );
+	getConfig().switchConfig( Config.KLPK );
 	// @@HIGH Test afmaken
 }
 @Test
 public void testgetStukDefinities()
 {
-	getConfig().switchConfig( "kdkt" );
+	getConfig().switchConfig( Config.KDKT );
 	List<StukDefinitie> expectedStukDefinities = new ArrayList<>();
 	expectedStukDefinities.add( StukDefinitie.builder()
 		.stukType( Koning )
@@ -167,7 +175,7 @@ public void testgetStukDefinities()
 	);
 	assertThat( getConfig().getStukDefinities(), is( expectedStukDefinities ) );
 	
-	getConfig().switchConfig( "klpk" );
+	getConfig().switchConfig( Config.KLPK );
 	expectedStukDefinities = new ArrayList<>();
 	expectedStukDefinities.add( StukDefinitie.builder()
 		.stukType( Koning )
@@ -199,32 +207,33 @@ public void testgetStukDefinities()
 @Test
 public void testgetDatabaseName()
 {
-	getConfig().switchConfig( "kdk" );
+	getConfig().switchConfig( Config.KDK );
 	assertThat( getConfig().getDatabaseName(), is( "dbs/KDK.DBS" ) );
-	getConfig().switchConfig( "kdkt" );
+	getConfig().switchConfig( Config.KDKT );
 	assertThat( getConfig().getDatabaseName(), is( "dbs/KDKT.DBS" ) );
-	getConfig().switchConfig( "kdktt", false );
+	getConfig().switchConfig( Config.KDKTT );
 	assertThat( getConfig().getDatabaseName(), is( "dbs/KDKTT.DBS" ) );
 }
 @Test
 public void testgetAantalStukken()
 {
-	getConfig().switchConfig( "kdk" );
+	getConfig().switchConfig( Config.KDK );
 	assertThat( getConfig().getAantalStukken(), is( 3 ) );
-	getConfig().switchConfig( "kdkt" );
+	getConfig().switchConfig( Config.KDKT );
 	assertThat( getConfig().getAantalStukken(), is( 4 ) );
-	getConfig().switchConfig( "kdktt", false );
+	getConfig().switchConfig( Config.KDKTT );
 	assertThat( getConfig().getAantalStukken(), is( 5 ) );
 
 }
 @Test
 public void testGetConfig()
 {
-	getConfig().switchConfig( "kdk" );
+
+	getConfig().switchConfig( Config.KDK );
 	assertThat( getConfig().getConfig(), is( "KDK" ) );
-	getConfig().switchConfig( "kdkt" );
+	getConfig().switchConfig( Config.KDKT );
 	assertThat( getConfig().getConfig(), is( "KDKT" ) );
-	getConfig().switchConfig( "kdktt" );
+	getConfig().switchConfig( Config.KDKTT );
 	assertThat( getConfig().getConfig(), is( "KDKTT" ) );
 }
 

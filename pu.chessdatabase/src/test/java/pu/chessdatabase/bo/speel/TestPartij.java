@@ -41,7 +41,7 @@ String savedConfigString;
 public void setup()
 {
 	savedConfigString = config.getConfig();
-	config.switchConfig( "KDKT" ); // Dit opent de database
+	config.switchConfig( Config.KDKT ); // Dit opent de database
 }
 @AfterEach
 public void destroy()

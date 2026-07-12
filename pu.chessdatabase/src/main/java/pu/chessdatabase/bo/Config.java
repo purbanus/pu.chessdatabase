@@ -15,11 +15,18 @@ import pu.chessdatabase.bo.configuraties.KDKTT;
 import pu.chessdatabase.bo.configuraties.KLLK;
 import pu.chessdatabase.bo.configuraties.KLPK;
 import pu.chessdatabase.bo.configuraties.KTK;
+import pu.chessdatabase.bo.configuraties.PipoKDK;
+import pu.chessdatabase.bo.configuraties.PipoKDKT;
+import pu.chessdatabase.bo.configuraties.PipoKDKTT;
+import pu.chessdatabase.bo.configuraties.PipoKLLK;
+import pu.chessdatabase.bo.configuraties.PipoKTK;
 import pu.chessdatabase.bo.configuraties.StukDefinitie;
 import pu.chessdatabase.bo.configuraties.TestKDK;
 import pu.chessdatabase.bo.configuraties.TestKDKT;
 import pu.chessdatabase.bo.configuraties.TestKDKTT;
 import pu.chessdatabase.bo.configuraties.TestKLLK;
+import pu.chessdatabase.bo.configuraties.TestKLPK;
+import pu.chessdatabase.bo.configuraties.TestKTK;
 import pu.chessdatabase.dbs.VM;
 
 import lombok.AccessLevel;
@@ -33,6 +40,23 @@ import lombok.ToString;
 public class Config
 {
 private static final ConfigImpl DEFAULT_CONFIG_IMPL = new KLPK();
+public static final KDK KDK = new KDK();
+public static final KTK KTK = new KTK();
+public static final KDKT KDKT = new KDKT();
+public static final KLLK KLLK = new KLLK();
+public static final KLPK KLPK = new KLPK();
+public static final KDKTT KDKTT = new KDKTT();
+public static final TestKDK TESTKDK = new TestKDK();
+public static final TestKTK TESTKTK = new TestKTK();
+public static final TestKDKT TESTKDKT = new TestKDKT();
+public static final TestKLLK TESTKLLK = new TestKLLK();
+public static final TestKLPK TESTKLPK = new TestKLPK();
+public static final TestKDKTT TESTKDKTT = new TestKDKTT();
+public static final PipoKDK PIPOKDK = new PipoKDK();
+public static final PipoKTK PIPOKTK = new PipoKTK();
+public static final PipoKDKT PIPOKDKT = new PipoKDKT();
+public static final PipoKLLK PIPOKLLK = new PipoKLLK();
+public static final PipoKDKTT PIPOKDKTT = new PipoKDKTT();
 private static List<Stuk> staticStukList = DEFAULT_CONFIG_IMPL.getStukken().getStukken();
 private static Stukken staticStukken = DEFAULT_CONFIG_IMPL.getStukken();
 public static List<Stuk> getStaticStukList()
@@ -66,16 +90,22 @@ Map<String, ConfigImpl> getConfigImplRegistry()
 	if ( configImplRegistry == null )
 	{
 		configImplRegistry = new HashMap<>();
-		configImplRegistry.put( "KDK", new KDK() );
-		configImplRegistry.put( "KTK", new KTK() );
-		configImplRegistry.put( "KDKT", new KDKT() );
-		configImplRegistry.put( "KLPK", new KLPK() );
-		configImplRegistry.put( "KLLK", new KLLK() );
-		configImplRegistry.put( "KDKTT", new KDKTT() );
-		configImplRegistry.put( "TESTKDK", new TestKDK() );
-		configImplRegistry.put( "TESTKDKT", new TestKDKT() );
-		configImplRegistry.put( "TESTKLLK", new TestKLLK() );
-		configImplRegistry.put( "TESTKDKTT", new TestKDKTT() );
+		configImplRegistry.put( "KDK", KDK );
+		configImplRegistry.put( "KTK", KTK );
+		configImplRegistry.put( "KDKT", KDKT );
+		configImplRegistry.put( "KLPK", KLPK );
+		configImplRegistry.put( "KLLK", KLLK );
+		configImplRegistry.put( "KDKTT", KDKTT );
+		configImplRegistry.put( "TESTKDK", TESTKDK );
+		configImplRegistry.put( "TESTKTK", TESTKTK );
+		configImplRegistry.put( "TESTKDKT", TESTKDKT );
+		configImplRegistry.put( "TESTKLLK", TESTKLLK );
+		configImplRegistry.put( "TESTKLPK", TESTKLPK );
+		configImplRegistry.put( "TESTKDKTT", TESTKDKTT );
+		configImplRegistry.put( "PIPO1KDK", PIPOKDK );
+		configImplRegistry.put( "PIPOKDKT", PIPOKDKT );
+		configImplRegistry.put( "PiPOKLLK", PIPOKLLK );
+		configImplRegistry.put( "PIPOKDKTT", PIPOKDKTT );
 	}
 	return configImplRegistry;
 }
@@ -105,6 +135,10 @@ public void switchConfig( String aConfigString, boolean aSwitchVM )
 public void switchConfig( String aConfigString )
 {
 	 switchConfig( aConfigString, true );
+}
+public void switchConfig( ConfigImpl aConfigImpl )
+{
+	 switchConfig( aConfigImpl, true );
 }
 public List<Stuk> getStukList()
 {
