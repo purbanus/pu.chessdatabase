@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import pu.chessdatabase.bo.configuraties.ConfigImpl;
 import pu.chessdatabase.dbs.Dbs;
 import pu.chessdatabase.dbs.PassType;
 
@@ -53,6 +54,27 @@ public void destroy()
 	config.switchConfig( savedConfigString );
 }
 
+@Test
+public void testGrootsteAantalZetten()
+{
+	getConfig().switchConfig( Config.KTK );
+	dbs.setReport( Integer.MAX_VALUE, this::doNothing, true );
+	grootste = Integer.MIN_VALUE;
+	dbs.pass( PassType.MarkeerWitEnZwart, this::vindGrootste );
+	dbs.pass( PassType.MarkeerWitEnZwart, this::vindGrootsten );
+	dbs.pass( PassType.MarkeerWitEnZwart, this::vindGrootstenMinEen );
+	if ( DO_PRINT )
+	{
+		System.out.println( "Grootste aantal zetten tot mat: " + grootste );
+		System.out.println( "Aantal stellingen: " + grootsten.size() );
+		System.out.println(  grootsten );
+		System.out.println( "Aantal min-1-stellingen: " + grootstenMinEen.size() );
+		System.out.println(  grootstenMinEen );
+	}
+	assertThat( grootste, is (19 ) );
+	assertThat( grootsten.size(), is (96 ) );
+	assertThat( grootstenMinEen.size(), is (1119 ) );
+}
 void vindGrootste( BoStelling aBoStelling )
 {
 	int aantalZetten = aBoStelling.getAantalZetten();
@@ -79,35 +101,24 @@ void doNothing( int aStellingTeller, int [][] aTellingen )
 {
 }
 @Test
-public void testGrootsteAantalZetten()
-{
-	getConfig().switchConfig( "KTK" );
-	dbs.setReport( Integer.MAX_VALUE, this::doNothing, true );
-	grootste = Integer.MIN_VALUE;
-	dbs.pass( PassType.MarkeerWitEnZwart, this::vindGrootste );
-	dbs.pass( PassType.MarkeerWitEnZwart, this::vindGrootsten );
-	dbs.pass( PassType.MarkeerWitEnZwart, this::vindGrootstenMinEen );
-	if ( DO_PRINT )
-	{
-		System.out.println( "Grootste aantal zetten tot mat: " + grootste );
-		System.out.println( "Aantal stellingen: " + grootsten.size() );
-		System.out.println(  grootsten );
-		System.out.println( "Aantal min-1-stellingen: " + grootstenMinEen.size() );
-		System.out.println(  grootstenMinEen );
-	}
-	assertThat( grootste, is (19 ) );
-	assertThat( grootsten.size(), is (96 ) );
-	assertThat( grootstenMinEen.size(), is (1119 ) );
-}
-@Test
 public void testTelAllesKDKAanHetEinde()
 {
 //	if ( DO_PRINT )
 	{
 		System.out.println( "methode testTelAlles\n" );
 	}
-	doTestTelAllesAanHetEinde( "TestKDK" );
-	doTestTelAllesAanHetEinde( "KDK" );
+	doTestTelAllesAanHetEinde( Config.TESTKDK );
+	doTestTelAllesAanHetEinde( Config.KDK );
+}
+@Test
+public void testTelAllesKTKAanHetEinde()
+{
+//	if ( DO_PRINT )
+	{
+		System.out.println( "methode testTelAlles\n" );
+	}
+	doTestTelAllesAanHetEinde( Config.TESTKTK );
+	doTestTelAllesAanHetEinde( Config.KTK );
 }
 @Test
 public void testTelAllesKDKTAanHetEinde()
@@ -117,14 +128,14 @@ public void testTelAllesKDKTAanHetEinde()
 		System.out.println( "methode testTelAlles\n" );
 	}
 	//doTestTelAllesAanHetEinde( "KDK" );
-	doTestTelAllesAanHetEinde( "TestKDKT" );
-	doTestTelAllesAanHetEinde( "KDKT" );
+	doTestTelAllesAanHetEinde( Config.TESTKDKT );
+	doTestTelAllesAanHetEinde( Config.KDKT );
 	//doTestTelAllesAanHetEinde( "KDKTT" );
 }
-void doTestTelAllesAanHetEinde( String aConfigString )
+void doTestTelAllesAanHetEinde( ConfigImpl aConfigImpl )
 {
-	System.out.println( "\nTel alles in " + aConfigString + "\n" );
-	getConfig().switchConfig( aConfigString );
+	System.out.println( "\nTel alles in " + aConfigImpl + "\n" );
+	getConfig().switchConfig( aConfigImpl );
 	
 	dbs.open();
 	bouw.telAndPrintAlles( true );
@@ -132,7 +143,7 @@ void doTestTelAllesAanHetEinde( String aConfigString )
 @Test 
 public void testIsIllegaal5Stukken_3()
 {
-	config.switchConfig( "TestKDKTT" );
+	config.switchConfig( Config.TESTKDKTT );
 	
 	// Bug van 18-06-2026
 	BoStelling boStelling = BoStelling.alfaBuilder()
@@ -151,7 +162,7 @@ public void testIsIllegaal5Stukken_3()
 @Test
 public void testBug2026_06_18()
 {
-	config.switchConfig( "KDKTT" );
+	config.switchConfig( Config.KDKTT );
 	
 	// Bug van 18-06-2026
 	BoStelling boStelling = BoStelling.alfaBuilder()

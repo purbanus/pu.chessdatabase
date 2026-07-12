@@ -42,9 +42,8 @@ String savedConfigString;
 public void setup()
 {
 	savedConfigString = config.getConfig();
-	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
+	config.switchConfig( Config.PIPOKDKT );
 	vm.setPageSizeCalculator( pageSizeCalculator );
-	vm.create();
 	cache = new MockCache( vm.getCache() );
 }
 @AfterEach
@@ -241,27 +240,23 @@ public void testPageIn() throws IOException
 public void testGetPageSize()
 {
 	// Hier niet de lokale cache gebruiken maar die uit VM, want die is geconfigSwitched
-	getConfig().switchConfig( "TestKDK" );
+	getConfig().switchConfig( Config.PIPOKDK );
 	assertThat( vm.getCache().getPageSize(), is( 64 ) );
-	getConfig().switchConfig( "TestKDKT" );
+	getConfig().switchConfig( Config.PIPOKDKT );
 	assertThat( vm.getCache().getPageSize(), is( 4096 ) );
-	getConfig().switchConfig( "TestKDKTT" );
+	getConfig().switchConfig( Config.PIPOKDKTT );
 	assertThat( vm.getCache().getPageSize(), is( 262144 ) );
-
-	getConfig().switchConfig( "TestKDKT" );
 }
 @Test
 public void testGetDatabaseSize()
 {
 	// Hier niet de lokale cache gebruiken maar die uit VM, want die is geconfigSwitched
-	getConfig().switchConfig( "TestKDK" );
+	getConfig().switchConfig( Config.PIPOKDK );
 	assertThat( vm.getCache().getDatabaseSize(), is( 10 * 64 * 2 * 64L ) );
-	getConfig().switchConfig( "TestKDKT" );
+	getConfig().switchConfig( Config.PIPOKDKT );
 	assertThat( vm.getCache().getDatabaseSize(), is(10 * 64 * 2 * 64 * 64L ) );
-	getConfig().switchConfig( "TestKDKTT" );
+	getConfig().switchConfig( Config.PIPOKDKTT );
 	assertThat( vm.getCache().getDatabaseSize(), is(10 * 64 * 2 * 64 * 64 * 64L ) );
-	
-	getConfig().switchConfig( "TestKDKT" );
 }
 @Test
 public void testGetPage()
@@ -461,20 +456,17 @@ public void testGetPositionWithinPage()
 		.aanZet( Wit )
 		.build();
 	// Hier niet de lokale cache gebruiken maar die uit VM, want die is geconfigSwithed
-	getConfig().switchConfig( "TestKDK" );
+	getConfig().switchConfig( Config.PIPOKDK );
 	assertThat( vm.getCache().getPositionWithinPage( vmStelling), is( 0 ) );
-	getConfig().switchConfig( "TestKDKT" );
+	getConfig().switchConfig( Config.PIPOKDKT );
 	assertThat( vm.getCache().getPositionWithinPage( vmStelling ), is( 7 ) );
-	getConfig().switchConfig( "TestKDKTT" );
+	getConfig().switchConfig( Config.PIPOKDKTT );
 	assertThat( vm.getCache().getPositionWithinPage( vmStelling), is( 7 * 64 + 9 ) );
-	
-	getConfig().switchConfig( "TestKDKT" );
-
 }
 @Test
 public void testGetAllPositionsWithinPage3Stukken()
 {
-	getConfig().switchConfig( "TestKDK" );
+	getConfig().switchConfig( Config.PIPOKDK );
 	VMStelling vmStelling = VMStelling.builder()
 		.wk( 0x00 )
 		.zk( 0x00 )
@@ -494,7 +486,7 @@ public void testGetAllPositionsWithinPage3Stukken()
 @Test
 public void testGetAllPositionsWithinPage4Stukken()
 {
-	getConfig().switchConfig( "TestKDKT" );
+	getConfig().switchConfig( Config.PIPOKDKT );
 	VMStelling vmStelling = VMStelling.builder()
 		.wk( 0x00 )
 		.zk( 0x00 )
@@ -519,7 +511,7 @@ public void testGetAllPositionsWithinPage4Stukken()
 public void testGetAllPositionsWithinPage5Stukken()
 {
 	StopWatch timer = new StopWatch();
-	getConfig().switchConfig( "TestKDKTT" );
+	getConfig().switchConfig( Config.PIPOKDKTT );
 	VMStelling vmStelling = VMStelling.builder()
 		.wk( 0x00 )
 		.zk( 0x00 )
@@ -548,7 +540,6 @@ public void testGetAllPositionsWithinPage5Stukken()
 		}
 	}
 	System.out.println( "testGetAllPositionsWithinPage5Stukken duurde " + timer.getElapsedMs() );
-	getConfig().switchConfig( "TestKDKT" );
 }
 
 @Test

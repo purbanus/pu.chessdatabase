@@ -105,7 +105,7 @@ public void testToString()
 		.s5( "a1" )
 		.aanZet( Wit )
 		.build();
-	config.switchConfig( "KDKT" );
+	config.switchConfig( Config.KDKT );
 	String vmStringText = MessageFormat.format( VM_TO_STRING, 
 		config.getStukken().getWk().getStukString(),
 		config.getStukken().getZk().getStukString(),
@@ -125,7 +125,7 @@ public void testToString()
 	}
 	assertThat( vmStelling.toString(), is( vmStringText ) );
 	
-	config.switchConfig( "KLPK" );
+	config.switchConfig( Config.KLPK );
 	vmStringText = MessageFormat.format( VM_TO_STRING, 
 		config.getStukken().getWk().getStukString(),
 		config.getStukken().getZk().getStukString(),
@@ -137,7 +137,7 @@ public void testToString()
 	assertThat( vmStelling.toString().length(), is( vmStringText.length() ) );
 	assertThat( vmStelling.toString(), is( vmStringText ) );
 
-	config.switchConfig( "KLLK" );
+	config.switchConfig( Config.KLLK );
 	vmStringText = MessageFormat.format( VM_TO_STRING, 
 		config.getStukken().getWk().getStukString(),
 		config.getStukken().getZk().getStukString(),

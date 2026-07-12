@@ -1,6 +1,7 @@
 package pu.chessdatabase.dbs;
 
 import pu.chessdatabase.bo.Config;
+import pu.chessdatabase.bo.configuraties.ConfigImpl;
 import pu.services.StopWatch;
 
 public class CompareDatabases
@@ -10,25 +11,26 @@ VM vm2;
 
 public static void main( String [] args )
 {
-	new CompareDatabases().run( "KDK", "TestKDK" );
-	new CompareDatabases().run( "KDKT", "TestKDKT" );
+	new CompareDatabases().run( Config.KDK, Config.TESTKDK );
+	new CompareDatabases().run( Config.KDKT, Config.TESTKDKT );
+	new CompareDatabases().run( Config.KDKTT, Config.TESTKDKTT );
 }
-private void run( String aConfigString1, String aConfigString2 )
+private void run( ConfigImpl aConfigImpl1, ConfigImpl aConfigImpl2 )
 {
 	StopWatch timer = new StopWatch();
-	vm1 = setupVm( aConfigString1 );
-	vm2 = setupVm( aConfigString2 );
+	vm1 = setupVm( aConfigImpl1 );
+	vm2 = setupVm( aConfigImpl2 );
 	vm1.getPageDescriptorTable().iterateOverAllPageDescriptors( this::compareDeDatabases );
-	System.out.println( "Compare " + aConfigString1 + " klaar, duurde " + timer.getElapsedMs() );
+	System.out.println( "Compare " + aConfigImpl1 + " klaar, duurde " + timer.getElapsedMs() );
 	System.out.printf( "Aantal stellingen: %d waarvan ongelijk: %d\n", aantalStellingen, aantalStellingenOngelijk );
 	System.out.printf( "Databases: %s %s\n", vm1.getDatabaseName(), vm2.getDatabaseName() );
 }
-VM setupVm( String aConfigName )
+VM setupVm( ConfigImpl aConfigImpl )
 {
 	VM vm = new VM();
 	Config config = new Config( vm );
 	vm.setConfig( config );
-	config.switchConfig( aConfigName );
+	config.switchConfig( aConfigImpl );
 	vm.setDatabaseName( config.getDatabaseName() );
 	vm.open();
 	return vm;

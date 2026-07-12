@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import pu.chessdatabase.bo.configuraties.ConfigImpl;
 import pu.chessdatabase.dbs.Dbs;
 import pu.chessdatabase.dbs.PassType;
 import pu.chessdatabase.dbs.VM;
@@ -48,15 +49,14 @@ String savedConfigString;
 public void setup()
 {
 	savedConfigString = config.getConfig();
-	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
+	config.switchConfig( Config.PIPOKDKT, false ); // false want de database bestaat nog niet dus VM kan m niet openen
 	dbs.create();
 }
 @AfterEach
 public void destroy()
 {
-	//config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
-	assertThat( dbs.getDatabaseName(), anyOf( startsWith( PREFIX_TEST_DATABASE ), startsWith( DATABASE_NAME_5PIECES ) ) );
-	assertThat( config.getAantalStukken(), is( lessThanOrEqualTo( 4 ) ) );
+	assertThat( dbs.getDatabaseName(), startsWith( PREFIX_TEST_DATABASE ) );
+	//assertThat( config.getAantalStukken(), is( lessThanOrEqualTo( 4 ) ) );
 	dbs.delete();
 	config.switchConfig( savedConfigString );
 }
@@ -91,16 +91,16 @@ public void testTelAllesInBeginstelling()
 	{
 		System.out.println( "methode testTelAllesInBeginStelling\n" );
 	}
-	doTestTelAlles( "TestKDK" );
-	doTestTelAlles( "TestKDKT" );
-	//doTestTelAlles( "TestKDKTT" );
+	doTestTelAlles( Config.PIPOKDK );
+	doTestTelAlles( Config.PIPOKDKT );
+	// doTestTelAlles( Config.PIPOKDKTT ); // Duurt een beetje lang, zo'n 3 minuten
 	
-	config.switchConfig( "TestKDK" );
+	config.switchConfig( Config.PIPOKDKT );
 }
-void doTestTelAlles( String aConfigString )
+void doTestTelAlles( ConfigImpl aConfigImpl )
 {
-	System.out.println( "\nTel alles in " + aConfigString + "\n" );
-	getConfig().switchConfig( aConfigString );
+	System.out.println( "\nTel alles in " + aConfigImpl + "\n" );
+	getConfig().switchConfig( aConfigImpl );
 	
 	bouw.pass_0( false );
 	dbs.open();
@@ -113,8 +113,7 @@ public void testMatStellingen()
 	{
 		System.out.println( "methode testMatStellingen\n" );
 	}
-	getConfig().switchConfig( "TestKDK" );
-	dbs.setDatabaseName( "dbs/TestPipo3" );
+	getConfig().switchConfig( Config.PIPOKDK );
 
 	bouw.pass_0( false );
 	dbs.open();
@@ -165,8 +164,7 @@ public void testIsIllegaal()
 //@Test // Deze test duurt ruim 3 minuten
 public void testIsIllegaal5Stukken()
 {
-	config.switchConfig( "TestKDKTT" );
-	dbs.setDatabaseName( "dbs/TestPipo5" );
+	config.switchConfig( Config.PIPOKDKTT );
 	dbs.create();
 	bouw.pass_0();
 	
@@ -183,12 +181,11 @@ public void testIsIllegaal5Stukken()
 	BoStelling gotBoStelling = dbs.get( boStelling );
 	assertThat( gotBoStelling.getResultaat(), is( Remise ) );
 }
-//@Test // Deze test duurt zo'n 15 seconden
+//@Test // Deze test duurt zo'n 10 seconden
 public void testIsIllegaal5Stukken_2()
 {
-	config.switchConfig( "TestKDKTT" );
-	dbs.setDatabaseName( "dbs/TestPipo5" );
-	dbs.create();
+	config.switchConfig( Config.PIPOKDKTT );
+	// dbs.create(); // Niet nodig, gebeurt al bij de swictConfig
 	bouw.reportNewPass( "Markeren illegale stellingen", false );
 	dbs.pass( PassType.MarkeerWit, bouw::isIllegaal );
 	
@@ -209,11 +206,9 @@ public void testIsIllegaal5Stukken_2()
 //@Test
 public void telIllegaleStellingen()
 {
-	config.switchConfig( "TestKDKTT" );
-	dbs.setDatabaseName( "dbs/TestPipo5" );
+	config.switchConfig( Config.PIPOKDKTT );
 	bouw.illegaleStellingen.clear();
 	bouw.passNumber = 0;
-	dbs.create();
 
 	bouw.reportNewPass( "Markeren illegale stellingen", true );
 	dbs.pass( PassType.MarkeerWit, bouw::isIllegaal );
@@ -299,14 +294,13 @@ public void testSchaakjes()
 	gotBoStelling = dbs.get( boStelling );
 	assertThat( gotBoStelling.getResultaat(), is( Illegaal ) );
 }
-//@Test
+// @@NOG Uitzoeken waarom ditt niet werkt
+//1@Test
 public void testPassSchaakjes()
 {
 	// Voor deze test moet je HOU_STELLINGEN_BIJ in VMStellingIterator op true zetten
-	getConfig().switchConfig( "TestKDK", false );
-	dbs.setDatabaseName( "dbs.TestPipo3" );
+	getConfig().switchConfig( Config.PIPOKDK, false );
 	bouw.reportNewPass( "Reserveren schijfruimte\n", DO_PRINT );
-	dbs.create();
 
 	bouw.reportNewPass( "Markeren illegale stellingen", DO_PRINT );
 	dbs.pass( MarkeerWit, bouw::isIllegaal );
@@ -342,25 +336,6 @@ public void testPassSchaakjes()
 			}
 		}
 	}
-}
-private void markeerIllegaal()
-{
-	dbs.setDatabaseName( "dbs/TestPipo4" );
-	bouw.illegaleStellingen = new ArrayList<>();
-	bouw.stellingenMetSchaak = new ArrayList<>();
-	bouw.matStellingen  = new ArrayList<>();
-	bouw.passNumber = 0;
-	
-	bouw.reportNewPass( "Reserveren schijfruimte\n", DO_PRINT );
-	dbs.create();
-
-	bouw.reportNewPass( "Markeren illegale stellingen", DO_PRINT );
-	dbs.pass( MarkeerWit, bouw::isIllegaal );
-	checkTellingen();
-	
-	bouw.reportNewPass( "Markeren schaakjes", DO_PRINT );
-	dbs.pass( MarkeerWit, bouw::schaakjes );
-	checkTellingen();
 }
 void checkTellingen()
 {
@@ -457,11 +432,29 @@ ZK ZT WK .. .. .. .. ..
 	assertThat( gotBoStelling.getResultaat(), is( Verloren ) );
 	assertThat( gotBoStelling.getAantalZetten(), is( 1 ) );
 }
+private void markeerIllegaal()
+{
+	bouw.illegaleStellingen = new ArrayList<>();
+	bouw.stellingenMetSchaak = new ArrayList<>();
+	bouw.matStellingen  = new ArrayList<>();
+	bouw.passNumber = 0;
+	
+	bouw.reportNewPass( "Reserveren schijfruimte\n", DO_PRINT );
+//	dbs.create();
+
+	bouw.reportNewPass( "Markeren illegale stellingen", DO_PRINT );
+	dbs.pass( MarkeerWit, bouw::isIllegaal );
+	checkTellingen();
+	
+	bouw.reportNewPass( "Markeren schaakjes", DO_PRINT );
+	dbs.pass( MarkeerWit, bouw::schaakjes );
+	checkTellingen();
+}
+
 @Test
 public void testMarkeer()
 {
-	config.switchConfig( "TestKDKT" );
-	dbs.setDatabaseName( "dbs/TestPipo4" );
+	config.switchConfig( Config.PIPOKDKT );
 	if ( DO_PRINT )
 	{
 		System.out.println( "methode testMarkeer\n" );

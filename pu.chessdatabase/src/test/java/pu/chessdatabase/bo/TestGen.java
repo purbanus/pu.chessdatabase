@@ -39,15 +39,13 @@ String savedConfigString;
 public void setup()
 {
 	savedConfigString = config.getConfig();
-	config.switchConfig( "TestKDKT", false ); // false want de database bestaat nog niet dus VM kan m niet openen
-	dbs.setDatabaseName( DATABASE_NAME_PIPO4 );
+	config.switchConfig( Config.PIPOKDKT, false ); // false want de database bestaat nog niet dus VM kan m niet openen
 	dbs.create();
 }
 @AfterEach
 public void destroy()
 {
 	assertThat( dbs.getDatabaseName(), startsWith( PREFIX_TEST_DATABASE ) );
-	assertThat( config.getAantalStukken(), is( lessThanOrEqualTo( 4 ) ) );
 	dbs.delete();
 	config.switchConfig( savedConfigString );
 }
@@ -99,7 +97,7 @@ public void testAlfaToVeld()
 @Test
 public void testIsGeomIllegaal3Stukken()
 {
-	getConfig().switchConfig( "TESTKDK", false );
+	getConfig().switchConfig( Config.PIPOKDK );
 
 	// Gewoon goed
 	BoStelling boStelling = BoStelling.builder()
@@ -304,7 +302,7 @@ public void testCheckSchaakDoorStuk()
 @Test
 public void testIsSchaak3Stukken()
 {
-	getConfig().switchConfig( "TESTKDK", false );
+	getConfig().switchConfig( Config.PIPOKDK, false );
 	
 	// Check aStukVeld == aStelling.getWk(), d.w.z. s3 is geslagen door zwart
 	BoStelling boStelling = BoStelling.alfaBuilder()
@@ -337,7 +335,7 @@ public void testIsSchaak3Stukken()
 @Test
 public void testIsSchaak4Stukken()
 {
-	getConfig().switchConfig( "TESTKDKT", false );
+	getConfig().switchConfig( Config.PIPOKDKT, false );
 	
 	// Check aStukVeld == aStelling.getZK(), d.w.z. s4 is geslagen door wit
 	BoStelling stelling = BoStelling.alfaBuilder()
@@ -503,7 +501,8 @@ public void testGenZetPerStuk()
 	assertThat( gegenereerdeZetten.get(  2 ).getAanZet(), is( Wit ) );
 	assertThat( gegenereerdeZetten.get(  3 ).getS4(), is( 0x37 ) );
 	assertThat( gegenereerdeZetten.get(  3 ).getAanZet(), is( Wit ) );
-	assertThat( gegenereerdeZetten.get(  4 ).getS4(), is( 0x43 ) );
+	assertThat( gegenereerdeZetten.get(  
+		4 ).getS4(), is( 0x43 ) );
 	assertThat( gegenereerdeZetten.get(  4 ).getAanZet(), is( Wit ) );
 	assertThat( gegenereerdeZetten.get(  5 ).getS4(), is( 0x53 ) );
 	assertThat( gegenereerdeZetten.get(  5 ).getAanZet(), is( Wit ) );
