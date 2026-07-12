@@ -32,13 +32,13 @@ public void destroy()
 //@Test
 public void buildKDK()
 {
-	config.switchConfig( Config.KDK, false );
+	config.switchConfig( Config.KDK );
 	bouw.bouwDatabase();
 }
 @Test
 public void buildKTK()
 {
-	config.switchConfig( Config.KTK, false );
+	config.switchConfig( Config.KTK );
 	bouw.bouwDatabase();
 }
 
@@ -47,19 +47,19 @@ public void buildKTK()
 
 //@Test
 public void buildKDKT()
-{	config.switchConfig( Config.KDKT, false );
+{	config.switchConfig( Config.KDKT );
 	bouw.bouwDatabase();
 }
 //@Test
 public void buildKLPK()
 {
-	config.switchConfig( Config.KLPK, false );
+	config.switchConfig( Config.KLPK );
 	bouw.bouwDatabase();
 }
 //@Test
 public void buildKLLK()
 {
-	config.switchConfig( Config.KLLK, false );
+	config.switchConfig( Config.KLLK );
 	bouw.bouwDatabase();
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -69,7 +69,7 @@ public void buildKLLK()
 // Als je deze activeert, zet dan HOU_STELLINGEN_BIJ op false, anders loop je uit het geheugen
 public void buildKDKTT()
 {
-	config.switchConfig( Config.KDKTT, false );
+	config.switchConfig( Config.KDKTT );
 	bouw.bouwDatabase();
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -78,25 +78,25 @@ public void buildKDKTT()
 @Test
 public void buildTestKDK()
 {
-	config.switchConfig( Config.TESTKDK, false );
+	config.switchConfig( Config.TESTKDK );
 	bouw.bouwDatabase();
 }
 @Test
 public void buildTestKTK()
 {
-	config.switchConfig( Config.TESTKTK, false );
+	config.switchConfig( Config.TESTKTK );
 	bouw.bouwDatabase();
 }
 //@Test
 public void buildTestKDKT()
 {
-	config.switchConfig( Config.TESTKDKT, false );
+	config.switchConfig( Config.TESTKDKT );
 	bouw.bouwDatabase();
 }
 //@Test
 public void buildTestKDKTT()
 {
-	config.switchConfig( Config.TESTKDKTT, false );
+	config.switchConfig( Config.TESTKDKTT );
 	bouw.bouwDatabase();
 }
 }

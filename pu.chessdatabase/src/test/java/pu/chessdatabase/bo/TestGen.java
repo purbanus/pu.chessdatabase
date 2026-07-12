@@ -39,7 +39,7 @@ String savedConfigString;
 public void setup()
 {
 	savedConfigString = config.getConfig();
-	config.switchConfig( Config.PIPOKDKT, false ); // false want de database bestaat nog niet dus VM kan m niet openen
+	config.switchConfig( Config.PIPOKDKT );
 	dbs.create();
 }
 @AfterEach
