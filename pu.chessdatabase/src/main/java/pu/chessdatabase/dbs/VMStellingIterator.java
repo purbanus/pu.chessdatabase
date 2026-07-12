@@ -40,6 +40,7 @@ private Dbs dbs;
 @Autowired private Config config;
 private int [][] tellingen = newTellingen();
 private int stellingTeller;
+List<BoStelling> stellingen = new ArrayList<>();
 private int reportFrequency;
 private ReportFunction reportFunction;
 private boolean doAllPositions = false;
@@ -220,7 +221,6 @@ public void iterateOverAllPieces( PassFunction aPassFunction )
 	}
 	report();
 }
-List<BoStelling> stellingen = new ArrayList<>();
 void callForAllPieces( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction, boolean aCountDouble )
 {
 	BoStelling gotBoStelling = dbs.getDirect( aVmStelling, aBoStelling );
