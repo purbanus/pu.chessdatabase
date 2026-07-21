@@ -109,16 +109,27 @@ void telAndPrintAlles( boolean aDoPrint )
 		printAlles( vmStellingIterator.getTellingen() );
 	}
 }
-void printAlles( int [][] aArrayl)
+
+void printAlles( int [][] aArray)
 {
-	System.out.println( "Illegaal met wit aan zet  : " + aArrayl[0][0] );
-	System.out.println( "Gewonnen met wit aan zet  : " + aArrayl[0][1] );
-    System.out.println( "Remise met wit aan zet    : " + aArrayl[0][2] );
-    System.out.println( "Verloren met wit aan zet  : " + aArrayl[0][3] );
-    System.out.println( "Illegaal met zwart aan zet: " + aArrayl[1][0] );
-	System.out.println( "Gewonnen met zwart aan zet: " + aArrayl[1][1] );
-    System.out.println( "Remise met zwart aan zet  : " + aArrayl[1][2] );
-    System.out.println( "Verloren met zwart aan zet: " + aArrayl[1][3] );
+	System.out.println( "Illegaal met wit aan zet  : " + aArray[0][0] );
+	System.out.println( "Gewonnen met wit aan zet  : " + aArray[0][1] );
+    System.out.println( "Remise met wit aan zet    : " + aArray[0][2] );
+    System.out.println( "Verloren met wit aan zet  : " + aArray[0][3] );
+    System.out.println( "Illegaal met zwart aan zet: " + aArray[1][0] );
+	System.out.println( "Gewonnen met zwart aan zet: " + aArray[1][1] );
+    System.out.println( "Remise met zwart aan zet  : " + aArray[1][2] );
+    System.out.println( "Verloren met zwart aan zet: " + aArray[1][3] );
+    int totaal = 0;
+    for ( int [] row : aArray )
+    {
+        for ( int col : row )
+        {
+            totaal += col; 
+        }
+    }
+    System.out.println( "Totaal                    : " + totaal );
+
 }
 /**
  * ------------ Kijk of een stelling illegaal is ---------------
