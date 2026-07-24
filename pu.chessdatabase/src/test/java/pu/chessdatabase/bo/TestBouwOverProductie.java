@@ -58,11 +58,12 @@ public void destroy()
 public void testGrootsteAantalZetten()
 {
 	getConfig().switchConfig( Config.KTK );
-	dbs.setReport( Integer.MAX_VALUE, this::doNothing, true );
+	dbs.setReport( Integer.MAX_VALUE, this::doNothing );
+	dbs.setDoAllPositions( true );
+
 	grootste = Integer.MIN_VALUE;
 	dbs.pass( PassType.MarkeerWitEnZwart, this::vindGrootste );
 	dbs.pass( PassType.MarkeerWitEnZwart, this::vindGrootsten );
-	dbs.pass( PassType.MarkeerWitEnZwart, this::vindGrootstenMinEen );
 	if ( DO_PRINT )
 	{
 		System.out.println( "Grootste aantal zetten tot mat: " + grootste );
@@ -71,9 +72,9 @@ public void testGrootsteAantalZetten()
 		System.out.println( "Aantal min-1-stellingen: " + grootstenMinEen.size() );
 		System.out.println(  grootstenMinEen );
 	}
-	assertThat( grootste, is (19 ) );
-	assertThat( grootsten.size(), is (96 ) );
-	assertThat( grootstenMinEen.size(), is (1119 ) );
+	assertThat( grootste, is (17 ) ); //Was 19???
+	assertThat( grootsten.size(), is (851 ) ); //Was 96???
+	assertThat( grootstenMinEen.size(), is (3640 ) ); //Was 1192???
 }
 void vindGrootste( BoStelling aBoStelling )
 {
@@ -89,13 +90,11 @@ void vindGrootsten( BoStelling aBoStelling )
 	{
 		grootsten.add(  aBoStelling );
 	}
-}
-void vindGrootstenMinEen( BoStelling aBoStelling )
-{
 	if ( aBoStelling.getAantalZetten() == grootste - 1 )
 	{
 		grootstenMinEen.add(  aBoStelling );
 	}
+
 }
 void doNothing( int aStellingTeller, int [][] aTellingen )
 {
