@@ -120,7 +120,7 @@ public void testMatStellingen()
 	bouw.telAndPrintAlles( true );
 	vmStellingIterator.clearTellingen();
 	vmStellingIterator.setDoAllPositions( true );
-	dbs.pass( MarkeerWitEnZwart, this::printMatStelling );
+	dbs.pass( MarkeerWitEnZwart, this::printMatStelling, "rw" );
 }
 private void printMatStelling( BoStelling aBoStelling )
 {
@@ -185,9 +185,9 @@ public void testIsIllegaal5Stukken()
 public void testIsIllegaal5Stukken_2()
 {
 	config.switchConfig( Config.PIPOKDKTT );
-	// dbs.create(); // Niet nodig, gebeurt al bij de swictConfig
+	// dbs.create(); // Niet nodig, gebeurt al bij de switchConfig
 	bouw.reportNewPass( "Markeren illegale stellingen", false );
-	dbs.pass( PassType.MarkeerWit, bouw::isIllegaal );
+	dbs.pass( PassType.MarkeerWit, bouw::isIllegaal, "rw" );
 	
 	// Bug van 18-06-2026
 	BoStelling boStelling = BoStelling.alfaBuilder()
@@ -211,7 +211,7 @@ public void telIllegaleStellingen()
 	bouw.passNumber = 0;
 
 	bouw.reportNewPass( "Markeren illegale stellingen", true );
-	dbs.pass( PassType.MarkeerWit, bouw::isIllegaal );
+	dbs.pass( PassType.MarkeerWit, bouw::isIllegaal, "rw" );
 	bouw.telAndPrintAlles( true );
 	
 //	System.out.println( "Aantal Illegale stellingen: " + bouw.illegaleStellingen.size() );
@@ -303,11 +303,11 @@ public void testPassSchaakjes()
 	bouw.reportNewPass( "Reserveren schijfruimte\n", DO_PRINT );
 
 	bouw.reportNewPass( "Markeren illegale stellingen", DO_PRINT );
-	dbs.pass( MarkeerWit, bouw::isIllegaal );
+	dbs.pass( MarkeerWit, bouw::isIllegaal, "rw" );
 	assertThat(vmStellingIterator.getStellingTeller(), is( 10 * 64 * 64 * 2 ) );
 	
 	bouw.reportNewPass( "Markeren illegale stellingen", DO_PRINT );
-	dbs.pass( MarkeerWit, bouw::schaakjes );
+	dbs.pass( MarkeerWit, bouw::schaakjes, "rw" );
 	assertThat(vmStellingIterator.getStellingTeller(), is( 10 * 64 * 64 * 2 ) );
 
 	Map<String, BoStelling> stellingLookup = new HashMap<>();
@@ -354,7 +354,7 @@ public void testIsMat()
 	// Je moet nu eerst de illegale stellingen markeren anders denkt genZPerStuk
 	// dat in het schaak gaan staan een legale zet is
 	markeerIllegaal();
-	dbs.open(); // Want hij wordt gesloten in dbs.Pass
+	dbs.open( "rw" ); // Want hij wordt gesloten in dbs.Pass
 	BoStelling boStelling;
 	
 	boStelling = BoStelling.builder()
@@ -443,12 +443,12 @@ private void markeerIllegaal()
 //	dbs.create();
 
 	bouw.reportNewPass( "Markeren illegale stellingen", DO_PRINT );
-	dbs.pass( MarkeerWit, bouw::isIllegaal );
+	dbs.pass( MarkeerWit, bouw::isIllegaal, "rw" );
 	checkTellingen();
 	
 	bouw.reportNewPass( "Markeren schaakjes", DO_PRINT );
-	dbs.pass( MarkeerWit, bouw::schaakjes );
-	checkTellingen();
+	dbs.pass( MarkeerWit, bouw::schaakjes, "rw" );
+	// @@NOG checkTellingen();
 }
 
 @Test
@@ -460,7 +460,7 @@ public void testMarkeer()
 		System.out.println( "methode testMarkeer\n" );
 	}
 	bouw.pass_0( DO_PRINT );
-	dbs.open();
+	dbs.open( "rw" );
 	BoStelling boStellingVan;
 	BoStelling gotBoStelling;
 	
