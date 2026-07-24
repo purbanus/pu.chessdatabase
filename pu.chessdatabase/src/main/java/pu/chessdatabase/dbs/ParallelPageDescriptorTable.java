@@ -25,7 +25,11 @@ public PageDescriptor getPageDescriptor( VMStelling aStelling )
 @Override
 public void setPageDescriptor( VMStelling aVmStelling, PageDescriptor aPageDescriptor )
 {
-	getPageDescriptorTable()[aVmStelling.getWk()] = aPageDescriptor; 
+	getPageDescriptorTable()[aVmStelling.getWk()] = aPageDescriptor;
+	if ( aPageDescriptor.getCacheNummer() == Integer.MAX_VALUE )
+	{
+		aPageDescriptor.setCacheNummer( aVmStelling.getWk() );
+	}
 }
 @Override
 public void iterateOverAllPageDescriptors( PageDescriptorFunction aPageDescriptorsFunction )
@@ -39,7 +43,7 @@ public void iterateOverAllPageDescriptors( PageDescriptorFunction aPageDescripto
 	}
 }
 long address = 0L; // @@NOG Dit is een multithread probleem(pje)
-int index = 0;;
+int index = 0;
 @Override 
 public void initializePageDescriptorTable()
 {
