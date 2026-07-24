@@ -3,7 +3,6 @@ package pu.chessdatabase.dbs;
 import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.bo.speel.Einde.*;
 import static pu.chessdatabase.dbs.Resultaat.*;
-import static pu.chessdatabase.dbs.CacheType.*;
 
 import org.apache.commons.lang3.tuple.Triple;
 
@@ -30,9 +29,9 @@ public static boolean isAllOne( byte [] aPage )
 public static boolean isAll( byte [] aPage, byte aValue )
 //public static Boolean isAll( byte [] aPage, byte aValue )
 {
-	for ( byte b : aPage )
+	for ( int x = 0; x < aPage.length; x++)
 	{
-		if ( b != aValue )
+		if ( aPage[x] != aValue )
 		{
 			return false;
 		}

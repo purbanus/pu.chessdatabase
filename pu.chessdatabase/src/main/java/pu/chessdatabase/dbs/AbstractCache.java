@@ -1,7 +1,6 @@
 package pu.chessdatabase.dbs;
 
 import static pu.chessdatabase.dbs.Lokatie.*;
-import static pu.chessdatabase.dbs.CacheType.*;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -116,7 +115,6 @@ protected void putRawPageData( PageDescriptor aPageDescriptor )
 	try
 	{
 		getDatabase().seek( aPageDescriptor.getSchijfAdres() );
-	    //getDatabase().write( Cache[aPageDescriptor.getCacheNummer()].getPage().getPage(), 0, PAGE_SIZE );
 		byte [] page = getPage( aPageDescriptor );
 	    getDatabase().write( page, 0, getPageSize() );
 	    // @@HIGH moet hier niet vuil=false gedaan worden?

@@ -39,6 +39,7 @@ public void setup()
 {
 	savedConfigString = config.getConfig();
 	config.switchConfig( Config.PIPOKDKT );
+	vm.open( "rw" );
 	vm.setPageSizeCalculator( getPageSizeCalculator() );
 }
 @AfterEach
@@ -104,11 +105,17 @@ private void writePage0WithAllOnes()
 }
 private void writePageWithAll( long aPageNumber, int aCacheNumber, byte aValue )
 {
+	long schijfAdres = aPageNumber * vm.getCache().getPageSize();
+	int databaseSize = getPageSizeCalculator().getDatabaseSize( getConfig().getAantalStukken() );
+	if ( schijfAdres > databaseSize )
+	{
+		throw new RuntimeException( "Schjfadres te groot: " + schijfAdres + " max " + databaseSize );
+	}
 	byte [] page = TestHelper.createPageWithAll( getPageSizeCalculator(), config.getAantalStukken(), aValue );
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( InRam )
 		.cacheNummer( aCacheNumber )
-		.schijfAdres( aPageNumber * vm.getCache().getPageSize() )
+		.schijfAdres( schijfAdres )
 		.build();
 	CacheEntry cacheEntry = CacheEntry.builder()
 		.generatie( 15 )
@@ -150,8 +157,8 @@ void checkIfDatabaseEntryIsZero( VMStelling aVmStelling )
 @Test
 public void testGetPage()
 {
-	long pageNumber = 27L;
-	int cacheNumber = 27;
+	long pageNumber = 7L;
+	int cacheNumber = 7;
 	byte value = (byte)0xf0;
 
 	writePageWithAll( pageNumber, cacheNumber, value );
@@ -187,8 +194,8 @@ public void testGetPage()
 @Test
 public void testGet()
 {
-	long pageNumber = 27L;
-	int cacheNumber = 25;
+	long pageNumber = 7L;
+	int cacheNumber = 6;
 	byte value = (byte)0xff;
 
 	writePageWithAll( pageNumber, cacheNumber, value );
@@ -212,8 +219,8 @@ public void testGet()
 @Test
 public void testPut()
 {
-	long pageNumber = 11L;
-	int cacheNumber = 23;
+	long pageNumber = 4L;
+	int cacheNumber = 7;
 	byte value = (byte)0xf0;
 
 	writePageWithAll( pageNumber, cacheNumber, value );
@@ -253,7 +260,7 @@ public void testPut()
 public void testFreeRecord()
 {
 	long pageNumber = 9L;
-	int cacheNumber = 21;
+	int cacheNumber = 5;
 	byte value = (byte)0xe0;
 
 	byte [] page = TestHelper.createPageWithAll( getPageSizeCalculator(), config.getAantalStukken(), value );
@@ -299,7 +306,7 @@ public void testCloseWithDatabaseOpen()
 @Test
 public void testOpen()
 {
-	vm.open();
+	vm.open( "rw" );
 	assertThat( vm.getDatabase(), is( notNullValue() ) );
 	// @@NOG Tests maken
 }
@@ -354,15 +361,15 @@ public void testDatabasesWeCannotDelete() throws FileNotFoundException
 	vm.create();
 	assertThrows( RuntimeException.class, () -> vm.delete() );
 	// Met de hand weggooien
-	File file = new File( "dbs.bizarplunk" );
+	File file = new File( "dbs/bizarplunk" );
 	file.delete();
 	
 	vm.setDatabaseName( "dbs/TestKDK.DBS" );
-	vm.create();
+//	vm.create();
 	file = new File( "dbs/TestKDK.DBS" );
 	assertTrue( file.exists() );
 	vm.setDatabaseFile( file );
-	vm.setDatabase( new RandomAccessFile( file, "rw" ) );
+	vm.setDatabase( new RandomAccessFile( file, "r" ) );
 	assertThrows( RuntimeException.class, () -> vm.delete() );
 	
 	vm.setDatabaseName( "dbs/PipoKDK.DBS" );

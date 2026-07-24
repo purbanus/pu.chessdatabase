@@ -44,6 +44,7 @@ public void setup()
 	savedConfigString = config.getConfig();
 	config.switchConfig( Config.PIPOKDKT );
 	vm.setPageSizeCalculator( getPageSizeCalculator() );
+	vm.open( "rw" );
 	cache = new MockCache( vm.getCache() );
 }
 @AfterEach
@@ -513,10 +514,10 @@ public void testGetAllPositionsWithinPage5Stukken()
 					for ( int s5 = 0; s5 < MAX_STUK; s5++ )
 					{
 						vmStelling.setS5( s5 );
-						if ( pos == 1 && vm.getCache().getPositionWithinPage( vmStelling ) == 64 )
-						{
-							System.out.println( "gottit" );
-						}
+//						if ( pos == 1 && vm.getCache().getPositionWithinPage( vmStelling ) == 64 )
+//						{
+//							System.out.println( "gottit" );
+//						}
 						assertThat( vm.getCache().getPositionWithinPage( vmStelling ), is( pos ) );
 						pos++;
 					}
@@ -653,7 +654,8 @@ public void testFlushWithSomePagesPresentAndVuil()
 	byte [] page = TestHelper.createPageWithAllOnes( getPageSizeCalculator(), config.getAantalStukken() );
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( InRam )
-		.cacheNummer( 1 )
+		// Je moet hier cachenummber=0 gebruiken want verderop staat de WK op a1 en dat is cachenummer 0
+		.cacheNummer( 0 )
 		.schijfAdres( 0L )
 		.build();
 	CacheEntry cacheEntry = CacheEntry.builder()
@@ -664,6 +666,8 @@ public void testFlushWithSomePagesPresentAndVuil()
 		.build();
 	getCache().setCacheEntry( pageDescriptor, cacheEntry );
 	
+	// Deze doet er eigenlijk niet zoveel toe. Er worden bij de flush nog wat extra enen 
+	// naar de database g7eschreven, dat is alles
 	pageDescriptor = PageDescriptor.builder()
 		.waar( InRam )
 		.cacheNummer( 5 )
@@ -680,6 +684,7 @@ public void testFlushWithSomePagesPresentAndVuil()
 	getCache().flush();
 
 	// Lees de eerste twee paginas en check of die allemaal 1 zijn
+	// N.B. Bij de parallelCache wordt steeds de cacheEntry 0 uitgelezen, zowel voor Wit als voor Zwart.
 	VMStelling vmStelling = VMStelling.builder()
 		.wk( 0x00 )
 		.zk( 0x00 )

@@ -2,6 +2,7 @@ package pu.chessdatabase.dbs;
 
 import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.dbs.Resultaat.*;
+import static pu.chessdatabase.dbs.VM.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,6 @@ import lombok.Data;
 @Data
 public class VMStellingIterator
 {
-
 public static final boolean HOU_STELLINGEN_BIJ = false;
 public static int [][] cloneArray( int [][] aArrayToClone )
 {
@@ -55,11 +55,10 @@ public void clearTellingen()
 	tellingen = newTellingen();
 	stellingTeller = 0;
 }
-public void setReport( int aReportFrequency, ReportFunction aReportFunction, boolean aDoAllPositions )
+public void setReport( int aReportFrequency, ReportFunction aReportFunction )
 {
 	reportFrequency = aReportFrequency;
 	reportFunction = aReportFunction;
-	doAllPositions = aDoAllPositions;
 	clearTellingen();
 }
 void report()
@@ -70,66 +69,28 @@ void report()
 	}
 
 }
-public void iterateOverWkZk( VMSimpleIteratorFunction aVmSimpleIteratorFunction )
-{
-	// @@HIGH Moet je hier niet over AanZet itereren?
-	VMStelling vmStelling = new VMStelling();
-	for ( int wk = 0; wk < 10; wk++)
-	{
-		vmStelling.setWk( wk );
-		for ( int zk = 0; zk < 64; zk++ )
-		{
-			vmStelling.setZk( zk );
-			for ( Kleur aanZet : Kleur.values() )
-			{
-				vmStelling.setAanZet( aanZet );
-				aVmSimpleIteratorFunction.doPass( vmStelling );
-			}
-		}
-	}
-	report();
-}
-public void iterateOverWkZkWit( PassFunction aPassFunction )
-{
-	VMStelling vmStelling = new VMStelling();
-	vmStelling.setAanZet( Wit );
-	BoStelling boStelling = new BoStelling();
-	boStelling.setAanZet( Wit );
-	for ( int zk = 0; zk < 64; zk++ )
-	{
-		vmStelling.setZk( zk );
-		boStelling.setZk( Dbs.CVT_STUK[zk] );
-		for ( int wk = 0; wk < 10; wk++ )
-		{
-			vmStelling.setWk( wk );
-			boStelling.setWk( Dbs.CVT_WK[wk] );
-			iterateOverPiecesOnlyWhite( boStelling, vmStelling, aPassFunction );
-		}
-	}
-	report();
-
-}
-public void iterateOverWkZk( Kleur aKleur, PassFunction aPassFunction )
+public void iterateOverWkZkOneColour( Kleur aKleur, PassFunction aPassFunction )
 {
 	VMStelling vmStelling = new VMStelling();
 	vmStelling.setAanZet( aKleur );
 	BoStelling boStelling = new BoStelling();
 	boStelling.setAanZet( aKleur );
-	for ( int zk = 0; zk < 64; zk++ )
+	for ( int wk = 0; wk < MAX_WK; wk++ )
 	{
-		vmStelling.setZk( zk );
-		boStelling.setZk( Dbs.CVT_STUK[zk] );
-		for ( int wk = 0; wk < 10; wk++ )
+		vmStelling.setWk( wk );
+		boStelling.setWk( Dbs.CVT_WK[wk] );
+		for ( int zk = 0; zk < MAX_STUK; zk++ )
 		{
-			vmStelling.setWk( wk );
-			boStelling.setWk( Dbs.CVT_WK[wk] );
-			iterateOverPiecesOnlyWhite( boStelling, vmStelling, aPassFunction );
+			vmStelling.setZk( zk );
+			boStelling.setZk( Dbs.CVT_STUK[zk] );
+			iterateOverPiecesOneColour( boStelling, vmStelling, aPassFunction );
 		}
 	}
+	report();
 }
 
 // @@HIGH Je kunt dit aanroepen in iterateOverAllPieces
-public void iterateOverPiecesOnlyWhite( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
+void iterateOverPiecesOneColour( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
 {
 	BoStelling boStelling = aBoStelling.clone();
 	VMStelling vmStelling = aVmStelling.clone();

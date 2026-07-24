@@ -6,9 +6,9 @@ package pu.chessdatabase.dbs;
 //===================================================================================================================== 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static pu.chessdatabase.bo.Kleur.Wit;
-import static pu.chessdatabase.dbs.Lokatie.InRam;
-import static pu.chessdatabase.dbs.Lokatie.OpSchijf;
+import static pu.chessdatabase.bo.Kleur.*;
+import static pu.chessdatabase.dbs.Lokatie.*;
+import static pu.chessdatabase.dbs.CacheType.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ public class TestSerialPageDescriptorTable
 {
 @Autowired private Config config;
 private PageDescriptorTable pageDescriptorTable;
-private PageSizeCalculator pageSizeCalculator = new PageSizeCalculator();
+private PageSizeCalculator pageSizeCalculator = new PageSizeCalculator( Serial );
 private Cache cache;
 @BeforeEach
 public void setup()

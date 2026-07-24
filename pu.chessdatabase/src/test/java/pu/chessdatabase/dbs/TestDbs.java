@@ -7,10 +7,12 @@ package pu.chessdatabase.dbs;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static pu.chessdatabase.bo.Kleur.*;
+import static pu.chessdatabase.dbs.CacheType.*;
 import static pu.chessdatabase.dbs.Constants.*;
 import static pu.chessdatabase.dbs.PassType.*;
 import static pu.chessdatabase.dbs.Resultaat.*;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,6 +63,19 @@ public void doReport( int aStellingTeller, int [][] aTellingen )
 	if ( DO_PRINT )
 	{
 		System.out.println( "Dbs Aantal Stellingen: " + aStellingTeller );
+	}
+}
+@SuppressWarnings( "unused" )
+private void printPage( byte [] aPage )
+{
+	System.out.println( "Page length: " + aPage.length );
+	for ( int row = 0; row < aPage.length; row += 64 )
+	{
+		for ( int col = 0; col < 64; col++ )
+		{
+			//System.out.print( aPage[row + col] + " " );
+		}
+		//System.out.println();
 	}
 }
 @Test
@@ -696,88 +711,72 @@ public void testDelete()
 {
 	// Dit is verder in TestVM al getest
 }
-void set0x8b( BoStelling aBoStelling )
+void checkWitEnZwartPages( VMStelling aVmStelling, int aWitValue, int aZwartValue )
 {
-	aBoStelling.setResultaat( Gewonnen );
-	aBoStelling.setAantalZetten( 0x8b );
-	dbs.put( aBoStelling );
+	byte [] page;
+	if ( vm.getPageSizeCalculator().getCacheType() == Serial )
+	{
+		aVmStelling.setAanZet( Wit );
+		page = vm.getPage( aVmStelling );
+		assertThat( TestHelper.isAll( page, (byte)aWitValue ), is( true ) );
+		aVmStelling.setAanZet( Zwart );
+		page = vm.getPage( aVmStelling );
+		assertThat( TestHelper.isAll( page, (byte)aZwartValue ), is( true ) );
+	}
+	else
+	{
+		aVmStelling.setAanZet( Wit );
+		page = vm.getPage( aVmStelling );
+		boolean wit = true;
+		for ( int x = 0; x < page.length; x += 4096 )
+		{
+			byte [] subPage = ArrayUtils.subarray( page, x, x + 4096 );
+			if ( wit )
+			{
+				assertThat( TestHelper.isAll( subPage, (byte)aWitValue ), is( true ) );
+			}
+			else
+			{
+				assertThat( TestHelper.isAll( subPage, (byte)aZwartValue ), is( true ) );
+			}
+			wit = ! wit;
+		}
+	}
 }
+
 @Test
-public void testMarkeerWitPassMet0x0b()
+public void testMarkeerWitPassMet0x37()
 {
 	dbs.setReport( (int)dbs.getDatabaseSize() / 10, this::doReport );
 
 	// Dit is een pass over alle witstellingen maar die alles dubbel telt
-	dbs.markeerWitPass( this::set0x0b );
+	dbs.markeerWitPass( this::set0x37 );
 	dbs.flush();
 	assertThat( vmStellingIterator.getStellingTeller(), is( 10 * 64 * 64 * 64 * 2 ) );
-	
-	vmStellingIterator.clearTellingen();
 	// De even pagina's moeten nu allmaal 0x0b zijn, oftewel alle pagina's met wit aan zet
 	// Dit is eveneens een pass over alle witstellingen maar die alles dubbel telt4
-	vmStellingIterator.iterateOverWkZkWit( this::checkMarkeerPassMet0x0b );
-	assertThat( vmStellingIterator.getStellingTeller(), is( 10 * 64 * 64 * 64 * 2 ) );
+	vm.getPageDescriptorTable().iterateOverAllPageDescriptors( this::checkMarkeerPassMet0x37 );
 }
-void checkMarkeerPassMet0x0b( BoStelling aBoStelling )
-{
-	VMStelling vmStelling = dbs.cardinaliseer( aBoStelling );
-
-	byte []  page;
-	vmStelling.setAanZet( Wit );
-	page = vm.getPage( vmStelling );
-	assertThat( TestHelper.isAll( page, (byte)0x0b ), is( true ) );
-	vmStelling.setAanZet( Zwart );
-	page = vm.getPage( vmStelling );
-	assertThat( TestHelper.isAll( page, (byte)0x00 ), is( true ) );
-}
-@Test
-public void testMarkeerWitPassMet0x8b()
-{
-	dbs.setReport( (int)dbs.getDatabaseSize() / 10, this::doReport );
-
-	// Alles in de database is nu 0x00 (Remise)
-	
-	// markeerWitPass runt over alle witstellingen maar telt alles dubbel
-	dbs.markeerWitPass( this::set0x8b );
-	dbs.flush();
-	assertThat( vmStellingIterator.getStellingTeller(), is( 10 * 64 * 64 * 64 * 2 ) );
-	vmStellingIterator.clearTellingen();
-	
-	// De even pagina's moeten nu allmaal 0x8b zijn, oftewel alle pagina's met wit aan zet, maar dan wordt alles dubbel geteld
-
-	// iterateOverWkZkWit runt ook over alle witstellingen maar telt alles dubbel
-	vmStellingIterator.iterateOverWkZkWit( this::checkMarkeerPassMet0x8b );
-	assertThat( vmStellingIterator.getStellingTeller(), is( 10 * 64 * 64 * 64 * 2 ) );
-}
-void set0x0b( BoStelling aBoStelling )
+void set0x37( BoStelling aBoStelling )
 {
 	aBoStelling.setResultaat( Gewonnen );
-	aBoStelling.setAantalZetten( 0x0b );
+	aBoStelling.setAantalZetten( 0x37 );
 	dbs.put( aBoStelling );
 }
-void checkMarkeerPassMet0x8b( BoStelling aBoStelling )
+void checkMarkeerPassMet0x37( VMStelling aVmStelling )
 {
-	VMStelling vmStelling = dbs.cardinaliseer( aBoStelling );
-
-	byte [] page;
-	vmStelling.setAanZet( Wit );
-	page = vm.getPage( vmStelling );
-	assertThat( TestHelper.isAll( page, (byte)0x8b ), is( true ) );
-	vmStelling.setAanZet( Zwart );
-	page = vm.getPage( vmStelling );
-	assertThat( TestHelper.isAll( page, (byte)0x00 ), is( true ) );
+	checkWitEnZwartPages( aVmStelling, 0x37, 0x00 );
 }
-
 @Test
-public void testMarkeerZwartPass()
+public void testMarkeerZwartPassMet0x11()
 {
 	dbs.setReport( (int)dbs.getDatabaseSize() / 10, this::doReport );
 
 	dbs.markeerZwartPass( this::set0x11 );
 	dbs.flush();
-	
+	assertThat( vmStellingIterator.getStellingTeller(), is( 10 * 64 * 64 * 64 * 2 ) );
 	// De even pagina's moeten nu allmaal 0x11 zijn, oftewel alle pagina's met zwart aan zet
-	vmStellingIterator.iterateOverWkZk( this::checkMarkeerPassMet0x11 );
+	vm.getPageDescriptorTable().iterateOverAllPageDescriptors( this::checkMarkeerPassMet0x11 );
 }
 void set0x11( BoStelling aBoStelling )
 {
@@ -787,54 +786,25 @@ void set0x11( BoStelling aBoStelling )
 }
 void checkMarkeerPassMet0x11( VMStelling aVmStelling )
 {
-	byte [] page;
-	aVmStelling.setAanZet( Wit );
-	page = vm.getPage( aVmStelling );
-	if ( ! TestHelper.isAll( page, (byte)0x00 ) )
-	{
-		System.out.println( "Hebbes!" );
-		System.out.println( aVmStelling );
-		printPage( page );
-	}
-	assertThat( TestHelper.isAll( page, (byte)0x00 ), is( true ) );
-	aVmStelling.setAanZet( Zwart );
-	page = vm.getPage( aVmStelling );
-	assertThat( TestHelper.isAll( page, (byte)0x11 ), is( true ) );
-}
-private void printPage( byte [] aPage )
-{
-	System.out.println( "Page length: " + aPage.length );
-	for ( int row = 0; row < aPage.length; row += 64 )
-	{
-		for ( int col = 0; col < 64; col++ )
-		{
-			//System.out.print( aPage[row + col] + " " );
-		}
-		//System.out.println();
-	}
-}
-void set0x34( BoStelling aBoStelling )
-{
-	aBoStelling.setResultaat( Gewonnen );
-	aBoStelling.setAantalZetten( 0x34 );
-	dbs.put( aBoStelling );
+	checkWitEnZwartPages( aVmStelling, 0x00, 0x11 );
 }
 @Test
-public void testMarkeerWitEnZwartPass()
+public void testMarkeerWitEnZwartPassMet0x34()
 {
 	dbs.setReport( (int)dbs.getDatabaseSize() / 10, this:: doReport );
 
 	dbs.markeerWitEnZwartPass( this::set0x34 );
 	dbs.flush();
 	assertThat( vmStellingIterator.getStellingTeller(), is( 10 * 64 * 64 * 64 * 2 ) );
-	vmStellingIterator.clearTellingen();
 
 	// Alle pagina's moeten nu 0x34 zijn
-	vmStellingIterator.iterateOverWkZk( this::checkMarkeerPassMet0x34 );
-	
-	// Die iterateOverWkZk telt niets!
-	assertThat( vmStellingIterator.getStellingTeller(), is( 0 ) );
-
+	vm.getPageDescriptorTable().iterateOverAllPageDescriptors( this::checkMarkeerPassMet0x34 );
+}
+void set0x34( BoStelling aBoStelling )
+{
+	aBoStelling.setResultaat( Gewonnen );
+	aBoStelling.setAantalZetten( 0x34 );
+	dbs.put( aBoStelling );
 }
 void checkMarkeerPassMet0x34( VMStelling vmStelling )
 {
@@ -844,15 +814,45 @@ void checkMarkeerPassMet0x34( VMStelling vmStelling )
 @Test
 public void testPass()
 {
+	vmStellingIterator.setDoAllPositions( true );
+	
 	dbs.setReport( (int)dbs.getDatabaseSize() / 10, this:: doReport );
-	dbs.pass( MarkeerWit, this::set0x0b );
+	dbs.pass( MarkeerWit, this::set0x0b, "rw" );
 	assertThat( vmStellingIterator.getStellingTeller(), is( 10 * 64 * 64 * 64 * 2) );
 	vmStellingIterator.clearTellingen();
-//	dbs.pass( MARKEER_ZWART, this::set0x0b );
-	dbs.pass( MarkeerWitEnZwart, this::set0x0b );
-	// Die markeer-methodes zijn hierboven al getest, we checken hier alleen of de aanroepjes goed gaan
+	dbs.pass( MarkeerZwart, this::set0x0b, "rw" );
 	assertThat( vmStellingIterator.getStellingTeller(), is( 10 * 64 * 64 * 64 * 2 ) );
+	vm.getPageDescriptorTable().iterateOverAllPageDescriptors( this::checkMarkeerPassMet0x0b );
+
+	vmStellingIterator.clearTellingen();
+	dbs.pass( MarkeerWitEnZwart, this::set0x17, "rw" );
+	assertThat( vmStellingIterator.getStellingTeller(), is( 10 * 64 * 64 * 64 * 2 ) );
+	vm.getPageDescriptorTable().iterateOverAllPageDescriptors( this::checkMarkeerPassMet0x17 );
 }
+void set0x0b( BoStelling aBoStelling )
+{
+	aBoStelling.setResultaat( Gewonnen );
+	aBoStelling.setAantalZetten( 0x0b );
+	dbs.put( aBoStelling );
+}
+void checkMarkeerPassMet0x0b( VMStelling vmStelling )
+{
+	byte [] page = vm.getPage( vmStelling );
+	assertThat( TestHelper.isAll( page, (byte)0x0b ), is( true ) );
+}
+void set0x17( BoStelling aBoStelling )
+{
+	aBoStelling.setResultaat( Gewonnen );
+	aBoStelling.setAantalZetten( 0x17 );
+	dbs.put( aBoStelling );
+}
+void checkMarkeerPassMet0x17( VMStelling vmStelling )
+{
+	byte [] page = vm.getPage( vmStelling );
+	assertThat( TestHelper.isAll( page, (byte)0x17 ), is( true ) );
+}
+
+
 /*
 public static final int [] OktTabel = {
    1,1,1,1,2,2,2,2,0,0,0,0,0,0,0,0,

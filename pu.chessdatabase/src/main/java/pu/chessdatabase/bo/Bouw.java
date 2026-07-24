@@ -106,10 +106,13 @@ void telAndPrintAlles( boolean aDoPrint )
 	telAlles( aDoPrint );
 	if ( aDoPrint )
 	{
-		printAlles( vmStellingIterator.getTellingen() );
+		printAlles();
 	}
 }
-
+void printAlles()
+{
+	printAlles( vmStellingIterator.getTellingen() );
+}
 void printAlles( int [][] aArray)
 {
 	System.out.println( "Illegaal met wit aan zet  : " + aArray[0][0] );
@@ -244,15 +247,15 @@ void pass_0( boolean aDoPrint )
 	dbs.create();
 
 	reportNewPass( "Markeren illegale stellingen", aDoPrint );
-	dbs.pass( PassType.MarkeerWit, this::isIllegaal );
+	dbs.pass( PassType.MarkeerWit, this::isIllegaal, "rw" );
 
 	reportNewPass( "Markeren schaakjes", aDoPrint );
-	dbs.pass( PassType.MarkeerWit, this::schaakjes );
+	dbs.pass( PassType.MarkeerWit, this::schaakjes, "rw" );
 
 //	dbs.setReport( 100, this::showThisPass );
 //	reportNewPass( "Matstellingen" );
-	dbs.pass( PassType.MarkeerWit  , this::isMat );
-	dbs.pass( PassType.MarkeerZwart, this::isMat );
+	dbs.pass( PassType.MarkeerWit  , this::isMat, "rw" );
+	dbs.pass( PassType.MarkeerZwart, this::isMat, "rw" );
 }
 /**
  * ------- Markeer een stelling gewonnen/verloren -----------
@@ -370,10 +373,10 @@ void pass_n()
 {
 //	dbs.setReport( 100, this::showThisPass );
 //	reportNewPass( "Wit aan zet" );
-	dbs.pass( PassType.MarkeerWit, this::markeer );
+	dbs.pass( PassType.MarkeerWit, this::markeer, "rw" );
 
 //	reportNewPass( "Zwart aan zet" );
-	dbs.pass( PassType.MarkeerZwart, this::markeer );
+	dbs.pass( PassType.MarkeerZwart, this::markeer, "rw" );
 }
 /**
  * ---------- Markeer tot er niets meer verandert ------------------
@@ -396,6 +399,7 @@ public void bouwDatabase()
 //		printAllesMetKleur();
 	}
 	System.out.println( "Totaaltijd: " + timer.getElapsedMs() );
+	telAndPrintAlles( true );
 }
 
 }

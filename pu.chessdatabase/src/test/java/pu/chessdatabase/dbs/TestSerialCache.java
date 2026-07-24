@@ -6,7 +6,6 @@ package pu.chessdatabase.dbs;
 //===================================================================================================================== 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
-
 import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.dbs.CacheType.*;
 import static pu.chessdatabase.dbs.Constants.*;
@@ -23,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.Config;
-import pu.chessdatabase.bo.Kleur;
 import pu.services.MatrixFormatter;
 import pu.services.StopWatch;
 
@@ -44,6 +42,7 @@ public void setup()
 	savedConfigString = config.getConfig();
 	config.switchConfig( Config.PIPOKDKT );
 	vm.setPageSizeCalculator( pageSizeCalculator );
+	vm.open( "rw" );
 	cache = new MockCache( vm.getCache() );
 }
 @AfterEach
@@ -530,10 +529,10 @@ public void testGetAllPositionsWithinPage5Stukken()
 			for ( int s5 = 0; s5 < MAX_STUK; s5++ )
 			{
 				vmStelling.setS5( s5 );
-				if ( pos == 1 && vm.getCache().getPositionWithinPage( vmStelling ) == 64 )
-				{
-					System.out.println( "gottit" );
-				}
+//				if ( pos == 1 && vm.getCache().getPositionWithinPage( vmStelling ) == 64 )
+//				{
+//					System.out.println( "gottit" );
+//				}
 				assertThat( vm.getCache().getPositionWithinPage( vmStelling ), is( pos ) );
 				pos++;
 			}
@@ -652,12 +651,17 @@ public void testFlushWithSomePagesPresentButNoneVuil()
 @Test
 public void testFlushWithSomePagesPresentAndVuil()
 {
-	byte [] page = TestHelper.createPageWithAllOnes(getPageSizeCalculator(), config.getAantalStukken() );
-	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( InRam )
-		.cacheNummer( 1 )
-		.schijfAdres( 0L )
+	VMStelling vmStelling = VMStelling.builder()
+		.wk( 0x00 )
+		.zk( 0x00 )
+		.s3( 0x01 )
+		.s4( 0x17 )
+		.aanZet( Wit )
 		.build();
+
+	byte [] page = TestHelper.createPageWithAllOnes(getPageSizeCalculator(), config.getAantalStukken() );
+	PageDescriptor pageDescriptor = vm.getPageDescriptor( vmStelling );
+	pageDescriptor.setCacheNummer( 0 );
 	CacheEntry cacheEntry = CacheEntry.builder()
 		.generatie( 2156 )
 		.pageDescriptor( pageDescriptor )
@@ -665,12 +669,10 @@ public void testFlushWithSomePagesPresentAndVuil()
 		.vuil( true )
 		.build();
 	getCache().setCacheEntry( pageDescriptor, cacheEntry );
-	
-	pageDescriptor = PageDescriptor.builder()
-		.waar( InRam )
-		.cacheNummer( 15 )
-		.schijfAdres( 4096L )
-		.build();
+
+	vmStelling.setAanZet( Zwart );
+	pageDescriptor = vm.getPageDescriptor( vmStelling );
+	pageDescriptor.setCacheNummer( 1 );
 	cacheEntry = CacheEntry.builder()
 		.generatie( 9500 )
 		.pageDescriptor( pageDescriptor )
@@ -682,13 +684,7 @@ public void testFlushWithSomePagesPresentAndVuil()
 	getCache().flush();
 
 	// Lees de eerste twee paginas en check of die allemaal 1 zijn
-	VMStelling vmStelling = VMStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x00 )
-		.s3( 0x01 )
-		.s4( 0x17 )
-		.aanZet( Wit )
-		.build();
+	vmStelling.setAanZet( Wit );
 	PageDescriptor newPageDescriptor = vm.getPageDescriptor( vmStelling );
 	byte [] newPage = getCache().getPage( newPageDescriptor );
 	assertThat( TestHelper.isAllOne( newPage ), is( true ) );

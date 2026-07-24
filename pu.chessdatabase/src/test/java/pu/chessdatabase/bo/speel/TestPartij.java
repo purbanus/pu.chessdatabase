@@ -885,6 +885,7 @@ public void testCreateZetDocument()
 		.zetNummer( 2 )
 		.witZet( "Db2-b8+" )
 		.zwartZet( "..." )
+		.currrentZet( true )
 		.build();
 	// Je mag createZetDocument niet meer aanroepen met een ply waarin Zwart aan zet is
 	/* Exception exception = */ assertThrows( RuntimeException.class, () -> partij.createZetDocument( 0 ) );
@@ -941,6 +942,7 @@ public void testCreateZetten()
 		.zetNummer( 2 )
 		.witZet( "Db2-b8+" )
 		.zwartZet( "..." )
+		.currrentZet( true )
 		.build();
 
 	assertThat( zetten.size(), is( 2 ) );

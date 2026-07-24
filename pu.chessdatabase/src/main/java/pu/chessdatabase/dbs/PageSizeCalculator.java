@@ -12,7 +12,7 @@ import lombok.Getter;
 @Data
 public class PageSizeCalculator
 {
-public static final CacheType DEFAULT_CACHE_TYPE = Serial;
+public static final CacheType DEFAULT_CACHE_TYPE = Parallel;
 
 @Getter( AccessLevel.PACKAGE ) 
 private final CacheType cacheType;

@@ -147,12 +147,13 @@ public Dbs( VM aVm )
 }
 public void setReport( int aReportFrequency, ReportFunction aReportFunction )
 {
-	setReport( aReportFrequency, aReportFunction, false );
+	vmStellingIterator.setReport( aReportFrequency, aReportFunction );
 }
-public void setReport( int aReportFrequency, ReportFunction aReportFunction, boolean aDoAllPositions )
+public void setDoAllPositions( boolean aDoAllPositions )
 {
-	vmStellingIterator.setReport( aReportFrequency, aReportFunction, aDoAllPositions );
+	vmStellingIterator.setDoAllPositions( aDoAllPositions );
 }
+
 /**
  * ------- Naam geven -------------------
  */
@@ -325,7 +326,11 @@ public void create()
  */
 public void open()
 {
-	vm.open();
+	open( "r" );
+}
+public void open( String aMode )
+{
+	vm.open( aMode );
 }
 public void flush()
 {
@@ -363,19 +368,15 @@ public void delete()
  */
 void markeerWitPass( PassFunction aPassFunction )
 {
-	vmStellingIterator.iterateOverWkZkWit(  aPassFunction/*, this::callPass345*/ );
+	vmStellingIterator.iterateOverWkZkOneColour( Wit, aPassFunction );
 }
-//void callPass345( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
-//{
-//	pass345( aBoStelling, aVmStelling, aPassFunction );
-//}
 /**
  * --------- Pass over de remisestellingen met zwart aan zet -------------
  */
 void markeerZwartPass( PassFunction aPassFunction )
 {
 	// @@NOG Deze doet het dus niet
-	vmStellingIterator.iterateOverWkZk( Zwart, aPassFunction );
+	vmStellingIterator.iterateOverWkZkOneColour( Zwart, aPassFunction );
 }
 /**
  * --------- Pass over alle stellingen -------------
@@ -395,7 +396,11 @@ void markeerWitEnZwartPass( PassFunction aPassFunction )
 //}
 public void pass( PassType aPassType, PassFunction aPassFunction )
 {
-	open();
+	pass( aPassType, aPassFunction, "r" );
+}
+public void pass( PassType aPassType, PassFunction aPassFunction, String aOpenMode )
+{
+	open( aOpenMode );
 	switch ( aPassType )
 	{
 		case MarkeerWit: markeerWitPass( aPassFunction ); break;

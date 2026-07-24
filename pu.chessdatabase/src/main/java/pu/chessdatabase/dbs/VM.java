@@ -159,7 +159,7 @@ public void switchConfig()
 	}
 	else
 	{
-		open();
+		open( "r" );
 	}
 }
 public String getDatabaseName()
@@ -169,6 +169,14 @@ public String getDatabaseName()
 		databaseName = getConfig().getDatabaseName();
 	}
 	return databaseName;
+}
+public File getDatabaseFile()
+{
+	if ( databaseFile == null )
+	{
+		createFile( getDatabaseName() );
+	}
+	return databaseFile;
 }
 public void setDatabaseName( String aDatabaseName )
 {
@@ -267,15 +275,11 @@ void checkDatabaseFile( String aFileNaam )
 	{
 		throw new RuntimeException( "Kan file niet lezen: " + aFileNaam );
 	}
-	if ( ! getDatabaseFile().canWrite() )
-	{
-		throw new RuntimeException( "Kan niet naar file schrijven: " + aFileNaam );
-	}
 }
 /**
  *  ----------- Openen van een database -------------
  */
-public void open()
+public void open( String aMode ) 
 {
 	if ( getDatabaseName() == null || getDatabaseName().length() == 0 )
 	{
@@ -291,7 +295,7 @@ public void open()
 		/**Zie doc for mode = "rwd" or "rws". "rw" betekent volgens mij dat een update direct naar
 		 * schijf wordt geschreven. "rwd" en "rws" cachen dat enigszins.
 		 */
-		database = new RandomAccessFile( getDatabaseFile(), "rw" ); 
+		database = new RandomAccessFile( getDatabaseFile(), aMode ); 
 	}
 	catch ( FileNotFoundException e )
 	{
@@ -325,10 +329,13 @@ public void create()
 	{
 		throw new RuntimeException( "Geen naam opgegeven voor de database" );
 	}
-
+	if ( ! getDatabaseFile().canWrite() )
+	{
+		throw new RuntimeException( "Kan niet naar file schrijven: " + getDatabaseFile() );
+	}
 	close();
 	createFile( getDatabaseName() );
-	open();
+	open( "rw" );
 	initializeDatabase();
 }
 void initializeDatabase()
