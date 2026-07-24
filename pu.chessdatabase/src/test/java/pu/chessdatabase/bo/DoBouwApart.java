@@ -35,7 +35,7 @@ public void buildKDK()
 	config.switchConfig( Config.KDK );
 	bouw.bouwDatabase();
 }
-@Test
+//@Test
 public void buildKTK()
 {
 	config.switchConfig( Config.KTK );
@@ -51,15 +51,15 @@ public void buildKDKT()
 	bouw.bouwDatabase();
 }
 //@Test
-public void buildKLPK()
-{
-	config.switchConfig( Config.KLPK );
-	bouw.bouwDatabase();
-}
-//@Test
 public void buildKLLK()
 {
 	config.switchConfig( Config.KLLK );
+	bouw.bouwDatabase();
+}
+//@Test
+public void buildKLPK()
+{
+	config.switchConfig( Config.KLPK );
 	bouw.bouwDatabase();
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -75,13 +75,13 @@ public void buildKDKTT()
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Bouw van de testdatabases
 
-@Test
+//@Test
 public void buildTestKDK()
 {
 	config.switchConfig( Config.TESTKDK );
 	bouw.bouwDatabase();
 }
-@Test
+//@Test
 public void buildTestKTK()
 {
 	config.switchConfig( Config.TESTKTK );
@@ -91,6 +91,18 @@ public void buildTestKTK()
 public void buildTestKDKT()
 {
 	config.switchConfig( Config.TESTKDKT );
+	bouw.bouwDatabase();
+}
+//@Test
+public void buildTestKLLK()
+{
+	config.switchConfig( Config.TESTKLLK );
+	bouw.bouwDatabase();
+}
+//@Test
+public void buildTestKLPK()
+{
+	config.switchConfig( Config.TESTKLPK );
 	bouw.bouwDatabase();
 }
 //@Test
