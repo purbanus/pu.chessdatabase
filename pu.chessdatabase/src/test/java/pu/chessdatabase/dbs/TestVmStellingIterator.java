@@ -57,7 +57,7 @@ public void testSetReport()
 	vmStellingIterator.setStellingTeller( 1500 );
 	vmStellingIterator.setReportFunction( null );
 	vmStellingIterator.setReportFrequency( 0 );
-	vmStellingIterator.setReport( 5000, bouw::showTellers, false );
+	vmStellingIterator.setReport( 5000, bouw::showTellers );
 	
 	totals = new int [][] { { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
 	assertThat( vmStellingIterator.getTellingen(), is( totals ) ); 

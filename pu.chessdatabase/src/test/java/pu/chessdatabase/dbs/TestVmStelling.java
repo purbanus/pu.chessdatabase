@@ -160,6 +160,6 @@ public void testBug20260708()
 		.s5( "h8" )
 		.aanZet( Wit )
 		.build();
-	System.out.println( vmStelling.toString() );
+	vmStelling.toString();
 }
 }
