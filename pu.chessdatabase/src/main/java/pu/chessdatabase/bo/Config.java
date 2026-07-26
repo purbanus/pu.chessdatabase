@@ -19,6 +19,7 @@ import pu.chessdatabase.bo.configuraties.PipoKDK;
 import pu.chessdatabase.bo.configuraties.PipoKDKT;
 import pu.chessdatabase.bo.configuraties.PipoKDKTT;
 import pu.chessdatabase.bo.configuraties.PipoKLLK;
+import pu.chessdatabase.bo.configuraties.PipoKLPK;
 import pu.chessdatabase.bo.configuraties.PipoKTK;
 import pu.chessdatabase.bo.configuraties.StukDefinitie;
 import pu.chessdatabase.bo.configuraties.TestKDK;
@@ -56,6 +57,7 @@ public static final PipoKDK PIPOKDK = new PipoKDK();
 public static final PipoKTK PIPOKTK = new PipoKTK();
 public static final PipoKDKT PIPOKDKT = new PipoKDKT();
 public static final PipoKLLK PIPOKLLK = new PipoKLLK();
+public static final PipoKLPK PIPOKLPK = new PipoKLPK();
 public static final PipoKDKTT PIPOKDKTT = new PipoKDKTT();
 private static List<Stuk> staticStukList = DEFAULT_CONFIG_IMPL.getStukken().getStukken();
 private static Stukken staticStukken = DEFAULT_CONFIG_IMPL.getStukken();
@@ -105,6 +107,7 @@ Map<String, ConfigImpl> getConfigImplRegistry()
 		configImplRegistry.put( "PIPO1KDK", PIPOKDK );
 		configImplRegistry.put( "PIPOKDKT", PIPOKDKT );
 		configImplRegistry.put( "PiPOKLLK", PIPOKLLK );
+		configImplRegistry.put( "PiPOKLPK", PIPOKLPK );
 		configImplRegistry.put( "PIPOKDKTT", PIPOKDKTT );
 	}
 	return configImplRegistry;
