@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pu.chessdatabase.bo.speel.Plies;
@@ -16,12 +15,14 @@ import lombok.Data;
 @Service
 public class PliesDao
 {
-@Autowired PliesRepository pliesRepository;
-@Autowired PliesQueryRepository pliesQueryRepository;
+final PliesRepository pliesRepository;
+final PliesQueryRepository pliesQueryRepository;
 
-public PliesDao()
+public PliesDao( PliesRepository aPliesRepository, PliesQueryRepository aPliesQueryRepository)
 {
 	super();
+	pliesRepository = aPliesRepository;
+	pliesQueryRepository = aPliesQueryRepository;
 }
 // Om het LazyInitializationException probleem op te lossen. Zie https://stackoverflow.com/questions/64762080/how-to-map-sql-native-query-result-into-dto-in-spring-jpa-repository?rq=1
 // - In de repository definieer je de ophaalmethode als List<Tuple> getBla

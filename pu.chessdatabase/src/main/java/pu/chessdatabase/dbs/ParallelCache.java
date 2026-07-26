@@ -2,7 +2,6 @@ package pu.chessdatabase.dbs;
 
 import static pu.chessdatabase.dbs.Lokatie.*;
 
-import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
@@ -11,7 +10,6 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode( callSuper=true )
-
 class ParallelCache  extends AbstractCache
 {
 static final int CACHE_SIZE = VM.MAX_WK; // Aantal stellingen van de WK 

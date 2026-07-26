@@ -1,6 +1,6 @@
 package pu.chessdatabase.dbs;
 
-import pu.chessdatabase.dbs.CacheType.*;
+import static pu.chessdatabase.dbs.CacheType.*;
 
 import java.io.RandomAccessFile;
 
@@ -24,7 +24,7 @@ public abstract void flush();
 
 public static Cache create( PageSizeCalculator aPageSizeCalculator, int aAantalStukken, RandomAccessFile aDatabase )
 {
-	if ( aPageSizeCalculator.getCacheType() == CacheType.Serial )
+	if ( aPageSizeCalculator.getCacheType() == Serial )
 	{
 		return new SerialCache( aPageSizeCalculator, aAantalStukken, aDatabase );
 	}

@@ -468,7 +468,7 @@ public void testBedenk()
 		.schaak( false )
 		.build();
 	VanNaar vanNaar = new VanNaar( 0x11, 0x44 );
-	BoStelling newBoStelling = partij.newGame( boStellingVan );
+	partij.newGame( boStellingVan );
 	assertThat( partij.vanCurrentStandNaarToStelling( vanNaar ), is( boStellingNaar ) );
 	
 	assertThat( partij.bedenk(), is( boStellingNaar ) );
@@ -495,7 +495,7 @@ public void testCheckPartijVoorZet()
 	assertThrows( RuntimeException.class, () -> partij.checkPartijVoorZet( startStelling ) );
 	
 	// Het mag niet mat zijn
-	BoStelling boStelling = BoStelling.alfaBuilder()
+	BoStelling matStelling = BoStelling.alfaBuilder()
 		.wk( "f7" )
 		.zk( "h8" )
 		.s3( "h2" )
@@ -503,10 +503,10 @@ public void testCheckPartijVoorZet()
 		.s5( "f7" )
 		.aanZet( Zwart )
 		.build();
-	assertThrows( RuntimeException.class, () -> partij.checkPartijVoorZet( startStelling ) );
+	assertThrows( RuntimeException.class, () -> partij.checkPartijVoorZet( matStelling ) );
 
 	// Het mag niet pat zijn
-	boStelling = BoStelling.alfaBuilder()
+	BoStelling patStelling = BoStelling.alfaBuilder()
 		.wk( "f7" )
 		.zk( "h8" )
 		.s3( "h7" )
@@ -514,11 +514,11 @@ public void testCheckPartijVoorZet()
 		.s5( "f7" )
 		.aanZet( Zwart )
 		.build();
-	assertThrows( RuntimeException.class, () -> partij.checkPartijVoorZet( startStelling ) );
+	assertThrows( RuntimeException.class, () -> partij.checkPartijVoorZet( patStelling ) );
 
 	// De stelling mag niet null zijn
-	boStelling = null;
-	assertThrows( RuntimeException.class, () -> partij.checkPartijVoorZet( startStelling ) );
+	BoStelling nullStelling = null;
+	assertThrows( RuntimeException.class, () -> partij.checkPartijVoorZet( nullStelling ) );
 }
 @Test
 public void testZetStelling()
@@ -543,7 +543,7 @@ public void testZetStelling()
 		.schaak( false )
 		.build();
 	VanNaar vanNaar = new VanNaar( "h8-g8" );
-	BoStelling newBoStelling = partij.newGame( boStellingVan );
+	partij.newGame( boStellingVan );
 	assertThat( partij.vanCurrentStandNaarToStelling( vanNaar ), is( boStellingNaar ) );
 	
 	assertThat( partij.zetStelling( boStellingNaar ), is( boStellingNaar ) );
@@ -664,7 +664,7 @@ public void testZetMetZwart()
 	assertThat( partij.getPlies().isBegonnen(), is ( false ) );
 
 	VanNaar vanNaar = new VanNaar( "h8-g8" );
-	BoStelling newBoStelling = partij.newGame( boStellingVan );
+	partij.newGame( boStellingVan );
 	assertThat( partij.getPlies().isBegonnen(), is ( true ) );
 	assertThat( partij.vanCurrentStandNaarToStelling( vanNaar ), is( boStellingNaar ) );
 	
@@ -876,6 +876,7 @@ public void testCreateZetDocument()
 	partij.zet( vanNaar );
 	vanNaar = new VanNaar( "b2-b8" );
 	partij.zet( vanNaar );
+	@SuppressWarnings( "unused" )
 	ZetDocument zetDocument1 = ZetDocument.builder()
 		.zetNummer( 1 )
 		.witZet( "..." )

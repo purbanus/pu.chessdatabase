@@ -4,13 +4,9 @@ package pu.chessdatabase.bo;
 //BELANGRIJK
 //In Eclipse kan hij de volgende twee imports niet vinden. Deze moet je dus met de hand toevoegen
 //===================================================================================================================== 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.lessThan;
-import static org.hamcrest.Matchers.lessThanOrEqualTo;
-import static org.hamcrest.Matchers.startsWith;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.bo.ZetSoort.*;
 import static pu.chessdatabase.dbs.Constants.*;
@@ -32,19 +28,17 @@ import lombok.Data;
 @Data
 public class TestGenZonderSpringBoot
 {
-private Gen gen = new Gen();
-private VM vm = new VM();
+private Config config = new Config();
+private VM vm = new VM( config );
 private Dbs dbs = new Dbs( vm );
-private Config config = new Config( vm );
-{
-	vm.setConfig( config );
-	gen.setConfig( config );
-	gen.setDbs( dbs );
-}
+private Gen gen = new Gen( dbs, config );
+
 String savedConfigString;
+
 @BeforeEach
 public void setup()
 {
+	config.setVm( vm );
 	savedConfigString = config.getConfig();
 	config.switchConfig( Config.PIPOKDKT );
 	dbs.create();

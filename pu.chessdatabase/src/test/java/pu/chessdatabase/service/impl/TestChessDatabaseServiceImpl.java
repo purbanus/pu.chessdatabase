@@ -6,7 +6,6 @@ package pu.chessdatabase.service.impl;
 //===================================================================================================================== 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,10 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import pu.chessdatabase.bo.Config;
 import pu.chessdatabase.bo.speel.Partij;
 import pu.chessdatabase.bo.speel.Plies;
-import pu.chessdatabase.bo.speel.Ply;
-import pu.chessdatabase.bo.speel.VanNaar;
 import pu.chessdatabase.dal.PliesDao;
-import pu.chessdatabase.dbs.TestHelper;
 import pu.chessdatabase.service.NewGameDocument;
 import pu.chessdatabase.web.NewGameResponse;
 import pu.chessdatabase.web.SwitchConfigResponse;

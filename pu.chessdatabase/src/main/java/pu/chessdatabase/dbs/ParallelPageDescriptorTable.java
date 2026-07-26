@@ -2,10 +2,6 @@ package pu.chessdatabase.dbs;
 
 import static pu.chessdatabase.dbs.Lokatie.*;
 
-import java.util.ArrayList;
-
-import pu.chessdatabase.bo.Kleur;
-
 import lombok.Data;
 
 @Data

@@ -22,7 +22,6 @@ private final int pageSize3Stukken;
 private final int pageSize4Stukken;
 @Getter( AccessLevel.PRIVATE ) 
 private final int pageSize5Stukken;
-@Getter( AccessLevel.PRIVATE ) 
 private Map<Integer, Integer> pageSizeLookup = null;
 public PageSizeCalculator()
 {
@@ -45,7 +44,7 @@ public PageSizeCalculator( CacheType aCacheType )
 		pageSize5Stukken = 64 * 64 * 64 * 64 * 2;
 	}
 }
-public Map<Integer, Integer> getPageSizeLookup()
+private Map<Integer, Integer> getPageSizeLookup()
 {
 	if ( pageSizeLookup == null )
 	{

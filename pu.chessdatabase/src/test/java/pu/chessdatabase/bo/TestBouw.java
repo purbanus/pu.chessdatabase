@@ -40,8 +40,7 @@ private static final boolean DO_PRINT = false;
 @Autowired private Dbs dbs;
 @Autowired private VM vm;
 @Autowired private Gen gen;
-@Autowired private VMStellingIterator vmStellingIterator
-;
+@Autowired private VMStellingIterator vmStellingIterator;
 @Autowired private Config config;
 String savedConfigString;
 

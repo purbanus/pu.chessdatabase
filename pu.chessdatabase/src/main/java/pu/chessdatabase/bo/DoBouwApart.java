@@ -1,30 +1,40 @@
 package pu.chessdatabase.bo;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-import pu.chessdatabase.dbs.Dbs;
-
-@SuppressWarnings( "unused" )
-@SpringBootTest
+//@EntityScan( "pu.chessdatabase" )
+//@SpringBootApplication 
+@Configuration
 public class DoBouwApart
 {
-@Autowired private Bouw bouw;
-@Autowired private Config config;
-String savedConfigString;
-@BeforeEach
-public void setup()
+//@Autowired private Bouw bouw;
+//@Autowired private Config config;
+private Bouw bouw;
+private Config config;
+public static void main( String[] args )
 {
-	savedConfigString = config.getConfig();
+	SpringApplication.run( DoBouwApart.class, args );
 }
-@AfterEach
-public void destroy()
+@Bean
+public CommandLineRunner bouwer( Bouw aBouw, Config aConfig )
 {
-	config.switchConfig( savedConfigString );
+	return new CommandLineRunner()
+	{
+		@Override
+		public void run( String... args ) throws Exception
+		{
+			bouw = aBouw;
+			config = aConfig;
+			
+			buildPipoKDK();
+		}
+
+	};
 }
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 3 stukken
 

@@ -25,10 +25,10 @@ public static final long MEG = 1048576;
 public static final boolean HOU_STELLINGEN_BIJ = false;
 public static final boolean BOUW_PARALLEL = false;
 
-private final Dbs dbs;
-private final Gen gen;
-private final Config config;
-private VMStellingIterator vmStellingIterator;
+@Autowired private Dbs dbs;
+@Autowired private Gen gen;
+@Autowired private Config config;
+@Autowired private VMStellingIterator vmStellingIterator;
 
 List<BoStelling> illegaleStellingen = new ArrayList<>();
 List<BoStelling> stellingenMetSchaak = new ArrayList<>();
@@ -38,14 +38,19 @@ List<BoStelling> changes = new ArrayList<>();
 int passNumber;
 boolean passNchanges;
 
-public Bouw( VMStellingIterator aVMStellingIterator, Dbs aDbs, Gen aGen, Config aConfig)
+public Bouw()
 {
+	super();
 	passNchanges = true;
 	passNumber = 0;
+}
+public Bouw( Dbs aDbs, Gen aGen, Config aConfig, VMStellingIterator aVMStellingIterator )
+{
+	this();
+	dbs = aDbs;
+	gen = aGen;
+	config = aConfig;
 	vmStellingIterator = aVMStellingIterator;
-	this.dbs = aDbs;
-	this.gen = aGen;
-	this.config = aConfig;
 }
 void reportNewPass( String aPassText )
 {
