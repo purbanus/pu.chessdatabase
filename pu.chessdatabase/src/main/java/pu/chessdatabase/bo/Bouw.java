@@ -23,6 +23,7 @@ public class Bouw
 
 public static final long MEG = 1048576;
 public static final boolean HOU_STELLINGEN_BIJ = false;
+public static final boolean BOUW_PARALLEL = false;
 
 private final Dbs dbs;
 private final Gen gen;
@@ -371,12 +372,22 @@ void markeer( BoStelling aBoStelling )
  */
 void pass_n()
 {
-//	dbs.setReport( 100, this::showThisPass );
-//	reportNewPass( "Wit aan zet" );
-	dbs.pass( PassType.MarkeerWit, this::markeer, "rw" );
-
-//	reportNewPass( "Zwart aan zet" );
-	dbs.pass( PassType.MarkeerZwart, this::markeer, "rw" );
+	if ( BOUW_PARALLEL )
+	{
+		dbs.pass( PassType.MarkeerParallel, this::markeer, "rw" );
+	}
+	else
+	{
+	//	dbs.setReport( 100, this::showThisPass );
+	//	reportNewPass( "Wit aan zet" );
+		dbs.pass( PassType.MarkeerWit, this::markeer, "rw" );
+	
+	//	reportNewPass( "Zwart aan zet" );
+		dbs.pass( PassType.MarkeerZwart, this::markeer, "rw" );
+	
+		// @@NOG Dit geeft fouten! Uitzoeken waarom. Bij KDKT geeft dit hogere aantallen zetten
+	//	dbs.pass( PassType.MarkeerWitEnZwart, this::markeer, "rw" );
+	}
 }
 /**
  * ---------- Markeer tot er niets meer verandert ------------------

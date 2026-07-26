@@ -3,6 +3,7 @@ package pu.chessdatabase.dbs;
 import static pu.chessdatabase.bo.Kleur .*;
 import static pu.chessdatabase.dbs.Resultaat.*;
 
+import org.apache.commons.lang3.builder.ToStringExclude;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +14,11 @@ import pu.services.Matrix;
 import pu.services.Range;
 import pu.services.Vector;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 @Component
+@Data
 public class Dbs
 {
 public static final int MAX_RESULTAAT_TYPE = 4;
@@ -135,6 +140,8 @@ public static void iterateOverKleurEnResultaat( IterateOverKleurEnResultaatFunct
 Range veldRange = new Range( 0, 0x77 );
 Range oktantRange = new Range( 1, OKTANTEN );
 Range resultaatRange = new Range( 0, 3 );
+@ToStringExclude
+@EqualsAndHashCode.Exclude
 int[][] transformatieTabel = new int [OKTANTEN + 1][veldRange.getMaximum() + 1];
 public Dbs()
 {
@@ -368,7 +375,7 @@ public void delete()
  */
 void markeerWitPass( PassFunction aPassFunction )
 {
-	vmStellingIterator.iterateOverWkZkOneColour( Wit, aPassFunction );
+	getVmStellingIterator().iterateOverWkZkOneColour( Wit, aPassFunction );
 }
 /**
  * --------- Pass over de remisestellingen met zwart aan zet -------------
@@ -376,14 +383,14 @@ void markeerWitPass( PassFunction aPassFunction )
 void markeerZwartPass( PassFunction aPassFunction )
 {
 	// @@NOG Deze doet het dus niet
-	vmStellingIterator.iterateOverWkZkOneColour( Zwart, aPassFunction );
+	getVmStellingIterator().iterateOverWkZkOneColour( Zwart, aPassFunction );
 }
 /**
  * --------- Pass over alle stellingen -------------
  */
 void markeerWitEnZwartPass( PassFunction aPassFunction )
 {
-	vmStellingIterator.iterateOverAllPieces( aPassFunction );
+	getVmStellingIterator().iterateOverWkZkAndKleur( aPassFunction );
 }
 
 //void callWitEnZwart( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
@@ -394,6 +401,10 @@ void markeerWitEnZwartPass( PassFunction aPassFunction )
 //	
 //	aPassFunction.doPass( gotBoStelling.clone() );
 //}
+void markeerParallel( PassFunction aPassFunction )
+{
+	getVmStellingIterator().iterateParallel( aPassFunction );
+}
 public void pass( PassType aPassType, PassFunction aPassFunction )
 {
 	pass( aPassType, aPassFunction, "r" );
@@ -406,6 +417,7 @@ public void pass( PassType aPassType, PassFunction aPassFunction, String aOpenMo
 		case MarkeerWit: markeerWitPass( aPassFunction ); break;
 		case MarkeerZwart: markeerZwartPass( aPassFunction ); break;
 		case MarkeerWitEnZwart: markeerWitEnZwartPass( aPassFunction ); break;
+		case MarkeerParallel: markeerParallel( aPassFunction );
 	}
 	close();
 }

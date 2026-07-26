@@ -6,6 +6,8 @@ import static pu.chessdatabase.dbs.VM.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -67,71 +69,42 @@ void report()
 	{
 		reportFunction.doReport( stellingTeller, tellingen );
 	}
-
 }
-public void iterateOverWkZkOneColour( Kleur aKleur, PassFunction aPassFunction )
+public void iterateParallel( PassFunction aPassFunction )
 {
-	VMStelling vmStelling = new VMStelling();
-	vmStelling.setAanZet( aKleur );
-	BoStelling boStelling = new BoStelling();
-	boStelling.setAanZet( aKleur );
+	List<VMIterateAction> actions = new ArrayList<>();
 	for ( int wk = 0; wk < MAX_WK; wk++ )
 	{
-		vmStelling.setWk( wk );
-		boStelling.setWk( Dbs.CVT_WK[wk] );
-		for ( int zk = 0; zk < MAX_STUK; zk++ )
-		{
-			vmStelling.setZk( zk );
-			boStelling.setZk( Dbs.CVT_STUK[zk] );
-			iterateOverPiecesOneColour( boStelling, vmStelling, aPassFunction );
-		}
+		actions.add( new VMIterateAction( this, aPassFunction, wk ) );
+	}
+	ForkJoinPool forkJoinPool = ForkJoinPool.commonPool();
+    ForkJoinTask.invokeAll(actions );
+}
+/**
+ * This iterates over zk with One Kleur. It is used by the parallelIterators.
+ * @param aPassFunction The function that is called after each complete set of values
+ */
+public void iterateOverZkOneColor( int aWk, Kleur aKleur, PassFunction aPassFunction )
+{
+	VMStelling vmStelling = new VMStelling();
+	BoStelling boStelling = new BoStelling();
+	vmStelling.setWk( aWk );
+	boStelling.setWk( Dbs.CVT_WK[aWk] );
+	vmStelling.setAanZet( aKleur );
+	boStelling.setAanZet( aKleur );
+	for ( int zk = 0; zk < 64; zk++ )
+	{
+		vmStelling.setZk( zk );
+		boStelling.setZk( Dbs.CVT_STUK[zk] );
+		iterateOverPieces( boStelling, vmStelling, aPassFunction, true );
 	}
 	report();
 }
-
-// @@HIGH Je kunt dit aanroepen in iterateOverAllPieces
-void iterateOverPiecesOneColour( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
-{
-	BoStelling boStelling = aBoStelling.clone();
-	VMStelling vmStelling = aVmStelling.clone();
-	for ( int s3 = 0; s3 < 64; s3++ )
-	{
-		vmStelling.setS3( s3 );
-		boStelling.setS3( Dbs.CVT_STUK[s3] );
-		if ( getConfig().getAantalStukken() == 3 )
-		{
-			callForAllPieces( boStelling, vmStelling, aPassFunction, true );
-		}
-		else
-		{
-			for ( int s4 = 0; s4 < 64; s4++ )
-			{
-				vmStelling.setS4( s4 );
-				boStelling.setS4( Dbs.CVT_STUK[s4] );
-				if ( getConfig().getAantalStukken() == 4 )
-				{
-					callForAllPieces( boStelling, vmStelling, aPassFunction, true );
-				}
-				else
-				{
-					for ( int s5 = 0; s5 < 64; s5++ )
-					{
-						vmStelling.setS5( s5 );
-						boStelling.setS5( Dbs.CVT_STUK[s5] );
-						callForAllPieces( boStelling, vmStelling, aPassFunction, true );
-					}
-				}
-			}
-		}
-	}
-	// Waar is dit voor nodig? 
-	// --> Voor die freeRecord. Alle drie de stukken zijn 0x40 en dat is niet legaal
-	vmStelling.setS3( 0 );
-	vmStelling.setS4( 0 );
-	vmStelling.setS5( 0 );
-	vm.freeRecord( vmStelling );
-}
-public void iterateOverAllPieces( PassFunction aPassFunction )
+/**
+ * This iterates over wk and zk and Kleur. It is used by Dbs.markeerWitEnZwartPass, amongst others
+ * @param aPassFunction The function that is called after each complete set of values
+ */
+public void iterateOverWkZkAndKleur( PassFunction aPassFunction )
 {
 	VMStelling vmStelling = new VMStelling();
 	BoStelling boStelling = new BoStelling();
@@ -147,40 +120,87 @@ public void iterateOverAllPieces( PassFunction aPassFunction )
 			{
 				vmStelling.setAanZet( aanZet );
 				boStelling.setAanZet( aanZet );
-				for ( int s3 = 0; s3 < 64; s3++ )
+				iterateOverPieces( boStelling, vmStelling, aPassFunction, false );
+			}
+		}
+	}
+	report();
+}
+
+/**
+ * This iterates over wk and zk using one Kleur. It is used by Dbs.markeerWitPass and Dbs.markeeZwartPass,
+ * amongst others
+ * @param aKleur The Kleur for this iterator: Wit or Zwart.
+ * @param aPassFunction The function that is called after each complete set of values
+ */
+public void iterateOverWkZkOneColour( Kleur aKleur, PassFunction aPassFunction )
+{
+	VMStelling vmStelling = new VMStelling();
+	vmStelling.setAanZet( aKleur );
+	BoStelling boStelling = new BoStelling();
+	boStelling.setAanZet( aKleur );
+	for ( int wk = 0; wk < MAX_WK; wk++ )
+	{
+		vmStelling.setWk( wk );
+		boStelling.setWk( Dbs.CVT_WK[wk] );
+		for ( int zk = 0; zk < MAX_STUK; zk++ )
+		{
+			vmStelling.setZk( zk );
+			boStelling.setZk( Dbs.CVT_STUK[zk] );
+			iterateOverPieces( boStelling, vmStelling, aPassFunction, true );
+		}
+	}
+	// Waar is dit voor nodig? 
+	// --> Voor die freeRecord. Alle drie de stukken zijn 0x40 en dat is niet legaal
+	vmStelling.setS3( 0 );
+	vmStelling.setS4( 0 );
+	vmStelling.setS5( 0 );
+	vm.freeRecord( vmStelling );
+	report();
+}
+
+/**
+ * This iterates over the pieces other than wk, zk and Kleur. It is used only internally
+ * @param aBoStelling The partially built BoStelling.
+ * @param aVmStelling The partially built VMStelling.
+ * @param aPassFunction The function that is called after each complete set of values
+ * @Param aCountDouble Whether this Stelling should be counted doubly. It is <code>true</code> when we're iterating with only one color,
+ * and <code>false</code> when we're iterating over all colors 
+ */
+void iterateOverPieces( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction, boolean aCountDouble )
+{
+	BoStelling boStelling = aBoStelling.clone();
+	VMStelling vmStelling = aVmStelling.clone();
+	for ( int s3 = 0; s3 < 64; s3++ )
+	{
+		vmStelling.setS3( s3 );
+		boStelling.setS3( Dbs.CVT_STUK[s3] );
+		if ( getConfig().getAantalStukken() == 3 )
+		{
+			callForAllPieces( boStelling, vmStelling, aPassFunction, aCountDouble );
+		}
+		else
+		{
+			for ( int s4 = 0; s4 < 64; s4++ )
+			{
+				vmStelling.setS4( s4 );
+				boStelling.setS4( Dbs.CVT_STUK[s4] );
+				if ( getConfig().getAantalStukken() == 4 )
 				{
-					vmStelling.setS3( s3 );
-					boStelling.setS3( Dbs.CVT_STUK[s3] );
-					if ( getConfig().getAantalStukken() == 3 )
+					callForAllPieces( boStelling, vmStelling, aPassFunction, aCountDouble );
+				}
+				else
+				{
+					for ( int s5 = 0; s5 < 64; s5++ )
 					{
-						callForAllPieces( boStelling, vmStelling, aPassFunction, false );
-					}
-					else
-					{
-						for ( int s4 = 0; s4 < 64; s4++ )
-						{
-							vmStelling.setS4( s4 );
-							boStelling.setS4( Dbs.CVT_STUK[s4] );
-							if ( getConfig().getAantalStukken() == 4 )
-							{
-								callForAllPieces( boStelling, vmStelling, aPassFunction, false );
-							}
-							else
-							{
-								for ( int s5 = 0; s5 < 64; s5++ )
-								{
-									vmStelling.setS5( s5 );
-									boStelling.setS5( Dbs.CVT_STUK[s5] );
-									callForAllPieces( boStelling, vmStelling, aPassFunction, false );
-								}
-							}
-						}
+						vmStelling.setS5( s5 );
+						boStelling.setS5( Dbs.CVT_STUK[s5] );
+						callForAllPieces( boStelling, vmStelling, aPassFunction, aCountDouble );
 					}
 				}
 			}
 		}
 	}
-	report();
 }
 void callForAllPieces( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction, boolean aCountDouble )
 {
@@ -210,27 +230,6 @@ void callForAllPieces( BoStelling aBoStelling, VMStelling aVmStelling, PassFunct
 		aPassFunction.doPass( gotBoStelling );
 	}
 }
-//void callForAllPiecesOnlyWhite( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
-//{
-//	BoStelling gotBoStelling = dbs.getDirect( aVmStelling, aBoStelling );
-//	if ( houStellingenBij )
-//	{
-//		stellingen.add( gotBoStelling );
-//	}
-//	// @@@@@NOG Wat is dit voor onzin???????
-//	tellingen [Wit.ordinal()][gotBoStelling.getResultaat().ordinal()]++;
-//	tellingen [Zwart.ordinal()][gotBoStelling.getResultaat().ordinal()]++;
-//	stellingTeller++;
-//	stellingTeller++;
-//	if ( stellingTeller % reportFrequency == 0 )
-//	{
-//		report();
-//	}
-//	if ( gotBoStelling.getResultaat() == Remise || isDoAllPositions() )
-//	{
-//		aPassFunction.doPass( gotBoStelling );
-//	}
-//}
 public void addResultaat( BoStelling aBoStelling )
 {
 	int kleurOrdinal = aBoStelling.getAanZet().ordinal();
