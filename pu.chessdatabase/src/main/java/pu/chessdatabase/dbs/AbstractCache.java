@@ -90,9 +90,13 @@ protected void getRawPageData( PageDescriptor aPageDescriptor )
 		getDatabase().seek( aPageDescriptor.getSchijfAdres() );
 		int pageSize = getPageSize();
 		int aantal = getDatabase().read( getPage( aPageDescriptor ), 0, pageSize );
+		if ( aantal == -1 )
+		{
+			throw new RuntimeException( String.format( "Ernstig: VM.GetPage heeft -1 records gelezen. Dat betekent vermoedelijk dat de database leeg is, of in ieder geval te klein" ) );
+		}
 		if ( aantal != pageSize )
 		{
-			throw new RuntimeException( "Ernstig: VM.GetPage heeft " + aantal + " records gelezen. Dat zouden er " + pageSize + " moeten zijn" );
+			throw new RuntimeException( String.format( "Ernstig: VM.GetPage heeft %d records gelezen. Dat zouden er %dmoeten zijn", aantal, pageSize ) );
 		}
 	}
 	catch ( IOException e )

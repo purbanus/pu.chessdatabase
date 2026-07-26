@@ -12,11 +12,11 @@ VM vm2;
 
 public static void main( String [] args )
 {
-//	new CompareDatabases().run( Config.KDK, Config.TESTKDK );
-//	new CompareDatabases().run( Config.KTK, Config.TESTKTK );
-	new CompareDatabases().run( Config.KDKT, Config.TESTKDKT );
-	new CompareDatabases().run( Config.KLLK, Config.TESTKLLK );
-	new CompareDatabases().run( Config.KLPK, Config.TESTKLPK );
+	new CompareDatabases().run( Config.KDK, Config.PIPOKDK );
+	new CompareDatabases().run( Config.KTK, Config.PIPOKTK );
+	new CompareDatabases().run( Config.KDKT, Config.PIPOKDKT );
+	new CompareDatabases().run( Config.KLLK, Config.PIPOKLLK );
+	new CompareDatabases().run( Config.KLPK, Config.PIPOKLPK );
 	//new CompareDatabases().run( Config.KDKTT, Config.TESTKDKTT );
 }
 private void run( ConfigImpl aConfigImpl1, ConfigImpl aConfigImpl2 )
@@ -36,7 +36,7 @@ VM setupVm( ConfigImpl aConfigImpl )
 	vm.setConfig( config );
 	config.switchConfig( aConfigImpl );
 	vm.setDatabaseName( config.getDatabaseName() );
-	vm.open( "rw" );
+	vm.open( "r" );
 	
 	return vm;
 }

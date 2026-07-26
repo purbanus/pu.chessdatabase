@@ -20,18 +20,26 @@ import pu.chessdatabase.service.PartijDocument;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
 //@Scope( "session" )
+@Slf4j
 @Data
 public class ChessDatabaseController
 {
-private static final Logger LOG = LoggerFactory.getLogger( ChessDatabaseController.class);
+//private static final Logger LOG = LoggerFactory.getLogger( ChessDatabaseController.class);
 
-@Autowired private ChessDatabaseService service;
+private final ChessDatabaseService service;
 
 @Value( "${spring.application.name}" )
 String appName;
+
+ChessDatabaseController( ChessDatabaseService aService )
+{
+	super();
+	service = aService;
+}
 
 void showSession( HttpSession aSession )
 {

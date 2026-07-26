@@ -2,5 +2,5 @@ package pu.chessdatabase.dbs;
 
 public enum PassType
 {
-MarkeerWit, MarkeerZwart, MarkeerWitEnZwart;
+MarkeerWit, MarkeerZwart, MarkeerWitEnZwart, MarkeerParallel;
 }
