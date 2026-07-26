@@ -73,7 +73,7 @@ public void buildKDKTT()
 	bouw.bouwDatabase();
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Bouw van de testdatabases
+//Bouw van de testdatabases
 
 //@Test
 public void buildTestKDK()
@@ -109,6 +109,45 @@ public void buildTestKLPK()
 public void buildTestKDKTT()
 {
 	config.switchConfig( Config.TESTKDKTT );
+	bouw.bouwDatabase();
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Bouw van de pipodatabases
+
+@Test
+public void buildPipoKDK()
+{
+	config.switchConfig( Config.PIPOKDK );
+	bouw.bouwDatabase();
+}
+@Test
+public void buildPipoKTK()
+{
+	config.switchConfig( Config.PIPOKTK );
+	bouw.bouwDatabase();
+}
+@Test
+public void buildPipoKDKT()
+{
+	config.switchConfig( Config.PIPOKDKT );
+	bouw.bouwDatabase();
+}
+@Test
+public void buildPipoKLLK()
+{
+	config.switchConfig( Config.PIPOKLLK );
+	bouw.bouwDatabase();
+}
+@Test
+public void buildPipoKLPK()
+{
+	config.switchConfig( Config.PIPOKLPK );
+	bouw.bouwDatabase();
+}
+//@Test
+public void buildPipoKDKTT()
+{
+	config.switchConfig( Config.PIPOKDKTT );
 	bouw.bouwDatabase();
 }
 }
