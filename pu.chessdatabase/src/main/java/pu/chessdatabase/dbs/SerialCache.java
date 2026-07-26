@@ -1,13 +1,9 @@
 package pu.chessdatabase.dbs;
 
-import static pu.chessdatabase.dbs.CacheType.Serial;
-import static pu.chessdatabase.dbs.Lokatie.InRam;
-import static pu.chessdatabase.dbs.Lokatie.OpSchijf;
+import static pu.chessdatabase.dbs.Lokatie.*;
 
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

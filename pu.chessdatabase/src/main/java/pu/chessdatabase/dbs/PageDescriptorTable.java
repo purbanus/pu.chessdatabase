@@ -1,6 +1,7 @@
 package pu.chessdatabase.dbs;
 
-import static pu.chessdatabase.dbs.CacheType.*;
+// @@ Gek hoor, dat wordt duidelij hierbenede gebruikt!
+//import static pu.chessdatabase.dbs.CacheType.*;
 
 public interface PageDescriptorTable
 {

@@ -9,7 +9,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import pu.chessdatabase.bo.BoStelling;
@@ -65,10 +64,8 @@ public class Partij
 public static final String DEFAULT_USER_NAME = "purbanus";
 
 private Dbs dbs;
-
-@Autowired private Gen gen;
-@Autowired private Config config;
-
+private Gen gen;
+private Config config;
 private Plies plies;
 
 /**
@@ -76,11 +73,12 @@ private Plies plies;
  * Gelukkig kun je een constructor maken met als parm het veld dat je wilt initialiseren.
  * Dat was in dit geval nodig omdat we dbs.Open() wilden aanroepen.
  */
-public Partij( Dbs aDbs, Config aConfig )
+public Partij( Dbs aDbs, Gen aGen, Config aConfig )
 {
 	super();
 	dbs = aDbs;
 	dbs.open();
+	gen = aGen;
 	config = aConfig;
 	plies = new Plies( config.getConfig() );
 }

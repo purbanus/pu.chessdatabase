@@ -1,7 +1,6 @@
 package pu.chessdatabase.bo;
 
 import static pu.chessdatabase.bo.Kleur.*;
-import static pu.chessdatabase.dbs.Resultaat.*;
 
 import pu.chessdatabase.dal.FlatDocument;
 import pu.chessdatabase.dbs.Resultaat;

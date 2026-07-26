@@ -8,7 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.lang3.builder.ToStringExclude;
 import org.springframework.stereotype.Component;
 
 import pu.chessdatabase.bo.Config;
@@ -16,6 +16,7 @@ import pu.services.Range;
 
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -109,34 +110,30 @@ public static int alfaToVeld( String aAlfaVeld )
 public Range wkVeldRange = new Range( 0, 9 );
 public Range stukVeldRange = new Range( 0, 63 );
 
-// Die ctor pakt config niet op
-@Autowired private Config config;
+private final Config config;
 @Getter( AccessLevel.PACKAGE ) 
 @Setter( AccessLevel.PACKAGE ) 
 private PageDescriptorTable pageDescriptorTable/* = new PageDescriptorTable( config.getAantalStukken() )*/;
 @Getter( AccessLevel.PACKAGE ) 
 @Setter( AccessLevel.PACKAGE ) 
+@EqualsAndHashCode.Exclude
+@ToStringExclude
 private Cache cache;
 
-//@EqualsAndHashCode.Exclude // @@NOG Waarom??
 private String databaseName = null;
-@Getter( AccessLevel.PACKAGE ) 
 @Setter( AccessLevel.PACKAGE ) 
 private File databaseFile;
 @Getter( AccessLevel.PUBLIC ) 
 @Setter( AccessLevel.PRIVATE ) 
 private boolean open = false;
 private PageSizeCalculator pageSizeCalculator;
-public VM()
+public VM( Config aConfig )
 {
+	super();
+	config = aConfig;
 	setDatabaseFile( null );
 	setPageSizeCalculator( new PageSizeCalculator() );
 }
-//public VM(Config aConfig)
-//{
-//	setDatabaseFile( null );
-//	config = aConfig;
-//}
 RandomAccessFile getDatabase()
 {
 	return getCache().getDatabase();

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -69,7 +70,6 @@ public static Stukken getStaticStukken()
 {
 	return staticStukken;
 }
-@Setter( AccessLevel.NONE ) 
 @ToString.Exclude
 private VM vm;
 
@@ -80,6 +80,17 @@ private Map<String, ConfigImpl> configImplRegistry = null;
 @Setter( AccessLevel.PACKAGE ) 
 private ConfigImpl configImpl = DEFAULT_CONFIG_IMPL;
 
+// Als deze ctor bestaat dan moet je die ZAndere ctor annoteren met @Autowired!!
+public Config()
+{
+	super();
+	// Vegeet nniet om setVm te doen hierna
+}
+public void setVm( VM aVm )
+{
+	vm = aVm;
+}
+@Autowired
 public Config( @Lazy VM aVm)
 {
 	super();

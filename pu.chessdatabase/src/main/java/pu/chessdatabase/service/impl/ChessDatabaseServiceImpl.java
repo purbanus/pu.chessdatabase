@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pu.chessdatabase.bo.BoStelling;
@@ -31,9 +30,16 @@ import lombok.Data;
 @Service
 public class ChessDatabaseServiceImpl implements ChessDatabaseService
 {
-@Autowired private Partij partij;
-@Autowired private PliesDao pliesDao;
-@Autowired private Config config;
+private final Partij partij;
+private final PliesDao pliesDao;
+private final Config config;
+
+ChessDatabaseServiceImpl( Partij aPartij, PliesDao aPliesDao, Config aConfig )
+{
+	partij = aPartij;
+	pliesDao = aPliesDao;
+	config = aConfig;
+}
 
 @Override
 public NewGameDocument newGame()

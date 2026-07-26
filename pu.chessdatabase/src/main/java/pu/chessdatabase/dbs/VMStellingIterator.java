@@ -6,10 +6,8 @@ import static pu.chessdatabase.dbs.VM.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -37,9 +35,9 @@ public static int [][] newTellingen()
 	return new int[Kleur.values().length][Resultaat.values().length];
 }
 
-@Autowired private VM vm;
+private VM vm;
 private Dbs dbs;
-@Autowired private Config config;
+private Config config;
 private int [][] tellingen = newTellingen();
 private int stellingTeller;
 List<BoStelling> stellingen = new ArrayList<>();
@@ -47,10 +45,12 @@ private int reportFrequency;
 private ReportFunction reportFunction;
 private boolean doAllPositions = false;
 
-VMStellingIterator( @Lazy Dbs aDbs )
+VMStellingIterator( @Lazy Dbs aDbs, VM aVm, Config aConfig )
 {
 	super();
 	dbs = aDbs;
+	vm = aVm;
+	config = aConfig;
 }
 public void clearTellingen()
 {
@@ -77,7 +77,6 @@ public void iterateParallel( PassFunction aPassFunction )
 	{
 		actions.add( new VMIterateAction( this, aPassFunction, wk ) );
 	}
-	ForkJoinPool forkJoinPool = ForkJoinPool.commonPool();
     ForkJoinTask.invokeAll(actions );
 }
 /**

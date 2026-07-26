@@ -6,12 +6,9 @@ package pu.chessdatabase.bo.speel;
 //===================================================================================================================== 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static pu.chessdatabase.bo.Kleur.*;
-import static pu.chessdatabase.bo.speel.Einde.*;
 import static pu.chessdatabase.dbs.Resultaat.*;
 
-import org.apache.commons.lang3.tuple.Triple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Config;
-import pu.chessdatabase.dbs.TestHelper;
 
 import lombok.Data;
 
@@ -133,7 +129,7 @@ public void testGetPreviousStelling()
 		.build();
 	getPartij().newGame( startStelling );
 	getPartij().zet( new VanNaar(  "Db2-f6" ) );
-	Plies plies = getPartij().getPlies();
+	plies = getPartij().getPlies();
 	BoStelling previousStelling = plies.getPly( 0 ).getPreviousStelling();
 	assertThat( previousStelling, is( startStelling ) );
 	

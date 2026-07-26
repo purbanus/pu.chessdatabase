@@ -2,15 +2,14 @@ package pu.chessdatabase.bo;
 
 import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.bo.ZetSoort.*;
-import static pu.chessdatabase.dbs.Resultaat.*;
 import static pu.chessdatabase.bo.configuraties.StukType.*;
+import static pu.chessdatabase.dbs.Resultaat.*;
 
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Comparator;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import pu.chessdatabase.dbs.Dbs;
@@ -34,9 +33,6 @@ public static final String [] NOTATIE = new String [] {
 	"a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7", "??", "??", "??", "??", "??", "??", "??", "??",
 	"a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"
 };
-@Autowired private Config config;
-@Autowired private Dbs dbs;
-
 static BitSet bitSetOfInt( int aInt )
 {
 	return bitSetOfByte( (byte) aInt );
@@ -103,9 +99,13 @@ public static int alfaToVeld( String aAlfaVeld )
 	}
 	return capAlfaVeld.charAt( 0 ) - 'A' + 16 * ( capAlfaVeld.charAt( 1 ) - '1' );
 }
+private final Dbs dbs;
+private final Config config;
 
-public Gen()
+public Gen( Dbs aDbs, Config aConfig)
 {
+	dbs = aDbs;
+	config = aConfig;
 }
 public Stukken getStukken()
 {

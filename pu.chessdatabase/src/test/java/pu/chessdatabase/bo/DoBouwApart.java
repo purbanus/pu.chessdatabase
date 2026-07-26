@@ -13,7 +13,6 @@ import pu.chessdatabase.dbs.Dbs;
 public class DoBouwApart
 {
 @Autowired private Bouw bouw;
-@Autowired private Dbs dbs;
 @Autowired private Config config;
 String savedConfigString;
 @BeforeEach
@@ -114,31 +113,31 @@ public void buildTestKDKTT()
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Bouw van de pipodatabases
 
-@Test
+//@Test
 public void buildPipoKDK()
 {
 	config.switchConfig( Config.PIPOKDK );
 	bouw.bouwDatabase();
 }
-@Test
+//@Test
 public void buildPipoKTK()
 {
 	config.switchConfig( Config.PIPOKTK );
 	bouw.bouwDatabase();
 }
-@Test
+//@Test
 public void buildPipoKDKT()
 {
 	config.switchConfig( Config.PIPOKDKT );
 	bouw.bouwDatabase();
 }
-@Test
+//@Test
 public void buildPipoKLLK()
 {
 	config.switchConfig( Config.PIPOKLLK );
 	bouw.bouwDatabase();
 }
-@Test
+//@Test
 public void buildPipoKLPK()
 {
 	config.switchConfig( Config.PIPOKLPK );
