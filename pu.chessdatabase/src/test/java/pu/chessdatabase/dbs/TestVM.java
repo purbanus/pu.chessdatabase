@@ -33,6 +33,7 @@ public class TestVM
 @Autowired private VM vm;
 @Autowired private Config config;
 PageSizeCalculator pageSizeCalculator = new PageSizeCalculator();
+TestHelper testHelper;
 String savedConfigString;
 @BeforeEach
 public void setup()
@@ -41,6 +42,7 @@ public void setup()
 	config.switchConfig( Config.PIPOKDKT );
 	vm.open( "rw" );
 	vm.setPageSizeCalculator( getPageSizeCalculator() );
+	testHelper = new TestHelper( pageSizeCalculator, getConfig().getAantalStukken() );
 }
 @AfterEach
 public void destroy()
@@ -111,7 +113,7 @@ private void writePageWithAll( long aPageNumber, int aCacheNumber, byte aValue )
 	{
 		throw new RuntimeException( "Schjfadres te groot: " + schijfAdres + " max " + databaseSize );
 	}
-	byte [] page = TestHelper.createPageWithAll( getPageSizeCalculator(), config.getAantalStukken(), aValue );
+	byte [] page = getTestHelper().createPageWithAll( aValue );
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( InRam )
 		.cacheNummer( aCacheNumber )
@@ -147,7 +149,7 @@ void checkIfDatabaseEntryIsZero( VMStelling aVmStelling )
 	{
 		throw new RuntimeException( e );
 	}
-	assertThat( TestHelper.isAllZero( page ), is( true ) );
+	assertThat( getTestHelper().isAllZero( page ), is( true ) );
 }
 
 //=================================================================================================
@@ -177,7 +179,7 @@ public void testGetPage()
 	vm.getPageDescriptorTable().setPageDescriptor( vmStelling, pageDescriptor );
 
 	byte [] page = vm.getPage( vmStelling );
-	assertThat( TestHelper.isAll( page, value ), is( true ) );
+	assertThat( getTestHelper().isAll( page, value ), is( true ) );
 
 	// Test met Integer.MAX_VALUE
 	pageDescriptor = PageDescriptor.builder()
@@ -188,7 +190,7 @@ public void testGetPage()
 	vm.getPageDescriptorTable().setPageDescriptor( vmStelling, pageDescriptor );
 
 	page = vm.getPage( vmStelling );
-	assertThat( TestHelper.isAll( page, value ), is( true ) );
+	assertThat( getTestHelper().isAll( page, value ), is( true ) );
 
 }
 @Test
@@ -263,7 +265,7 @@ public void testFreeRecord()
 	int cacheNumber = 5;
 	byte value = (byte)0xe0;
 
-	byte [] page = TestHelper.createPageWithAll( getPageSizeCalculator(), config.getAantalStukken(), value );
+	byte [] page = getTestHelper().createPageWithAll( value );
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( InRam )
 		.cacheNummer( cacheNumber )

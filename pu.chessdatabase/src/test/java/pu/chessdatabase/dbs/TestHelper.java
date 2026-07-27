@@ -1,33 +1,32 @@
 package pu.chessdatabase.dbs;
 
-import static pu.chessdatabase.bo.Kleur.*;
-import static pu.chessdatabase.bo.speel.Einde.*;
-import static pu.chessdatabase.dbs.Resultaat.*;
-
-import org.apache.commons.lang3.tuple.Triple;
-
-import pu.chessdatabase.bo.BoStelling;
-import pu.chessdatabase.bo.speel.Plies;
-import pu.chessdatabase.bo.speel.Ply;
-import pu.chessdatabase.bo.speel.VanNaar;
+import lombok.Data;
 
 //=================================================================================================
 // Hulpmethodes bij testen
 //=================================================================================================
 
-// @@NOG Hier een niormake class van maken (geen static methodes) met instan e vars pageSizeCalculator en aantalStukken
+@Data
 public class TestHelper
 {
-public static boolean isAllZero( byte [] aPage )
+private final PageSizeCalculator pageSizeCalculator;
+private final int aantalStukken;
+
+public TestHelper( PageSizeCalculator aPageSizeCalculator, int aAantalStukken )
+{
+	super();
+	pageSizeCalculator = aPageSizeCalculator;
+	aantalStukken = aAantalStukken;
+}
+public boolean isAllZero( byte [] aPage )
 {
 	return isAll( aPage, (byte)0 );
 }
-public static boolean isAllOne( byte [] aPage )
+public boolean isAllOne( byte [] aPage )
 {
 	return isAll( aPage, (byte)1 );
 }
-public static boolean isAll( byte [] aPage, byte aValue )
-//public static Boolean isAll( byte [] aPage, byte aValue )
+public boolean isAll( byte [] aPage, byte aValue )
 {
 	for ( int x = 0; x < aPage.length; x++)
 	{
@@ -38,20 +37,20 @@ public static boolean isAll( byte [] aPage, byte aValue )
 	}
 	return true;
 }
-public static byte [] createPageWithAllOnes( PageSizeCalculator aPageSizeCalculator,  int aAantalStukken )
+public byte [] createPageWithAllOnes()
 {
-	return createPageWithAll( aPageSizeCalculator, aAantalStukken, (byte)1 );
+	return createPageWithAll( (byte)1 );
 }
-public static byte [] createPageWithAll( PageSizeCalculator aPageSizeCalculator, int aAantalStukken, byte aValue )
+public byte [] createPageWithAll( byte aValue )
 {
-	byte [] entries = new byte [ aPageSizeCalculator.getPageSize( aAantalStukken )];
+	byte [] entries = new byte [ getPageSizeCalculator().getPageSize( getAantalStukken() )];
 	for ( int x = 0; x < entries.length; x++ )
 	{
 		entries[x] = aValue;
 	}
 	return entries;
 }
-public static byte [] createBlockOfBytes( int aNumberOfBytes, byte aValue )
+public byte [] createBlockOfBytes( int aNumberOfBytes, byte aValue )
 {
 	byte [] bytes = new byte [aNumberOfBytes];
 	for ( int x = 0; x < bytes.length; x++ )
@@ -59,80 +58,6 @@ public static byte [] createBlockOfBytes( int aNumberOfBytes, byte aValue )
 		bytes[x] = aValue;
 	}
 	return bytes;
-}
-public static Ply createOnePly( Plies aPlies)
-{
-	return createOnePly( aPlies, new VanNaar( "a1", "a2" ) );
-}
-public static Ply createOnePly( Plies aPlies, VanNaar aVanNaar )
-{
-	BoStelling boStelling = BoStelling.alfaBuilder()
-		.wk( "a1" )
-		.zk( "h8" )
-		.s3( "b2" )
-		.s4( "g7" )
-		.aanZet( Wit )
-		.resultaat( Gewonnen )
-		.aantalZetten( 29 )
-		.build();
-	return createOnePly( aPlies, boStelling, aVanNaar );
-}
-public static Ply createOnePly( Plies aPlies, BoStelling aBoStelling )
-{
-	return createOnePly( aPlies, aBoStelling, new VanNaar( "a1", "a2" ) );
-}
-public static Ply createOnePly( Plies aPlies, BoStelling aBoStelling, VanNaar aVanNaar )
-{
-	return Ply.builder()
-		//.id is voor JPA
-		.plies( aPlies )
-		.einde( Nog_niet )
-		.plyNummer( 0 )
-		.vanNaar( aVanNaar )
-		.boStelling( aBoStelling )
-		.build();
-}
-public static Triple<Ply, Ply, Ply> createThreeDifferentPlies( Plies aPlies )
-{
-	BoStelling boStelling = BoStelling.alfaBuilder()
-		.wk( "a1" )
-		.zk( "h8" )
-		.s3( "b2" )
-		.s4( "g7" )
-		.aanZet( Wit )
-		.resultaat( Gewonnen )
-		.aantalZetten( 29 )
-		.schaak( false )
-		.build();
-	return createThreeDifferentPlies( aPlies, boStelling );
-}
-public static Triple<Ply, Ply, Ply> createThreeDifferentPlies( Plies aPlies, BoStelling aBoStelling )
-{
-	Ply firstPly = Ply.builder()
-		//.id is voor JPA
-		.plies( aPlies )
-		.einde( Nog_niet )
-		.plyNummer( 0 )
-		.vanNaar( new VanNaar( "a1", "a2" ) )
-		.boStelling( aBoStelling )
-		.build();
-	Ply secondPly = Ply.builder()
-		//.id is voor JPA
-		.plies( aPlies )
-		.einde( Mat )
-		.plyNummer( 1 )
-		.vanNaar( new VanNaar( "b2", "c3" ) )
-		.boStelling( aBoStelling )
-		.build();
-	Ply thirdPly = Ply.builder()
-		//.id is voor JPA
-		.plies( aPlies )
-		.einde( Mat )
-		.plyNummer( 2 )
-		.vanNaar( new VanNaar( "b2", "c3" ) )
-		.boStelling( aBoStelling )
-		.build();
-	return Triple.of( firstPly, secondPly, thirdPly );
 }
 
 }

@@ -37,6 +37,7 @@ public class TestParallelCache
 @Autowired private Config config;
 private MockCache cache;
 private PageSizeCalculator pageSizeCalculator = new PageSizeCalculator( Parallel );
+private TestHelper testHelper;
 String savedConfigString;
 @BeforeEach
 public void setup()
@@ -46,6 +47,7 @@ public void setup()
 	vm.setPageSizeCalculator( getPageSizeCalculator() );
 	vm.open( "rw" );
 	cache = new MockCache( vm.getCache() );
+	testHelper = new TestHelper( pageSizeCalculator, getConfig().getAantalStukken() );
 }
 @AfterEach
 public void destroy()
@@ -57,7 +59,7 @@ public void destroy()
 
 private void writePageWithAll( long aPageNumber, int aCacheNumber, byte aValue )
 {
-	byte [] page = TestHelper.createPageWithAll( getPageSizeCalculator(), config.getAantalStukken(), aValue );
+	byte [] page = getTestHelper().createPageWithAll( aValue );
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( InRam )
 		.cacheNummer( aCacheNumber )
@@ -163,7 +165,7 @@ public void testInitializeCache()
 			.waar( OpSchijf )
 			.build();
 		assertThat( cacheEntry.getPageDescriptor(), is( pageDescriptor ) );
-		assertThat( TestHelper.isAllZero( cacheEntry.getPage() ), is( true ) );
+		assertThat( getTestHelper().isAllZero( cacheEntry.getPage() ), is( true ) );
 		assertThat( cacheEntry.getGeneratie(), is( 0L ) );
 		assertThat( cacheEntry.isVuil(), is( false ) );
 		
@@ -189,7 +191,7 @@ public void testGetRawPageData()
 		.schijfAdres( pageNumber * getCache().getPageSize() )
 		.build();
 	getCache().getRawPageData( pageDescriptor );
-	assertThat( TestHelper.isAll( getCache().getPage( pageDescriptor ), value ), is( true ) );
+	assertThat( getTestHelper().isAll( getCache().getPage( pageDescriptor ), value ), is( true ) );
 }
 // @Test
 // public void testPageIn() throws IOException
@@ -233,11 +235,11 @@ public void testGetPage()
 		.cacheNummer( cacheNumber )
 		.schijfAdres( pageNumber * getCache().getPageSize() )
 		.build();
-	byte [] page = TestHelper.createPageWithAll( getPageSizeCalculator(), config.getAantalStukken(), value );
+	byte [] page = getTestHelper().createPageWithAll( value );
 	getCache().setPage( pageDescriptor, page );
 	
 	byte [] pageData = getCache().getPage( pageDescriptor );
-	assertThat( TestHelper.isAll( pageData, value ), is( true ) );
+	assertThat( getTestHelper().isAll( pageData, value ), is( true ) );
 }
 @Test
 public void testGetPageFromDatabase()
@@ -264,7 +266,7 @@ public void testGetPageFromDatabase()
 	vm.getPageDescriptorTable().setPageDescriptor( vmStelling, pageDescriptor );
 
 	byte [] page = getCache().getPageFromDatabase( pageDescriptor );
-	assertThat( TestHelper.isAll( page, value ), is( true ) );
+	assertThat( getTestHelper().isAll( page, value ), is( true ) );
 	assertThat( pageDescriptor.getCacheNummer(), is( 9 ) );
 	assertThat( getCache().isVuil( pageDescriptor ), is( false ) );
 }
@@ -280,11 +282,11 @@ public void testGetSetPage()
 		.cacheNummer( cacheNumber )
 		.schijfAdres( pageNumber * getCache().getPageSize() )
 		.build();
-	byte [] page = TestHelper.createPageWithAll( getPageSizeCalculator(), config.getAantalStukken(), value );
+	byte [] page = getTestHelper().createPageWithAll( value );
 	getCache().setPage( pageDescriptor, page );
 	
 	byte [] gotPage = getCache().getPage( pageDescriptor );
-	assertThat( TestHelper.isAll( gotPage, value ), is( true ) );
+	assertThat( getTestHelper().isAll( gotPage, value ), is( true ) );
 	assertThat( gotPage, is( page ) );
 }
 @Test
@@ -311,7 +313,7 @@ public void testGetPageNotDirtyAndInRam()
 	vm.getPageDescriptorTable().setPageDescriptor( vmStelling, pageDescriptor );
 
 	byte [] page = getCache().getPageFromDatabase( pageDescriptor );
-	assertThat( TestHelper.isAll( page, value ), is( true ) );
+	assertThat( getTestHelper().isAll( page, value ), is( true ) );
 	// De pageDescriptor is NIET veranderd
 	assertThat( pageDescriptor.getCacheNummer(), is( cacheNumber ) );
 	assertThat( getCache().isVuil( pageDescriptor ), is( false ) );
@@ -345,7 +347,7 @@ public void testGetSetCacheEntry()
 		.cacheNummer( cacheNumber )
 		.schijfAdres( pageNumber * getCache().getPageSize() )
 		.build();
-	byte [] page = TestHelper.createPageWithAll(getPageSizeCalculator(), config.getAantalStukken(),  value );
+	byte [] page = getTestHelper().createPageWithAll(value );
 	CacheEntry cacheEntry = CacheEntry.builder()
 		.pageDescriptor( pageDescriptor )
 		.page( page )
@@ -355,7 +357,7 @@ public void testGetSetCacheEntry()
 	getCache().setCacheEntry( pageDescriptor, cacheEntry );
 	CacheEntry gotCacheEntry = getCache().getCacheEntry( pageDescriptor );
 	assertThat( gotCacheEntry.isVuil(), is( true ) );
-	assertThat( TestHelper.isAll( gotCacheEntry.getPage(), value ), is( true ) );
+	assertThat( getTestHelper().isAll( gotCacheEntry.getPage(), value ), is( true ) );
 	assertThat( gotCacheEntry.getGeneratie(), is( generatie ) );
 	assertThat( gotCacheEntry.isVuil(), is( true ) );
 }
@@ -371,12 +373,12 @@ public void testPutRawPageData()
 		.cacheNummer( cacheNumber )
 		.schijfAdres( pageNumber * getCache().getPageSize() )
 		.build();
-	byte [] page = TestHelper.createPageWithAll( getPageSizeCalculator(), config.getAantalStukken(), value );
+	byte [] page = getTestHelper().createPageWithAll( value );
 	getCache().setPage( pageDescriptor, page );
 	getCache().putRawPageData( pageDescriptor );
 	
 	getCache().getRawPageData( pageDescriptor );
-	assertThat( TestHelper.isAll( getCache().getPage( pageDescriptor ), value ), is( true ) );
+	assertThat( getTestHelper().isAll( getCache().getPage( pageDescriptor ), value ), is( true ) );
 }
 @Test
 public void testPageOut()
@@ -390,7 +392,7 @@ public void testPageOut()
 		.cacheNummer( cacheNumber )
 		.schijfAdres( pageNumber * getCache().getPageSize() )
 		.build();
-	byte [] page = TestHelper.createPageWithAll( getPageSizeCalculator(), config.getAantalStukken(), value );
+	byte [] page = getTestHelper().createPageWithAll( value );
 	CacheEntry cacheEntry = CacheEntry.builder()
 		.page( page )
 		.pageDescriptor( pageDescriptor )
@@ -404,7 +406,7 @@ public void testPageOut()
 	page = new byte [getCache().getPageSize()];
 	getCache().getCacheEntry( pageDescriptor ).setPage( page );
 	getCache().getRawPageData( pageDescriptor );
-	assertThat( TestHelper.isAll( getCache().getPage( pageDescriptor ), value ), is( true ) );
+	assertThat( getTestHelper().isAll( getCache().getPage( pageDescriptor ), value ), is( true ) );
 }
 @Test
 public void testGetPositionWithinPage()
@@ -618,7 +620,7 @@ public void testFlushWithNothingChanged()
 @Test
 public void testFlushWithSomePagesPresentButNoneVuil()
 {
-	byte [] page = TestHelper.createPageWithAllOnes( getPageSizeCalculator(), config.getAantalStukken() );
+	byte [] page = getTestHelper().createPageWithAllOnes();
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( InRam )
 		.cacheNummer( 1 )
@@ -651,7 +653,7 @@ public void testFlushWithSomePagesPresentButNoneVuil()
 @Test
 public void testFlushWithSomePagesPresentAndVuil()
 {
-	byte [] page = TestHelper.createPageWithAllOnes( getPageSizeCalculator(), config.getAantalStukken() );
+	byte [] page = getTestHelper().createPageWithAllOnes();
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( InRam )
 		// Je moet hier cachenummber=0 gebruiken want verderop staat de WK op a1 en dat is cachenummer 0
@@ -694,11 +696,11 @@ public void testFlushWithSomePagesPresentAndVuil()
 		.build();
 	PageDescriptor newPageDescriptor = vm.getPageDescriptor( vmStelling );
 	byte [] newPage = getCache().getPage( newPageDescriptor );
-	assertThat( TestHelper.isAllOne( newPage ), is( true ) );
+	assertThat( getTestHelper().isAllOne( newPage ), is( true ) );
 	
 	vmStelling.setAanZet( Zwart );
 	newPage = getCache().getPage( newPageDescriptor );
-	assertThat( TestHelper.isAllOne( newPage ), is( true ) );
+	assertThat( getTestHelper().isAllOne( newPage ), is( true ) );
 }
 
 }
