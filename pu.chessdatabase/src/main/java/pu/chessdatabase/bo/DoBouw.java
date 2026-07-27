@@ -2,13 +2,15 @@ package pu.chessdatabase.bo;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-//@EntityScan( "pu.chessdatabase" )
-//@SpringBootApplication 
+@EntityScan( "pu.chessdatabase" )
+@SpringBootApplication 
 @Configuration
-public class DoBouwApart
+public class DoBouw
 {
 //@Autowired private Bouw bouw;
 //@Autowired private Config config;
@@ -16,7 +18,7 @@ private Bouw bouw;
 private Config config;
 public static void main( String[] args )
 {
-	SpringApplication.run( DoBouwApart.class, args );
+	SpringApplication.run( DoBouw.class, args );
 }
 @Bean
 public CommandLineRunner bouwer( Bouw aBouw, Config aConfig )
