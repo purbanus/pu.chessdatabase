@@ -169,32 +169,12 @@ public Ply getFirstPly()
 }
 public Ply getCurrentPly()
 {
-	// @@NOG Dit is een zwaktebod. Je kunt beter alle referenties naar getCurrentPly afgaan
-	//       en daar beslissen wat te doen. Onthoud: er IS geen ply!
-	//       MEE EENS dus afgesterd. Nu oveeral waar dit een foute test oplevert:
-	//       - kijken hoe erg het is
-	//       - die situatie voorkomen
 	if ( getCurrentPlyNummer() < 0 )
 	{
-//		return Ply.builder()
-//			.plies( this )
-//			.einde( Einde.Nog_niet )
-//			.plyNummer( -1 )
-//			.vanNaar( null )
-//			.boStelling( getStartStelling() )
-//			.build();
 		throw new RuntimeException( "Fout in getCurrentPly: huidige Plynummer negatief" );
 	}
 	return getPlies().get( getCurrentPlyNummer() );
 }
-//public BoStelling getCurrentStand()
-//{
-//	if ( getCurrentPlyNummer() < 0 )
-//	{
-//		return getStartStelling();
-//	}
-//	return getPlies().get( currentPlyNummer ).getBoStelling();
-//}
 public boolean hasPreviousPly()
 {
 	return getCurrentPlyNummer() > 0;

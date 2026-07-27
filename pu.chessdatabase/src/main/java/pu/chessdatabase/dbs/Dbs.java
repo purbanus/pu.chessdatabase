@@ -354,22 +354,6 @@ public void delete()
 {
 	vm.delete();
 }
-///**
-// * --------- Pass over stukken 3, 4 en 5 ----------------------------------
-// */
-//public void pass345( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
-//{
-//	vmStellingIterator.iterateOverPieces( aBoStelling, aVmStelling, aPassFunction, this::call345 );
-//}
-//void call345( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
-//{
-//	BoStelling gotBoStelling = getDirect( aVmStelling, aBoStelling );
-//	// @@NOG Je kunt hier niet Gen.isSchaak() aanroepen dus moet het in de proc
-//	if ( gotBoStelling.getResultaat() == ResultaatType.REMISE )
-//	{
-//		aPassFunction.doPass( gotBoStelling.clone() );
-//	}
-//}
 /**
  * --------- Pass over de remisestellingen met wit aan zet -------------
  */
@@ -382,7 +366,6 @@ void markeerWitPass( PassFunction aPassFunction )
  */
 void markeerZwartPass( PassFunction aPassFunction )
 {
-	// @@NOG Deze doet het dus niet
 	getVmStellingIterator().iterateOverWkZkOneColour( Zwart, aPassFunction );
 }
 /**
@@ -392,15 +375,6 @@ void markeerWitEnZwartPass( PassFunction aPassFunction )
 {
 	getVmStellingIterator().iterateOverWkZkAndKleur( aPassFunction );
 }
-
-//void callWitEnZwart( BoStelling aBoStelling, VMStelling aVmStelling, PassFunction aPassFunction )
-//{
-//	BoStelling gotBoStelling = getDirect( aVmStelling, aBoStelling );
-//	// Je kunt hier niet Gen.isSchaak() aanroepen dus moet het in de proc
-//	// Je wilt het ook niet aanroepen want in de opbouwbeweging worden schaakjes niet gebruikt behalve in pass 0
-//	
-//	aPassFunction.doPass( gotBoStelling.clone() );
-//}
 void markeerParallel( PassFunction aPassFunction )
 {
 	getVmStellingIterator().iterateParallel( aPassFunction );

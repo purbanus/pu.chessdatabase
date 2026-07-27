@@ -41,6 +41,7 @@ private static final boolean DO_PRINT = false;
 @Autowired private Config config;
 @Autowired private VMStellingIterator vmStellingIterator;
 PageSizeCalculator pageSizeCalculator = new PageSizeCalculator();
+TestHelper testHelper;
 
 String savedConfigString;
 @BeforeEach
@@ -50,6 +51,7 @@ public void setup()
 	config.switchConfig( Config.PIPOKDKT );
 	vm.setPageSizeCalculator( pageSizeCalculator );
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
+	testHelper = new TestHelper( getPageSizeCalculator(), getConfig().getAantalStukken() );
 }
 @AfterEach
 public void destroy()
@@ -718,10 +720,10 @@ void checkWitEnZwartPages( VMStelling aVmStelling, int aWitValue, int aZwartValu
 	{
 		aVmStelling.setAanZet( Wit );
 		page = vm.getPage( aVmStelling );
-		assertThat( TestHelper.isAll( page, (byte)aWitValue ), is( true ) );
+		assertThat( getTestHelper().isAll( page, (byte)aWitValue ), is( true ) );
 		aVmStelling.setAanZet( Zwart );
 		page = vm.getPage( aVmStelling );
-		assertThat( TestHelper.isAll( page, (byte)aZwartValue ), is( true ) );
+		assertThat( getTestHelper().isAll( page, (byte)aZwartValue ), is( true ) );
 	}
 	else
 	{
@@ -733,11 +735,11 @@ void checkWitEnZwartPages( VMStelling aVmStelling, int aWitValue, int aZwartValu
 			byte [] subPage = ArrayUtils.subarray( page, x, x + 4096 );
 			if ( wit )
 			{
-				assertThat( TestHelper.isAll( subPage, (byte)aWitValue ), is( true ) );
+				assertThat( getTestHelper().isAll( subPage, (byte)aWitValue ), is( true ) );
 			}
 			else
 			{
-				assertThat( TestHelper.isAll( subPage, (byte)aZwartValue ), is( true ) );
+				assertThat( getTestHelper().isAll( subPage, (byte)aZwartValue ), is( true ) );
 			}
 			wit = ! wit;
 		}
@@ -809,7 +811,7 @@ void set0x34( BoStelling aBoStelling )
 void checkMarkeerPassMet0x34( VMStelling vmStelling )
 {
 	byte [] page = vm.getPage( vmStelling );
-	assertThat( TestHelper.isAll( page, (byte)0x34 ), is( true ) );
+	assertThat( getTestHelper().isAll( page, (byte)0x34 ), is( true ) );
 }
 @Test
 public void testPass()
@@ -838,7 +840,7 @@ void set0x0b( BoStelling aBoStelling )
 void checkMarkeerPassMet0x0b( VMStelling vmStelling )
 {
 	byte [] page = vm.getPage( vmStelling );
-	assertThat( TestHelper.isAll( page, (byte)0x0b ), is( true ) );
+	assertThat( getTestHelper().isAll( page, (byte)0x0b ), is( true ) );
 }
 void set0x17( BoStelling aBoStelling )
 {
@@ -849,7 +851,7 @@ void set0x17( BoStelling aBoStelling )
 void checkMarkeerPassMet0x17( VMStelling vmStelling )
 {
 	byte [] page = vm.getPage( vmStelling );
-	assertThat( TestHelper.isAll( page, (byte)0x17 ), is( true ) );
+	assertThat( getTestHelper().isAll( page, (byte)0x17 ), is( true ) );
 }
 
 
