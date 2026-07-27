@@ -115,7 +115,7 @@ Map<String, ConfigImpl> getConfigImplRegistry()
 		configImplRegistry.put( "TESTKLLK", TESTKLLK );
 		configImplRegistry.put( "TESTKLPK", TESTKLPK );
 		configImplRegistry.put( "TESTKDKTT", TESTKDKTT );
-		configImplRegistry.put( "PIPO1KDK", PIPOKDK );
+		configImplRegistry.put( "PIPOKDK", PIPOKDK );
 		configImplRegistry.put( "PIPOKDKT", PIPOKDKT );
 		configImplRegistry.put( "PiPOKLLK", PIPOKLLK );
 		configImplRegistry.put( "PiPOKLPK", PIPOKLPK );
