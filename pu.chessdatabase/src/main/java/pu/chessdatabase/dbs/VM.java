@@ -107,8 +107,8 @@ public static int alfaToVeld( String aAlfaVeld )
 	return capAlfaVeld.charAt( 0 ) - 'A' + 8 * ( capAlfaVeld.charAt( 1 ) - '1' );
 }
 
-public Range wkVeldRange = new Range( 0, 9 );
-public Range stukVeldRange = new Range( 0, 63 );
+public Range wkVeldRange = new Range( 0, MAX_WK - 1 );
+public Range stukVeldRange = new Range( 0, MAX_STUK - 1 );
 
 private final Config config;
 @Getter( AccessLevel.PACKAGE ) 
