@@ -73,7 +73,7 @@ void report()
 public void iterateParallel( PassFunction aPassFunction )
 {
 	List<VMIterateAction> actions = new ArrayList<>();
-	for ( int wk = 0; wk < MAX_WK; wk++ )
+	for ( int wk : getVm().getWkVeldRange() )
 	{
 		actions.add( new VMIterateAction( this, aPassFunction, wk ) );
 	}
@@ -91,7 +91,7 @@ public void iterateOverZkOneColor( int aWk, Kleur aKleur, PassFunction aPassFunc
 	boStelling.setWk( Dbs.CVT_WK[aWk] );
 	vmStelling.setAanZet( aKleur );
 	boStelling.setAanZet( aKleur );
-	for ( int zk = 0; zk < 64; zk++ )
+	for ( int zk : getVm().getStukVeldRange() )
 	{
 		vmStelling.setZk( zk );
 		boStelling.setZk( Dbs.CVT_STUK[zk] );
@@ -107,11 +107,11 @@ public void iterateOverWkZkAndKleur( PassFunction aPassFunction )
 {
 	VMStelling vmStelling = new VMStelling();
 	BoStelling boStelling = new BoStelling();
-	for ( int wk = 0; wk < 10; wk++ )
+	for ( int wk : getVm().getWkVeldRange() )
 	{
 		vmStelling.setWk( wk );
 		boStelling.setWk( Dbs.CVT_WK[wk] );
-		for ( int zk = 0; zk < 64; zk++ )
+		for ( int zk : getVm().getStukVeldRange() )
 		{
 			vmStelling.setZk( zk );
 			boStelling.setZk( Dbs.CVT_STUK[zk] );
@@ -138,11 +138,11 @@ public void iterateOverWkZkOneColour( Kleur aKleur, PassFunction aPassFunction )
 	vmStelling.setAanZet( aKleur );
 	BoStelling boStelling = new BoStelling();
 	boStelling.setAanZet( aKleur );
-	for ( int wk = 0; wk < MAX_WK; wk++ )
+	for ( int wk : getVm().getWkVeldRange() )
 	{
 		vmStelling.setWk( wk );
 		boStelling.setWk( Dbs.CVT_WK[wk] );
-		for ( int zk = 0; zk < MAX_STUK; zk++ )
+		for ( int zk : getVm().getStukVeldRange() )
 		{
 			vmStelling.setZk( zk );
 			boStelling.setZk( Dbs.CVT_STUK[zk] );
@@ -170,7 +170,7 @@ void iterateOverPieces( BoStelling aBoStelling, VMStelling aVmStelling, PassFunc
 {
 	BoStelling boStelling = aBoStelling.clone();
 	VMStelling vmStelling = aVmStelling.clone();
-	for ( int s3 = 0; s3 < 64; s3++ )
+	for ( int s3 : getVm().getStukVeldRange() )
 	{
 		vmStelling.setS3( s3 );
 		boStelling.setS3( Dbs.CVT_STUK[s3] );
@@ -180,7 +180,7 @@ void iterateOverPieces( BoStelling aBoStelling, VMStelling aVmStelling, PassFunc
 		}
 		else
 		{
-			for ( int s4 = 0; s4 < 64; s4++ )
+			for ( int s4 : getVm().getStukVeldRange() )
 			{
 				vmStelling.setS4( s4 );
 				boStelling.setS4( Dbs.CVT_STUK[s4] );
@@ -190,7 +190,7 @@ void iterateOverPieces( BoStelling aBoStelling, VMStelling aVmStelling, PassFunc
 				}
 				else
 				{
-					for ( int s5 = 0; s5 < 64; s5++ )
+					for ( int s5 : getVm().getStukVeldRange() )
 					{
 						vmStelling.setS5( s5 );
 						boStelling.setS5( Dbs.CVT_STUK[s5] );
