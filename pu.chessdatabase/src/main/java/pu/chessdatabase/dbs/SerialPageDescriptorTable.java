@@ -44,7 +44,7 @@ public void iterateOverAllPageDescriptors( PageDescriptorFunction aPageDescripto
 		}
 	}
 }
-long address; // @@NOG Dit is een multithread probleem(pje)
+long address;
 @Override
 public void initializePageDescriptorTable()
 {

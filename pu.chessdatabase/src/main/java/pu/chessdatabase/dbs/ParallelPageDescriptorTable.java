@@ -38,7 +38,7 @@ public void iterateOverAllPageDescriptors( PageDescriptorFunction aPageDescripto
 		aPageDescriptorsFunction.doPass( vmStelling );
 	}
 }
-long address = 0L; // @@NOG Dit is een multithread probleem(pje)
+long address = 0L;
 int index = 0;
 @Override 
 public void initializePageDescriptorTable()
