@@ -25,10 +25,10 @@ public static final long MEG = 1048576;
 public static final boolean HOU_STELLINGEN_BIJ = false;
 public static final boolean BOUW_PARALLEL = false;
 
-@Autowired private Dbs dbs;
-@Autowired private Gen gen;
-@Autowired private Config config;
-@Autowired private VMStellingIterator vmStellingIterator;
+private Dbs dbs;
+private Gen gen;
+private Config config;
+private VMStellingIterator vmStellingIterator;
 
 List<BoStelling> illegaleStellingen = new ArrayList<>();
 List<BoStelling> stellingenMetSchaak = new ArrayList<>();
@@ -44,6 +44,7 @@ public Bouw()
 	passNchanges = true;
 	passNumber = 0;
 }
+@Autowired
 public Bouw( Dbs aDbs, Gen aGen, Config aConfig, VMStellingIterator aVMStellingIterator )
 {
 	this();
