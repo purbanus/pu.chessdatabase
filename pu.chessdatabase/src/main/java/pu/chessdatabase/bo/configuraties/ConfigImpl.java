@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pu.chessdatabase.bo.Stukken;
+import pu.chessdatabase.dbs.AlleenStukkenTransformator;
+import pu.chessdatabase.dbs.MetPionnenTransformator;
+import pu.chessdatabase.dbs.Transformator;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -23,12 +26,49 @@ private final List<StukDefinitie> stukDefinities = new ArrayList<>();
 
 @Setter( AccessLevel.PROTECTED )
 private Stukken stukken;
+private Transformator transformator = null;
 public ConfigImpl()
 {
 	super();
 	// Dit hebben ze allemaal
 	stukDefinities.add( new StukDefinitie( Koning, Wit ) );
 	stukDefinities.add( new StukDefinitie( Koning, Zwart ) );
+}
+//public boolean heeftPionnen()
+//{
+//	for ( StukDefinitie stukDefinitie : stukDefinities )
+//	{
+//		if ( stukDefinitie.getStukType() == Pion )
+//		{
+//			return true;
+//		}
+//	}
+//	return false;
+//}
+//public int getAantalPionnen()
+//{
+//	int aantalPionnen = 0;
+//	for ( StukDefinitie stukDefinitie : stukDefinities )
+//	{
+//		if ( stukDefinitie.getStukType() == Pion )
+//		{
+//			aantalPionnen++;
+//		}
+//	}
+//	return aantalPionnen;
+//}
+public boolean heeftPionnen()
+{
+	return getStukken().heeftPionnen();
+}
+
+public Transformator getTransformator()
+{
+	if ( transformator == null )
+	{
+		transformator = heeftPionnen() ? new MetPionnenTransformator() : new AlleenStukkenTransformator();
+	}
+	return transformator;
 }
 public abstract String getDatabaseName();
 public abstract String getName();
