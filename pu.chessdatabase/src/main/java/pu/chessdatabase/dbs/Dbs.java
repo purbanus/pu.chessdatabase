@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import pu.chessdatabase.bo.BoStelling;
+import pu.chessdatabase.bo.Config;
 import pu.chessdatabase.bo.Kleur;
 import pu.chessdatabase.bo.ReportFunction;
 import pu.services.Matrix;
@@ -21,109 +22,7 @@ import lombok.EqualsAndHashCode;
 @Data
 public class Dbs
 {
-public static final int MAX_RESULTAAT_TYPE = 4;
-public static final int OKTANTEN = 8;
-
-/**==============================================================================================================
-* Konversie WK notatie van VM naar Gen
-*==============================================================================================================*/
-// De WK moet in het eerste oktant zitten, dwz de veldwaarde moet tussen 0 en 9 zitten
-// De CVT_WK transformeert hem dan naar een van de velden
-// a1, b1, c1, d1,   0, 1, 2, 3  
-//     b2, c2, d3,      4, 5, 6
-//         c3, d3,         7, 8
-//             d4,            9
-public static final int [] CVT_WK = {
-	0x00,0x01,0x02,0x03,
-		 0x11,0x12,0x13,
-			  0x22,0x23,
-				   0x33
-};
-/**==============================================================================================================
-* Konversie stuk (niet-WK) notatie van VM naar Zgen
-*==============================================================================================================*/
-public static final int [] CVT_STUK = {
-	0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,
-	0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17,
-	0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27,
-	0x30,0x31,0x32,0x33,0x34,0x35,0x36,0x37,
-	0x40,0x41,0x42,0x43,0x44,0x45,0x46,0x47,
-	0x50,0x51,0x52,0x53,0x54,0x55,0x56,0x57,
-	0x60,0x61,0x62,0x63,0x64,0x65,0x66,0x67,
-	0x70,0x71,0x72,0x73,0x74,0x75,0x76,0x77
-};
-/**==============================================================================================================
-* Oktantentabel. Deze wordt gebruikt om te kijken in welk oktant een stuk (inz. de witte koning) zich bevindt.
-* 0 = foutkode, daar wordt in Cardinaliseer() op getest.
-* oktant 1 - Identieke transformatie
-* oktant 2 - Spiegeling in de y-as
-* oktant 3 - Rotatie van -90 graden
-* oktant 4 - Spiegeling in de diagonaal a8-h1
-* oktant 5 - Spiegeling in de x-as gevolgd door een spiegeling in de y-as,
-*            oftewel een rotatie over 180 graden
-* oktant 6 - Spiegeling in de x-as
-* oktant 7 - Rotatie over +90 graden
-* oktant 8 - Spiegeling in de diagonaal a1-h8
-*==============================================================================================================*/
-public static final int [] OKTANTEN_TABEL = {
-   1,1,1,1,2,2,2,2,0,0,0,0,0,0,0,0,
-   8,1,1,1,2,2,2,3,0,0,0,0,0,0,0,0,
-   8,8,1,1,2,2,3,3,0,0,0,0,0,0,0,0,
-   8,8,8,1,2,3,3,3,0,0,0,0,0,0,0,0,
-   7,7,7,6,5,4,4,4,0,0,0,0,0,0,0,0,
-   7,7,6,6,5,5,4,4,0,0,0,0,0,0,0,0,
-   7,6,6,6,5,5,5,4,0,0,0,0,0,0,0,0,
-   6,6,6,6,5,5,5,5
-};
-/*
- * Zo ziet hij eruit met de a-lijn onderaan
-   6,6,6,6,5,5,5,5
-   7,6,6,6,5,5,5,4,0,0,0,0,0,0,0,0,
-   7,7,6,6,5,5,4,4,0,0,0,0,0,0,0,0,
-   7,7,7,6,5,4,4,4,0,0,0,0,0,0,0,0,
-   8,8,8,1,2,3,3,3,0,0,0,0,0,0,0,0,
-   8,8,1,1,2,2,3,3,0,0,0,0,0,0,0,0,
-   8,1,1,1,2,2,2,3,0,0,0,0,0,0,0,0,
-   1,1,1,1,2,2,2,2,0,0,0,0,0,0,0,0,
- */
-
-/**========================================================================================
-* Transformatietabel voor WK. Nadat WK is getransformeerd naar het juiste oktant,
-* moet hij nog naar de speciale VM-kodering (0..9) worden gebracht. Dat gebeurt hiermee
-* 10 = foutkode, wordt in VM op getest.
-*========================================================================================*/
-public static final int [] TRANSFORM_WK = {
-	 0, 1, 2, 3,10,10,10,10,
-	10, 4, 5, 6,10,10,10,10,
-	10,10, 7, 8,10,10,10,10,
-	10,10,10, 9,10,10,10,10,
-	10,10,10,10,10,10,10,10,
-	10,10,10,10,10,10,10,10,
-	10,10,10,10,10,10,10,10,
-	10,10,10,10,10,10,10,10
-};
-public static final Matrix [] MATRIX_TABEL = {
-	null, // Dit heeft een matrix per oktant, en oktant 0 bestaat niet
-	new Matrix( new Vector[] { new Vector( 1, 0), new Vector( 0, 1) }),
-	new Matrix( new Vector[] { new Vector(-1, 0), new Vector( 0, 1) }),
-	new Matrix( new Vector[] { new Vector( 0, 1), new Vector(-1, 0) }),
-	new Matrix( new Vector[] { new Vector( 0,-1), new Vector(-1, 0) }),
-	new Matrix( new Vector[] { new Vector(-1, 0), new Vector( 0,-1) }),
-	new Matrix( new Vector[] { new Vector( 1, 0), new Vector( 0,-1) }),
-	new Matrix( new Vector[] { new Vector( 0,-1), new Vector( 1, 0) }),
-	new Matrix( new Vector[] { new Vector( 0, 1), new Vector( 1, 0) })
-};
-public static final Vector [] TRANSLATIE_TABEL = new Vector [] {
-	null, // Dit heeft een vector per oktant, en oktant 0 bestaat niet
-	new Vector( 0, 0),
-	new Vector( 7, 0),
-	new Vector( 0, 7),
-	new Vector( 7, 7),
-	new Vector( 7, 7),
-	new Vector( 0, 7),
-	new Vector( 7, 0),
-	new Vector( 0, 0)
-};
+//public static final int MAX_RESULTAAT_TYPE = 4;
 public static void iterateOverKleurEnResultaat( IterateOverKleurEnResultaatFunction aIterateOverKleurEnResultaatFunction )
 {
 	for ( Kleur kleur : Kleur.values() )
@@ -134,23 +33,28 @@ public static void iterateOverKleurEnResultaat( IterateOverKleurEnResultaatFunct
 		}
 	}
 }
+public static Range VELD_RANGE = new Range( 0, 0x77 );
+public static Range RESULTAAT_RANGE = new Range( 0, 3 );
 
-@Autowired private VM vm;
-@Autowired private VMStellingIterator vmStellingIterator;
-Range veldRange = new Range( 0, 0x77 );
-Range oktantRange = new Range( 1, OKTANTEN );
-Range resultaatRange = new Range( 0, 3 );
-@ToStringExclude
-@EqualsAndHashCode.Exclude
-int[][] transformatieTabel = new int [OKTANTEN + 1][veldRange.getMaximum() + 1];
-public Dbs()
+private final VM vm;
+private final VMStellingIterator vmStellingIterator;
+private final Config config;
+
+public Dbs( VM aVm, Config aConfig )
 {
-	createTransformatieTabel();
-}
-public Dbs( VM aVm )
-{
-	this();
+	super();
 	vm = aVm;
+	vmStellingIterator = null;
+	config = aConfig;
+}
+
+@Autowired
+public Dbs( VM aVm, VMStellingIterator aVmStellingIterator, Config aConfig )
+{
+	super();
+	vm = aVm;
+	vmStellingIterator = aVmStellingIterator;
+	config = aConfig;
 }
 public void setReport( int aReportFrequency, ReportFunction aReportFunction )
 {
@@ -176,65 +80,9 @@ public void setDatabaseName( String aDatabaseName )
 {
 	vm.setDatabaseName( aDatabaseName );
 }
-
-public void createTransformatieTabel()
+public Transformator getTransformator()
 {
-	Vector Vres;
-	for ( int oktant = oktantRange.getMinimum(); oktant <= oktantRange.getMaximum(); oktant++ )
-	{
-		for ( int rij = 0; rij < 8; rij++ )
-		{
-			for ( int kol = 0; kol < 8; kol++ )
-			{
-				Vres = new Vector( kol, rij );
-				Vres = MATRIX_TABEL[oktant].multiply( Vres );
-				Vres = Vres.add( TRANSLATIE_TABEL[oktant] );
-				int oudVeld = kol + 16 * rij;
-				int newVeld = Vres.get( 0 ) + 8 * Vres.get( 1 );
-				transformatieTabel[oktant][oudVeld] = newVeld;
-			}
-		}
-	}
-}
-/**
- * -------- Stelling van Dbs-formaat naar VM-formaat ------
- */
-public VMStelling cardinaliseer( BoStelling aStelling )
-{
-	int oktant = OKTANTEN_TABEL[aStelling.getWk()];
-	int trfWk = transformatieTabel[oktant][aStelling.getWk()];
-	@SuppressWarnings( "unused" )
-	int trftrfWk = TRANSFORM_WK[trfWk];
-	
-	VMStelling vmStelling = spiegelEnRoteer( aStelling );
-	vmStelling.setWk( TRANSFORM_WK[ vmStelling.getWk()] );
-	return vmStelling;
-}
-public VMStelling spiegelEnRoteer( BoStelling aStelling )
-{
-	int oktant = getOktant( aStelling );
-	return spiegelEnRoteer( aStelling, oktant );
-}
-VMStelling spiegelEnRoteer( BoStelling aStelling, int aOktant )
-{
-	return VMStelling.builder()
-		.wk( transformatieTabel[aOktant][aStelling.getWk()] )
-		.zk( transformatieTabel[aOktant][aStelling.getZk()] )
-		.s3( transformatieTabel[aOktant][aStelling.getS3()] )
-		.s4( transformatieTabel[aOktant][aStelling.getS4()] )
-		.s5( transformatieTabel[aOktant][aStelling.getS5()] )
-		.aanZet( aStelling.getAanZet() )
-		.build();
-}
-
-int getOktant( BoStelling aStelling )
-{
-	int oktant = OKTANTEN_TABEL[aStelling.getWk()];
-	if ( oktant < 1 || oktant > 8)
-	{
-		throw new RuntimeException( "Foutief oktant in Dbs.spiegelEnRoteer voor WK op " + Integer.toHexString( aStelling.getWk() ) );
-	}
-	return oktant;
+	return getConfig().getTransformator();
 }
 /**
  *----------- Schrijven ----------------- 
@@ -242,7 +90,7 @@ int getOktant( BoStelling aStelling )
 public void put( BoStelling aBoStelling )
 {
 	int VMRec = 0;
-	VMStelling vmStelling = cardinaliseer( aBoStelling );
+	VMStelling vmStelling = getTransformator().boStellingToVmStelling( aBoStelling );
 	switch ( aBoStelling.getResultaat() )
 	{
 		case Illegaal: 
@@ -262,7 +110,7 @@ public void put( BoStelling aBoStelling )
  */
 public BoStelling get( BoStelling aBoStelling )
 {
-	VMStelling vmStelling = cardinaliseer( aBoStelling );
+	VMStelling vmStelling = getTransformator().boStellingToVmStelling( aBoStelling );
 	return getDirect( vmStelling, aBoStelling );
 }
 /**
@@ -275,12 +123,8 @@ BoStelling getDirect( VMStelling aVMStelling, BoStelling aBoStelling )
 {
 	BoStelling boStelling = aBoStelling.clone();
 	int VMrec = vm.get( aVMStelling );
-	// @@LOW Erg onhandig! Je kunt hier niet Gen gebruiken want dan krijg je een circulaire 
-	//       referentie: Gen gebruikt Dbs en Dbs gebruikt dan ook Gen. Er zijn twee oplossingen:
-	//       - De isSchaak uit Gen tillen en in een aparte class stoppen (ik weet trouwens niet of
-	//         dat gaat werken, of je dan geen circulaire referentie hebt.
-	// Overal waar getDirect gebruikt wordt, isSchaak() aanroepen ==> Nee want dat is erg slecht voor de performance.
-	// In de hele opbouwbeweging wordt niets met schaakjes gedaan, behalve in de nulde ronde.
+
+	// In de hele opbouwbeweging wordt niets met schaakjes gedaan, behalve in de nulde ronde, om matjes op te sporen
 	boStelling.setSchaak( false );
 	if ( VMrec == VM.VM_ILLEGAAL )
 	{
@@ -318,7 +162,7 @@ BoStelling getDirect( VMStelling aVMStelling, BoStelling aBoStelling )
  */
 public void freeRecord( BoStelling aBoStelling )
 {
-	VMStelling vmStelling = cardinaliseer( aBoStelling );
+	VMStelling vmStelling = getTransformator().boStellingToVmStelling( aBoStelling );
 	vm.freeRecord( vmStelling );
 }
 /**
