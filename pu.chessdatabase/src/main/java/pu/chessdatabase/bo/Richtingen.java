@@ -13,5 +13,6 @@ public static final List<Integer> KRICHTING = Arrays.asList( 0x01, 0x11,  0x10, 
 public static final List<Integer> TRICHTING = Arrays.asList( 0x01, 0x10, -0x01, -0x10 );
 public static final List<Integer> LRICHTING = Arrays.asList( 0x11, 0x0F, -0x11, -0x0F );
 public static final List<Integer> PRICHTING = Arrays.asList( 0x12, 0x21,  0x1F,  0x0E, -0x12, -0x21, -0x1F, -0x0E );
+public static final List<Integer> ORICHTING = Arrays.asList();
 public static final List<Integer> GRICHTING = new ArrayList<>();
 }
