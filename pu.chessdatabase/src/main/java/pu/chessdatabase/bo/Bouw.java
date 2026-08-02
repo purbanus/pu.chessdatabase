@@ -15,9 +15,11 @@ import pu.chessdatabase.dbs.VMStellingIterator;
 import pu.services.StopWatch;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Data
+@Slf4j
 public class Bouw
 {
 
@@ -61,7 +63,7 @@ void reportNewPass( String aPassText, boolean aDoPrint )
 {
 	if ( aDoPrint )
 	{
-		System.out.println( "\n" + aPassText + "\n" );
+		LOG.info( "\n{}\n", aPassText );
 		dbs.setReport( getReportFrequency(), this::showTellers );
 	}
 	else
@@ -84,7 +86,7 @@ public void showNothing( int aStellingTeller, int [][] aTellingen )
 }
 public void showTellers( int aStellingTeller, int [][] aTellingen )
 {
-	System.out.println( "Tellingen na " + aStellingTeller + " stellingen" );
+	LOG.info( "Tellingen na {} stellingen" );
 	printAlles( aTellingen );
 }
 
@@ -122,14 +124,14 @@ void printAlles()
 }
 void printAlles( int [][] aArray)
 {
-	System.out.println( "Illegaal met wit aan zet  : " + aArray[0][0] );
-	System.out.println( "Gewonnen met wit aan zet  : " + aArray[0][1] );
-    System.out.println( "Remise met wit aan zet    : " + aArray[0][2] );
-    System.out.println( "Verloren met wit aan zet  : " + aArray[0][3] );
-    System.out.println( "Illegaal met zwart aan zet: " + aArray[1][0] );
-	System.out.println( "Gewonnen met zwart aan zet: " + aArray[1][1] );
-    System.out.println( "Remise met zwart aan zet  : " + aArray[1][2] );
-    System.out.println( "Verloren met zwart aan zet: " + aArray[1][3] );
+	LOG.info( "Illegaal met wit aan zet  : {}", aArray[0][0] );
+	LOG.info( "Gewonnen met wit aan zet  : {}", aArray[0][1] );
+    LOG.info( "Remise met wit aan zet    : {}", aArray[0][2] );
+    LOG.info( "Verloren met wit aan zet  : {}", aArray[0][3] );
+    LOG.info( "Illegaal met zwart aan zet: {}", aArray[1][0] );
+	LOG.info( "Gewonnen met zwart aan zet: {}", aArray[1][1] );
+    LOG.info( "Remise met zwart aan zet  : {}", aArray[1][2] );
+    LOG.info( "Verloren met zwart aan zet: {}", aArray[1][3] );
     int totaal = 0;
     for ( int [] row : aArray )
     {
@@ -138,7 +140,7 @@ void printAlles( int [][] aArray)
             totaal += col; 
         }
     }
-    System.out.println( "Totaal                    : " + totaal );
+    LOG.info( "Totaal                    : {}", totaal );
 
 }
 /**
@@ -400,22 +402,21 @@ void pass_n()
  */
 public void bouwDatabase()
 {
-	System.out.println( "We bouwen op: " + dbs.getDatabaseName() );
+	LOG.info( "We bouwen op: {}", getDbs().getDatabaseName() );
 	StopWatch timer = new StopWatch();
 	passNumber = 0;
 	pass_0();
 //	telAlles();
 //	printAllesMetKleur();
-	System.out.printf( "Pass %d duurde %s\n", passNumber, timer.getLapTimeMs() );
+	LOG.info( "Pass {} duurde {}", passNumber, timer.getLapTimeMs() );
 	while ( passNchanges )
 	{
 		passNchanges = false;
 		pass_n();
 		passNumber++;
-		System.out.printf( "Pass %d duurde %s\n", passNumber, timer.getLapTimeMs() );
-//		printAllesMetKleur();
+		LOG.info( "Pass {} duurde {}", passNumber, timer.getLapTimeMs() );
 	}
-	System.out.println( "Totaaltijd: " + timer.getElapsedMs() );
+	LOG.info( "Totaaltijd: {}" + timer.getElapsedMs() );
 	telAndPrintAlles( true );
 }
 
