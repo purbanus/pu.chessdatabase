@@ -135,6 +135,41 @@ public Stuk getS5()
 {
 	return getStukken().get( 4 );
 }
+public boolean isS3Pion()
+{
+	return getS3().getStukType() == Pion;
+}
+public boolean isS4Pion()
+{
+	return getS4().getStukType() == Pion;
+}
+public boolean isS5Pion()
+{
+	return getS5().getStukType() == Pion;
+}
+public boolean heeftPionnen()
+{
+	for ( Stuk stuk : getStukken() )
+	{
+		if ( stuk.getStukType() == Pion )
+		{
+			return true;
+		}
+	}
+	return false;
+}
+public int getAantalPionnen()
+{
+	int aantalPionnen = 0;
+	for ( Stuk stuk : getStukken() )
+	{
+		if ( stuk.getStukType() == Pion )
+		{
+			aantalPionnen++;
+		}
+	}
+	return aantalPionnen;
+}
 public Stuk getStukAtIndex( int aStukNummer)
 {
 		return getStukken().get( aStukNummer );
