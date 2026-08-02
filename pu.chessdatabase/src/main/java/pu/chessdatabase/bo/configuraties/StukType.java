@@ -12,6 +12,7 @@ Dame( "D", "Dame", Richtingen.KRICHTING, true ),
 Toren( "T", "Toren", Richtingen.TRICHTING, true ), 
 Loper( "L", "Loper", Richtingen.LRICHTING, true ), 
 Paard( "P",  "Paard", Richtingen.PRICHTING, false ),
+Pion( "o",  "Pion", Richtingen.ORICHTING, false ),
 Geen( "G",  "Geen stuk", Richtingen.GRICHTING, false );
 // geen pion!
 
