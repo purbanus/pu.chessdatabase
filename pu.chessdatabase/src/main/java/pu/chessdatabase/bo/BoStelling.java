@@ -144,26 +144,47 @@ public void normaliseer( int aAantalStukken )
 		setS5( getWk() );
 	}
 }
+public Stuk getWkStuk()
+{
+	return Config.getStaticStukken().getWk();
+}
+public Stuk getZkStuk()
+{
+	return Config.getStaticStukken().getZk();
+}
+public Stuk getS3Stuk()
+{
+	return Config.getStaticStukken().getS3();
+}
+public Stuk getS4Stuk()
+{
+	return Config.getStaticStukken().getS4();
+}
+public Stuk getS5Stuk()
+{
+	return Config.getStaticStukken().getS5();
+}
 public String getWkString()
 {
-	return Config.getStaticStukken().getWk().getStukString();
+	return getWkStuk().getStukString();
 }
 public String getZkString()
 {
-	return Config.getStaticStukken().getZk().getStukString();
+	return getZkStuk().getStukString();
 }
 public String getS3String()
 {
-	return Config.getStaticStukken().getS3().getStukString();
+	return getS3Stuk().getStukString();
 }
 public String getS4String()
 {
-	return Config.getStaticStukken().getS4().getStukString();
+	return getS4Stuk().getStukString();
 }
 public String getS5String()
 {
-	return Config.getStaticStukken().getS5().getStukString();
+	return getS5Stuk().getStukString();
 }
+
 public String getWkAlfa()
 {
 	return Gen.veldToAlfa( wk );
