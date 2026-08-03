@@ -446,6 +446,7 @@ public void testPageOut()
 @Test
 public void testGetPositionWithinPage()
 {
+	// @@HIGH Dit nog geschikt maken voor pionnen
 	VMStelling vmStelling = VMStelling.builder()
 		.wk( 0x04 )
 		.zk( 0x31 )
@@ -465,6 +466,7 @@ public void testGetPositionWithinPage()
 @Test
 public void testGetAllPositionsWithinPage3Stukken()
 {
+	// @@HIGH Dit nog geschikt maken voor pionnen
 	getConfig().switchConfig( Config.PIPOKDK );
 	VMStelling vmStelling = VMStelling.builder()
 		.wk( 0x00 )
@@ -485,6 +487,7 @@ public void testGetAllPositionsWithinPage3Stukken()
 @Test
 public void testGetAllPositionsWithinPage4Stukken()
 {
+	// @@HIGH Dit nog geschikt maken voor pionnen
 	getConfig().switchConfig( Config.PIPOKDKT );
 	VMStelling vmStelling = VMStelling.builder()
 		.wk( 0x00 )
@@ -509,6 +512,7 @@ public void testGetAllPositionsWithinPage4Stukken()
 @Test
 public void testGetAllPositionsWithinPage5Stukken()
 {
+	// @@HIGH Dit nog geschikt maken voor pionnen
 	StopWatch timer = new StopWatch();
 	getConfig().switchConfig( Config.PIPOKDKTT );
 	VMStelling vmStelling = VMStelling.builder()
