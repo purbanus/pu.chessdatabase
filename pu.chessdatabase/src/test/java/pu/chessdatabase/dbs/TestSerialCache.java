@@ -10,7 +10,6 @@ import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.dbs.CacheType.*;
 import static pu.chessdatabase.dbs.Constants.*;
 import static pu.chessdatabase.dbs.Lokatie.*;
-import static pu.chessdatabase.dbs.VM.*;
 
 import java.io.IOException;
 
@@ -34,7 +33,6 @@ public class TestSerialCache
 @Autowired private VM vm;
 @Autowired private Config config;
 private MockCache cache;
-private PageSizeCalculator pageSizeCalculator = new PageSizeCalculator( Serial );
 private TestHelper testHelper;
 
 private String savedConfigString;
@@ -42,11 +40,11 @@ private String savedConfigString;
 public void setup()
 {
 	savedConfigString = config.getConfig();
-	config.switchConfig( Config.PIPOKDKT );
-	vm.setPageSizeCalculator( pageSizeCalculator );
-	vm.open( "rw" );
+	getConfig().setCacheType( Serial );
+	getConfig().switchConfig( Config.PIPOKDKT );
+	getVm().open( "rw" );
 	cache = new MockCache( vm.getCache() );
-	testHelper = new TestHelper( getPageSizeCalculator(), getConfig().getAantalStukken() );
+	testHelper = new TestHelper( getConfig() );
 }
 @AfterEach
 public void destroy()
@@ -55,23 +53,9 @@ public void destroy()
 	vm.delete();
 	config.switchConfig( savedConfigString );
 }
-
-private void writePageWithAll( long aPageNumber, int aCacheNumber, byte aValue )
+PageSizeCalculator getPageSizeCalculator()
 {
-	byte [] page = getTestHelper().createPageWithAll( aValue );
-	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( InRam )
-		.cacheNummer( aCacheNumber )
-		.schijfAdres( aPageNumber * getCache().getPageSize() )
-		.build();
-	CacheEntry cacheEntry = CacheEntry.builder()
-		.generatie( 15 )
-		.page( page )
-		.pageDescriptor( pageDescriptor )
-		.vuil( true )
-		.build();
-	getCache().setCacheEntry( pageDescriptor, cacheEntry );
-	getCache().pageOut( pageDescriptor );
+	return getConfig().getPageSizeCalculator();
 }
 //@Test
 public void showCache()
@@ -143,14 +127,25 @@ public void testGetCacheSize()
 @Test
 public void testInitializeCache()
 {
-	//getCache().initializeCache(); // gebeurt al in de setup, via vm.open)_
+	getConfig().switchConfig( Config.PIPOKDKT );
+	doTestInitalizeCache();
+
+	doTestInitalizeCache();
+}
+void doTestInitalizeCache()
+{
 	assertThat( getCache().getCacheEntries().size(), is( SerialCache.CACHE_SIZE ) );
+//	long address = 0L;
+//	int index = 0;
 	for ( CacheEntry cacheEntry : getCache().getCacheEntries() )
 	{
 		assertThat( cacheEntry.getPageDescriptor(), is( nullValue() ) );
 		assertThat( getTestHelper().isAllZero( cacheEntry.getPage() ), is( true ) );
 		assertThat( cacheEntry.getGeneratie(), is( 0L ) );
 		assertThat( cacheEntry.isVuil(), is( false ) );
+
+//		address += getPageSizeCalculator().getPageSize( getConfig().getAantalStukken() );
+//		index++;
 	}
 }
 @Test
@@ -206,7 +201,7 @@ public void testGetRawPageData()
 	int cacheNumber = 15;
 	byte value = (byte)0x80;
 
-	writePageWithAll( pageNumber, cacheNumber, value );
+	getTestHelper().writePageWithAll( getCache(), pageNumber, cacheNumber, value );
 
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( OpSchijf )
@@ -223,7 +218,7 @@ public void testPageIn() throws IOException
 	int cacheNumber = 17;
 	byte value = (byte)0x40;
 
-	writePageWithAll( pageNumber, cacheNumber, value );
+	getTestHelper().writePageWithAll( getCache(), pageNumber, cacheNumber, value );
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( InRam )
 		.cacheNummer( cacheNumber )
@@ -241,6 +236,7 @@ public void testPageIn() throws IOException
 @Test
 public void testGetPageSize()
 {
+	// @@HIGH Dit nog geschikt maken voor pionnen
 	// Hier niet de lokale cache gebruiken maar die uit VM, want die is geconfigSwitched
 	getConfig().switchConfig( Config.PIPOKDK );
 	assertThat( vm.getCache().getPageSize(), is( 64 ) );
@@ -252,6 +248,7 @@ public void testGetPageSize()
 @Test
 public void testGetDatabaseSize()
 {
+	// @@HIGH Dit nog geschikt maken voor pionnen
 	// Hier niet de lokale cache gebruiken maar die uit VM, want die is geconfigSwitched
 	getConfig().switchConfig( Config.PIPOKDK );
 	assertThat( vm.getCache().getDatabaseSize(), is( 10 * 64 * 2 * 64L ) );
@@ -286,7 +283,7 @@ public void testGetPageFromDatabase()
 	byte value = (byte)0x30;
 	setCache( getCache() );
 	
-	writePageWithAll( pageNumber, cacheNumber, value );
+	getTestHelper().writePageWithAll( getCache(), pageNumber, cacheNumber, value );
 	
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( OpSchijf )
@@ -334,7 +331,7 @@ public void testGetPageNotDirtyAndInRam()
 	int cacheNumber = 20;
 	byte value = (byte)0x2f;
 
-	writePageWithAll( pageNumber, cacheNumber, value );
+	getTestHelper().writePageWithAll( getCache(), pageNumber, cacheNumber, value );
 	
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( InRam )
@@ -478,7 +475,7 @@ public void testGetAllPositionsWithinPage3Stukken()
 		.aanZet( Wit )
 		.build();
 	int pos = 0;
-	for ( int s3 = 0; s3 < MAX_STUK; s3++ )
+	for ( int s3 : getConfig().getStukken().isS3Pion() ? PION_VELD_RANGE : STUK_VELD_RANGE )
 	{
 		vmStelling.setS3( s3 );
 		assertThat( vm.getCache().getPositionWithinPage( vmStelling), is( pos ) );
@@ -498,10 +495,10 @@ public void testGetAllPositionsWithinPage4Stukken()
 		.aanZet( Wit )
 		.build();
 	int pos = 0;
-	for ( int s3 = 0; s3 < MAX_STUK; s3++ )
+	for ( int s3 : getConfig().getStukken().isS3Pion() ? PION_VELD_RANGE : STUK_VELD_RANGE )
 	{
 		vmStelling.setS3( s3 );
-		for ( int s4 = 0; s4 < MAX_STUK; s4++ )
+		for ( int s4 : getConfig().getStukken().isS4Pion() ? PION_VELD_RANGE : STUK_VELD_RANGE )
 		{
 			vmStelling.setS4( s4 );
 			assertThat( vm.getCache().getPositionWithinPage( vmStelling), is( pos ) );
@@ -523,13 +520,13 @@ public void testGetAllPositionsWithinPage5Stukken()
 		.aanZet( Wit )
 		.build();
 	int pos = 0;
-	for ( int s3 = 0; s3 < MAX_STUK; s3++ )
+	for ( int s3 : getConfig().getStukken().isS3Pion() ? PION_VELD_RANGE : STUK_VELD_RANGE )
 	{
 		vmStelling.setS3( s3 );
-		for ( int s4 = 0; s4 < MAX_STUK; s4++ )
+		for ( int s4 : getConfig().getStukken().isS4Pion() ? PION_VELD_RANGE : STUK_VELD_RANGE )
 		{
 			vmStelling.setS4( s4 );
-			for ( int s5 = 0; s5 < MAX_STUK; s5++ )
+			for ( int s5 : getConfig().getStukken().isS5Pion() ? PION_VELD_RANGE : STUK_VELD_RANGE )
 			{
 				vmStelling.setS5( s5 );
 //				if ( pos == 1 && vm.getCache().getPositionWithinPage( vmStelling ) == 64 )
@@ -553,7 +550,7 @@ public void testGetSetData()
 	byte newValue = (byte)0x77;
 	int positionWithinPage = 10;
 
-	writePageWithAll( pageNumber, cacheNumber, value );
+	getTestHelper().writePageWithAll( getCache(), pageNumber, cacheNumber, value );
 	
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( InRam )
@@ -584,6 +581,7 @@ public void testGetSetData()
 	assertThat( getCache().getData( pageDescriptor, vmStelling ), is( newValue ) );
 }
 @Test
+
 public void testGetDataWithNoGetPage()
 {
 	long pageNumber = 9L;
@@ -592,7 +590,7 @@ public void testGetDataWithNoGetPage()
 	byte newValue = (byte)0x00;
 	int positionWithinPage = 10;
 
-	writePageWithAll( pageNumber, cacheNumber, value );
+	getTestHelper().writePageWithAll( getCache(), pageNumber, cacheNumber, value );
 	
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
 		.waar( InRam )
