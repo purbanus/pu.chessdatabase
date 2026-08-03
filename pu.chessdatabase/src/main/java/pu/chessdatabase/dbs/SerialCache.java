@@ -5,6 +5,9 @@ import static pu.chessdatabase.dbs.Lokatie.*;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
+import pu.chessdatabase.bo.Config;
+import pu.services.Range;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -13,25 +16,27 @@ import lombok.EqualsAndHashCode;
 class SerialCache extends AbstractCache
 {
 static final int CACHE_SIZE = 30; // Aantal pagina"s
-private static int staticAantalStukken;
-public static int getStaticAantalStukken()
+static final Range CACHE_SIZE_RANGE = new Range( 0, CACHE_SIZE - 1 );
+//private static int staticAantalStukken;
+//public static int getStaticAantalStukken()
+//{
+//	return staticAantalStukken;
+//}
+SerialCache( Config aConfig, RandomAccessFile aDatabase )
 {
-	return staticAantalStukken;
-}
-SerialCache( PageSizeCalculator aPageSizeCalculator, int aAantalStukken, RandomAccessFile aDatabase )
-{
-	super( aPageSizeCalculator, aAantalStukken, aDatabase );
+	super( aConfig, aDatabase );
 }
 @Override
 int getCacheSize()
 {
 	return CACHE_SIZE;
 }
+@SuppressWarnings( "unused" )
 @Override
 void initializeCache()
 {
 	setCacheEntries( new ArrayList<>() );
-	for ( int x = 0; x < CACHE_SIZE; x++ )
+	for ( int x : CACHE_SIZE_RANGE )
 	{
 		CacheEntry cacheEntry = CacheEntry.builder()
 			.pageDescriptor( null )

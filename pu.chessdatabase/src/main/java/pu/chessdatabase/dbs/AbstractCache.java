@@ -7,6 +7,8 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
 
+import pu.chessdatabase.bo.Config;
+
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
@@ -16,25 +18,35 @@ import lombok.Setter;
 public abstract class AbstractCache implements Cache
 {
 public static final boolean REPORT_FLUSH = false; 
-private final int aantalStukken;
 private RandomAccessFile database = null;
 private List<CacheEntry> cacheEntries = new ArrayList<>();
 @Getter( AccessLevel.PACKAGE ) 
 @Setter( AccessLevel.PRIVATE ) 
 private long generatieTeller;
-private PageSizeCalculator pageSizeCalculator;
-AbstractCache( PageSizeCalculator aPageSizeCalculator, int aAantalStukken, RandomAccessFile aDatabase )
+private Config config;
+AbstractCache( Config aConfig, RandomAccessFile aDatabase )
 {
 	super();
-	pageSizeCalculator = aPageSizeCalculator;
+	if ( aDatabase == null )
+	{
+		throw new RuntimeException( "Database mag niet null zijn" );
+	}
+	config = aConfig;
 	database = aDatabase;
-	aantalStukken = aAantalStukken;
 	initializeCache();
 	setGeneratieTeller( 1L );
 }
 abstract void initializeCache();
 abstract int getCacheSize();
 abstract void pageIn( PageDescriptor aPageDescriptor );
+public PageSizeCalculator getPageSizeCalculator()
+{
+	return getConfig().getPageSizeCalculator();
+}
+public int getAantalStukken()
+{
+	return getConfig().getAantalStukken();
+}
 long incrementGeneratieTeller()
 {
 	return ++generatieTeller;
@@ -52,10 +64,10 @@ public long getDatabaseSize()
 @Override
 public byte [] getPage( PageDescriptor aPageDescriptor )
 {
-	if ( aPageDescriptor.getCacheNummer() >= getCacheSize() )
-	{
-		System.out.println( "Got him! Hij is " + aPageDescriptor.getCacheNummer() );
-	}
+//	if ( aPageDescriptor.getCacheNummer() >= getCacheSize() )
+//	{
+//		System.out.println( "Got him! Hij is " + aPageDescriptor.getCacheNummer() );
+//	}
 	CacheEntry cacheEntry = getCacheEntries().get( aPageDescriptor.getCacheNummer() );
 	return cacheEntry.getPage();
 }

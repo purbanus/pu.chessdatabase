@@ -1,9 +1,12 @@
 package pu.chessdatabase.dbs;
 
 import static pu.chessdatabase.dbs.Lokatie.*;
+import static pu.chessdatabase.dbs.Constants.*;
 
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+
+import pu.chessdatabase.bo.Config;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -12,27 +15,27 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode( callSuper=true )
 class ParallelCache  extends AbstractCache
 {
-static final int CACHE_SIZE = VM.MAX_WK; // Aantal stellingen van de WK 
-private static int staticAantalStukken;
-public static int getStaticAantalStukken()
+//static final int CACHE_SIZE = Constants.MAX_WK; // Aantal stellingen van de WK 
+//private static int staticAantalStukken;
+//public static int getStaticAantalStukken()
+//{
+//	return staticAantalStukken;
+//}
+ParallelCache( Config aConfig, RandomAccessFile aDatabase )
 {
-	return staticAantalStukken;
-}
-ParallelCache( PageSizeCalculator aPageSizeCalculator, int aAantalStukken, RandomAccessFile aDatabase )
-{
-	super( aPageSizeCalculator, aAantalStukken, aDatabase );
+	super( aConfig, aDatabase );
 }
 @Override
 int getCacheSize()
 {
-	return CACHE_SIZE;
+	return getConfig().heeftPionnen() ? MAX_STUK : MAX_WK;
 }
 @Override
 void initializeCache()
 {
 	setCacheEntries( new ArrayList<>() );
 	long address = 0L;
-	for ( int wk = 0; wk < VM.MAX_WK; wk++ )
+	for ( int wk : getConfig().heeftPionnen() ? STUK_VELD_RANGE : WK_VELD_RANGE )
 	{
 		// @@NOG Kun je deie PD niet uit de PDTable halen?
 		PageDescriptor pageDescriptor = PageDescriptor.builder()
@@ -57,6 +60,7 @@ public int getPositionWithinPage( VMStelling aVmStelling )
 {
 	switch ( getAantalStukken() )
 	{
+
 //		case 3: return ( aVmStelling.getZk() << 7 ) + ( aVmStelling.getAanZet().ordinal() << 6 ) + aVmStelling.getS3();
 //		case 4: return ( aVmStelling.getZk() << 13 ) + ( aVmStelling.getAanZet().ordinal() << 12 ) + ( aVmStelling.getS3() << 6 ) + aVmStelling.getS4();
 //		case 5: return ( aVmStelling.getZk() << 19 ) + ( aVmStelling.getAanZet().ordinal() << 18 ) + ( aVmStelling.getS3() << 12 ) + ( aVmStelling.getS4() << 6 ) + aVmStelling.getS5();
@@ -72,7 +76,6 @@ public int getPositionWithinPage( VMStelling aVmStelling )
 //			return pos;
 //		}
 		default: throw new RuntimeException( "Ongeldig aantal stukken in Cache: " + getAantalStukken() );
-
 	}
 }
 @Override
