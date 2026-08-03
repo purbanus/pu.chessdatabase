@@ -1,7 +1,9 @@
 package pu.chessdatabase.dbs;
 
+import static pu.chessdatabase.dbs.Constants.*;
 import static pu.chessdatabase.dbs.Lokatie.*;
 
+import pu.chessdatabase.bo.Config;
 import pu.chessdatabase.bo.Kleur;
 
 import lombok.Data;
@@ -9,10 +11,10 @@ import lombok.Data;
 @Data
 public class SerialPageDescriptorTable extends AbstractPageDescriptorTable
 {
-private PageDescriptor[][][] pageDescriptorTable = new PageDescriptor[VM.MAX_WK][VM.MAX_STUK][VM.MAX_AANZET];
-SerialPageDescriptorTable(  PageSizeCalculator aPageSizeCalculator, int aAantalStukken )
+private PageDescriptor[][][] pageDescriptorTable;
+SerialPageDescriptorTable( Config aConfig )
 {
-	super( aPageSizeCalculator, aAantalStukken );
+	super( aConfig );
 	initializePageDescriptorTable();
 }
 @Override
@@ -28,9 +30,9 @@ public void setPageDescriptor( VMStelling aVmStelling, PageDescriptor aPageDescr
 @Override
 public void iterateOverAllPageDescriptors( PageDescriptorFunction aPageDescriptorsFunction )
 {
-	for ( int wk = 0; wk < VM.MAX_WK; wk++ )
+	for ( int wk : getConfig().heeftPionnen() ? STUK_VELD_RANGE : WK_VELD_RANGE )
 	{
-		for ( int zk = 0; zk < VM.MAX_STUK; zk++ )
+		for ( int zk : STUK_VELD_RANGE )
 		{
 			for ( Kleur aanZet : Kleur.values() )
 			{
@@ -49,7 +51,7 @@ long address;
 public void initializePageDescriptorTable()
 {
 	address = 0L;
-	setPageDescriptorTable( new PageDescriptor[VM.MAX_WK][VM.MAX_STUK][VM.MAX_AANZET] );
+	setPageDescriptorTable( new PageDescriptor[getConfig().heeftPionnen() ? MAX_STUK : MAX_WK][MAX_STUK][MAX_AANZET] );
 	iterateOverAllPageDescriptors( this::initializePageDescriptor );
 }
 void initializePageDescriptor( VMStelling aVmStelling )

@@ -1,16 +1,19 @@
 package pu.chessdatabase.dbs;
 
+import static pu.chessdatabase.dbs.Constants.*;
 import static pu.chessdatabase.dbs.Lokatie.*;
+
+import pu.chessdatabase.bo.Config;
 
 import lombok.Data;
 
 @Data
 public class ParallelPageDescriptorTable extends AbstractPageDescriptorTable
 {
-private PageDescriptor[] pageDescriptorTable = new PageDescriptor[VM.MAX_WK];
-ParallelPageDescriptorTable( PageSizeCalculator aPageSizeCalculator, int aAantalStukken )
+private PageDescriptor[] pageDescriptorTable;
+ParallelPageDescriptorTable( Config aConfig )
 {
-	super( aPageSizeCalculator, aAantalStukken );
+	super( aConfig );
 	initializePageDescriptorTable();
 }
 @Override
@@ -30,7 +33,7 @@ public void setPageDescriptor( VMStelling aVmStelling, PageDescriptor aPageDescr
 @Override
 public void iterateOverAllPageDescriptors( PageDescriptorFunction aPageDescriptorsFunction )
 {
-	for ( int wk = 0; wk < VM.MAX_WK; wk++ )
+	for ( int wk : getConfig().heeftPionnen() ? STUK_VELD_RANGE : WK_VELD_RANGE )
 	{
     	VMStelling vmStelling = VMStelling.builder()
     		.wk( wk )
@@ -43,7 +46,7 @@ int index = 0;
 @Override 
 public void initializePageDescriptorTable()
 {
-	setPageDescriptorTable( new PageDescriptor[VM.MAX_WK] );
+	setPageDescriptorTable( new PageDescriptor[getConfig().heeftPionnen() ? MAX_STUK : MAX_WK] );
 	iterateOverAllPageDescriptors( this::initializePageDescriptor );
 }
 void initializePageDescriptor( VMStelling aVmStelling )
