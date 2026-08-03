@@ -34,29 +34,6 @@ public ConfigImpl()
 	stukDefinities.add( new StukDefinitie( Koning, Wit ) );
 	stukDefinities.add( new StukDefinitie( Koning, Zwart ) );
 }
-//public boolean heeftPionnen()
-//{
-//	for ( StukDefinitie stukDefinitie : stukDefinities )
-//	{
-//		if ( stukDefinitie.getStukType() == Pion )
-//		{
-//			return true;
-//		}
-//	}
-//	return false;
-//}
-//public int getAantalPionnen()
-//{
-//	int aantalPionnen = 0;
-//	for ( StukDefinitie stukDefinitie : stukDefinities )
-//	{
-//		if ( stukDefinitie.getStukType() == Pion )
-//		{
-//			aantalPionnen++;
-//		}
-//	}
-//	return aantalPionnen;
-//}
 public boolean heeftPionnen()
 {
 	return getStukken().heeftPionnen();
