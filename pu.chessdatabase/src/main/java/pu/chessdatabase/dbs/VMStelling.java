@@ -1,5 +1,9 @@
 package pu.chessdatabase.dbs;
 
+import static pu.chessdatabase.bo.configuraties.StukType.*;
+
+import org.springframework.boot.context.config.ConfigData;
+
 import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Config;
 //import pu.chessdatabase.bo.Gen;
@@ -44,13 +48,21 @@ private Kleur aanZet;
 
 public void checkStelling()
 {
-	if ( wk > 9 || zk > 63 || s3 > 63 || s4 > 63 || s5 > 63 )
-	{
-		throw new RuntimeException( "Dit is geen cardinaalstelling: " + this );
-	}
 	if ( wk < 0 || zk < 0 || s3 < 0 || s4 < 0 || s5 < 0 )
 	{
 		throw new RuntimeException( "Dit is geen geldige stelling: " + this );
+	}
+	if ( wk > 63 || zk > 63 || s3 > 63 || s4 > 63 || s5 > 63 )
+	{
+		throw new RuntimeException( "Dit is geen cardinaalstelling: " + this );
+	}
+
+	if ( ! Config.getStaticStukken().heeftPionnen() )
+	{
+		if ( wk > 9 )
+		{
+			throw new RuntimeException( "Dit is geen cardinaalstelling: " + this );
+		}
 	}
 }
 @Override
@@ -65,14 +77,14 @@ public VMStelling clone()
 		throw new RuntimeException( e );
 	}
 }
-public BoStelling getBoStelling()
+public BoStelling getBoStelling( Transformator aTransformator )
 {
 	return BoStelling.builder()
-		.wk( Dbs.CVT_WK[getWk()] )
-		.zk( Dbs.CVT_STUK[getZk()] )
-		.s3( Dbs.CVT_STUK[getS3()] )
-		.s4( Dbs.CVT_STUK[getS4()] )
-		.s5( Dbs.CVT_STUK[getS5()] )
+		.wk( aTransformator.vmStellingWkToBoStellingWk( getWk() ) )
+		.zk( aTransformator.vmStellingStukToBoStellingStuk( getZk() ) )
+		.s3( aTransformator.vmStellingStukToBoStellingStuk( getS3() ) )
+		.s4( aTransformator.vmStellingStukToBoStellingStuk( getS4() ) )
+		.s5( aTransformator.vmStellingStukToBoStellingStuk( getS5() ) )
 		.aanZet( getAanZet() )
 		.build();
 }
@@ -96,16 +108,28 @@ public String getS5String()
 {
 	return Config.getStaticStukken().getS5().getStukString();
 }
+public boolean isS3Pion()
+{
+	return Config.getStaticStukken().getS3().getStukType() == Pion;
+}
+public boolean isS4Pion()
+{
+	return Config.getStaticStukken().getS4().getStukType() == Pion;
+}
+public boolean isS5Pion()
+{
+	return Config.getStaticStukken().getS5().getStukType() == Pion;
+}
 @Override
 public String toString()
 {
 	StringBuilder sb = new StringBuilder()
-		.append( "WK="  ).append( VM.veldToAlfa( wk ) )
-		.append( " ZK=" ).append( VM.veldToAlfa( zk ) )
-		.append( " S3=" ).append( VM.veldToAlfa( s3 ) )
-		.append( " S4=" ).append( VM.veldToAlfa( s4 ) )
-		.append( " S5=" ).append( VM.veldToAlfa( s5 ) )
-		.append( " AanZet=" ).append( aanZet.getAfko() ).append( "\n" );
+		.append( "WK="  ).append( VM.veldToAlfa( getWk() ) )
+		.append( " ZK=" ).append( VM.veldToAlfa( getZk() ) )
+		.append( " S3=" ).append( VM.veldToAlfa( getS3() ) )
+		.append( " S4=" ).append( VM.veldToAlfa( getS4() ) )
+		.append( " S5=" ).append( VM.veldToAlfa( getS5() ) )
+		.append( " AanZet=" ).append( getAanZet().getAfko() ).append( "\n" );
 	for ( int rij = 7; rij >= 0; rij-- )
 	{
 		for ( int kol = 0; kol < 8; kol++ )
@@ -114,19 +138,19 @@ public String toString()
 			String veldString;
 			// Omdat we eerst testen of het de wk is die oip het veld staat, komen andere stukken die op dat 
 			// veld staan, niet in aanmerking.
-			if ( veld == wk )
+			if ( veld == getWk() )
 			{
 				veldString = getWkString();
 			}
-			else if ( veld == zk )
+			else if ( veld == getZk() )
 			{
 				veldString = getZkString();
 			}
-			else if ( veld == s3 )
+			else if ( veld == getS3() )
 			{
 				veldString = getS3String();
 			}
-			else if ( veld == s4 )
+			else if ( veld == getS4() )
 			{
 				veldString = getS4String(); 
 				if ( veldString.equals( "WG" ) )
@@ -134,7 +158,7 @@ public String toString()
 					veldString = "..";
 				}
 			}
-			else if ( veld == s5 )
+			else if ( veld == getS5() )
 			{
 				veldString = getS5String(); 
 				if ( veldString.equals( "WG" ) )
