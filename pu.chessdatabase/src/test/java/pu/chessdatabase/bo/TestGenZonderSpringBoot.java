@@ -20,8 +20,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import pu.chessdatabase.dbs.Dbs;
+import pu.chessdatabase.dbs.PageSizeCalculator;
 import pu.chessdatabase.dbs.Resultaat;
 import pu.chessdatabase.dbs.VM;
+import pu.chessdatabase.dbs.VMStelling;
 
 import lombok.Data;
 
@@ -29,8 +31,9 @@ import lombok.Data;
 public class TestGenZonderSpringBoot
 {
 private Config config = new Config();
+private PageSizeCalculator pageSizeCalculator = new PageSizeCalculator( config );
 private VM vm = new VM( config );
-private Dbs dbs = new Dbs( vm );
+private Dbs dbs = new Dbs( vm, config );
 private Gen gen = new Gen( dbs, config );
 
 String savedConfigString;
@@ -39,6 +42,7 @@ String savedConfigString;
 public void setup()
 {
 	config.setVm( vm );
+	config.setPageSizeCalculator( pageSizeCalculator );
 	savedConfigString = config.getConfig();
 	config.switchConfig( Config.PIPOKDKT );
 	dbs.create();
@@ -237,7 +241,7 @@ public void testIsSchaakDoorStuk()
 		.s4( 0x33 )
 		.aanZet( Zwart )
 		.build();
-	Bord bord = new Bord( getConfig().getAantalStukken(), getConfig().getStukken(), boStelling );
+	Bord bord = new Bord( getConfig().getStukken(), boStelling );
 	assertThat( gen.isSchaakDoorStuk( gen.getStukken().getS4(), 0x11, 0x33, bord ), is( false ) );
 
 	// T links
@@ -248,7 +252,7 @@ public void testIsSchaakDoorStuk()
 		.s4( 0x10 )
 		.aanZet( Zwart )
 		.build();
-	bord = new Bord( getConfig().getAantalStukken(), getConfig().getStukken(), boStelling );
+	bord = new Bord( getConfig().getStukken(), boStelling );
 	assertThat( gen.isSchaakDoorStuk( gen.getStukken().getS4(), 0x11, 0x10, bord ), is( true ) );
 
 	// T uiterst rechts
@@ -259,7 +263,7 @@ public void testIsSchaakDoorStuk()
 		.s4( 0x17 )
 		.aanZet( Zwart )
 		.build();
-	bord = new Bord( getConfig().getAantalStukken(), getConfig().getStukken(), boStelling );
+	bord = new Bord( getConfig().getStukken(), boStelling );
 	assertThat( gen.isSchaakDoorStuk( gen.getStukken().getS4(), 0x11, 0x17, bord ), is( true ) );
 
 	// T nog steeds uiterst rechts, maar D ertussen
@@ -270,7 +274,7 @@ public void testIsSchaakDoorStuk()
 		.s4( 0x17 )
 		.aanZet( Zwart )
 		.build();
-	bord = new Bord( getConfig().getAantalStukken(), getConfig().getStukken(), boStelling );
+	bord = new Bord( getConfig().getStukken(), boStelling );
 	assertThat( gen.isSchaakDoorStuk( gen.getStukken().getS4(), 0x11, 0x17, bord ), is( false ) );
 
 	// Check of Z schaak staat
@@ -281,7 +285,7 @@ public void testIsSchaakDoorStuk()
 		.s4( 0x77 )
 		.aanZet( Wit )
 		.build();
-	bord = new Bord( getConfig().getAantalStukken(), getConfig().getStukken(), boStelling );
+	bord = new Bord( getConfig().getStukken(), boStelling );
 	assertThat( gen.isSchaakDoorStuk( gen.getStukken().getS3(), 0x27, 0x20, bord ), is( true ) );
 }
 @Test
@@ -295,7 +299,7 @@ public void testCheckSchaakDoorStuk()
 		.s4( 0x33 )
 		.aanZet( Zwart )
 		.build();
-	Bord bord = new Bord( getConfig().getAantalStukken(), getConfig().getStukken(), boStelling );
+	Bord bord = new Bord( getConfig().getStukken(), boStelling );
 	assertThat( gen.checkSchaakDoorStuk( boStelling, gen.getStukken().getS3(), 0x11, 0x11, bord ), is( false ) );
 
 	// Check aStukVeld == aStelling.getZK(), d.w.z. het zwarte stuk is geslagen
@@ -306,7 +310,7 @@ public void testCheckSchaakDoorStuk()
 		.s4( 0x27 )
 		.aanZet( Zwart )
 		.build();
-	bord = new Bord( getConfig().getAantalStukken(), getConfig().getStukken(), boStelling );
+	bord = new Bord( getConfig().getStukken(), boStelling );
 	assertThat( gen.checkSchaakDoorStuk( boStelling, gen.getStukken().getS4(), 0x27, 0x27, bord ), is( false ) );
 
 	// Check dat het stuk aan zet is
@@ -317,7 +321,7 @@ public void testCheckSchaakDoorStuk()
 		.s4( 0x33 )
 		.aanZet( Zwart )
 		.build();
-	bord = new Bord( getConfig().getAantalStukken(), getConfig().getStukken(), boStelling );
+	bord = new Bord( getConfig().getStukken(), boStelling );
 	assertThat( gen.checkSchaakDoorStuk( boStelling, gen.getStukken().getS4(), 0x11, 0x33, bord ), is( false ) );
 
 	// T links
@@ -328,7 +332,7 @@ public void testCheckSchaakDoorStuk()
 		.s4( 0x10 )
 		.aanZet( Wit )
 		.build();
-	bord = new Bord( getConfig().getAantalStukken(), getConfig().getStukken(), boStelling );
+	bord = new Bord( getConfig().getStukken(), boStelling );
 	assertThat( gen.checkSchaakDoorStuk( boStelling, gen.getStukken().getS4(), 0x11, 0x10, bord ), is( true ) );
 }
 @Test
@@ -519,7 +523,7 @@ public void testGenZetPerStuk()
 		.s4( 0x33 )
 		.aanZet( Zwart )
 		.build();
-	Bord bord = new Bord( getConfig().getAantalStukken(), getConfig().getStukken(), boStelling );
+	Bord bord = new Bord( getConfig().getStukken(), boStelling );
 
 	List<BoStelling> gegenereerdeZetten = gen.genereerZettenPerStuk( boStelling, gen.getStukken().getS4(), boStelling.getZk(), boStelling.getS4(), bord );
 	assertThat( gegenereerdeZetten.size(), is( 14 ) );
@@ -559,7 +563,7 @@ public void testGenZetPerStuk()
 		.s4( 0x77 )
 		.aanZet( Zwart )
 		.build();
-	bord = new Bord( getConfig().getAantalStukken(), getConfig().getStukken(), boStelling );
+	bord = new Bord( getConfig().getStukken(), boStelling );
 	gegenereerdeZetten = gen.genereerZettenPerStuk( boStelling, gen.getStukken().getS4(), boStelling.getZk(), boStelling.getS4(), bord );
 	assertThat( gegenereerdeZetten.size(), is( 5 ) );
 	assertThat( gegenereerdeZetten.get(  0 ).getS4(), is( 0x76 ) );
@@ -579,7 +583,7 @@ public void testGenZetPerStuk()
 		.resultaat( Resultaat.Remise )
 		.aantalZetten( 0 )
 		.build();
-	bord = new Bord( getConfig().getAantalStukken(), getConfig().getStukken(), boStelling );	//gen.printBord();
+	bord = new Bord( getConfig().getStukken(), boStelling );	//gen.printBord();
 	gegenereerdeZetten = gen.genereerZettenPerStuk( boStelling, gen.getStukken().getWk(), boStelling.getWk(), boStelling.getWk(), bord );
 	assertThat( gegenereerdeZetten.size(), is( 5 ) );
 }
