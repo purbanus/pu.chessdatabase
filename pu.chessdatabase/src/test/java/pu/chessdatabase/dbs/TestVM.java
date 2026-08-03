@@ -32,7 +32,6 @@ public class TestVM
 {
 @Autowired private VM vm;
 @Autowired private Config config;
-PageSizeCalculator pageSizeCalculator = new PageSizeCalculator();
 TestHelper testHelper;
 String savedConfigString;
 @BeforeEach
@@ -41,8 +40,7 @@ public void setup()
 	savedConfigString = config.getConfig();
 	config.switchConfig( Config.PIPOKDKT );
 	vm.open( "rw" );
-	vm.setPageSizeCalculator( getPageSizeCalculator() );
-	testHelper = new TestHelper( pageSizeCalculator, getConfig().getAantalStukken() );
+	testHelper = new TestHelper( getConfig() );
 }
 @AfterEach
 public void destroy()
@@ -50,6 +48,10 @@ public void destroy()
 	assertThat( vm.getDatabaseName(), anyOf( startsWith( PREFIX_TEST_DATABASE ), startsWith( DATABASE_NAME_PIPO ) ) );
 	vm.delete();
 	config.switchConfig( savedConfigString );
+}
+PageSizeCalculator getPageSizeCalculator()
+{
+	return getConfig().getPageSizeCalculator();
 }
 
 @Test
@@ -130,7 +132,7 @@ private void writePageWithAll( long aPageNumber, int aCacheNumber, byte aValue )
 }
 private void checkIfAllDatabaseEntriesAreZero() throws IOException
 {
-	PageDescriptorTable pageDescriptorTable = PageDescriptorTable.create( getPageSizeCalculator(), getConfig().getAantalStukken() );
+	PageDescriptorTable pageDescriptorTable = PageDescriptorTable.create( getConfig() );
 	pageDescriptorTable.iterateOverAllPageDescriptors( this::checkIfDatabaseEntryIsZero );
 }
 void checkIfDatabaseEntryIsZero( VMStelling aVmStelling )
