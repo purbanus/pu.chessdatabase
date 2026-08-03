@@ -4,12 +4,13 @@ package pu.chessdatabase.dbs;
 //BELANGRIJK
 //In Eclipse kan hij de volgende twee imports niet vinden. Deze moet je dus met de hand toevoegen
 //===================================================================================================================== 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 import static pu.chessdatabase.bo.Kleur.*;
-import static pu.chessdatabase.dbs.Lokatie.*;
 import static pu.chessdatabase.dbs.CacheType.*;
+import static pu.chessdatabase.dbs.Lokatie.*;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,14 +25,33 @@ import lombok.Data;
 public class TestSerialPageDescriptorTable
 {
 @Autowired private Config config;
-private PageDescriptorTable pageDescriptorTable;
-private PageSizeCalculator pageSizeCalculator = new PageSizeCalculator( Serial );
-private Cache cache;
+@Autowired private VM vm; 
+
+private String savedConfigString;
 @BeforeEach
 public void setup()
 {
-	pageDescriptorTable = PageDescriptorTable.create( pageSizeCalculator, config.getAantalStukken() );
-	cache = Cache.create(pageSizeCalculator, config.getAantalStukken(), null );
+	savedConfigString = config.getConfig();
+	getConfig().setCacheType( Serial );
+	// Dit is o.a. nodig om VM te initialiseren
+	getConfig().switchConfig( Config.PIPOKDKT );
+}
+@AfterEach
+public void destroy()
+{
+	config.switchConfig( savedConfigString );
+}
+PageSizeCalculator getPageSizeCalculator()
+{
+	return getConfig().getPageSizeCalculator();
+}
+PageDescriptorTable getPageDescriptorTable()
+{
+	return getVm().getPageDescriptorTable();
+}
+Cache getCache()
+{
+	return getVm().getCache();
 }
 @Test
 public void testGetSetPageDescriptor()
@@ -52,7 +72,6 @@ public void testGetSetPageDescriptor()
 	PageDescriptor gotPageDescriptor = getPageDescriptorTable().getPageDescriptor( vmStelling );
 	assertThat( gotPageDescriptor, is( pageDescriptor ) );
 }
-
 int numberOfPages = 0;
 @Test
 public void testIterateOverAllPageDescriptors()
