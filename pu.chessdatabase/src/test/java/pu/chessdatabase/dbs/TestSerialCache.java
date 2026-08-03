@@ -129,7 +129,7 @@ public void testInitializeCache()
 {
 	getConfig().switchConfig( Config.PIPOKDKT );
 	doTestInitalizeCache();
-
+	getConfig().switchConfig( Config.PIPOKLOK );
 	doTestInitalizeCache();
 }
 void doTestInitalizeCache()
