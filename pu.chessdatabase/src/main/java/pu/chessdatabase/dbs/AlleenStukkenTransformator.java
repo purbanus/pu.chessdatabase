@@ -89,6 +89,8 @@ public static final Vector [] TRANSLATIE_TABEL = new Vector [] {
 	new Vector( 0, 0)
 };
 Range oktantRange = new Range( 1, OKTANTEN );
+Range rijRange = new Range( 0, 7 );
+Range kolRange = new Range( 0, 7 );
 @ToStringExclude
 @EqualsAndHashCode.Exclude
 int[][] transformatieTabel = new int [OKTANTEN + 1][Dbs.VELD_RANGE.getMaximum() + 1];
@@ -101,11 +103,11 @@ public AlleenStukkenTransformator()
 void createTransformatieTabel()
 {
 	Vector Vres;
-	for ( int oktant = oktantRange.getMinimum(); oktant <= oktantRange.getMaximum(); oktant++ )
+	for ( int oktant : oktantRange )
 	{
-		for ( int rij = 0; rij < 8; rij++ )
+		for ( int rij : rijRange )
 		{
-			for ( int kol = 0; kol < 8; kol++ )
+			for ( int kol: kolRange )
 			{
 				Vres = new Vector( kol, rij );
 				Vres = MATRIX_TABEL[oktant].multiply( Vres );
@@ -117,6 +119,13 @@ void createTransformatieTabel()
 		}
 	}
 }
+@Override
+public int vmStellingWkToBoStellingWk( int aVmStellingWk )
+{
+	return CVT_WK[aVmStellingWk];
+}
+
+
 /**
  * -------- Stelling van Dbs-formaat naar VM-formaat ------
  */
