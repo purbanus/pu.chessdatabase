@@ -15,8 +15,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Config;
+import pu.chessdatabase.bo.configuraties.KLOK;
+
+import lombok.Data;
 
 @SpringBootTest
+@Data
 public class TestVmStelling
 {
 public static final String VM_TO_STRING = """
@@ -42,6 +46,10 @@ public void destroy()
 {
 	config.switchConfig( savedConfigString );
 }
+public Transformator getTransformator()
+{
+	return getConfig().getTransformator();
+}
 @Autowired private Config config;
 
 @Test
@@ -56,23 +64,23 @@ public void testShiftLeft()
 public void testGetBoStelling()
 {
 	// @@HIGH config-afhankelijk maken
-	VMStelling vmStelling  = VMStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x02 )
-		.s3( 0x11 )
-		.s4( 0x23 )
-		.s5( 0x00 )
+	VMStelling vmStelling  = VMStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "c1" )
+		.s3( "b3" )
+		.s4( "d5" )
+		.s5( "a1" )
 		.aanZet( Wit )
 		.build();
-	BoStelling boStelling = BoStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x02 )
-		.s3( 0x21 )
-		.s4( 0x43 )
-		.s5( 0x00 )
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "c1" )
+		.s3( "b3" )
+		.s4( "d5" )
+		.s5( "a1" )
 		.aanZet( Wit )
 		.build();
-	assertThat( vmStelling.getBoStelling(), is( boStelling ) );
+	assertThat( vmStelling.getBoStelling( getTransformator() ), is( boStelling ) );
 	
 	vmStelling = VMStelling.alfaBuilder()
 		.wk( "f1" )
@@ -90,13 +98,12 @@ public void testGetBoStelling()
 		.s5( "f1" )
 		.aanZet( Zwart )
 		.build();
-	assertThat( vmStelling.getBoStelling(), is( boStelling ) );
+	assertThat( vmStelling.getBoStelling( getTransformator() ), is( boStelling ) );
 }
 
 @Test
-public void testToString()
+public void testToStringZonderPionnen()
 {
-	// @@HIGH config-afhankelijk maken
 	VMStelling vmStelling  = VMStelling.alfaBuilder()
 		.wk( "a1" )
 		.zk( "c1" )
@@ -147,6 +154,59 @@ public void testToString()
 		vmStelling.getAanZet().getAfko()
 	);
 	assertThat( vmStelling.toString().length(), is( vmStringText.length() ) );
+	assertThat( vmStelling.toString(), is( vmStringText ) );
+}
+@Test
+public void testToStringMetPionnen()
+{
+	// Met pionnen moet je opnieuw alfaBuilder doen
+	config.switchConfig( Config.KLOK );
+	VMStelling vmStelling  = VMStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "c1" )
+		.s3( "b2" )
+		.s4( "d3" )
+		.s5( "a1" )
+		.aanZet( Wit )
+		.build();
+	String vmStringText = MessageFormat.format( VM_TO_STRING, 
+		config.getStukken().getWk().getStukString(),
+		config.getStukken().getZk().getStukString(),
+		config.getStukken().getS3().getStukString(),
+		config.getStukken().getS4().getStukString(),
+		config.getStukken().getS5().getStukString(),
+		vmStelling.getAanZet().getAfko()
+	);
+	assertThat( vmStelling.toString().length(), is( vmStringText.length() ) );
+	String vmStellingToString = vmStelling.toString();
+	for ( int x = 0; x < vmStringText.length(); x++ )
+	{
+		if ( vmStringText.charAt( x ) != vmStellingToString.charAt( x ) )
+		{
+			System.out.println( "Op positie " + x + " " + vmStringText.charAt( x ) + " " + vmStellingToString.charAt( x ) );
+		}
+	}
+	assertThat( vmStelling.toString(), is( vmStringText ) );
+	
+	config.switchConfig( Config.KLLK );
+	vmStelling  = VMStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "c1" )
+		.s3( "b2" )
+		.s4( "d3" )
+		.s5( "a1" )
+		.aanZet( Wit )
+		.build();
+	vmStringText = MessageFormat.format( VM_TO_STRING, 
+		config.getStukken().getWk().getStukString(),
+		config.getStukken().getZk().getStukString(),
+		config.getStukken().getS3().getStukString(),
+		config.getStukken().getS4().getStukString(),
+		config.getStukken().getS5().getStukString(),
+		vmStelling.getAanZet().getAfko()
+	);
+	assertThat( vmStelling.toString().length(), is( vmStringText.length() ) );
+	vmStellingToString = vmStelling.toString();
 	assertThat( vmStelling.toString(), is( vmStringText ) );
 }
 @Test
