@@ -226,7 +226,6 @@ public String getConfig()
 }
 public List<String> getAvailableConfigs()
 {
-	// @@HIGH completeren
 	return Arrays.asList( new String [] { "KDK", "KTK", "KDKT", "KLPK", "KLLK", "KDKTT" } );
 }
 public boolean heeftPionnen()
