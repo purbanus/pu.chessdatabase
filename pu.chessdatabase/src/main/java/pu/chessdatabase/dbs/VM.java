@@ -12,7 +12,6 @@ import org.apache.commons.lang3.builder.ToStringExclude;
 import org.springframework.stereotype.Component;
 
 import pu.chessdatabase.bo.Config;
-import pu.services.Range;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -34,10 +33,6 @@ Doel   : Implementeren van een virtual memory systeem voor de chess
 @Data
 public class VM
 {
-public static final int MAX_WK = 10;
-public static final int MAX_STUK = 64;
-public static final int MAX_AANZET = 2;
-
 public static final int VERLIES_OFFSET   = 0x80;
 public static final int VM_SCHAAK        = 0x80;
 public static final int VM_REMISE        = 0x00;
@@ -54,11 +49,11 @@ public static final String [] NOTATIE = new String [] {
 };
 /*------ Witte koning ------------*/
 @SuppressWarnings( "unused" )
-private static final String [] RepWK = {"a1", "b1", "c1", "d1", "b2", "c2", "d2", "c3", "d3", "d4" };
+private static final String [] REP_WK_ZONDER_PIONNEN = {"a1", "b1", "c1", "d1", "b2", "c2", "d2", "c3", "d3", "d4" };
 
 /*------ Andere stukken -----------*/
 @SuppressWarnings( "unused" )
-private static final String [] RepZK = {
+private static final String [] Rep_STUK = {
 		"a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1",
 		"a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2",
 		"a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3",
@@ -71,7 +66,7 @@ private static final String [] RepZK = {
 
 /*------ Aan zet -----------------*/
 @SuppressWarnings( "unused" )
-private static final String [] RepAZ = { "W", "Z" };
+private static final String [] REP_AZ = { "W", "Z" };
 
 /**
  * ------- Veld naar alfa ----------------------------------
@@ -107,9 +102,6 @@ public static int alfaToVeld( String aAlfaVeld )
 	return capAlfaVeld.charAt( 0 ) - 'A' + 8 * ( capAlfaVeld.charAt( 1 ) - '1' );
 }
 
-public Range wkVeldRange = new Range( 0, MAX_WK - 1 );
-public Range stukVeldRange = new Range( 0, MAX_STUK - 1 );
-
 private final Config config;
 @Getter( AccessLevel.PACKAGE ) 
 @Setter( AccessLevel.PACKAGE ) 
@@ -126,13 +118,16 @@ private File databaseFile;
 @Getter( AccessLevel.PUBLIC ) 
 @Setter( AccessLevel.PRIVATE ) 
 private boolean open = false;
-private PageSizeCalculator pageSizeCalculator;
+//@Autowired is overbodig zeggen ze
 public VM( Config aConfig )
 {
 	super();
 	config = aConfig;
-	setDatabaseFile( null );
-	setPageSizeCalculator( new PageSizeCalculator() );
+	databaseFile = null;
+}
+PageSizeCalculator getPageSizeCalculator()
+{
+	return getConfig().getPageSizeCalculator();
 }
 RandomAccessFile getDatabase()
 {
@@ -181,6 +176,8 @@ public void setDatabaseName( String aDatabaseName )
 	databaseFile = null;
 	if ( getCache() != null )
 	{
+		// @@HIGH Dit is dus de plek waar de database null wordt. Als je de cache daarna gaat gebruiken krijg je allemaal NPE's
+		// Hier een oplossing voor verzinnen. Het gaat al mis als je een seek() probeerte te doen op de database (in getRawPageData)
 		getCache().setDatabase( null );
 	}
 }
@@ -298,8 +295,8 @@ public void open( String aMode )
 	{
 		throw new RuntimeException( e );
 	}
-    setCache( Cache.create( getPageSizeCalculator(), config.getAantalStukken(), database ) );
-	setPageDescriptorTable( PageDescriptorTable.create( getPageSizeCalculator(), config.getAantalStukken() ) );
+    setCache( Cache.create( getConfig(), database ) );
+	setPageDescriptorTable( PageDescriptorTable.create( getConfig() ) );
 	setOpen( true );
 }
 /**

@@ -1,5 +1,7 @@
 package pu.chessdatabase.bo;
 
+import pu.services.Range;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -8,22 +10,24 @@ import lombok.EqualsAndHashCode;
 public class Bord
 {
 public static final int LEEG = 0xFF;
-public static final int MAX_BORD = 0x77;
-
-private int [] bord = new int[MAX_BORD + 1];
-private int aantalStukken;
+public static final int MAX_BORD = 0x78;
+public static final Range BORD_RANGE = new Range( 0, MAX_BORD - 1 );
+private int [] bord = new int[MAX_BORD];
 private Stukken stukken;
-public Bord( int aAantalStukken, Stukken aStukken )
+public Bord( Stukken aStukken )
 {
 	super();
-	aantalStukken = aAantalStukken;
 	stukken = aStukken;
 	maakBordLeeg();
 }
-public Bord( int aAantalStukken, Stukken aStukken, BoStelling aBoStelling )
+public Bord( Stukken aStukken, BoStelling aBoStelling )
 {
-	this( aAantalStukken, aStukken );
+	this( aStukken );
 	zetBordOp( aBoStelling );
+}
+public int getAantalStukken()
+{
+	return getStukken().getAantalStukken();
 }
 
 /**
@@ -40,7 +44,7 @@ END MaakBordLeeg;
  */
 public void maakBordLeeg()
 {
-	for ( int x = 0; x <= MAX_BORD; x++ )
+	for ( int x : BORD_RANGE )
 	{
 		bord[x] = LEEG;
 	}
@@ -99,6 +103,10 @@ public int getVeld( int aVeld )
 {
 	return bord[aVeld];
 }
+public void setVeld( int aVeld, int aValue )
+{
+	bord[aVeld] = aValue;
+}
 public int getAlfaVeld( String aAlfaVeld )
 {
 	return bord[Gen.alfaToVeld(aAlfaVeld)];
@@ -106,6 +114,14 @@ public int getAlfaVeld( String aAlfaVeld )
 public boolean isVeldLeeg( int aVeld )
 {
 	return bord[aVeld] == LEEG;
+}
+public int getRij( int aVeld )
+{
+	return aVeld / 16;
+}
+public int getKol( int aVeld )
+{
+	return aVeld % 16;
 }
 @Override
 public String toString()

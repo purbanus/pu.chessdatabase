@@ -1,13 +1,14 @@
 package pu.chessdatabase.dbs;
 
 import static pu.chessdatabase.bo.Kleur.*;
+import static pu.chessdatabase.dbs.Constants.*;
 import static pu.chessdatabase.dbs.Resultaat.*;
-import static pu.chessdatabase.dbs.VM.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ForkJoinTask;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -35,9 +36,8 @@ public static int [][] newTellingen()
 	return new int[Kleur.values().length][Resultaat.values().length];
 }
 
-private VM vm;
 private Dbs dbs;
-private Config config;
+private final Config config;
 private int [][] tellingen = newTellingen();
 private int stellingTeller;
 List<BoStelling> stellingen = new ArrayList<>();
@@ -45,12 +45,21 @@ private int reportFrequency;
 private ReportFunction reportFunction;
 private boolean doAllPositions = false;
 
-VMStellingIterator( @Lazy Dbs aDbs, VM aVm, Config aConfig )
+public VMStellingIterator( Config aConfig )
+{
+	super();
+	config = aConfig;
+}
+@Autowired
+VMStellingIterator( @Lazy Dbs aDbs, Config aConfig )
 {
 	super();
 	dbs = aDbs;
-	vm = aVm;
 	config = aConfig;
+}
+public Transformator getTransformator()
+{
+	return getConfig().getTransformator();
 }
 public void clearTellingen()
 {
@@ -65,15 +74,15 @@ public void setReport( int aReportFrequency, ReportFunction aReportFunction )
 }
 void report()
 {
-	if ( reportFunction != null )
+	if ( getReportFunction() != null )
 	{
-		reportFunction.doReport( stellingTeller, tellingen );
+		getReportFunction().doReport( stellingTeller, tellingen );
 	}
 }
 public void iterateParallel( PassFunction aPassFunction )
 {
 	List<VMIterateAction> actions = new ArrayList<>();
-	for ( int wk : getVm().getWkVeldRange() )
+	for ( int wk : getConfig().heeftPionnen() ? STUK_VELD_RANGE : WK_VELD_RANGE )
 	{
 		actions.add( new VMIterateAction( this, aPassFunction, wk ) );
 	}
@@ -88,13 +97,13 @@ public void iterateOverZkOneColor( int aWk, Kleur aKleur, PassFunction aPassFunc
 	VMStelling vmStelling = new VMStelling();
 	BoStelling boStelling = new BoStelling();
 	vmStelling.setWk( aWk );
-	boStelling.setWk( Dbs.CVT_WK[aWk] );
+	boStelling.setWk( getTransformator().vmStellingWkToBoStellingWk( aWk ) );
 	vmStelling.setAanZet( aKleur );
 	boStelling.setAanZet( aKleur );
-	for ( int zk : getVm().getStukVeldRange() )
+	for ( int zk : STUK_VELD_RANGE )
 	{
 		vmStelling.setZk( zk );
-		boStelling.setZk( Dbs.CVT_STUK[zk] );
+		boStelling.setZk( getTransformator().vmStellingStukToBoStellingStuk( zk ) );
 		iterateOverPieces( boStelling, vmStelling, aPassFunction, true );
 	}
 	report();
@@ -107,14 +116,14 @@ public void iterateOverWkZkAndKleur( PassFunction aPassFunction )
 {
 	VMStelling vmStelling = new VMStelling();
 	BoStelling boStelling = new BoStelling();
-	for ( int wk : getVm().getWkVeldRange() )
+	for ( int wk : getConfig().heeftPionnen() ? STUK_VELD_RANGE : WK_VELD_RANGE )
 	{
 		vmStelling.setWk( wk );
-		boStelling.setWk( Dbs.CVT_WK[wk] );
-		for ( int zk : getVm().getStukVeldRange() )
+		boStelling.setWk( getTransformator().vmStellingWkToBoStellingWk( wk ) );
+		for ( int zk : STUK_VELD_RANGE )
 		{
 			vmStelling.setZk( zk );
-			boStelling.setZk( Dbs.CVT_STUK[zk] );
+			boStelling.setZk( getTransformator().vmStellingStukToBoStellingStuk( zk ) );
 			for ( Kleur aanZet : Kleur.values() )
 			{
 				vmStelling.setAanZet( aanZet );
@@ -138,23 +147,17 @@ public void iterateOverWkZkOneColour( Kleur aKleur, PassFunction aPassFunction )
 	vmStelling.setAanZet( aKleur );
 	BoStelling boStelling = new BoStelling();
 	boStelling.setAanZet( aKleur );
-	for ( int wk : getVm().getWkVeldRange() )
+	for ( int wk : getConfig().heeftPionnen() ? STUK_VELD_RANGE : WK_VELD_RANGE )
 	{
 		vmStelling.setWk( wk );
-		boStelling.setWk( Dbs.CVT_WK[wk] );
-		for ( int zk : getVm().getStukVeldRange() )
+		boStelling.setWk( getTransformator().vmStellingWkToBoStellingWk( wk ) );
+		for ( int zk : STUK_VELD_RANGE )
 		{
 			vmStelling.setZk( zk );
-			boStelling.setZk( Dbs.CVT_STUK[zk] );
+			boStelling.setZk( getTransformator().vmStellingStukToBoStellingStuk( zk ) );
 			iterateOverPieces( boStelling, vmStelling, aPassFunction, true );
 		}
 	}
-	// Waar is dit voor nodig? 
-	// --> Voor die freeRecord. Alle drie de stukken zijn 0x40 en dat is niet legaal
-	vmStelling.setS3( 0 );
-	vmStelling.setS4( 0 );
-	vmStelling.setS5( 0 );
-	vm.freeRecord( vmStelling );
 	report();
 }
 
@@ -170,30 +173,30 @@ void iterateOverPieces( BoStelling aBoStelling, VMStelling aVmStelling, PassFunc
 {
 	BoStelling boStelling = aBoStelling.clone();
 	VMStelling vmStelling = aVmStelling.clone();
-	for ( int s3 : getVm().getStukVeldRange() )
+	for ( int s3 :getConfig().getStukken().isS3Pion() ? PION_VELD_RANGE : STUK_VELD_RANGE )
 	{
 		vmStelling.setS3( s3 );
-		boStelling.setS3( Dbs.CVT_STUK[s3] );
+		boStelling.setS3( getTransformator().vmStellingStukToBoStellingStuk( s3 ) );
 		if ( getConfig().getAantalStukken() == 3 )
 		{
 			callForAllPieces( boStelling, vmStelling, aPassFunction, aCountDouble );
 		}
 		else
 		{
-			for ( int s4 : getVm().getStukVeldRange() )
+			for ( int s4 :getConfig().getStukken().isS3Pion() ? PION_VELD_RANGE : STUK_VELD_RANGE )
 			{
 				vmStelling.setS4( s4 );
-				boStelling.setS4( Dbs.CVT_STUK[s4] );
+				boStelling.setS4( getTransformator().vmStellingStukToBoStellingStuk( s4 ) );
 				if ( getConfig().getAantalStukken() == 4 )
 				{
 					callForAllPieces( boStelling, vmStelling, aPassFunction, aCountDouble );
 				}
 				else
 				{
-					for ( int s5 : getVm().getStukVeldRange() )
+					for ( int s5 :getConfig().getStukken().isS3Pion() ? PION_VELD_RANGE : STUK_VELD_RANGE )
 					{
 						vmStelling.setS5( s5 );
-						boStelling.setS5( Dbs.CVT_STUK[s5] );
+						boStelling.setS5( getTransformator().vmStellingStukToBoStellingStuk( s5 ) );
 						callForAllPieces( boStelling, vmStelling, aPassFunction, aCountDouble );
 					}
 				}
@@ -210,7 +213,7 @@ void callForAllPieces( BoStelling aBoStelling, VMStelling aVmStelling, PassFunct
 	}
 	if ( aCountDouble )
 	{
-		tellingen [Wit.ordinal()][gotBoStelling.getResultaat().ordinal()]++;
+		tellingen [Wit  .ordinal()][gotBoStelling.getResultaat().ordinal()]++;
 		tellingen [Zwart.ordinal()][gotBoStelling.getResultaat().ordinal()]++;
 		stellingTeller++;
 	}

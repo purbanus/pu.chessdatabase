@@ -1,18 +1,25 @@
 package pu.chessdatabase.dbs;
 
+import pu.chessdatabase.bo.Config;
+
 import lombok.Data;
 
 @Data
 public abstract class AbstractPageDescriptorTable implements PageDescriptorTable
 {
-private final int aantalStukken;
-private final PageSizeCalculator pageSizeCalculator;
+private final Config config;
 
-AbstractPageDescriptorTable( PageSizeCalculator aPageSizeCalculator, int aAantalStukken )
+AbstractPageDescriptorTable( Config aConfig )
 {
 	super();
-	aantalStukken = aAantalStukken;
-	pageSizeCalculator = aPageSizeCalculator;
+	config = aConfig;
 }
-
+public PageSizeCalculator getPageSizeCalculator()
+{
+	return getConfig().getPageSizeCalculator();
+}
+public int getAantalStukken()
+{
+	return getConfig().getAantalStukken();
+}
 }

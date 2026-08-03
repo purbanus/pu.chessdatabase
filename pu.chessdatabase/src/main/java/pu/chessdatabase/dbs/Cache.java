@@ -4,6 +4,8 @@ import static pu.chessdatabase.dbs.CacheType.*;
 
 import java.io.RandomAccessFile;
 
+import pu.chessdatabase.bo.Config;
+
 public interface Cache
 {
 public abstract RandomAccessFile getDatabase();
@@ -22,15 +24,19 @@ public abstract CacheEntry getCacheEntry( PageDescriptor aPageDescriptor );
 public abstract void setCacheEntry( PageDescriptor aPageDescriptor, CacheEntry aCacheEntry );
 public abstract void flush();
 
-public static Cache create( PageSizeCalculator aPageSizeCalculator, int aAantalStukken, RandomAccessFile aDatabase )
+public static Cache create( Config aConfig, RandomAccessFile aDatabase )
 {
-	if ( aPageSizeCalculator.getCacheType() == Serial )
+	if ( aDatabase == null )
 	{
-		return new SerialCache( aPageSizeCalculator, aAantalStukken, aDatabase );
+		throw new RuntimeException( "Database mag niet null zijn" );
+	}
+	if ( aConfig.getPageSizeCalculator().getCacheType() == Serial )
+	{
+		return new SerialCache( aConfig, aDatabase );
 	}
 	else
 	{
-		return new ParallelCache( aPageSizeCalculator, aAantalStukken, aDatabase );
+		return new ParallelCache( aConfig, aDatabase );
 	}
 }
 

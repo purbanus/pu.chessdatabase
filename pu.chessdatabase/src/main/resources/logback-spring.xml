@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<configuration debug="true">
 
 	<property name="LOG_FILE" value="logs/app.log" />
 	<property name="SIMPLE_PATTERN" value="%highlight(%date %-5level [%thread] %message -- %logger)s %n" />
@@ -7,22 +7,24 @@
 
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
 <!-- 		<withJansi>true</withJansi> -->
-		<layout class="ch.qos.logback.classic.PatternLayout">
+		<encoder>
 			<Pattern>${SIMPLE_PATTERN}</Pattern>
-		</layout>
+		</encoder>
 	</appender>
 
 	<appender name="ROLLING-FILE"	class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${LOG_FILE}.log</file>
+		<file>${LOG_FILE}</file>
 		<rollingPolicy
 			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- daily rollover -->
 			<fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.gz</fileNamePattern>
 
 			<!-- keep 30 days' worth of history capped at 3GB total size -->
-			<maxHistory>30</maxHistory>
-			<totalSizeCap>3GB</totalSizeCap>
-		</rollingPolicy>
+<!-- 			<maxHistory>30</maxHistory>
+ -->
+ <!-- 			<totalSizeCap>3GB</totalSizeCap>
+ -->
+ 		</rollingPolicy>
 		<encoder>
 			<Pattern>${EXTENDED_PATTERN}</Pattern>
 		</encoder>
@@ -40,6 +42,11 @@
 
 	<!-- Voortdurende meldingen over zijn pooltjes -->
 	<logger name="com.zaxxer.hikari.pool.HikariPool" level="info" additivity="false" />
+	<logger name="org.apache.tomcat.util.net.NioEndpoint" level="info" additivity="false" />
+	<logger name="javax.management.remote.rmi" level="info" additivity="false" />
+	<logger name="sun.rmi" level="info" additivity="false" />
+	<logger name="javax.management.remote" level="info" additivity="false" />
+	<logger name="javax.management.mbeanservers" level="info" additivity="false" />
 	
 	<!-- In plaats van alles wat je niet hoeft te zien hierboven op INFO te zetten, kun je ook alles wat je WEL wilt zien hieronder op DEBUG zetten -->
 	<logger name="org.springframework.web.servlet.HandlerMapping.Mappings" level="debug" additivity="false" />
@@ -59,7 +66,7 @@
 		<appender-ref ref="CONSOLE" />
 	</logger>
  -->	
-	<root level="trace">
+	<root level="info">
 		<appender-ref ref="CONSOLE" />
 		<appender-ref ref="ROLLING-FILE" />
 	</root>

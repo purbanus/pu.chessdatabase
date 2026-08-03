@@ -1,5 +1,9 @@
 package pu.chessdatabase.dbs;
 
+import static pu.chessdatabase.dbs.Lokatie.*;
+
+import pu.chessdatabase.bo.Config;
+
 import lombok.Data;
 
 //=================================================================================================
@@ -9,14 +13,20 @@ import lombok.Data;
 @Data
 public class TestHelper
 {
-private final PageSizeCalculator pageSizeCalculator;
-private final int aantalStukken;
+private final Config config;
 
-public TestHelper( PageSizeCalculator aPageSizeCalculator, int aAantalStukken )
+public TestHelper( Config aConfig )
 {
 	super();
-	pageSizeCalculator = aPageSizeCalculator;
-	aantalStukken = aAantalStukken;
+	config = aConfig;
+}
+PageSizeCalculator getPageSizeCalculator()
+{
+	return getConfig().getPageSizeCalculator();
+}
+int getAantalStukken()
+{
+	return getConfig().getAantalStukken();
 }
 public boolean isAllZero( byte [] aPage )
 {
@@ -58,6 +68,23 @@ public byte [] createBlockOfBytes( int aNumberOfBytes, byte aValue )
 		bytes[x] = aValue;
 	}
 	return bytes;
+}
+public void writePageWithAll( Cache aCache, long aPageNumber, int aCacheNumber, byte aValue )
+{
+	byte [] page = createPageWithAll( aValue );
+	PageDescriptor pageDescriptor = PageDescriptor.builder()
+		.waar( InRam )
+		.cacheNummer( aCacheNumber )
+		.schijfAdres( aPageNumber * aCache.getPageSize() )
+		.build();
+	CacheEntry cacheEntry = CacheEntry.builder()
+		.generatie( 15 )
+		.page( page )
+		.pageDescriptor( pageDescriptor )
+		.vuil( true )
+		.build();
+	aCache.setCacheEntry( pageDescriptor, cacheEntry );
+	aCache.pageOut( pageDescriptor );
 }
 
 }

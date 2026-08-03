@@ -5,6 +5,9 @@ import pu.chessdatabase.bo.Kleur;
 import pu.chessdatabase.bo.configuraties.ConfigImpl;
 import pu.services.StopWatch;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class CompareDatabases
 {
 VM vm1;
@@ -17,7 +20,7 @@ public static void main( String [] args )
 	new CompareDatabases().run( Config.KDKT, Config.TESTKDKT );
 	new CompareDatabases().run( Config.KLLK, Config.TESTKLLK );
 	new CompareDatabases().run( Config.KLPK, Config.TESTKLPK );
-	//new CompareDatabases().run( Config.KDKTT, Config.TESTKDKTT );
+	new CompareDatabases().run( Config.KDKTT, Config.TESTKDKTT );
 }
 private void run( ConfigImpl aConfigImpl1, ConfigImpl aConfigImpl2 )
 {
@@ -25,15 +28,16 @@ private void run( ConfigImpl aConfigImpl1, ConfigImpl aConfigImpl2 )
 	vm1 = setupVm( aConfigImpl1 );
 	vm2 = setupVm( aConfigImpl2 );
 	vm1.getPageDescriptorTable().iterateOverAllPageDescriptors( this::compareDeDatabases );
-	System.out.printf( "Compare %s met %s klaar, duurde %s\n", aConfigImpl1, aConfigImpl2, timer.getElapsedMs() );
-	System.out.printf( "Aantal stellingen: %d waarvan ongelijk: %d\n", aantalStellingen, aantalStellingenOngelijk );
-//	System.out.printf( "Databases: %s %s\n", vm1.getDatabaseName(), vm2.getDatabaseName() );
+	LOG.info( "Compare {} met {} klaar, duurde {}", aConfigImpl1, aConfigImpl2, timer.getElapsedMs() );
+	LOG.info( "Aantal stellingen: {} waarvan ongelijk: {}", aantalStellingen, aantalStellingenOngelijk );
 }
 VM setupVm( ConfigImpl aConfigImpl )
 {
 	Config config = new Config();
+	PageSizeCalculator pageSizeCalculator = new PageSizeCalculator( config );
 	VM vm = new VM( config );
 	config.setVm( vm );
+	config.setPageSizeCalculator( pageSizeCalculator );
 
 	config.switchConfig( aConfigImpl );
 	vm.setDatabaseName( config.getDatabaseName() );
@@ -60,7 +64,7 @@ void compareDeDatabasesSerial( VMStelling aVmStelling )
 void compareDeDatabasesParallel( VMStelling aVmStelling )
 {
 	VMStelling vmStelling = aVmStelling.clone();
-	for ( int zk = 0; zk < VM.MAX_STUK; zk++ )
+	for ( int zk = 0; zk < Constants.MAX_STUK; zk++ )
 	{
 		vmStelling.setZk( zk );
 		for ( Kleur aanZet : Kleur.values() )
@@ -72,7 +76,7 @@ void compareDeDatabasesParallel( VMStelling aVmStelling )
 }
 private void comparDeDatabasesS3tmS5( VMStelling vmStelling )
 {
-	for ( int s3 = 0; s3 < VM.MAX_STUK; s3++ )
+	for ( int s3 = 0; s3 < Constants.MAX_STUK; s3++ )
 	{
 		vmStelling.setS3( s3 );
 		if ( vm1.getConfig().getAantalStukken() == 3 )
@@ -81,7 +85,7 @@ private void comparDeDatabasesS3tmS5( VMStelling vmStelling )
 		}
 		else
 		{
-			for ( int s4 = 0; s4 < VM.MAX_STUK; s4++ )
+			for ( int s4 = 0; s4 < Constants.MAX_STUK; s4++ )
 			{
 				vmStelling.setS4( s4 );
 				if ( vm1.getConfig().getAantalStukken() == 4 )
@@ -90,7 +94,7 @@ private void comparDeDatabasesS3tmS5( VMStelling vmStelling )
 				}
 				else
 				{
-					for ( int s5 = 0; s5 < VM.MAX_STUK; s5++ )
+					for ( int s5 = 0; s5 < Constants.MAX_STUK; s5++ )
 					{
 						vmStelling.setS5( s5 );
 						compareStelling( vmStelling );
@@ -109,7 +113,7 @@ void compareStelling( VMStelling aVmStelling )
 	{
 		if ( aantalStellingenGeprint < 500 )
 		{
-			System.err.println( "Stelling ongelijk: " + aVmStelling + "real = " + vm1Rec + " test = " + vm2Rec );
+			LOG.error( "Stelling ongelijk: {} real = {} test = {}", aVmStelling, vm1Rec, vm2Rec );
 			aantalStellingenGeprint++;
 		}
 		aantalStellingenOngelijk++;

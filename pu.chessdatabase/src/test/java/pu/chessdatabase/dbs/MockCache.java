@@ -12,7 +12,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import lombok.Data;
 
 @Data
-public class MockCache
+public class MockCache implements Cache
 {
 
 Cache delegate;
@@ -93,9 +93,15 @@ Object callMethod( String aMethodName, Object...aParams )
 	}
 }
 // @@HIGH test getStaticAantalStukken
-RandomAccessFile getDatabase()
+@Override
+public RandomAccessFile getDatabase()
 {
 	return (RandomAccessFile) callMethod( "getDatabase" );
+}
+@Override
+public void setDatabase( RandomAccessFile aDatabase )
+{
+	callMethod( "setDatabase", aDatabase );
 }
 @SuppressWarnings( "unchecked" )
 List<CacheEntry> getCacheEntries()
@@ -110,13 +116,15 @@ int getCacheSize()
 {
 	return (int) callMethod( "getCacheSize" );
 }
-int getPageSize()
+@Override
+public int getPageSize()
 {
 	return (int) callMethod( "getPageSize" );
 }
-int getDatabaseSize()
+@Override
+public long getDatabaseSize()
 {
-	return (int) callMethod( "getDatabaseSize" );
+	return (long) callMethod( "getDatabaseSize" );
 }
 void initializeCache()
 {
@@ -126,7 +134,8 @@ int getFreeCacheEntry()
 {
 	return (int) callMethod( "getFreeCacheEntry" );
 }
-byte [] getPage( PageDescriptor aPageDescriptor )
+@Override
+public byte [] getPage( PageDescriptor aPageDescriptor )
 {
 	return (byte []) callMethod( "getPage", aPageDescriptor );
 }
@@ -138,15 +147,18 @@ boolean isVuil( PageDescriptor aPageDescriptor )
 {
 	return (boolean) callMethod( "isVuil", aPageDescriptor );
 }
-void setVuil( PageDescriptor aPageDescriptor, boolean aVuil )
+@Override
+public void setVuil( PageDescriptor aPageDescriptor, boolean aVuil )
 {
 	callMethod( "setVuil", aPageDescriptor, aVuil );
 }
-CacheEntry getCacheEntry( PageDescriptor aPageDescriptor )
+@Override
+public CacheEntry getCacheEntry( PageDescriptor aPageDescriptor )
 {
 	return (CacheEntry) callMethod( "getCacheEntry", aPageDescriptor );
 }
-void setCacheEntry( PageDescriptor aPageDescriptor, CacheEntry aCacheEntry )
+@Override
+public void setCacheEntry( PageDescriptor aPageDescriptor, CacheEntry aCacheEntry )
 {
 	callMethod( "setCacheEntry", aPageDescriptor, aCacheEntry );
 }
@@ -158,7 +170,8 @@ void putRawPageData( PageDescriptor aPageDescriptor )
 {
 	callMethod( "putRawPageData", aPageDescriptor );
 }
-void pageOut( PageDescriptor aPageDescriptor )
+@Override
+public void pageOut( PageDescriptor aPageDescriptor )
 {
 	callMethod( "pageOut", aPageDescriptor );
 }
@@ -166,15 +179,18 @@ void pageIn( PageDescriptor aPageDescriptor )
 {
 	callMethod( "pageIn", aPageDescriptor );
 }
-byte []  getPageFromDatabase( PageDescriptor aPageDescriptor )
+@Override
+public byte []  getPageFromDatabase( PageDescriptor aPageDescriptor )
 {
 	return (byte []) callMethod( "getPageFromDatabase", aPageDescriptor );
 }
-int getPositionWithinPage( VMStelling aVmStelling )
+@Override
+public int getPositionWithinPage( VMStelling aVmStelling )
 {
 	return (int) callMethod( "getPositionWithinPage", aVmStelling );
 }
-byte getData( PageDescriptor aPageDescriptor, VMStelling aVmStelling )
+@Override
+public byte getData( PageDescriptor aPageDescriptor, VMStelling aVmStelling )
 {
 	return (byte) callMethod( "getDataWithVmStelling", aPageDescriptor, aVmStelling );
 }
@@ -182,7 +198,8 @@ byte getData( PageDescriptor aPageDescriptor, int aPositionWithPage )
 {
 	return (byte) callMethod( "getDataWithInt", aPageDescriptor, aPositionWithPage );
 }
-void setData( PageDescriptor aPageDescriptor, VMStelling aVmStelling, byte aData )
+@Override
+public void setData( PageDescriptor aPageDescriptor, VMStelling aVmStelling, byte aData )
 {
 	callMethod( "setDataWithVmStelling", aPageDescriptor, aVmStelling, aData );
 }
@@ -190,7 +207,8 @@ void setData( PageDescriptor aPageDescriptor, int aPositionWithinPage, byte aDat
 {
 	callMethod( "setDataWithInt", aPageDescriptor, aPositionWithinPage, aData );
 }
-void flush()
+@Override
+public void flush()
 {
 	callMethod( "flush" );
 }

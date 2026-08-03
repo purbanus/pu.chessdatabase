@@ -155,7 +155,7 @@ public void testIsIllegaal5Stukken_3()
 		.build();
 	assertThat( gen.isGeometrischIllegaal( boStelling ), is( false ) );
 	BoStelling gotBoStelling = dbs.get( boStelling );
-	assertThat( gotBoStelling.getResultaat(), is( Remise ) );
+	assertThat( gotBoStelling.getResultaat(), is( Verloren ) );
 }
 
 @Test

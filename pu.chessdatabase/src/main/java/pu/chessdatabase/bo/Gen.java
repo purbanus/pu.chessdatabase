@@ -109,7 +109,7 @@ public Gen( Dbs aDbs, Config aConfig)
 }
 public Stukken getStukken()
 {
-	return config.getStukken();
+	return getConfig().getStukken();
 }
 
 /**
@@ -325,7 +325,7 @@ public boolean checkSchaakDoorStuk( BoStelling aStelling, Stuk aStuk, int aKonin
  */
 public boolean isSchaak( BoStelling aStelling )
 {
-	Bord bord = new Bord( getConfig().getAantalStukken(), getConfig().getStukken(), aStelling );
+	Bord bord = new Bord( getConfig().getStukken(), aStelling );
 	int KVeld = aStelling.getAanZet() == Wit ? aStelling.getWk() : aStelling.getZk();
 	if ( checkSchaakDoorStuk( aStelling, getStukken().getS3(), KVeld, aStelling.getS3(), bord ) )
 	{
@@ -460,6 +460,25 @@ void addZet( final BoStelling aBoStelling, Stuk aStuk, int aNaar, ZetSoort aZets
 		aGegenereerdeZetten.add( gotBoStelling );
 	}
 }
+private List<BoStelling> genereerZettenPerPion( BoStelling aBoStelling, Stuk aStuk, int aKoningsVeld, int aStukVeld, Bord aBord )
+{
+	List<BoStelling> gegenereerdeZetten = new ArrayList<>();
+
+	// We gaan hier pionnen terugzetten
+	int naar = aStukVeld - 1;
+	if ( aBord.getRij( aStukVeld ) > 1 && aBord.isVeldLeeg( naar ) )
+	{
+		addZet( aBoStelling, aStuk, naar, Gewoon, aKoningsVeld, aStukVeld, gegenereerdeZetten );
+	}
+	naar = aStukVeld - 2;
+	if ( aBord.getRij( aStukVeld ) == 3 && aBord.isVeldLeeg( naar ) )
+	{
+		addZet( aBoStelling, aStuk, naar, Gewoon, aKoningsVeld, aStukVeld, gegenereerdeZetten );
+	}
+	
+	return gegenereerdeZetten;
+}
+
 /**
 PROCEDURE GenZperStuk(StukNr: StukNummer);
 
@@ -491,6 +510,10 @@ END GenZperStuk;
  */
 List<BoStelling> genereerZettenPerStuk( BoStelling aBoStelling, Stuk aStuk, int aKoningsVeld, int aStukVeld, Bord aBord )
 {
+	if ( aStuk.getStukType() == Pion )
+	{
+		return genereerZettenPerPion( aBoStelling, aStuk, aKoningsVeld, aStukVeld, aBord );
+	}
 	List<BoStelling> gegenereerdeZetten = new ArrayList<>();
 	for ( int richting : aStuk.getRichtingen() )
 	{
@@ -558,7 +581,7 @@ END GenZ;
 public List<BoStelling> genereerZetten( BoStelling aStelling )
 {
 	List<BoStelling> gegenereerdeZetten = new ArrayList<>();
-	Bord bord = new Bord( getConfig().getAantalStukken(), getConfig().getStukken(), aStelling );
+	Bord bord = new Bord( getConfig().getStukken(), aStelling );
 	int stukVeld;
 	int koningsVeld;
 	Stuk stuk;

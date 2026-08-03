@@ -25,13 +25,17 @@ Bord bord;
 @BeforeEach
 public void setup()
 {
-	bord = new Bord( getConfig().getAantalStukken(), getConfig().getStukken() );
+	bord = new Bord( getConfig().getStukken() );
 }
 @Test
 public void testMaakBordLeeg()
 {
+	for ( int x : BORD_RANGE )
+	{
+		bord.setVeld( x, 0xff );
+	}
 	bord.maakBordLeeg();
-	for ( int x = 0; x < 0x77; x++ )
+	for ( int x : BORD_RANGE )
 	{
 		assertThat( bord.isVeldLeeg( x ), is( true ) );
 	}
@@ -93,15 +97,24 @@ public void testClrBord()
 	{
 		assertThat( bord.getAlfaVeld( "b2" ), is( 4 ) );
 	}
-	for ( int x = 0x12; x <= MAX_BORD; x++ )
+	for ( int x = 0x12; x < MAX_BORD; x++ )
 	{
 		assertThat( bord.getVeld( x ), is( LEEG ) );
 	}
+
 	bord.clearBord( stelling );
-	for ( int x = 0; x <= MAX_BORD; x++ )
+	for ( int x : BORD_RANGE )
 	{
 		assertThat( bord.getVeld( x ), is( LEEG ) );
 	}
 }
-
+@Test
+public void testGetRij()
+{
+	assertThat( getBord().getRij( 0x00 ), is( 0 ) );
+	assertThat( getBord().getRij( 0x01 ), is( 0 ) );
+	assertThat( getBord().getRij( 0x10 ), is( 1 ) );
+	assertThat( getBord().getRij( 0x70 ), is( 7 ) );
+	assertThat( getBord().getRij( 0x77 ), is( 7 ) );
+}
 }

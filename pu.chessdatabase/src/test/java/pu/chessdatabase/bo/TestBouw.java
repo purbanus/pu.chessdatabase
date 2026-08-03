@@ -6,10 +6,9 @@ package pu.chessdatabase.bo;
 //===================================================================================================================== 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
-
 import static pu.chessdatabase.bo.Kleur.*;
-import static pu.chessdatabase.dbs.PassType.*;
 import static pu.chessdatabase.dbs.Constants.*;
+import static pu.chessdatabase.dbs.PassType.*;
 import static pu.chessdatabase.dbs.Resultaat.*;
 
 import java.util.ArrayList;
@@ -26,13 +25,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import pu.chessdatabase.bo.configuraties.ConfigImpl;
 import pu.chessdatabase.dbs.Dbs;
 import pu.chessdatabase.dbs.PassType;
+import pu.chessdatabase.dbs.Transformator;
 import pu.chessdatabase.dbs.VM;
 import pu.chessdatabase.dbs.VMStellingIterator;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 @SpringBootTest
 @Data
+@Slf4j
 public class TestBouw
 {
 private static final boolean DO_PRINT = false;
@@ -83,22 +85,41 @@ public void testReportNewPass()
 	// Dit is de databaseSize / 4 (64 * 64 * 64 * 10 * 2 / 4), zie Bouw,getReportFrequency
 	assertThat( vmStellingIterator.getReportFrequency(), is( 64 * 64 * 64 * 5 ) ); 
 }
-@Test
-public void testTelAllesInBeginstelling()
+//@Test
+public void testTelAlles()
 {
 //	if ( DO_PRINT )
 	{
-		System.out.println( "methode testTelAllesInBeginStelling\n" );
+		LOG.info( "methode testTelAlles" );
 	}
-	doTestTelAlles( Config.PIPOKDK );
-	doTestTelAlles( Config.PIPOKDKT );
+	doTestTelAlles( Config.KDKTT );
+	doTestTelAlles( Config.TESTKDKTT );
 	// doTestTelAlles( Config.PIPOKDKTT ); // Duurt een beetje lang, zo'n 3 minuten
 	
 	config.switchConfig( Config.PIPOKDKT );
 }
 void doTestTelAlles( ConfigImpl aConfigImpl )
 {
-	System.out.println( "\nTel alles in " + aConfigImpl + "\n" );
+	LOG.info( "\nTel alles in {}", aConfigImpl );
+	getConfig().switchConfig( aConfigImpl );
+	bouw.telAndPrintAlles( true );
+}
+//@Test
+public void testTelAllesInBeginstelling()
+{
+//	if ( DO_PRINT )
+	{
+		LOG.info( "methode testTelAllesInBeginStelling" );
+	}
+	doTestTelAllesInBeginStelling( Config.PIPOKDK );
+	doTestTelAllesInBeginStelling( Config.PIPOKDKT );
+	// doTestTelAlles( Config.PIPOKDKTT ); // Duurt een beetje lang, zo'n 3 minuten
+	
+	config.switchConfig( Config.PIPOKDKT );
+}
+void doTestTelAllesInBeginStelling( ConfigImpl aConfigImpl )
+{
+	LOG.info( "\nTel alles in {}", aConfigImpl );
 	getConfig().switchConfig( aConfigImpl );
 	
 	bouw.pass_0( false );
@@ -110,7 +131,7 @@ public void testMatStellingen()
 {
 	if ( DO_PRINT )
 	{
-		System.out.println( "methode testMatStellingen\n" );
+		LOG.info( "methode testMatStellingen" );
 	}
 	getConfig().switchConfig( Config.PIPOKDK );
 
@@ -125,7 +146,7 @@ private void printMatStelling( BoStelling aBoStelling )
 {
 	if ( aBoStelling.getResultaat() == Verloren && aBoStelling.getAanZet() == Zwart )
 	{
-		System.out.println( aBoStelling );
+		LOG.info( "{}", aBoStelling );
 	}
 }
 @Test
@@ -184,7 +205,6 @@ public void testIsIllegaal5Stukken()
 public void testIsIllegaal5Stukken_2()
 {
 	config.switchConfig( Config.PIPOKDKTT );
-	// dbs.create(); // Niet nodig, gebeurt al bij de switchConfig
 	bouw.reportNewPass( "Markeren illegale stellingen", false );
 	dbs.pass( PassType.MarkeerWit, bouw::isIllegaal, "rw" );
 	
@@ -213,13 +233,13 @@ public void telIllegaleStellingen()
 	dbs.pass( PassType.MarkeerWit, bouw::isIllegaal, "rw" );
 	bouw.telAndPrintAlles( true );
 	
-//	System.out.println( "Aantal Illegale stellingen: " + bouw.illegaleStellingen.size() );
-//	System.out.println( "\nIllegale stellingen\n" );
-//	System.out.println(   bouw.illegaleStellingen );
+//	LOG.info( "Aantal Illegale stellingen: " + bouw.illegaleStellingen.size() );
+//	LOG.info( "Illegale stellingen" );
+//	LOG.info(   bouw.illegaleStellingen );
 //
-//	System.out.println( "Aantal niet-Illegale stellingen: " + bouw.changes.size() );
-//	System.out.println( "\nNiet-Illegale stellingen\n" );
-//	System.out.println(   bouw.changes );
+//	LOG.info( "Aantal niet-Illegale stellingen: " + bouw.changes.size() );
+//	LOG.info( "Niet-Illegale stellingen" );
+//	LOG.info(   bouw.changes );
 }
 @Test
 public void testSchaakjes()
@@ -299,7 +319,7 @@ public void testPassSchaakjes()
 {
 	// Voor deze test moet je HOU_STELLINGEN_BIJ in VMStellingIterator op true zetten
 	getConfig().switchConfig( Config.PIPOKDK, false );
-	bouw.reportNewPass( "Reserveren schijfruimte\n", DO_PRINT );
+	bouw.reportNewPass( "Reserveren schijfruimte", DO_PRINT );
 
 	bouw.reportNewPass( "Markeren illegale stellingen", DO_PRINT );
 	dbs.pass( MarkeerWit, bouw::isIllegaal, "rw" );
@@ -319,16 +339,17 @@ public void testPassSchaakjes()
 			.append( boStelling.getAanZet().getAfko() );
 		stellingLookup.put( sb.toString(), boStelling );
 	}
-	for ( int wk : vm.wkVeldRange )
+	Transformator transformator = getDbs().getTransformator();
+	for ( int wk : WK_VELD_RANGE )
 	{
-		for ( int zk : vm.stukVeldRange )
+		for ( int zk : STUK_VELD_RANGE )
 		{
-			for ( int s3 : vm.stukVeldRange )
+			for ( int s3 : STUK_VELD_RANGE )
 			{
 				StringBuilder sb = new StringBuilder()
-					.append( Gen.veldToAlfa( Dbs.CVT_WK  [wk] ) )
-					.append( Gen.veldToAlfa( Dbs.CVT_STUK[zk] ) )
-					.append( Gen.veldToAlfa( Dbs.CVT_STUK[s3] ) )
+					.append( Gen.veldToAlfa( transformator.vmStellingWkToBoStellingWk( wk ) ) )
+					.append( Gen.veldToAlfa( transformator.vmStellingWkToBoStellingWk( zk ) ) )
+					.append( Gen.veldToAlfa( transformator.vmStellingWkToBoStellingWk( s3 ) ) )
 					.append( Wit.getAfko() );
 				BoStelling boStellingLookup = stellingLookup.get( sb.toString() );
 				assertThat("For key: " + sb.toString(), boStellingLookup, is( notNullValue() ) );
@@ -355,7 +376,7 @@ public void testIsMat()
 {
 	if ( DO_PRINT )
 	{
-		System.out.println( "methode testIsMat\n" );
+		LOG.info( "methode testIsMat" );
 	}
 
 	// Je moet nu eerst de illegale stellingen markeren anders denkt genZPerStuk
@@ -436,7 +457,7 @@ private void markeerIllegaal()
 	bouw.matStellingen  = new ArrayList<>();
 	bouw.passNumber = 0;
 	
-	bouw.reportNewPass( "Reserveren schijfruimte\n", DO_PRINT );
+	bouw.reportNewPass( "Reserveren schijfruimte", DO_PRINT );
 //	dbs.create();
 
 	bouw.reportNewPass( "Markeren illegale stellingen", DO_PRINT );
@@ -454,7 +475,7 @@ public void testMarkeer()
 	config.switchConfig( Config.PIPOKDKT );
 	if ( DO_PRINT )
 	{
-		System.out.println( "methode testMarkeer\n" );
+		LOG.info( "methode testMarkeer" );
 	}
 	bouw.pass_0( DO_PRINT );
 	dbs.open( "rw" );
