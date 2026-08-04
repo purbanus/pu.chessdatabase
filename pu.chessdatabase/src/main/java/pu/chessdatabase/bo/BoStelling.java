@@ -224,6 +224,27 @@ public String getS5Alfa()
 {
 	return Gen.veldToAlfa( s5 );
 }
+public void setWkAlfa( String aVeld )
+{
+	wk = Gen.alfaToVeld( aVeld );
+}
+public void setZkAlfa( String aVeld )
+{
+	zk = Gen.alfaToVeld( aVeld );
+}
+public void setS3Alfa( String aVeld )
+{
+	s3 = Gen.alfaToVeld( aVeld );
+}
+public void sets4Alfa( String aVeld )
+{
+	s4 = Gen.alfaToVeld( aVeld );
+}
+public void sets5Alfa( String aVeld )
+{
+	s5 = Gen.alfaToVeld( aVeld );
+}
+
 @Override
 public String toString()
 {
