@@ -50,7 +50,7 @@ String savedConfigString;
 public void setup()
 {
 	savedConfigString = config.getConfig();
-	config.switchConfig( Config.PIPOKDKT, false ); // false want de database bestaat nog niet dus VM kan m niet openen
+	config.switchConfig( Config.PipoKDKT, false ); // false want de database bestaat nog niet dus VM kan m niet openen
 	dbs.create();
 }
 @AfterEach
@@ -93,10 +93,10 @@ public void testTelAlles()
 		LOG.info( "methode testTelAlles" );
 	}
 	doTestTelAlles( Config.KDKTT );
-	doTestTelAlles( Config.TESTKDKTT );
-	// doTestTelAlles( Config.PIPOKDKTT ); // Duurt een beetje lang, zo'n 3 minuten
+	doTestTelAlles( Config.TestKDKTT );
+	// doTestTelAlles( Config.PipoKDKTT ); // Duurt een beetje lang, zo'n 3 minuten
 	
-	config.switchConfig( Config.PIPOKDKT );
+	config.switchConfig( Config.PipoKDKT );
 }
 void doTestTelAlles( ConfigImpl aConfigImpl )
 {
@@ -111,11 +111,11 @@ public void testTelAllesInBeginstelling()
 	{
 		LOG.info( "methode testTelAllesInBeginStelling" );
 	}
-	doTestTelAllesInBeginStelling( Config.PIPOKDK );
-	doTestTelAllesInBeginStelling( Config.PIPOKDKT );
-	// doTestTelAlles( Config.PIPOKDKTT ); // Duurt een beetje lang, zo'n 3 minuten
+	doTestTelAllesInBeginStelling( Config.PipoKDK );
+	doTestTelAllesInBeginStelling( Config.PipoKDKT );
+	// doTestTelAlles( Config.PipoKDKTT ); // Duurt een beetje lang, zo'n 3 minuten
 	
-	config.switchConfig( Config.PIPOKDKT );
+	config.switchConfig( Config.PipoKDKT );
 }
 void doTestTelAllesInBeginStelling( ConfigImpl aConfigImpl )
 {
@@ -133,7 +133,7 @@ public void testMatStellingen()
 	{
 		LOG.info( "methode testMatStellingen" );
 	}
-	getConfig().switchConfig( Config.PIPOKDK );
+	getConfig().switchConfig( Config.PipoKDK );
 
 	bouw.pass_0( false );
 	dbs.open();
@@ -184,7 +184,7 @@ public void testIsIllegaal()
 //@Test // Deze test duurt ruim 3 minuten
 public void testIsIllegaal5Stukken()
 {
-	config.switchConfig( Config.PIPOKDKTT );
+	config.switchConfig( Config.PipoKDKTT );
 	dbs.create();
 	bouw.pass_0();
 	
@@ -204,7 +204,7 @@ public void testIsIllegaal5Stukken()
 //@Test // Deze test duurt zo'n 10 seconden
 public void testIsIllegaal5Stukken_2()
 {
-	config.switchConfig( Config.PIPOKDKTT );
+	config.switchConfig( Config.PipoKDKTT );
 	bouw.reportNewPass( "Markeren illegale stellingen", false );
 	dbs.pass( PassType.MarkeerWit, bouw::isIllegaal, "rw" );
 	
@@ -225,7 +225,7 @@ public void testIsIllegaal5Stukken_2()
 //@Test
 public void telIllegaleStellingen()
 {
-	config.switchConfig( Config.PIPOKDKTT );
+	config.switchConfig( Config.PipoKDKTT );
 	bouw.illegaleStellingen.clear();
 	bouw.passNumber = 0;
 
@@ -318,7 +318,7 @@ public void testSchaakjes()
 public void testPassSchaakjes()
 {
 	// Voor deze test moet je HOU_STELLINGEN_BIJ in VMStellingIterator op true zetten
-	getConfig().switchConfig( Config.PIPOKDK, false );
+	getConfig().switchConfig( Config.PipoKDK, false );
 	bouw.reportNewPass( "Reserveren schijfruimte", DO_PRINT );
 
 	bouw.reportNewPass( "Markeren illegale stellingen", DO_PRINT );
@@ -472,7 +472,7 @@ private void markeerIllegaal()
 @Test
 public void testMarkeer()
 {
-	config.switchConfig( Config.PIPOKDKT );
+	config.switchConfig( Config.PipoKDKT );
 	if ( DO_PRINT )
 	{
 		LOG.info( "methode testMarkeer" );

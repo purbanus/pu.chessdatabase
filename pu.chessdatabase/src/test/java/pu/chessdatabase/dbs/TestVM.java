@@ -38,7 +38,7 @@ String savedConfigString;
 public void setup()
 {
 	savedConfigString = config.getConfig();
-	config.switchConfig( Config.PIPOKDKT );
+	config.switchConfig( Config.PipoKDKT );
 	vm.open( "rw" );
 	testHelper = new TestHelper( getConfig() );
 }
@@ -391,7 +391,7 @@ public void testDatabasesWeCannotDelete() throws FileNotFoundException
 	assertDoesNotThrow( () -> vm.delete() );
 	assertFalse( file.exists() );
 
-	config.switchConfig( Config.PIPOKDKTT );
+	config.switchConfig( Config.PipoKDKTT );
 	vm.create();
 	file = new File( "dbs/PipoKDKTT.DBS" );
 	assertTrue( file.exists() );

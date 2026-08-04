@@ -39,7 +39,7 @@ String savedConfigString;
 public void setup()
 {
 	savedConfigString = config.getConfig();
-	config.switchConfig( Config.PIPOKDKT );
+	config.switchConfig( Config.PipoKDKT );
 	dbs.create();
 }
 @AfterEach
@@ -97,7 +97,7 @@ public void testAlfaToVeld()
 @Test
 public void testIsGeomIllegaal3Stukken()
 {
-	getConfig().switchConfig( Config.PIPOKDK );
+	getConfig().switchConfig( Config.PipoKDK );
 
 	// Gewoon goed
 	BoStelling boStelling = BoStelling.builder()
@@ -302,7 +302,7 @@ public void testCheckSchaakDoorStuk()
 @Test
 public void testIsSchaak3Stukken()
 {
-	getConfig().switchConfig( Config.PIPOKDK, false );
+	getConfig().switchConfig( Config.PipoKDK, false );
 	
 	// Check aStukVeld == aStelling.getWk(), d.w.z. s3 is geslagen door zwart
 	BoStelling boStelling = BoStelling.alfaBuilder()
@@ -335,7 +335,7 @@ public void testIsSchaak3Stukken()
 @Test
 public void testIsSchaak4Stukken()
 {
-	getConfig().switchConfig( Config.PIPOKDKT, false );
+	getConfig().switchConfig( Config.PipoKDKT, false );
 	
 	// Check aStukVeld == aStelling.getZK(), d.w.z. s4 is geslagen door wit
 	BoStelling stelling = BoStelling.alfaBuilder()

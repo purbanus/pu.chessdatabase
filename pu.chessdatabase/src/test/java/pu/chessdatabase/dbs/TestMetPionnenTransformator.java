@@ -44,7 +44,7 @@ String savedConfigString;
 public void setup()
 {
 	savedConfigString = config.getConfig();
-	config.switchConfig( Config.PIPOKDKT );
+	config.switchConfig( Config.PipoKDKT );
 }
 @AfterEach
 public void destroy()
@@ -99,7 +99,7 @@ public void testBoStellingToVmStelling()
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
 	
-	getConfig().switchConfig( "PipoKOK" );
+	getConfig().switchConfig( Config.PipoKoK );
 	
 	boStelling = BoStelling.alfaBuilder()
 		.wk( "a1" )

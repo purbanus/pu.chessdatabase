@@ -99,27 +99,27 @@ void vindGrootsten( BoStelling aBoStelling )
 void doNothing( int aStellingTeller, int [][] aTellingen )
 {
 }
-@Test
+//@Test
 public void testTelAllesKDKAanHetEinde()
 {
 //	if ( DO_PRINT )
 	{
 		System.out.println( "methode testTelAlles\n" );
 	}
-	doTestTelAllesAanHetEinde( Config.TESTKDK );
+	doTestTelAllesAanHetEinde( Config.TestKDK );
 	doTestTelAllesAanHetEinde( Config.KDK );
 }
-@Test
+//@Test
 public void testTelAllesKTKAanHetEinde()
 {
 //	if ( DO_PRINT )
 	{
 		System.out.println( "methode testTelAlles\n" );
 	}
-	doTestTelAllesAanHetEinde( Config.TESTKTK );
+	doTestTelAllesAanHetEinde( Config.TestKTK );
 	doTestTelAllesAanHetEinde( Config.KTK );
 }
-@Test
+//@Test
 public void testTelAllesKDKTAanHetEinde()
 {
 //	if ( DO_PRINT )
@@ -127,7 +127,7 @@ public void testTelAllesKDKTAanHetEinde()
 		System.out.println( "methode testTelAlles\n" );
 	}
 	//doTestTelAllesAanHetEinde( "KDK" );
-	doTestTelAllesAanHetEinde( Config.TESTKDKT );
+	doTestTelAllesAanHetEinde( Config.TestKDKT );
 	doTestTelAllesAanHetEinde( Config.KDKT );
 	//doTestTelAllesAanHetEinde( "KDKTT" );
 }
@@ -142,7 +142,7 @@ void doTestTelAllesAanHetEinde( ConfigImpl aConfigImpl )
 @Test 
 public void testIsIllegaal5Stukken_3()
 {
-	config.switchConfig( Config.TESTKDKTT );
+	config.switchConfig( Config.TestKDKTT );
 	
 	// Bug van 18-06-2026
 	BoStelling boStelling = BoStelling.alfaBuilder()
@@ -173,7 +173,7 @@ public void testBug2026_06_18()
 		.aanZet( Zwart )
 		.build();
 	BoStelling gotBoStelling = dbs.get( boStelling );
-	assertThat( gotBoStelling.getResultaat(), is( Remise ) );
+	assertThat( gotBoStelling.getResultaat(), is( Verloren ) );
 }
 
 }

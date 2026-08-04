@@ -40,7 +40,7 @@ public void setup()
 {
 	savedConfigString = config.getConfig();
 	getConfig().setCacheType( Parallel );
-	getConfig().switchConfig( Config.PIPOKDKT );
+	getConfig().switchConfig( Config.PipoKDKT );
 	getVm().open( "rw" );
 	cache = new MockCache( vm.getCache() );
 	testHelper = new TestHelper( getConfig() );
@@ -126,9 +126,9 @@ public void testGetCacheSize()
 @Test
 public void testInitializeCache()
 {
-	getConfig().switchConfig( Config.PIPOKDKT );
+	getConfig().switchConfig( Config.PipoKDKT );
 	doTestInitializeCache();
-	getConfig().switchConfig( Config.PIPOKLOK );
+	getConfig().switchConfig( Config.PipoKLoK );
 	doTestInitializeCache();
 }
 void doTestInitializeCache()
@@ -185,26 +185,26 @@ public void testGetRawPageData()
 public void testGetPageSize()
 {
 	// Hier niet de lokale cache gebruiken maar die uit VM, want die is geconfigSwitched
-	getConfig().switchConfig( Config.PIPOKDK );
+	getConfig().switchConfig( Config.PipoKDK );
 	assertThat( vm.getCache().getPageSize(), is( 64 * 64 * 2 ) );
-	getConfig().switchConfig( Config.PIPOKOK );
+	getConfig().switchConfig( Config.PipoKoK );
 	assertThat( vm.getCache().getPageSize(), is( 64 * 64 * 2 ) );
-	getConfig().switchConfig( Config.PIPOKDKT );
+	getConfig().switchConfig( Config.PipoKDKT );
 	assertThat( vm.getCache().getPageSize(), is( 64 * 64 * 64 * 2 ) );
-	getConfig().switchConfig( Config.PIPOKLOK );
+	getConfig().switchConfig( Config.PipoKLoK );
 	assertThat( vm.getCache().getPageSize(), is( 64 * 64 * 64 * 2 ) );
-	getConfig().switchConfig( Config.PIPOKDKTT );
+	getConfig().switchConfig( Config.PipoKDKTT );
 	assertThat( vm.getCache().getPageSize(), is( 64 * 64 * 64 * 64 * 2  ) );
 }
 @Test
 public void testGetDatabaseSize()
 {
 	// Hier niet de lokale cache gebruiken maar die uit VM, want die is geconfigSwitched
-	getConfig().switchConfig( Config.PIPOKDK );
+	getConfig().switchConfig( Config.PipoKDK );
 	assertThat( vm.getCache().getDatabaseSize(), is( 10 * 64 * 2 * 64L ) );
-	getConfig().switchConfig( Config.PIPOKDKT );
+	getConfig().switchConfig( Config.PipoKDKT );
 	assertThat( vm.getCache().getDatabaseSize(), is(10 * 64 * 2 * 64 * 64L ) );
-	getConfig().switchConfig( Config.PIPOKDKTT );
+	getConfig().switchConfig( Config.PipoKDKTT );
 	assertThat( vm.getCache().getDatabaseSize(), is(10 * 64 * 2 * 64 * 64 * 64L ) );
 }
 @Test
@@ -404,17 +404,17 @@ public void testGetPositionWithinPage()
 		.aanZet( Wit )
 		.build();
 	// Hier niet de lokale cache gebruiken maaT die uit VM, want die is geconfigSwithed
-	getConfig().switchConfig( Config.PIPOKDK );
+	getConfig().switchConfig( Config.PipoKDK );
 	assertThat( vm.getCache().getPositionWithinPage( vmStelling), is( 6272 ) );
-	getConfig().switchConfig( Config.PIPOKDKT );
+	getConfig().switchConfig( Config.PipoKDKT );
 	assertThat( vm.getCache().getPositionWithinPage( vmStelling ), is( 401415 ) );
-	getConfig().switchConfig( Config.PIPOKDKTT );
+	getConfig().switchConfig( Config.PipoKDKTT );
 	assertThat( vm.getCache().getPositionWithinPage( vmStelling), is( 25690569 ) );
 }
 @Test
 public void testGetAllPositionsWithinPage3Stukken()
 {
-	getConfig().switchConfig( Config.PIPOKDK );
+	getConfig().switchConfig( Config.PipoKDK );
 	VMStelling vmStelling = VMStelling.builder()
 		.wk( 0x00 )
 		.zk( 0x00 )
@@ -446,7 +446,7 @@ public void testGetAllPositionsWithinPage3Stukken()
 @Test
 public void testGetAllPositionsWithinPage4Stukken()
 {
-	getConfig().switchConfig( Config.PIPOKDKT );
+	getConfig().switchConfig( Config.PipoKDKT );
 	VMStelling vmStelling = VMStelling.builder()
 		.wk( 0x00 )
 		.zk( 0x00 )
@@ -479,7 +479,7 @@ public void testGetAllPositionsWithinPage4Stukken()
 public void testGetAllPositionsWithinPage5Stukken()
 {
 	StopWatch timer = new StopWatch();
-	getConfig().switchConfig( Config.PIPOKDKTT );
+	getConfig().switchConfig( Config.PipoKDKTT );
 	VMStelling vmStelling = VMStelling.builder()
 		.wk( 0x00 )
 		.zk( 0x00 )

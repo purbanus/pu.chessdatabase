@@ -44,7 +44,7 @@ public void setup()
 	config.setVm( vm );
 	config.setPageSizeCalculator( pageSizeCalculator );
 	savedConfigString = config.getConfig();
-	config.switchConfig( Config.PIPOKDKT );
+	config.switchConfig( Config.PipoKDKT );
 	dbs.create();
 }
 @AfterEach
@@ -102,7 +102,7 @@ public void testAlfaToVeld()
 @Test
 public void testIsGeomIllegaal3Stukken()
 {
-	getConfig().switchConfig( Config.PIPOKDK );
+	getConfig().switchConfig( Config.PipoKDK );
 
 	// Gewoon goed
 	BoStelling boStelling = BoStelling.builder()
@@ -168,7 +168,7 @@ public void testIsGeomIllegaal4Stukken()
 		.build();
 	assertThat( gen.isGeometrischIllegaal( boStelling ), is( true ) );
 	
-	config.switchConfig( Config.PIPOKLLK );
+	config.switchConfig( Config.PipoKLLK );
 	boStelling = BoStelling.builder()
 		.wk( 5 )
 		.zk( 6 )
@@ -192,7 +192,7 @@ public void testIsGeomIllegaal5Stukken()
 @Test
 public void testBug2026_06_18()
 {
-	config.switchConfig( Config.PIPOKDKTT );
+	config.switchConfig( Config.PipoKDKTT );
 	// Er staan 2 zwarte stukken op hetzelfde veld. Die zijn allebeigeslagen
 	BoStelling boStelling = BoStelling.alfaBuilder()
 		.wk( "a1" )
@@ -338,7 +338,7 @@ public void testCheckSchaakDoorStuk()
 @Test
 public void testIsSchaak3Stukken()
 {
-	getConfig().switchConfig( Config.PIPOKDK );
+	getConfig().switchConfig( Config.PipoKDK );
 	
 	// Check aStukVeld == aStelling.getWk(), d.w.z. s3 is geslagen door zwart
 	BoStelling boStelling = BoStelling.alfaBuilder()
@@ -371,7 +371,7 @@ public void testIsSchaak3Stukken()
 @Test
 public void testIsSchaak4Stukken()
 {
-	getConfig().switchConfig( Config.PIPOKDKT );
+	getConfig().switchConfig( Config.PipoKDKT );
 	
 	// Check aStukVeld == aStelling.getZK(), d.w.z. s4 is geslagen door wit
 	BoStelling stelling = BoStelling.alfaBuilder()

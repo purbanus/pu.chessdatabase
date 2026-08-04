@@ -238,6 +238,15 @@ public void isMat( BoStelling aBoStelling )
 		}
 	}
 }
+public void promoveerPionnen( BoStelling aBoStelling )
+{
+	BoStelling boStelling = aBoStelling.clone();
+	// Er komen alleen remisestellingen binnen
+	if ( boStelling.isS3Pion() && boStelling.getRij( boStelling.getS3() ) == 7 )
+	{
+		// @HIGH "" Wat nu ??11
+	}
+}
 /**
  * ------------ Pass 0: Initialisatie database ---------------
  */

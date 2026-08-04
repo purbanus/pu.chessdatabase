@@ -77,76 +77,76 @@ public void buildKDKTT()
 //@Test
 public void buildTestKDK()
 {
-	config.switchConfig( Config.TESTKDK );
+	config.switchConfig( Config.TestKDK );
 	bouw.bouwDatabase();
 }
 //@Test
 public void buildTestKTK()
 {
-	config.switchConfig( Config.TESTKTK );
+	config.switchConfig( Config.TestKTK );
 	bouw.bouwDatabase();
 }
 //@Test
 public void buildTestKDKT()
 {
-	config.switchConfig( Config.TESTKDKT );
+	config.switchConfig( Config.TestKDKT );
 	bouw.bouwDatabase();
 }
 //@Test
 public void buildTestKLLK()
 {
-	config.switchConfig( Config.TESTKLLK );
+	config.switchConfig( Config.TestKLLK );
 	bouw.bouwDatabase();
 }
 //@Test
 public void buildTestKLPK()
 {
-	config.switchConfig( Config.TESTKLPK );
+	config.switchConfig( Config.TestKLPK );
 	bouw.bouwDatabase();
 }
 //@Test
 public void buildTestKDKTT()
 {
-	config.switchConfig( Config.TESTKDKTT );
+	config.switchConfig( Config.TestKDKTT );
 	bouw.bouwDatabase();
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Bouw van de pipodatabases
 
-//@Test
+@Test
 public void buildPipoKDK()
 {
-	config.switchConfig( Config.PIPOKDK );
+	config.switchConfig( Config.PipoKDK );
 	bouw.bouwDatabase();
 }
 //@Test
 public void buildPipoKTK()
 {
-	config.switchConfig( Config.PIPOKTK );
+	config.switchConfig( Config.PipoKTK );
 	bouw.bouwDatabase();
 }
 //@Test
 public void buildPipoKDKT()
 {
-	config.switchConfig( Config.PIPOKDKT );
+	config.switchConfig( Config.PipoKDKT );
 	bouw.bouwDatabase();
 }
 //@Test
 public void buildPipoKLLK()
 {
-	config.switchConfig( Config.PIPOKLLK );
+	config.switchConfig( Config.PipoKLLK );
 	bouw.bouwDatabase();
 }
 //@Test
 public void buildPipoKLPK()
 {
-	config.switchConfig( Config.PIPOKLPK );
+	config.switchConfig( Config.PipoKLPK );
 	bouw.bouwDatabase();
 }
 //@Test
 public void buildPipoKDKTT()
 {
-	config.switchConfig( Config.PIPOKDKTT );
+	config.switchConfig( Config.PipoKDKTT );
 	bouw.bouwDatabase();
 }
 }
