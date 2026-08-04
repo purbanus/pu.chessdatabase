@@ -1,6 +1,7 @@
 package pu.chessdatabase.bo;
 
 import static pu.chessdatabase.bo.Kleur.*;
+import static pu.chessdatabase.bo.configuraties.StukType.*;
 
 import pu.chessdatabase.dal.FlatDocument;
 import pu.chessdatabase.dbs.Resultaat;
@@ -83,12 +84,19 @@ public static BoStelling fromFlatDocumentForPlies( FlatDocument aFlatDocument )
 		.schaak( aFlatDocument.isPliesSchaak() )
 		.build();
 }
+public static int getRij( int aVeld )
+{
+	return aVeld / 16;
+}
+public static int getKol( int aVeld )
+{
+	return aVeld % 16;
+}
 public static Kleur getVeldKleur( int aVeld )
 {
-	int rij = aVeld / 16;
-	int kol = aVeld % 16;
-	return ( rij + kol ) % 2 == 0 ? Zwart : Wit;
+	return ( getRij( aVeld ) + getKol( aVeld ) ) % 2 == 0 ? Zwart : Wit;
 }
+
 @Column( nullable = false )
 private int wk;
 
@@ -184,7 +192,18 @@ public String getS5String()
 {
 	return getS5Stuk().getStukString();
 }
-
+public boolean isS3Pion()
+{
+	return Config.getStaticStukken().getS3().getStukType() == Pion;
+}
+public boolean isS4Pion()
+{
+	return Config.getStaticStukken().getS4().getStukType() == Pion;
+}
+public boolean isS5Pion()
+{
+	return Config.getStaticStukken().getS5().getStukType() == Pion;
+}
 public String getWkAlfa()
 {
 	return Gen.veldToAlfa( wk );
