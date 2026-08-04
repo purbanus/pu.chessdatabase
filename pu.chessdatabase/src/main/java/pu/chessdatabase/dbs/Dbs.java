@@ -33,8 +33,6 @@ public static void iterateOverKleurEnResultaat( IterateOverKleurEnResultaatFunct
 		}
 	}
 }
-public static Range VELD_RANGE = new Range( 0, 0x77 );
-public static Range RESULTAAT_RANGE = new Range( 0, Resultaat.values().length - 1 );
 
 private final VM vm;
 private final VMStellingIterator vmStellingIterator;
