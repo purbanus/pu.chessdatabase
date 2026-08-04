@@ -6,6 +6,7 @@ import org.springframework.boot.context.config.ConfigData;
 
 import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Config;
+import pu.chessdatabase.bo.Gen;
 //import pu.chessdatabase.bo.Gen;
 import pu.chessdatabase.bo.Kleur;
 
@@ -120,6 +121,43 @@ public boolean isS5Pion()
 {
 	return Config.getStaticStukken().getS5().getStukType() == Pion;
 }
+public String getWkAlfa()
+{
+	return VM.veldToAlfa( wk );
+}
+public String getZkAlfa()
+{
+	return VM.veldToAlfa( zk );
+}
+public String getS3Alfa()
+{
+	return VM.veldToAlfa( s3 );
+}
+public String getS4Alfa()
+{
+	return VM.veldToAlfa( s4 );
+}
+public void setWkAlfa( String aVeld )
+{
+	wk = VM.alfaToVeld( aVeld );
+}
+public void setZkAlfa( String aVeld )
+{
+	zk = VM.alfaToVeld( aVeld );
+}
+public void setS3Alfa( String aVeld )
+{
+	s3 = VM.alfaToVeld( aVeld );
+}
+public void sets4Alfa( String aVeld )
+{
+	s4 = VM.alfaToVeld( aVeld );
+}
+public void sets5Alfa( String aVeld )
+{
+	s5 = VM.alfaToVeld( aVeld );
+}
+
 @Override
 public String toString()
 {
