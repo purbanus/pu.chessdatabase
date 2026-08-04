@@ -14,26 +14,26 @@ import pu.chessdatabase.bo.configuraties.KDK;
 import pu.chessdatabase.bo.configuraties.KDKT;
 import pu.chessdatabase.bo.configuraties.KDKTT;
 import pu.chessdatabase.bo.configuraties.KLLK;
-import pu.chessdatabase.bo.configuraties.KLOK;
+import pu.chessdatabase.bo.configuraties.KLoK;
 import pu.chessdatabase.bo.configuraties.KLPK;
-import pu.chessdatabase.bo.configuraties.KOK;
+import pu.chessdatabase.bo.configuraties.KoK;
 import pu.chessdatabase.bo.configuraties.KTK;
 import pu.chessdatabase.bo.configuraties.PipoKDK;
 import pu.chessdatabase.bo.configuraties.PipoKDKT;
 import pu.chessdatabase.bo.configuraties.PipoKDKTT;
 import pu.chessdatabase.bo.configuraties.PipoKLLK;
-import pu.chessdatabase.bo.configuraties.PipoKLOK;
+import pu.chessdatabase.bo.configuraties.PipoKLoK;
 import pu.chessdatabase.bo.configuraties.PipoKLPK;
-import pu.chessdatabase.bo.configuraties.PipoKOK;
+import pu.chessdatabase.bo.configuraties.PipoKoK;
 import pu.chessdatabase.bo.configuraties.PipoKTK;
 import pu.chessdatabase.bo.configuraties.StukDefinitie;
 import pu.chessdatabase.bo.configuraties.TestKDK;
 import pu.chessdatabase.bo.configuraties.TestKDKT;
 import pu.chessdatabase.bo.configuraties.TestKDKTT;
 import pu.chessdatabase.bo.configuraties.TestKLLK;
-import pu.chessdatabase.bo.configuraties.TestKLOK;
+import pu.chessdatabase.bo.configuraties.TestKLoK;
 import pu.chessdatabase.bo.configuraties.TestKLPK;
-import pu.chessdatabase.bo.configuraties.TestKOK;
+import pu.chessdatabase.bo.configuraties.TestKoK;
 import pu.chessdatabase.bo.configuraties.TestKTK;
 import pu.chessdatabase.dbs.CacheType;
 import pu.chessdatabase.dbs.PageSizeCalculator;
@@ -53,29 +53,29 @@ public class Config
 {
 private static final ConfigImpl DEFAULT_CONFIG_IMPL = new KLPK();
 public static final KDK KDK = new KDK();
-public static final KOK KOK = new KOK();
+public static final KoK KoK = new KoK();
 public static final KTK KTK = new KTK();
 public static final KDKT KDKT = new KDKT();
 public static final KLLK KLLK = new KLLK();
-public static final KLOK KLOK = new KLOK();
+public static final KLoK KLoK = new KLoK();
 public static final KLPK KLPK = new KLPK();
 public static final KDKTT KDKTT = new KDKTT();
-public static final TestKOK TESTKOK = new TestKOK();
-public static final TestKDK TESTKDK = new TestKDK();
-public static final TestKTK TESTKTK = new TestKTK();
-public static final TestKDKT TESTKDKT = new TestKDKT();
-public static final TestKLLK TESTKLLK = new TestKLLK();
-public static final TestKLOK TESTKLOK = new TestKLOK();
-public static final TestKLPK TESTKLPK = new TestKLPK();
-public static final TestKDKTT TESTKDKTT = new TestKDKTT();
-public static final PipoKDK PIPOKDK = new PipoKDK();
-public static final PipoKOK PIPOKOK = new PipoKOK();
-public static final PipoKTK PIPOKTK = new PipoKTK();
-public static final PipoKDKT PIPOKDKT = new PipoKDKT();
-public static final PipoKLLK PIPOKLLK = new PipoKLLK();
-public static final PipoKLOK PIPOKLOK = new PipoKLOK();
-public static final PipoKLPK PIPOKLPK = new PipoKLPK();
-public static final PipoKDKTT PIPOKDKTT = new PipoKDKTT();
+public static final TestKDK TestKDK = new TestKDK();
+public static final TestKoK TestKoK = new TestKoK();
+public static final TestKTK TestKTK = new TestKTK();
+public static final TestKDKT TestKDKT = new TestKDKT();
+public static final TestKLLK TestKLLK = new TestKLLK();
+public static final TestKLoK TestKLoK = new TestKLoK();
+public static final TestKLPK TestKLPK = new TestKLPK();
+public static final TestKDKTT TestKDKTT = new TestKDKTT();
+public static final PipoKDK PipoKDK = new PipoKDK();
+public static final PipoKoK PipoKoK = new PipoKoK();
+public static final PipoKTK PipoKTK = new PipoKTK();
+public static final PipoKDKT PipoKDKT = new PipoKDKT();
+public static final PipoKLLK PipoKLLK = new PipoKLLK();
+public static final PipoKLoK PipoKLoK = new PipoKLoK();
+public static final PipoKLPK PipoKLPK = new PipoKLPK();
+public static final PipoKDKTT PipoKDKTT = new PipoKDKTT();
 private static List<Stuk> staticStukList = DEFAULT_CONFIG_IMPL.getStukken().getStukken();
 private static Stukken staticStukken = DEFAULT_CONFIG_IMPL.getStukken();
 public static List<Stuk> getStaticStukList()
@@ -125,29 +125,29 @@ Map<String, ConfigImpl> getConfigImplRegistry()
 	{
 		configImplRegistry = new HashMap<>();
 		configImplRegistry.put( "KDK", KDK );
-		configImplRegistry.put( "KOK", KOK );
+		configImplRegistry.put( "KoK", KoK );
 		configImplRegistry.put( "KTK", KTK );
 		configImplRegistry.put( "KDKT", KDKT );
-		configImplRegistry.put( "KLOK", KLOK );
+		configImplRegistry.put( "KLoK", KLoK );
 		configImplRegistry.put( "KLPK", KLPK );
 		configImplRegistry.put( "KLLK", KLLK );
 		configImplRegistry.put( "KDKTT", KDKTT );
-		configImplRegistry.put( "TESTKDK", TESTKDK );
-		configImplRegistry.put( "TESTKOK", TESTKOK );
-		configImplRegistry.put( "TESTKTK", TESTKTK );
-		configImplRegistry.put( "TESTKDKT", TESTKDKT );
-		configImplRegistry.put( "TESTKLLK", TESTKLLK );
-		configImplRegistry.put( "TESTKLOK", TESTKLOK );
-		configImplRegistry.put( "TESTKLPK", TESTKLPK );
-		configImplRegistry.put( "TESTKDKTT", TESTKDKTT );
-		configImplRegistry.put( "PIPOKDK", PIPOKDK );
-		configImplRegistry.put( "PIPOKOK", PIPOKOK );
-		configImplRegistry.put( "PIPOKTK", PIPOKTK );
-		configImplRegistry.put( "PIPOKDKT", PIPOKDKT );
-		configImplRegistry.put( "PIPOKLLK", PIPOKLLK );
-		configImplRegistry.put( "PIPOKLOK", PIPOKLOK );
-		configImplRegistry.put( "PIPOKLPK", PIPOKLPK );
-		configImplRegistry.put( "PIPOKDKTT", PIPOKDKTT );
+		configImplRegistry.put( "TestKDK", TestKDK );
+		configImplRegistry.put( "TestKoK", TestKoK );
+		configImplRegistry.put( "TestKTK", TestKTK );
+		configImplRegistry.put( "TestKDKT", TestKDKT );
+		configImplRegistry.put( "TestKLLK", TestKLLK );
+		configImplRegistry.put( "TestKLoK", TestKLoK );
+		configImplRegistry.put( "TestKLPK", TestKLPK );
+		configImplRegistry.put( "TestKDKTT", TestKDKTT );
+		configImplRegistry.put( "PipoKDK", PipoKDK );
+		configImplRegistry.put( "PipoKoK", PipoKoK );
+		configImplRegistry.put( "PipoKTK", PipoKTK );
+		configImplRegistry.put( "PipoKDKT", PipoKDKT );
+		configImplRegistry.put( "PipoKLLK", PipoKLLK );
+		configImplRegistry.put( "PipoKLoK", PipoKLoK );
+		configImplRegistry.put( "PipoKLPK", PipoKLPK );
+		configImplRegistry.put( "PipoKDKTT", PipoKDKTT );
 	}
 	return configImplRegistry;
 }
@@ -168,7 +168,7 @@ void switchConfig( ConfigImpl aNewConfig, boolean aSwitchVM )
 }
 public void switchConfig( String aConfigString, boolean aSwitchVM )
 {
-	ConfigImpl switchToConfigImpl = getConfigImplRegistry().get( aConfigString.toUpperCase() );
+	ConfigImpl switchToConfigImpl = getConfigImplRegistry().get( aConfigString );
 	if ( switchToConfigImpl == null )
 	{
 		throw new RuntimeException( "Ongeldige configString: " + aConfigString );

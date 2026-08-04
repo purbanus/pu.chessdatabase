@@ -10,22 +10,22 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode( callSuper=false )
-public class TestKLOK extends ConfigImpl
+public class TestKLoK extends ConfigImpl
 {
 private final String databaseName;
-public TestKLOK()
+public TestKLoK()
 {
 	super();
 	getStukDefinities().add( new StukDefinitie( Loper,   Wit ) );
 	getStukDefinities().add( new StukDefinitie( Pion,  Wit ) );
 	getStukDefinities().add( new StukDefinitie( Geen,   Wit ) );
-	databaseName = "dbs/TestKLOK.DBS";
+	databaseName = "dbs/TestKLoK.DBS";
 	setStukken( new Stukken( this ) );
 }
 @Override
 public String getName()
 {
-	return "TESTKLOK";
+	return "TESTKLoK";
 }
 
 }

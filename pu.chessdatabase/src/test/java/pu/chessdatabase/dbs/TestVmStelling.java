@@ -15,7 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Config;
-import pu.chessdatabase.bo.configuraties.KLOK;
+import pu.chessdatabase.bo.configuraties.KLoK;
 
 import lombok.Data;
 
@@ -160,7 +160,7 @@ public void testToStringZonderPionnen()
 public void testToStringMetPionnen()
 {
 	// Met pionnen moet je opnieuw alfaBuilder doen
-	config.switchConfig( Config.KLOK );
+	config.switchConfig( Config.KLoK );
 	VMStelling vmStelling  = VMStelling.alfaBuilder()
 		.wk( "a1" )
 		.zk( "c1" )

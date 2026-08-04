@@ -84,7 +84,7 @@ public void testGenereerZetten()
 @Test
 public void testIsGeomIllegaal4Stukken()
 {
-	config.switchConfig( Config.PIPOKLLK );
+	config.switchConfig( Config.PipoKLLK );
 	BoStelling boStelling = BoStelling.builder()
 		.wk( 5 )
 		.zk( 6 )
@@ -103,7 +103,7 @@ public void testIsGeomIllegaal4Stukken()
 @Test
 public void testBug2026_06_18()
 {
-	config.switchConfig( Config.PIPOKDKTT );
+	config.switchConfig( Config.PipoKDKTT );
 	// Er staan 2 zwarte stukken op hetzelfde veld. Die zijn allebeigeslagen
 	BoStelling boStelling = BoStelling.alfaBuilder()
 		.wk( "a1" )

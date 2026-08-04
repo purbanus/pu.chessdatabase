@@ -34,7 +34,7 @@ public void setup()
 	savedConfigString = config.getConfig();
 	getConfig().setCacheType( Serial );
 	// Dit is o.a. nodig om VM te initialiseren
-	getConfig().switchConfig( Config.PIPOKDKT );
+	getConfig().switchConfig( Config.PipoKDKT );
 }
 @AfterEach
 public void destroy()

@@ -25,7 +25,7 @@ public TestKDKT()
 @Override
 public String getName()
 {
-	return "TESTKDKT";
+	return "TestKDKT";
 }
 
 }

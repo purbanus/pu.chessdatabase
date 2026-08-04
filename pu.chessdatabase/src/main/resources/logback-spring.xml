@@ -2,8 +2,9 @@
 <configuration debug="true">
 
 	<property name="LOG_FILE" value="logs/app.log" />
+	<property name="LOG_FILE_BOUW" value="logs/bouw.log" />
 	<property name="SIMPLE_PATTERN" value="%highlight(%date %-5level [%thread] %message -- %logger)s %n" />
-	<property name="EXTENDED_PATTERN" value="%date{yyyy-MM-dd HH:mm:ss.SSS} %5level ${hostName} --- [%15.15thread] %-40.40logger{15} : %message%n%exception" />
+	<property name="EXTENDED_PATTERN" value="%date{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%15.15thread] %message%exception -- %logger %n" />
 
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
 <!-- 		<withJansi>true</withJansi> -->
@@ -24,6 +25,18 @@
  -->
  <!-- 			<totalSizeCap>3GB</totalSizeCap>
  -->
+ 		</rollingPolicy>
+		<encoder>
+			<Pattern>${EXTENDED_PATTERN}</Pattern>
+		</encoder>
+	</appender>
+
+	<appender name="ROLLING-FILE-BOUW"	class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_FILE_BOUW}</file>
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- daily rollover -->
+			<fileNamePattern>${LOG_FILE_BOUW}.%d{yyyy-MM-dd}.gz</fileNamePattern>
  		</rollingPolicy>
 		<encoder>
 			<Pattern>${EXTENDED_PATTERN}</Pattern>
@@ -60,7 +73,13 @@
 	<logger name="org.springframework.web.servlet.view.ContentNegotiatingViewResolver" level="debug" additivity="false" />
 	<logger name="org.springframework.jdbc.datasource.init.ScriptUtils" level="debug" additivity="true" />
 	<logger name="freemarker" level="debug" additivity="true" />
-4	
+
+	<logger name="pu.chessdatabase.bo.DoBouwApart" level="debug" additivity="false" >
+		<appender-ref ref="ROLLING-FILE-BOUW" />
+	</logger>
+	<logger name="pu.chessdatabase.bo.Bouw" level="debug" additivity="false" >
+		<appender-ref ref="ROLLING-FILE-BOUW" />
+	</logger>
 
 <!-- 	<logger name="pu.heavymetal" level="debug" additivity="false">
 		<appender-ref ref="CONSOLE" />

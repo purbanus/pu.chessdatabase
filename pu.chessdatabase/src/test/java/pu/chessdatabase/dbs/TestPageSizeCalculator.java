@@ -35,7 +35,7 @@ public void testGetPageSizeSerial()
 {
 	getConfig().setPageSizeCalculator( new PageSizeCalculator( Serial, getConfig() ) );
 	
-	getConfig().switchConfig( Config.KLOK );
+	getConfig().switchConfig( Config.KLoK );
 	assertThat( getPageSizeCalculator().getPageSize( 3 ), is( 64 ) );
 	assertThat( getPageSizeCalculator().getPageSize( 4 ), is( 64 * 64 ) );
 	assertThat( getPageSizeCalculator().getPageSize( 5 ), is( 64 * 64 * 64 ) );
@@ -50,7 +50,7 @@ public void testGetPageSizeParallel()
 {
 	getConfig().setPageSizeCalculator( new PageSizeCalculator( Parallel, getConfig() ) );
 
-	getConfig().switchConfig( Config.KLOK );
+	getConfig().switchConfig( Config.KLoK );
 	assertThat( getPageSizeCalculator().getPageSize( 3 ), is( 64 * 64 * 2 ) );
 	assertThat( getPageSizeCalculator().getPageSize( 4 ), is( 64 * 64 * 64 * 2  ) );
 	assertThat( getPageSizeCalculator().getPageSize( 5 ), is( 64 * 64 * 64 * 64 * 2  ) );
@@ -64,7 +64,7 @@ public void testGetPageSizeParallel()
 @Test
 public void testGetDatabaseSizeSerialZonderPionnen()
 {
-	getConfig().switchConfig( Config.PIPOKDKT );
+	getConfig().switchConfig( Config.PipoKDKT );
 	
 	getConfig().setPageSizeCalculator( new PageSizeCalculator( Serial, getConfig() ) );
 	assertThat( getPageSizeCalculator().getDatabaseSize( 3 ), is( 10 * 64 * 64 * 2 ) );
@@ -80,7 +80,7 @@ public void testGetDatabaseSizeSerialZonderPionnen()
 @Test
 public void testGetDatabaseSizeSerialMetPionnen()
 {
-	getConfig().switchConfig( Config.PIPOKLOK );
+	getConfig().switchConfig( Config.PipoKLoK );
 
 	getConfig().setPageSizeCalculator( new PageSizeCalculator( Serial, getConfig() ) );
 	assertThat( getPageSizeCalculator().getDatabaseSize( 3 ), is( 64 * 64 * 64 * 2 ) );          //       524.288

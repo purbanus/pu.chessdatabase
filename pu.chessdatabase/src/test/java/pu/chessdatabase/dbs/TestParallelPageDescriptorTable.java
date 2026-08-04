@@ -34,7 +34,7 @@ public void setup()
 	savedConfigString = config.getConfig();
 	getConfig().setCacheType( Parallel );
 	// Dit is o.a. nodig om VM te initialiseren
-	getConfig().switchConfig( Config.PIPOKDKT );
+	getConfig().switchConfig( Config.PipoKDKT );
 }
 @AfterEach
 public void destroy()
@@ -82,7 +82,7 @@ public void testIterateOverAllPageDescriptors()
 	assertThat( numberOfPages, is( 10 ) );
 	
 	numberOfPages = 0;
-	getConfig().switchConfig( Config.KLOK );
+	getConfig().switchConfig( Config.KLoK );
 	getPageDescriptorTable().iterateOverAllPageDescriptors( this::countPages );
 	assertThat( numberOfPages, is( 64 ) );
 }

@@ -47,7 +47,7 @@ String savedConfigString;
 public void setup()
 {
 	savedConfigString = config.getConfig();
-	config.switchConfig( Config.PIPOKDKT );
+	config.switchConfig( Config.PipoKDKT );
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 	testHelper = new TestHelper( getConfig() );
 }

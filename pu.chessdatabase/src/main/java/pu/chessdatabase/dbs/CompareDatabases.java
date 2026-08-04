@@ -15,12 +15,12 @@ VM vm2;
 
 public static void main( String [] args )
 {
-	new CompareDatabases().run( Config.KDK, Config.TESTKDK );
-	new CompareDatabases().run( Config.KTK, Config.TESTKTK );
-	new CompareDatabases().run( Config.KDKT, Config.TESTKDKT );
-	new CompareDatabases().run( Config.KLLK, Config.TESTKLLK );
-	new CompareDatabases().run( Config.KLPK, Config.TESTKLPK );
-	new CompareDatabases().run( Config.KDKTT, Config.TESTKDKTT );
+	new CompareDatabases().run( Config.KDK, Config.TestKDK );
+	new CompareDatabases().run( Config.KTK, Config.TestKTK );
+	new CompareDatabases().run( Config.KDKT, Config.TestKDKT );
+	new CompareDatabases().run( Config.KLLK, Config.TestKLLK );
+	new CompareDatabases().run( Config.KLPK, Config.TestKLPK );
+	new CompareDatabases().run( Config.KDKTT, Config.TestKDKTT );
 }
 private void run( ConfigImpl aConfigImpl1, ConfigImpl aConfigImpl2 )
 {
