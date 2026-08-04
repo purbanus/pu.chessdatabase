@@ -1,5 +1,7 @@
 package pu.chessdatabase.dbs;
 
+import static pu.chessdatabase.dbs.Constants.*;
+
 import org.apache.commons.lang3.builder.ToStringExclude;
 import org.springframework.stereotype.Component;
 
@@ -54,19 +56,20 @@ public static final int [] OKTANTEN_TABEL = {
 /**========================================================================================
 * Transformatietabel voor WK. Nadat WK is getransformeerd naar het juiste oktant,
 * moet hij nog naar de speciale VM-kodering (0..9) worden gebracht. Dat gebeurt hiermee
-* 10 = foutkode, wordt in VMStelling op getest.
+* 80 = foutkode, wordt in VMStelling op getest.
 *========================================================================================*/
 public static final int [] TRANSFORM_WK = {
-	 0, 1, 2, 3,10,10,10,10,
-	10, 4, 5, 6,10,10,10,10,
-	10,10, 7, 8,10,10,10,10,
-	10,10,10, 9,10,10,10,10,
-	10,10,10,10,10,10,10,10,
-	10,10,10,10,10,10,10,10,
-	10,10,10,10,10,10,10,10,
-	10,10,10,10,10,10,10,10
+	 0, 1, 2, 3,80,80,80,80,
+	80, 4, 5, 6,80,80,80,80,
+	80,80, 7, 8,80,80,80,80,
+	80,80,80, 9,80,80,80,80,
+	80,80,80,80,80,80,80,80,
+	80,80,80,80,80,80,80,80,
+	80,80,80,80,80,80,80,80,
+	80,80,80,80,80,80,80,80
 };
-public static final Matrix [] MATRIX_TABEL = {
+public static final Matrix [] MATRIX_TABEL =
+{
 	null, // Dit heeft een matrix per oktant, en oktant 0 bestaat niet
 	new Matrix( new Vector[] { new Vector( 1, 0), new Vector( 0, 1) }),
 	new Matrix( new Vector[] { new Vector(-1, 0), new Vector( 0, 1) }),
@@ -88,12 +91,11 @@ public static final Vector [] TRANSLATIE_TABEL = new Vector [] {
 	new Vector( 7, 0),
 	new Vector( 0, 0)
 };
-Range oktantRange = new Range( 1, OKTANTEN );
-Range rijRange = new Range( 0, 7 );
-Range kolRange = new Range( 0, 7 );
+static final Range OKTANT_RANGE = new Range( 1, OKTANTEN );
+
 @ToStringExclude
 @EqualsAndHashCode.Exclude
-int[][] transformatieTabel = new int [OKTANTEN + 1][Dbs.VELD_RANGE.getMaximum() + 1];
+int[][] transformatieTabel = new int [OKTANTEN + 1][VM_VELD_RANGE.getMaximum() + 1];
 
 public AlleenStukkenTransformator()
 {
@@ -103,11 +105,11 @@ public AlleenStukkenTransformator()
 void createTransformatieTabel()
 {
 	Vector Vres;
-	for ( int oktant : oktantRange )
+	for ( int oktant : OKTANT_RANGE )
 	{
-		for ( int rij : rijRange )
+		for ( int rij : RIJ_RANGE )
 		{
-			for ( int kol: kolRange )
+			for ( int kol: KOL_RANGE )
 			{
 				Vres = new Vector( kol, rij );
 				Vres = MATRIX_TABEL[oktant].multiply( Vres );
@@ -130,14 +132,14 @@ public int vmStellingWkToBoStellingWk( int aVmStellingWk )
  * -------- Stelling van Dbs-formaat naar VM-formaat ------
  */
 @Override
-public VMStelling boStellingToVmStelling( BoStelling aStelling )
+public VMStelling boStellingToVmStelling( BoStelling aBoStelling )
 {
-	int oktant = OKTANTEN_TABEL[aStelling.getWk()];
-	int trfWk = transformatieTabel[oktant][aStelling.getWk()];
+	int oktant = getOktant( aBoStelling );
+	int trfWk = transformatieTabel[oktant][aBoStelling.getWk()];
 	@SuppressWarnings( "unused" )
 	int trftrfWk = TRANSFORM_WK[trfWk];
 	
-	VMStelling vmStelling = spiegelEnRoteer( aStelling );
+	VMStelling vmStelling = spiegelEnRoteer( aBoStelling );
 	vmStelling.setWk( TRANSFORM_WK[ vmStelling.getWk()] );
 	return vmStelling;
 }
@@ -157,12 +159,12 @@ VMStelling spiegelEnRoteer( BoStelling aStelling, int aOktant )
 		.aanZet( aStelling.getAanZet() )
 		.build();
 }
-int getOktant( BoStelling aStelling )
+int getOktant( BoStelling aBoStelling )
 {
-	int oktant = OKTANTEN_TABEL[aStelling.getWk()];
-	if ( oktant < 1 || oktant > 8)
+	int oktant = OKTANTEN_TABEL[aBoStelling.getWk()];
+	if ( oktant < OKTANT_RANGE.getMinimum() || oktant > OKTANT_RANGE.getMaximum() )
 	{
-		throw new RuntimeException( "Foutief oktant in Dbs.spiegelEnRoteer voor WK op " + Integer.toHexString( aStelling.getWk() ) );
+		throw new RuntimeException( "Foutief oktant in Dbs.spiegelEnRoteer voor WK op " + Integer.toHexString( aBoStelling.getWk() ) );
 	}
 	return oktant;
 }
