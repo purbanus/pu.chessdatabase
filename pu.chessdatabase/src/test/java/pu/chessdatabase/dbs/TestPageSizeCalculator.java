@@ -36,9 +36,9 @@ public void testGetPageSizeSerial()
 	getConfig().setPageSizeCalculator( new PageSizeCalculator( Serial, getConfig() ) );
 	
 	getConfig().switchConfig( Config.KLoK );
-	assertThat( getPageSizeCalculator().getPageSize( 3 ), is( 64 ) );
-	assertThat( getPageSizeCalculator().getPageSize( 4 ), is( 64 * 64 ) );
-	assertThat( getPageSizeCalculator().getPageSize( 5 ), is( 64 * 64 * 64 ) );
+	assertThat( getPageSizeCalculator().getPageSize( 3 ), is( 64 / 2 ) );
+	assertThat( getPageSizeCalculator().getPageSize( 4 ), is( 64 * 64 / 2 ) );
+	assertThat( getPageSizeCalculator().getPageSize( 5 ), is( 64 * 64 * 64 / 2 ) );
 
 	getConfig().switchConfig( Config.KLLK );
 	assertThat( getPageSizeCalculator().getPageSize( 3 ), is( 64 ) );
@@ -51,9 +51,9 @@ public void testGetPageSizeParallel()
 	getConfig().setPageSizeCalculator( new PageSizeCalculator( Parallel, getConfig() ) );
 
 	getConfig().switchConfig( Config.KLoK );
-	assertThat( getPageSizeCalculator().getPageSize( 3 ), is( 64 * 64 * 2 ) );
-	assertThat( getPageSizeCalculator().getPageSize( 4 ), is( 64 * 64 * 64 * 2  ) );
-	assertThat( getPageSizeCalculator().getPageSize( 5 ), is( 64 * 64 * 64 * 64 * 2  ) );
+	assertThat( getPageSizeCalculator().getPageSize( 3 ), is( 64 * 64 ) );
+	assertThat( getPageSizeCalculator().getPageSize( 4 ), is( 64 * 64 * 64 ) );
+	assertThat( getPageSizeCalculator().getPageSize( 5 ), is( 64 * 64 * 64 * 64 ) );
 	
 	getConfig().switchConfig( Config.KLLK );
 	assertThat( getPageSizeCalculator().getPageSize( 3 ), is( 64 * 64 * 2 ) );
@@ -83,14 +83,14 @@ public void testGetDatabaseSizeSerialMetPionnen()
 	getConfig().switchConfig( Config.PipoKLoK );
 
 	getConfig().setPageSizeCalculator( new PageSizeCalculator( Serial, getConfig() ) );
-	assertThat( getPageSizeCalculator().getDatabaseSize( 3 ), is( 64 * 64 * 64 * 2 ) );          //       524.288
-	assertThat( getPageSizeCalculator().getDatabaseSize( 4 ), is( 64 * 64 * 64 * 64 * 2 ) );     //    33.554.432
-	assertThat( getPageSizeCalculator().getDatabaseSize( 5 ), is( 64 * 64 * 64 * 64 * 64 * 2) ); // 2.147.483.648
+	assertThat( getPageSizeCalculator().getDatabaseSize( 3 ), is( 64 * 64 * 64 ) );          //       524.288
+	assertThat( getPageSizeCalculator().getDatabaseSize( 4 ), is( 64 * 64 * 64 * 64 ) );     //    33.554.432
+	assertThat( getPageSizeCalculator().getDatabaseSize( 5 ), is( 64 * 64 * 64 * 64 * 64) ); // 2.147.483.648
 
 	// Zelfde als Serial!
 	getConfig().setPageSizeCalculator( new PageSizeCalculator( Parallel, getConfig() ) );
-	assertThat( getPageSizeCalculator().getDatabaseSize( 3 ), is( 64 * 64 * 64 * 2 ) );
-	assertThat( getPageSizeCalculator().getDatabaseSize( 4 ), is( 64 * 64 * 64 * 64 * 2 ) );
-	assertThat( getPageSizeCalculator().getDatabaseSize( 5 ), is( 64 * 64 * 64 * 64 * 64 * 2) );
+	assertThat( getPageSizeCalculator().getDatabaseSize( 3 ), is( 64 * 64 * 64 ) );
+	assertThat( getPageSizeCalculator().getDatabaseSize( 4 ), is( 64 * 64 * 64 * 64 ) );
+	assertThat( getPageSizeCalculator().getDatabaseSize( 5 ), is( 64 * 64 * 64 * 64 * 64 ) );
 }
 }

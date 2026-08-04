@@ -16,7 +16,6 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 
 @Component
 @Data
@@ -77,6 +76,12 @@ private void calculateAllPageSizes()
 		pageSize3Stukken = Math.powExact( 64, 2 ) * 2;
 		pageSize4Stukken = Math.powExact( 64, 3 ) * 2;
 		pageSize5Stukken = Math.powExact( 64, 4 ) * 2;
+	}
+	if ( getConfig().heeftPionnen() )
+	{
+		pageSize3Stukken /= 2;
+		pageSize4Stukken /= 2;
+		pageSize5Stukken /= 2;
 	}
 }
 public int getPageSize( int aAantalStukken )
