@@ -477,7 +477,7 @@ public void testGetAllPositionsWithinPage3Stukken()
 		.aanZet( Wit )
 		.build();
 	int pos = 0;
-	for ( int s3 : getConfig().getStukken().isS3Pion() ? PION_VELD_RANGE : STUK_VELD_RANGE )
+	for ( int s3 : STUK_VELD_RANGE )
 	{
 		vmStelling.setS3( s3 );
 		assertThat( vm.getCache().getPositionWithinPage( vmStelling), is( pos ) );
@@ -498,10 +498,10 @@ public void testGetAllPositionsWithinPage4Stukken()
 		.aanZet( Wit )
 		.build();
 	int pos = 0;
-	for ( int s3 : getConfig().getStukken().isS3Pion() ? PION_VELD_RANGE : STUK_VELD_RANGE )
+	for ( int s3 : STUK_VELD_RANGE )
 	{
 		vmStelling.setS3( s3 );
-		for ( int s4 : getConfig().getStukken().isS4Pion() ? PION_VELD_RANGE : STUK_VELD_RANGE )
+		for ( int s4 : STUK_VELD_RANGE )
 		{
 			vmStelling.setS4( s4 );
 			assertThat( vm.getCache().getPositionWithinPage( vmStelling), is( pos ) );
@@ -524,13 +524,13 @@ public void testGetAllPositionsWithinPage5Stukken()
 		.aanZet( Wit )
 		.build();
 	int pos = 0;
-	for ( int s3 : getConfig().getStukken().isS3Pion() ? PION_VELD_RANGE : STUK_VELD_RANGE )
+	for ( int s3 : STUK_VELD_RANGE )
 	{
 		vmStelling.setS3( s3 );
-		for ( int s4 : getConfig().getStukken().isS4Pion() ? PION_VELD_RANGE : STUK_VELD_RANGE )
+		for ( int s4 : STUK_VELD_RANGE )
 		{
 			vmStelling.setS4( s4 );
-			for ( int s5 : getConfig().getStukken().isS5Pion() ? PION_VELD_RANGE : STUK_VELD_RANGE )
+			for ( int s5 : STUK_VELD_RANGE )
 			{
 				vmStelling.setS5( s5 );
 //				if ( pos == 1 && vm.getCache().getPositionWithinPage( vmStelling ) == 64 )

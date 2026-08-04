@@ -1,5 +1,7 @@
 package pu.chessdatabase.dbs;
 
+import pu.services.Range;
+
 public abstract class AbstractTransformator implements Transformator
 {
 /**==============================================================================================================
@@ -31,7 +33,6 @@ public static final int [] CVT_STUK = {
 	0x60,0x61,0x62,0x63,0x64,0x65,0x66,0x67,
 	0x70,0x71,0x72,0x73,0x74,0x75,0x76,0x77
 };
-
 public AbstractTransformator()
 {
 	super();

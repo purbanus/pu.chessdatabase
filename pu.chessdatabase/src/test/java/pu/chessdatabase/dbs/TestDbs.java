@@ -90,8 +90,8 @@ public void testIterateOVerKleurEnResultaat()
 @Test
 public void testResultaatRange()
 {
-	assertThat( dbs.RESULTAAT_RANGE.getMinimum(), is( 0 ) );
-	assertThat( dbs.RESULTAAT_RANGE.getMaximum(), is( 3 ) );
+	assertThat( RESULTAAT_RANGE.getMinimum(), is( 0 ) );
+	assertThat( RESULTAAT_RANGE.getMaximum(), is( 3 ) );
 }
 @Test
 public void testPut()

@@ -173,7 +173,7 @@ void iterateOverPieces( BoStelling aBoStelling, VMStelling aVmStelling, PassFunc
 {
 	BoStelling boStelling = aBoStelling.clone();
 	VMStelling vmStelling = aVmStelling.clone();
-	for ( int s3 :getConfig().getStukken().isS3Pion() ? PION_VELD_RANGE : STUK_VELD_RANGE )
+	for ( int s3 : STUK_VELD_RANGE )
 	{
 		vmStelling.setS3( s3 );
 		boStelling.setS3( getTransformator().vmStellingStukToBoStellingStuk( s3 ) );
@@ -183,7 +183,7 @@ void iterateOverPieces( BoStelling aBoStelling, VMStelling aVmStelling, PassFunc
 		}
 		else
 		{
-			for ( int s4 :getConfig().getStukken().isS3Pion() ? PION_VELD_RANGE : STUK_VELD_RANGE )
+			for ( int s4 : STUK_VELD_RANGE )
 			{
 				vmStelling.setS4( s4 );
 				boStelling.setS4( getTransformator().vmStellingStukToBoStellingStuk( s4 ) );
@@ -193,7 +193,7 @@ void iterateOverPieces( BoStelling aBoStelling, VMStelling aVmStelling, PassFunc
 				}
 				else
 				{
-					for ( int s5 :getConfig().getStukken().isS3Pion() ? PION_VELD_RANGE : STUK_VELD_RANGE )
+					for ( int s5 : STUK_VELD_RANGE )
 					{
 						vmStelling.setS5( s5 );
 						boStelling.setS5( getTransformator().vmStellingStukToBoStellingStuk( s5 ) );
