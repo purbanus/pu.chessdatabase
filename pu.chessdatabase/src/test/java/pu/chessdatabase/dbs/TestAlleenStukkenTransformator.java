@@ -3,11 +3,17 @@ package pu.chessdatabase.dbs;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static pu.chessdatabase.bo.Kleur.*;
+import static pu.chessdatabase.dbs.Constants.*;
+import static pu.chessdatabase.dbs.AlleenStukkenTransformator.*;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.BoStelling;
+import pu.chessdatabase.bo.Config;
 import pu.services.Vector;
 
 import lombok.Data;
@@ -30,23 +36,38 @@ private AlleenStukkenTransformator transformator = new AlleenStukkenTransformato
    6,6,6,6,5,5,5,5
 };
  */
+@Autowired private Config config;
+
+String savedConfigString;
+@BeforeEach
+public void setup()
+{
+	savedConfigString = config.getConfig();
+	config.switchConfig( Config.PipoKDKT );
+}
+@AfterEach
+public void destroy()
+{
+	config.switchConfig( savedConfigString );
+}
+
 @Test
 public void testCreateTransformatieTabel()
 {
 	// Laten we beginnen in oktant 1. Alles is identiek behalve dat VMStelling maar 8 kolommen per rij heeft. 
 	int oktant = 1;
-	for ( int rij = 0; rij < 8; rij++ )
+	for ( int rij : RIJ_RANGE )
 	{
-		for ( int kol = 0; kol < 8; kol++ )
+		for ( int kol : KOL_RANGE )
 		{
 			assertThat( getTransformator().transformatieTabel[oktant][kol + 16 * rij], is( kol + 8 * rij ) );
 		}
 	}
 	// Oktant 2 is een spiegeling over de y-as
 	oktant = 2;
-	for ( int rij = 0; rij < 8; rij++ )
+	for ( int rij : RIJ_RANGE )
 	{
-		for ( int kol = 0; kol < 8; kol++ )
+		for ( int kol : KOL_RANGE )
 		{
 			Vector vector = new Vector( kol, rij );
 			Vector resVector = getTransformator().MATRIX_TABEL[oktant].multiply( vector );
@@ -91,9 +112,9 @@ public void testCreateTransformatieTabel()
 //@Test
 public void printTrfTabel()
 {
-	for ( int oktant = 1; oktant <= getTransformator().OKTANTEN; oktant++ )
+	for ( int oktant : OKTANT_RANGE )
 	{
-		for ( int x = Dbs.VELD_RANGE.getMinimum(); x < Dbs.VELD_RANGE.getMaximum(); x++ )
+		for ( int x : VM_VELD_RANGE )
 		{
 			System.out.print( Integer.toHexString( getTransformator().transformatieTabel[oktant][x] ) + " " );
 		}
@@ -101,111 +122,101 @@ public void printTrfTabel()
 	}
 }
 @Test
-public void testCardinaliseer()
-{
-	// Test Oktant 1: behalve dan dat de WK nog 
-	// een speciale afbeelding krijgt om 'm in de VM-notatie te krijgen; hij gaat van 9 naar 4.
-}
-int transFormVeld( int aVeld )
-{
-	return 0;
-}
-@Test
 public void testSpiegelEnRoteerAlleenWk()
 {
-	BoStelling boStelling = BoStelling.builder()
-		.wk( 0 )
-		.zk( 0 )
-		.s3( 0 )
-		.s4( 0 )
+		BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "a1" )
+		.s3( "a1" )
+		.s4( "a1" )
+		.s5( "a1" )
 		.aanZet( Wit )
 		.build();
-	VMStelling expectedVmStelling = VMStelling.builder()
-		.wk( 0 )
-		.zk( 0 )
-		.s3( 0 )
-		.s4( 0 )
+	VMStelling expectedVmStelling = VMStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "a1" )
+		.s3( "a1" )
+		.s4( "a1" )
+		.s5( "a1" )
 		.aanZet( Wit )
 		.build();
 	
-	boStelling.setWk( 0x11 );
+	boStelling.setWkAlfa( "b2" );
 	// De WK staat in oktant 1, dit krijgt een identieke afbeelding,
 	VMStelling actualVmStelling = getTransformator().spiegelEnRoteer( boStelling );
-	expectedVmStelling.setWk( 0x09 );
-	assertThat( actualVmStelling, is( actualVmStelling ) );
+	expectedVmStelling.setWkAlfa( "b2" );
+	assertThat( actualVmStelling, is( expectedVmStelling ) );
 
-	boStelling.setWk( 0x06 );
+	boStelling.setWkAlfa( "g1" );
 	// De WK staat in oktant 2. Dit krijgt een spiegeling in de y-as van het midden van het bord
 	actualVmStelling = getTransformator().spiegelEnRoteer( boStelling );
-	expectedVmStelling.setWk( 0x01 );
-	assertThat( actualVmStelling, is( actualVmStelling ) );
+	expectedVmStelling.setWkAlfa( "b1" );
+	expectedVmStelling.setZkAlfa( "h1" );
+	expectedVmStelling.setS3Alfa( "h1" ); 
+	expectedVmStelling.sets4Alfa( "h1" );
+	expectedVmStelling.sets5Alfa( "h1" );
+	assertThat( actualVmStelling, is( expectedVmStelling ) );
 
-	boStelling = BoStelling.builder()
-		.wk( 0x17 )
-		.zk( 0x11 )
-		.s3( 0x57 )
-		.s4( 0x20 )
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "h2" )
+		.zk( "b2" )
+		.s3( "h6" )
+		.s4( "a3" )
+		.s5( "b2" )
 		.aanZet( Wit )
 		.build();
 	// De WK staat in oktant 3. Dit krijgt een rotatie over +90 graden
 	actualVmStelling = getTransformator().spiegelEnRoteer( boStelling );
-	actualVmStelling = VMStelling.builder()
-		.wk( 0x01 )
-		.zk( 0x31 )
-		.s3( 0x05 )
-		.s4( 0x3a )
+	expectedVmStelling = VMStelling.alfaBuilder()
+		.wk( "b1" )
+		.zk( "b7" )
+		.s3( "f1" )
+		.s4( "c8" )
+		.s5( "b7" )
 		.aanZet( Wit )
 		.build();
-	assertThat( actualVmStelling, is( actualVmStelling ) );
+	assertThat( actualVmStelling, is( expectedVmStelling ) );
 	
-	boStelling = BoStelling.builder()
-		.wk( 0x57 )
-		.zk( 0x11 )
-		.s3( 0x43 )
-		.s4( 0x20 )
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "h6" )
+		.zk( "b2" )
+		.s3( "d5" )
+		.s4( "a3" )
+		.s5( "a1" )
 		.aanZet( Wit )
 		.build();
 	// De WK staat in oktant 4. Dit krijgt een rotatie van 180 graden om het middelpunt
 	actualVmStelling = getTransformator().spiegelEnRoteer( boStelling );
-	actualVmStelling = VMStelling.builder()
-		.wk( 0x01 )
-		.zk( 0x31 )
-		.s3( 0x05 )
-		.s4( 0x3a )
+	expectedVmStelling = VMStelling.alfaBuilder()
+		.wk( "c1" )
+		.zk( "g7" )
+		.s3( "d5" )
+		.s4( "f8" )
+		.s5( "h8" )
 		.aanZet( Wit )
 		.build();
-	assertThat( actualVmStelling, is( actualVmStelling ) );
+	assertThat( actualVmStelling, is( expectedVmStelling ) );
 	
-	boStelling = BoStelling.builder()
-		.wk( 0x10 )
-		.zk( 0x12 )
-		.s3( 0x00 )
-		.s4( 0x13 )
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "a2" )
+		.zk( "c2" )
+		.s3( "a1" )
+		.s4( "d2" )
+		.s5( "a1" )
 		.aanZet( Wit )
 		.build();
 	// De WK zit in oktant 8. Dit krijgt een spiegeling in de diagonaal a1-h8 
 	actualVmStelling = getTransformator().spiegelEnRoteer( boStelling );
-	actualVmStelling = VMStelling.builder()
-		.wk( 0x01 )
-		.zk( 0x11 )
-		.s3( 0x00 )
-		.s4( 0x19 )
+	expectedVmStelling = VMStelling.alfaBuilder()
+		.wk( "b1" )
+		.zk( "b3" )
+		.s3( "a1" )
+		.s4( "b4" )
+		.s5( "a1" )
 		.aanZet( Wit )
 		.build();
-	assertThat( actualVmStelling, is( actualVmStelling ) );
-	
+	assertThat( actualVmStelling, is( expectedVmStelling ) );
 }
-public static final int [] OKTANTEN_TABEL = {
-	   1,1,1,1,2,2,2,2,0,0,0,0,0,0,0,0,
-	   8,1,1,1,2,2,2,3,0,0,0,0,0,0,0,0,
-	   8,8,1,1,2,2,3,3,0,0,0,0,0,0,0,0,
-	   8,8,8,1,2,3,3,3,0,0,0,0,0,0,0,0,
-	   7,7,7,6,5,4,4,4,0,0,0,0,0,0,0,0,
-	   7,7,6,6,5,5,4,4,0,0,0,0,0,0,0,0,
-	   7,6,6,6,5,5,5,4,0,0,0,0,0,0,0,0,
-	   6,6,6,6,5,5,5,5
-	};
-
 @Test
 public void testSpiegelEnRoteer()
 {
