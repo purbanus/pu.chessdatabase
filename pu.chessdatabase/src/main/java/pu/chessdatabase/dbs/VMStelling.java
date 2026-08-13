@@ -1,6 +1,7 @@
 package pu.chessdatabase.dbs;
 
 import static pu.chessdatabase.bo.configuraties.StukType.*;
+import static pu.chessdatabase.dbs.Constants.*;
 
 import org.springframework.boot.context.config.ConfigData;
 
@@ -58,11 +59,18 @@ public void checkStelling()
 		throw new RuntimeException( "Dit is geen cardinaalstelling: " + this );
 	}
 
-	if ( ! Config.getStaticStukken().heeftPionnen() )
+	if ( Config.getStaticStukken().heeftPionnen() )
 	{
-		if ( wk > 9 )
+		if ( ! WK_MET_PIONNEN_ITERATOR.contains( wk ) )
 		{
-			throw new RuntimeException( "Dit is geen cardinaalstelling: " + this );
+			throw new RuntimeException( String.format( "De stelling bevat een ongeldige wk: %s",  this ) );
+		}
+	}
+	else
+	{
+		if ( wk >= MAX_WK_ZONDER_PIONNEN )
+		{
+			throw new RuntimeException( String.format( "De stelling bevat een ongeldige wk: %s",  this ) );
 		}
 	}
 }
@@ -80,14 +88,7 @@ public VMStelling clone()
 }
 public BoStelling getBoStelling( Transformator aTransformator )
 {
-	return BoStelling.builder()
-		.wk( aTransformator.vmStellingWkToBoStellingWk( getWk() ) )
-		.zk( aTransformator.vmStellingStukToBoStellingStuk( getZk() ) )
-		.s3( aTransformator.vmStellingStukToBoStellingStuk( getS3() ) )
-		.s4( aTransformator.vmStellingStukToBoStellingStuk( getS4() ) )
-		.s5( aTransformator.vmStellingStukToBoStellingStuk( getS5() ) )
-		.aanZet( getAanZet() )
-		.build();
+	return aTransformator.vmStellingToBoStelling( this );
 }
 public String getWkString()
 {
