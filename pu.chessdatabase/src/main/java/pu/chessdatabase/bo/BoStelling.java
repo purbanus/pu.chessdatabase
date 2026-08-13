@@ -5,6 +5,8 @@ import static pu.chessdatabase.bo.configuraties.StukType.*;
 
 import pu.chessdatabase.dal.FlatDocument;
 import pu.chessdatabase.dbs.Resultaat;
+import pu.chessdatabase.dbs.Transformator;
+import pu.chessdatabase.dbs.VMStelling;
 import pu.chessdatabase.service.BoStellingKey;
 
 import jakarta.persistence.Column;
@@ -137,6 +139,10 @@ public BoStelling clone()
 	{
 		throw new RuntimeException( e );
 	}
+}
+public VMStelling getVmStelling( Transformator aTransformator )
+{
+	return aTransformator.boStellingToVmStelling( this );
 }
 public void normaliseer( int aAantalStukken )
 {
