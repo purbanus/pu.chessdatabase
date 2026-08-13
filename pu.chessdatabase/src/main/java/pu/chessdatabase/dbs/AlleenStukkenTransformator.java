@@ -3,7 +3,6 @@ package pu.chessdatabase.dbs;
 import static pu.chessdatabase.dbs.Constants.*;
 
 import org.apache.commons.lang3.builder.ToStringExclude;
-import org.springframework.stereotype.Component;
 
 import pu.chessdatabase.bo.BoStelling;
 import pu.services.Matrix;
@@ -41,6 +40,20 @@ public static final int [] OKTANTEN_TABEL = {
    7,6,6,6,5,5,5,4,0,0,0,0,0,0,0,0,
    6,6,6,6,5,5,5,5
 };
+/**========================================================================================
+* Transformatietabel voor WK. Nadat WK is getransformeerd naar het juiste oktant,
+* moet hij nog naar de speciale VM-kodering (0..9) worden gebracht. Dat gebeurt hiermee
+* 80 = foutkode, wordt in VMStelling op getest. @@NOG Waar dan???
+*========================================================================================*/
+/**==============================================================================================================
+* Konversie WK notatie van VM naar Gen
+*==============================================================================================================*/
+// De WK moet in het eerste oktant zitten, dwz de veldwaarde moet tussen 0 en 9 zitten
+// De TRANSFORM_WK transformeert hem dan naar een van de velden
+// a1, b1, c1, d1,   0, 1, 2, 3  
+//     b2, c2, d3,      4, 5, 6
+//         c3, d3,         7, 8
+//             d4,            9
 /*
  * Zo ziet hij eruit met de a-lijn onderaan
    6,6,6,6,5,5,5,5
@@ -52,14 +65,21 @@ public static final int [] OKTANTEN_TABEL = {
    8,1,1,1,2,2,2,3,0,0,0,0,0,0,0,0,
    1,1,1,1,2,2,2,2,0,0,0,0,0,0,0,0,
  */
-
+public static final int [] WK_FROM_VM_TO_BO = 
+{
+	0x00,0x01,0x02,0x03,
+		 0x11,0x12,0x13,
+		 	  0x22,0x23,
+		 	  	   0x33
+};
 /**========================================================================================
 * Transformatietabel voor WK. Nadat WK is getransformeerd naar het juiste oktant,
 * moet hij nog naar de speciale VM-kodering (0..9) worden gebracht. Dat gebeurt hiermee
-* 80 = foutkode, wordt in VMStelling op getest.
+* 10 = foutkode, wordt in VM op getest.
 *========================================================================================*/
-public static final int [] TRANSFORM_WK = {
-	 0, 1, 2, 3,80,80,80,80,
+public static final int [] TRANSFORM_WK = 
+{
+	0, 1, 2, 3,80,80,80,80,
 	80, 4, 5, 6,80,80,80,80,
 	80,80, 7, 8,80,80,80,80,
 	80,80,80, 9,80,80,80,80,
@@ -124,9 +144,22 @@ void createTransformatieTabel()
 @Override
 public int vmStellingWkToBoStellingWk( int aVmStellingWk )
 {
-	return CVT_WK[aVmStellingWk];
+	if ( aVmStellingWk < 0 || aVmStellingWk >= MAX_WK_ZONDER_PIONNEN )
+	{
+		throw new RuntimeException( String.format( "De wk is te groot of te klein: %d", aVmStellingWk ) );
+	}
+	return WK_FROM_VM_TO_BO[aVmStellingWk];
 }
-
+@Override
+public int vmStellingWkToLinear( int aVmStellingWk )
+{
+	return aVmStellingWk;
+}
+@Override
+public int vmStellingWkFromLinear( int aVmStellingWk )
+{
+	return aVmStellingWk;
+}
 
 /**
  * -------- Stelling van Dbs-formaat naar VM-formaat ------
@@ -162,7 +195,7 @@ VMStelling spiegelEnRoteer( BoStelling aStelling, int aOktant )
 int getOktant( BoStelling aBoStelling )
 {
 	int oktant = OKTANTEN_TABEL[aBoStelling.getWk()];
-	if ( oktant < OKTANT_RANGE.getMinimum() || oktant > OKTANT_RANGE.getMaximum() )
+	if ( ! OKTANT_RANGE.contains( oktant ) )
 	{
 		throw new RuntimeException( "Foutief oktant in Dbs.spiegelEnRoteer voor WK op " + Integer.toHexString( aBoStelling.getWk() ) );
 	}
