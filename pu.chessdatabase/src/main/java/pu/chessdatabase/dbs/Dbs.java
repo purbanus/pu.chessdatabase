@@ -83,10 +83,6 @@ public Transformator getTransformator()
  */
 public void put( BoStelling aBoStelling )
 {
-//	if ( aBoStelling.getWk() == 1 && aBoStelling.getZk() == 0 && aBoStelling.getS3() == 35 )
-//	{
-//		System.out.println( "Te pakkn!" );
-//	}
 	int VMRec = 0;
 	VMStelling vmStelling = getTransformator().boStellingToVmStelling( aBoStelling );
 	switch ( aBoStelling.getResultaat() )
