@@ -465,12 +465,12 @@ private List<BoStelling> genereerZettenPerPion( BoStelling aBoStelling, Stuk aSt
 	List<BoStelling> gegenereerdeZetten = new ArrayList<>();
 
 	// We gaan hier pionnen terugzetten
-	int naar = aStukVeld - 1;
+	int naar = aStukVeld - 16;
 	if ( aBord.getRij( aStukVeld ) > 1 && aBord.isVeldLeeg( naar ) )
 	{
 		addZet( aBoStelling, aStuk, naar, Gewoon, aKoningsVeld, aStukVeld, gegenereerdeZetten );
 	}
-	naar = aStukVeld - 2;
+	naar = aStukVeld - 32;
 	if ( aBord.getRij( aStukVeld ) == 3 && aBord.isVeldLeeg( naar ) )
 	{
 		addZet( aBoStelling, aStuk, naar, Gewoon, aKoningsVeld, aStukVeld, gegenereerdeZetten );
