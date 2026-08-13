@@ -51,6 +51,10 @@ public void destroy()
 	assertThat( vm.getDatabaseName(), startsWith( PREFIX_TEST_DATABASE ) );
 	vm.delete();
 	config.switchConfig( savedConfigString );
+
+	// Set cacheType to default
+	getConfig().setPageSizeCalculator( new PageSizeCalculator( getConfig() ) );
+	assertThat( getConfig().getCacheType(), is( Parallel ) );
 }
 PageSizeCalculator getPageSizeCalculator()
 {
@@ -121,7 +125,7 @@ public void showCache()
 @Test
 public void testGetCacheSize()
 {
-	assertThat( getCache().getCacheSize(), is( getConfig().heeftPionnen() ? MAX_STUK : MAX_WK ) );
+	assertThat( getCache().getCacheSize(), is( getConfig().heeftPionnen() ? MAX_STUK : MAX_WK_ZONDER_PIONNEN ) );
 }
 @Test
 public void testInitializeCache()
@@ -134,7 +138,7 @@ public void testInitializeCache()
 void doTestInitializeCache()
 {
 	cache = new MockCache( vm.getCache() );
-	assertThat( getCache().getCacheEntries().size(), is( getConfig().heeftPionnen() ? MAX_STUK : MAX_WK ) );
+	assertThat( getCache().getCacheEntries().size(), is( getConfig().heeftPionnen() ? MAX_WK_MET_PIONNEN : MAX_WK_ZONDER_PIONNEN ) );
 	long address = 0L;
 	int index = 0;
 	for ( CacheEntry cacheEntry : getCache().getCacheEntries() )
@@ -412,7 +416,7 @@ public void testGetPositionWithinPage()
 	assertThat( vm.getCache().getPositionWithinPage( vmStelling), is( 25690569 ) );
 }
 @Test
-public void testGetAllPositionsWithinPage3Stukken()
+public void testGetAllPositionsWithinPage3StukkeZonderPionnenn()
 {
 	getConfig().switchConfig( Config.PipoKDK );
 	VMStelling vmStelling = VMStelling.builder()
@@ -433,10 +437,34 @@ public void testGetAllPositionsWithinPage3Stukken()
 			for ( int s3 : STUK_VELD_RANGE )
 			{
 				vmStelling.setS3( s3 );
-				if ( vm.getCache().getPositionWithinPage( vmStelling) == 0 )
-				{
-					System.out.println( "Bla" );
-				}
+				assertThat( vm.getCache().getPositionWithinPage( vmStelling), is( pos ) );
+				pos++;
+			}
+		}
+	}
+}
+@Test
+public void testGetAllPositionsWithinPage3StukkeMetPionnenn()
+{
+	getConfig().switchConfig( Config.PipoKoK );
+	VMStelling vmStelling = VMStelling.builder()
+		.wk( 0x00 )
+		.zk( 0x00 )
+		.s3( 0x00 )
+		.s4( 0x00 )
+		.s5( 0x00 )
+		.aanZet( Wit )
+		.build();
+	int pos = 0;
+	for ( int zk : STUK_VELD_RANGE )
+	{
+		vmStelling.setZk( zk );
+		for ( Kleur aanZet : Kleur.values() )
+		{
+			vmStelling.setAanZet( aanZet );
+			for ( int s3 : STUK_VELD_RANGE )
+			{
+				vmStelling.setS3( s3 );
 				assertThat( vm.getCache().getPositionWithinPage( vmStelling), is( pos ) );
 				pos++;
 			}
@@ -515,7 +543,7 @@ public void testGetAllPositionsWithinPage5Stukken()
 			}
 		}
 	}
-	System.out.println( "testGetAllPositionsWithinPage5Stukken duurde " + timer.getElapsedMs() );
+	System.out.printf( "Parallel: testGetAllPositionsWithinPage5Stukken duurde %s\n", timer.getElapsedMs() );
 }
 @Test
 public void testGetSetData()
@@ -682,7 +710,7 @@ public void testFlushWithSomePagesPresentAndVuil()
 		.s4( 0x17 )
 		.aanZet( Wit )
 		.build();
-	PageDescriptor newPageDescriptor = vm.getPageDescriptor( vmStelling );
+	PageDescriptor newPageDescriptor = vm.getLinearPageDescriptor( vmStelling );
 	byte [] newPage = getCache().getPage( newPageDescriptor );
 	assertThat( getTestHelper().isAllOne( newPage ), is( true ) );
 	

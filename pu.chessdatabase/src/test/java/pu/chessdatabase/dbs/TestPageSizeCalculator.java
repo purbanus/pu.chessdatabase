@@ -8,6 +8,7 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static pu.chessdatabase.dbs.CacheType.*;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,12 @@ public class TestPageSizeCalculator
 public void setup()
 {
 }
+@AfterEach
+public void destroy()
+{
+	// Set cacheType to default
+	getConfig().setPageSizeCalculator( new PageSizeCalculator( getConfig() ) );
+}
 public PageSizeCalculator getPageSizeCalculator()
 {
 	return getConfig().getPageSizeCalculator();
@@ -36,9 +43,9 @@ public void testGetPageSizeSerial()
 	getConfig().setPageSizeCalculator( new PageSizeCalculator( Serial, getConfig() ) );
 	
 	getConfig().switchConfig( Config.KLoK );
-	assertThat( getPageSizeCalculator().getPageSize( 3 ), is( 64 / 2 ) );
-	assertThat( getPageSizeCalculator().getPageSize( 4 ), is( 64 * 64 / 2 ) );
-	assertThat( getPageSizeCalculator().getPageSize( 5 ), is( 64 * 64 * 64 / 2 ) );
+	assertThat( getPageSizeCalculator().getPageSize( 3 ), is( 64 ) );
+	assertThat( getPageSizeCalculator().getPageSize( 4 ), is( 64 * 64 ) );
+	assertThat( getPageSizeCalculator().getPageSize( 5 ), is( 64 * 64 * 64 ) );
 
 	getConfig().switchConfig( Config.KLLK );
 	assertThat( getPageSizeCalculator().getPageSize( 3 ), is( 64 ) );
@@ -51,9 +58,9 @@ public void testGetPageSizeParallel()
 	getConfig().setPageSizeCalculator( new PageSizeCalculator( Parallel, getConfig() ) );
 
 	getConfig().switchConfig( Config.KLoK );
-	assertThat( getPageSizeCalculator().getPageSize( 3 ), is( 64 * 64 ) );
-	assertThat( getPageSizeCalculator().getPageSize( 4 ), is( 64 * 64 * 64 ) );
-	assertThat( getPageSizeCalculator().getPageSize( 5 ), is( 64 * 64 * 64 * 64 ) );
+	assertThat( getPageSizeCalculator().getPageSize( 3 ), is( 64 * 64 * 2 ) );
+	assertThat( getPageSizeCalculator().getPageSize( 4 ), is( 64 * 64 * 64 * 2 ) );
+	assertThat( getPageSizeCalculator().getPageSize( 5 ), is( 64 * 64 * 64 * 64 * 2 ) );
 	
 	getConfig().switchConfig( Config.KLLK );
 	assertThat( getPageSizeCalculator().getPageSize( 3 ), is( 64 * 64 * 2 ) );

@@ -52,6 +52,11 @@ public void destroy()
 	assertThat( vm.getDatabaseName(), startsWith( PREFIX_TEST_DATABASE ) );
 	vm.delete();
 	config.switchConfig( savedConfigString );
+
+	// Set cacheType to default
+	getConfig().setPageSizeCalculator( new PageSizeCalculator( getConfig() ) );
+	assertThat( getConfig().getCacheType(), is( Parallel ) );
+
 }
 PageSizeCalculator getPageSizeCalculator()
 {
@@ -542,7 +547,7 @@ public void testGetAllPositionsWithinPage5Stukken()
 			}
 		}
 	}
-	System.out.println( "testGetAllPositionsWithinPage5Stukken duurde " + timer.getElapsedMs() );
+	System.out.printf( "Serial  : testGetAllPositionsWithinPage5Stukken duurde %s\n", timer.getElapsedMs() );
 }
 
 @Test
@@ -665,7 +670,7 @@ public void testFlushWithSomePagesPresentAndVuil()
 		.build();
 
 	byte [] page = getTestHelper().createPageWithAllOnes();
-	PageDescriptor pageDescriptor = vm.getPageDescriptor( vmStelling );
+	PageDescriptor pageDescriptor = vm.getLinearPageDescriptor( vmStelling );
 	pageDescriptor.setCacheNummer( 0 );
 	CacheEntry cacheEntry = CacheEntry.builder()
 		.generatie( 2156 )
@@ -676,7 +681,7 @@ public void testFlushWithSomePagesPresentAndVuil()
 	getCache().setCacheEntry( pageDescriptor, cacheEntry );
 
 	vmStelling.setAanZet( Zwart );
-	pageDescriptor = vm.getPageDescriptor( vmStelling );
+	pageDescriptor = vm.getLinearPageDescriptor( vmStelling );
 	pageDescriptor.setCacheNummer( 1 );
 	cacheEntry = CacheEntry.builder()
 		.generatie( 9500 )
@@ -690,7 +695,7 @@ public void testFlushWithSomePagesPresentAndVuil()
 
 	// Lees de eerste twee paginas en check of die allemaal 1 zijn
 	vmStelling.setAanZet( Wit );
-	PageDescriptor newPageDescriptor = vm.getPageDescriptor( vmStelling );
+	PageDescriptor newPageDescriptor = vm.getLinearPageDescriptor( vmStelling );
 	byte [] newPage = getCache().getPage( newPageDescriptor );
 	assertThat( getTestHelper().isAllOne( newPage ), is( true ) );
 	

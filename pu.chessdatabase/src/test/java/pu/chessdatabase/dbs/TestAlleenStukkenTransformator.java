@@ -2,6 +2,7 @@ package pu.chessdatabase.dbs;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.dbs.Constants.*;
 import static pu.chessdatabase.dbs.AlleenStukkenTransformator.*;
@@ -120,6 +121,22 @@ public void printTrfTabel()
 		}
 		System.out.println();
 	}
+}
+@Test
+public void testVmStellingWkToBoStellingWk()
+{
+	assertThrows( RuntimeException.class, () -> getTransformator().vmStellingWkToBoStellingWk( -31415 ) );
+	assertThat( getTransformator().vmStellingWkToBoStellingWk( 0 ), is( 0x00 ) );
+	assertThat( getTransformator().vmStellingWkToBoStellingWk( 1 ), is( 0x01 ) );
+	assertThat( getTransformator().vmStellingWkToBoStellingWk( 2 ), is( 0x02 ) );
+	assertThat( getTransformator().vmStellingWkToBoStellingWk( 3 ), is( 0x03 ) );
+	assertThat( getTransformator().vmStellingWkToBoStellingWk( 4 ), is( 0x11 ) );
+	assertThat( getTransformator().vmStellingWkToBoStellingWk( 5 ), is( 0x12 ) );
+	assertThat( getTransformator().vmStellingWkToBoStellingWk( 6 ), is( 0x13 ) );
+	assertThat( getTransformator().vmStellingWkToBoStellingWk( 7 ), is( 0x22 ) );
+	assertThat( getTransformator().vmStellingWkToBoStellingWk( 8 ), is( 0x23 ) );
+	assertThat( getTransformator().vmStellingWkToBoStellingWk( 9 ), is( 0x33 ) );
+	assertThrows( RuntimeException.class, () -> getTransformator().vmStellingWkToBoStellingWk( 10 ) );
 }
 @Test
 public void testSpiegelEnRoteerAlleenWk()
@@ -498,6 +515,220 @@ public void testSpiegelEnRoteerOktant5()
 		.build();
 	assertThat( vmStelling, is( oktant3Stelling ) );
 	assertThat( oktant3Stelling, is( oktant5Stelling ) );
+}
+@Test
+public void testBoStellingToVmStelling()
+{
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "b1" )
+		.zk( "b3" )
+		.s3( "a1" )
+		.s4( "a3" )
+		.s5( "b1" )
+		.aanZet( Wit )
+		.build();
+	// De WK staat in oktant 1, dit krijgt een identieke afbeelding,
+	assertThat( getTransformator().getOktant( boStelling ), is( 1 ) );
+	VMStelling vmStelling = getTransformator().boStellingToVmStelling( boStelling );
+	VMStelling newVmStelling = VMStelling.alfaBuilder()
+		.wk( "b1" )
+		.zk( "b3" )
+		.s3( "a1" )
+		.s4( "a3" )
+		.s5( "b1" )
+		.aanZet( Wit )
+		.build();
+	assertThat( vmStelling, is( newVmStelling ) );
+
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "g1" )
+		.zk( "g3" )
+		.s3( "h1" )
+		.s4( "h3" )
+		.s5( "g1" )
+		.aanZet( Wit )
+		.build();
+	// De WK staat in oktant 2. Dit krijgt een spiegeling in de y-as
+	assertThat( getTransformator().getOktant( boStelling ), is( 2 ) );
+	vmStelling = getTransformator().boStellingToVmStelling( boStelling );
+	newVmStelling = VMStelling.alfaBuilder()
+		.wk( "b1" )
+		.zk( "b3" )
+		.s3( "a1" )
+		.s4( "a3" )
+		.s5( "b1" )
+		.aanZet( Wit )
+		.build();
+	assertThat( vmStelling, is( newVmStelling ) );
+	
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "h4" )
+		.zk( "h6" )
+		.s3( "g4" )
+		.s4( "g6" )
+		.s5( "h4" )
+		.aanZet( Wit )
+		.build();
+	// De WK staat in oktant 3. Dit krijgt een rotatie over -90 graden
+	assertThat( getTransformator().getOktant( boStelling ), is( 3 ) );
+	vmStelling = getTransformator().boStellingToVmStelling( boStelling );
+	newVmStelling = VMStelling.alfaBuilder()
+		.wk( "d1" )
+		.zk( "f1" )
+		.s3( "d2" )
+		.s4( "f2" )
+		.s5( "d1" )
+		.aanZet( Wit )
+		.build();
+	assertThat( vmStelling, is( newVmStelling ) );
+	
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "h5" )
+		.zk( "h7" )
+		.s3( "g5" )
+		.s4( "g7" )
+		.s5( "h5" )
+		.aanZet( Wit )
+		.build();
+	// De WK staat in oktant 4. Dit krijgt een spiegeling in de diagonaal a8-h1
+	assertThat( getTransformator().getOktant( boStelling ), is( 4 ) );
+	vmStelling = getTransformator().boStellingToVmStelling( boStelling );
+	newVmStelling = VMStelling.alfaBuilder()
+		.wk( "d1" )
+		.zk( "b1" )
+		.s3( "d2" )
+		.s4( "b2" )
+		.s5( "d1" )
+		.aanZet( Wit )
+		.build();
+	assertThat( vmStelling, is( newVmStelling ) );
+
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "f5" )
+		.zk( "f7" )
+		.s3( "e5" )
+		.s4( "e7" )
+		.s5( "f5" )
+		.aanZet( Wit )
+		.build();
+	// De WK staat in oktant 4. Dit krijgt een spiegeling in de diagonaal a8-h1
+	assertThat( getTransformator().getOktant( boStelling ), is( 4 ) );
+	vmStelling = getTransformator().boStellingToVmStelling( boStelling );
+	newVmStelling = VMStelling.alfaBuilder()
+		.wk( "a2" )
+		.zk( "b3" )
+		.s3( "d4" )
+		.s4( "b4" )
+		.s5( "d3" )
+		.aanZet( Wit )
+		.build();
+	assertThat( vmStelling, is( newVmStelling ) );
+
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "e5" )
+		.zk( "e3" )
+		.s3( "f5" )
+		.s4( "f3" )
+		.s5( "e5" )
+		.aanZet( Wit )
+		.build();
+	// De WK staat in oktant 5. Dit krijgt een spiegeling in de x-as gevolgd door een spiegeling in de y-as
+	assertThat( getTransformator().getOktant( boStelling ), is( 5 ) );
+	vmStelling = getTransformator().boStellingToVmStelling( boStelling );
+	newVmStelling = VMStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "d6" )
+		.s3( "c4" )
+		.s4( "c6" )
+		.s5( "d4" )
+		.aanZet( Wit )
+		.build();
+	assertThat( vmStelling, is( newVmStelling ) );
+	
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "d5" )
+		.zk( "d3" )
+		.s3( "e5" )
+		.s4( "e3" )
+		.s5( "d5" )
+		.aanZet( Wit )
+		.build();
+	// De WK staat in oktant 6. Dit krijgt een spiegeling in de x-as
+	assertThat( getTransformator().getOktant( boStelling ), is( 6 ) );
+	vmStelling = getTransformator().boStellingToVmStelling( boStelling );
+	newVmStelling = VMStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "d6" )
+		.s3( "e4" )
+		.s4( "e6" )
+		.s5( "d4" )
+		.aanZet( Wit )
+		.build();
+	assertThat( vmStelling, is( newVmStelling ) );
+	
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "c5" )
+		.zk( "c3" )
+		.s3( "d5" )
+		.s4( "d3" )
+		.s5( "c5" )
+		.aanZet( Wit )
+		.build();
+	// De WK staat in oktant 7. Dit krijgt een rotatie over +90 graden
+	assertThat( getTransformator().getOktant( boStelling ), is( 7 ) );
+	vmStelling = getTransformator().boStellingToVmStelling( boStelling );
+	newVmStelling = VMStelling.alfaBuilder()
+		.wk( "a2" )
+		.zk( "f3" )
+		.s3( "d4" )
+		.s4( "f4" )
+		.s5( "d3" )
+		.aanZet( Wit )
+		.build();
+	assertThat( vmStelling, is( newVmStelling ) );
+	
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "c4" )
+		.zk( "d4" )
+		.s3( "c6" )
+		.s4( "d6" )
+		.s5( "c4" )
+		.aanZet( Wit )
+		.build();
+	// De WK staat in oktant 8. Dit krijgt een spiegeling in de diagonaal a1-h8
+	assertThat( getTransformator().getOktant( boStelling ), is( 8 ) );
+	vmStelling = getTransformator().boStellingToVmStelling( boStelling );
+	newVmStelling = VMStelling.alfaBuilder()
+		.wk( "a2" )
+		.zk( "d4" )
+		.s3( "f3" )
+		.s4( "f4" )
+		.s5( "d3" )
+		.aanZet( Wit )
+		.build();
+	assertThat( vmStelling, is( newVmStelling ) );
+
+	// Oude stijl
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "a2" )
+		.zk( "c2" )
+		.s3( "a1" )
+		.s4( "d2" )
+		.s5( "a2" )
+		.aanZet( Wit )
+		.build();
+	// De WK zit in oktant 8. Dit krijgt een spiegeling in de diagonaal a1-h8 
+	assertThat( getTransformator().getOktant( boStelling ), is( 8 ) );
+	vmStelling = getTransformator().boStellingToVmStelling( boStelling );
+	newVmStelling = VMStelling.alfaBuilder()
+		.wk( "b1" )
+		.zk( "b3" )
+		.s3( "a1" )
+		.s4( "b4" )
+		.s5( "b1" )
+		.aanZet( Wit )
+		.build();
+	assertThat( vmStelling, is( newVmStelling ) );
 }
 
 }
