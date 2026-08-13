@@ -26,7 +26,6 @@ private final List<StukDefinitie> stukDefinities = new ArrayList<>();
 
 @Setter( AccessLevel.PROTECTED )
 private Stukken stukken;
-private Transformator transformator = null;
 public ConfigImpl()
 {
 	super();
@@ -39,14 +38,6 @@ public boolean heeftPionnen()
 	return getStukken().heeftPionnen();
 }
 
-public Transformator getTransformator()
-{
-	if ( transformator == null )
-	{
-		transformator = heeftPionnen() ? new MetPionnenTransformator() : new AlleenStukkenTransformator();
-	}
-	return transformator;
-}
 public abstract String getDatabaseName();
 public abstract String getName();
 }
