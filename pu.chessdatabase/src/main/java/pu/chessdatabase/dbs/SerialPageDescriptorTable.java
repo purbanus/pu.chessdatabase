@@ -1,7 +1,6 @@
 package pu.chessdatabase.dbs;
 
 import static pu.chessdatabase.dbs.Constants.*;
-import static pu.chessdatabase.dbs.Lokatie.*;
 
 import pu.chessdatabase.bo.Config;
 import pu.chessdatabase.bo.Kleur;
@@ -18,9 +17,14 @@ SerialPageDescriptorTable( Config aConfig )
 	initializePageDescriptorTable();
 }
 @Override
-public PageDescriptor getPageDescriptor( VMStelling aStelling )
+public PageDescriptor getLinearPageDescriptor( VMStelling aVmStelling )
 {
-	return getPageDescriptorTable()[aStelling.getWk()][aStelling.getZk()][aStelling.getAanZet().ordinal()];
+	return getPageDescriptorTable()[aVmStelling.getWk()][aVmStelling.getZk()][aVmStelling.getAanZet().ordinal()];
+}
+@Override
+public PageDescriptor getNonLinearPageDescriptor( VMStelling aVmStelling )
+{
+	return getLinearPageDescriptor( aVmStelling );
 }
 @Override
 public void setPageDescriptor( VMStelling aVmStelling, PageDescriptor aPageDescriptor )
@@ -30,7 +34,7 @@ public void setPageDescriptor( VMStelling aVmStelling, PageDescriptor aPageDescr
 @Override
 public void iterateOverAllPageDescriptors( PageDescriptorFunction aPageDescriptorsFunction )
 {
-	for ( int wk : getConfig().heeftPionnen() ? STUK_VELD_RANGE : WK_VELD_RANGE )
+	for ( int wk : getConfig().heeftPionnen() ? WK_VELD_RANGE_MET_PIONNEN : WK_VELD_RANGE_ZONDER_PIONNEN )
 	{
 		for ( int zk : STUK_VELD_RANGE )
 		{
@@ -46,23 +50,9 @@ public void iterateOverAllPageDescriptors( PageDescriptorFunction aPageDescripto
 		}
 	}
 }
-long address;
 @Override
-public void initializePageDescriptorTable()
+public void createPageDescriptorTable()
 {
-	address = 0L;
-	setPageDescriptorTable( new PageDescriptor[getConfig().heeftPionnen() ? MAX_STUK : MAX_WK][MAX_STUK][MAX_AANZET] );
-	iterateOverAllPageDescriptors( this::initializePageDescriptor );
+	setPageDescriptorTable( new PageDescriptor[getConfig().heeftPionnen() ? MAX_WK_MET_PIONNEN : MAX_WK_ZONDER_PIONNEN][MAX_STUK][MAX_AANZET] );
 }
-void initializePageDescriptor( VMStelling aVmStelling )
-{
-	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( OpSchijf )
-		.schijfAdres( address )
-		.cacheNummer( Integer.MAX_VALUE )
-		.build();
-	setPageDescriptor( aVmStelling, pageDescriptor );
-	address += getPageSizeCalculator().getPageSize( getAantalStukken() );
-}
-
 }
