@@ -22,15 +22,7 @@ ParallelPageDescriptorTable( Config aConfig )
  */
 PageDescriptor getPageDescriptor( int aWk )
 {
-	try
-	{
-		return getPageDescriptorTable()[aWk];
-	}
-	catch ( Exception e )
-	{
-		e.printStackTrace();
-		throw e;
-	}
+	return getPageDescriptorTable()[aWk];
 }
 @Override
 public PageDescriptor getLinearPageDescriptor( VMStelling aVmStelling )
