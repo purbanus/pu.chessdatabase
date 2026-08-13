@@ -9,7 +9,8 @@ public interface PageDescriptorTable
 {
 public abstract void initializePageDescriptorTable();
 public abstract void iterateOverAllPageDescriptors( PageDescriptorFunction aPageDescriptorsFunction );
-public abstract PageDescriptor getPageDescriptor( VMStelling aStelling );
+public abstract PageDescriptor getLinearPageDescriptor( VMStelling aVmStelling );
+public abstract PageDescriptor getNonLinearPageDescriptor( VMStelling aVmStelling );
 public abstract void setPageDescriptor( VMStelling aVmStelling, PageDescriptor aPageDescriptor );
 
 public static PageDescriptorTable create( Config aConfig )
