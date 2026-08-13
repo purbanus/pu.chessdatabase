@@ -89,6 +89,13 @@ Map<String, String> createStukVelden()
 			stukVelden.put( "s3", "a2" );
 			break;
 		}
+		case "KoK":
+		{
+			stukVelden.put( "wk", "a1" );
+			stukVelden.put( "zk", "g4" );
+			stukVelden.put( "s3", "a4" );
+			break;
+		}
 		case "KTK":
 		{
 			stukVelden.put( "wk", "a1" );
