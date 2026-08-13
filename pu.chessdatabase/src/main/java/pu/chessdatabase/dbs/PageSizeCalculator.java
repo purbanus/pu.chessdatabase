@@ -31,7 +31,7 @@ private int pageSize3Stukken;
 private int pageSize4Stukken;
 @Getter( AccessLevel.PRIVATE ) 
 private int pageSize5Stukken;
-@Getter( AccessLevel.PRIVATE ) 
+//@Getter( AccessLevel.PRIVATE ) 
 @EqualsAndHashCode.Exclude
 private Map<Integer, Integer> pageSizeLookup = null;
 
@@ -77,12 +77,6 @@ private void calculateAllPageSizes()
 		pageSize4Stukken = Math.powExact( 64, 3 ) * 2;
 		pageSize5Stukken = Math.powExact( 64, 4 ) * 2;
 	}
-	if ( getConfig().heeftPionnen() )
-	{
-		pageSize3Stukken /= 2;
-		pageSize4Stukken /= 2;
-		pageSize5Stukken /= 2;
-	}
 }
 public int getPageSize( int aAantalStukken )
 {
@@ -92,11 +86,11 @@ public int getDatabaseSize( int aAantalStukken )
 {
 	if ( getCacheType() == Serial )
 	{
-		return ( getConfig().heeftPionnen() ? MAX_STUK : MAX_WK ) * 64 * 2 * getPageSize( aAantalStukken );
+		return ( getConfig().heeftPionnen() ? MAX_WK_MET_PIONNEN : MAX_WK_ZONDER_PIONNEN ) * 64 * 2 * getPageSize( aAantalStukken );
 	}
 	else
 	{
-		return ( getConfig().heeftPionnen() ? MAX_STUK : MAX_WK ) * getPageSize( aAantalStukken );
+		return ( getConfig().heeftPionnen() ? MAX_WK_MET_PIONNEN : MAX_WK_ZONDER_PIONNEN ) * getPageSize( aAantalStukken );
 	}
 }
 }
