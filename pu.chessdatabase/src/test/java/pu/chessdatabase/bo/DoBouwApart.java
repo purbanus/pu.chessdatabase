@@ -34,6 +34,12 @@ public void buildKDK()
 	config.switchConfig( Config.KDK );
 	bouw.bouwDatabase();
 }
+@Test
+public void buildKoK()
+{
+	config.switchConfig( Config.KoK );
+	bouw.bouwDatabase();
+}
 //@Test
 public void buildKTK()
 {
@@ -113,7 +119,7 @@ public void buildTestKDKTT()
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Bouw van de pipodatabases
 
-@Test
+//@Test
 public void buildPipoKDK()
 {
 	config.switchConfig( Config.PipoKDK );

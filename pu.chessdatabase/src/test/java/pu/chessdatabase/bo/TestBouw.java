@@ -6,6 +6,7 @@ package pu.chessdatabase.bo;
 //===================================================================================================================== 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.dbs.Constants.*;
 import static pu.chessdatabase.dbs.PassType.*;
@@ -64,7 +65,6 @@ public void destroy()
 @Test
 public void testConstructor()
 {
-	assertThat( bouw.passNchanges, is( true ) );
 	assertThat( bouw.passNumber, is( 0 ) );
 }
 @Test
@@ -153,6 +153,9 @@ private void printMatStelling( BoStelling aBoStelling )
 public void testIsIllegaal()
 {
 	//IsGeomIllegaal wordt al getest in TestGen. We nemen nu een willekeurige illegale stelling
+	
+	getDbs().setCheckStellingen( false );
+	
 	BoStelling boStelling;
 	BoStelling gotBoStelling;
 	boStelling = BoStelling.alfaBuilder()
@@ -246,6 +249,8 @@ public void testSchaakjes()
 {
 	BoStelling boStelling;
 
+	getDbs().setCheckStellingen( false );
+	
 	// T links geeft schaak
 	boStelling = BoStelling.alfaBuilder()
 		.wk( "b2" )
@@ -340,7 +345,7 @@ public void testPassSchaakjes()
 		stellingLookup.put( sb.toString(), boStelling );
 	}
 	Transformator transformator = getDbs().getTransformator();
-	for ( int wk : WK_VELD_RANGE )
+	for ( int wk : WK_VELD_RANGE_ZONDER_PIONNEN )
 	{
 		for ( int zk : STUK_VELD_RANGE )
 		{
@@ -468,6 +473,21 @@ private void markeerIllegaal()
 	dbs.pass( MarkeerWit, bouw::schaakjes, "rw" );
 	checkTellingen();
 }
+@Test
+public void testPass0()
+{
+	config.switchConfig( Config.PipoKoK );
+//	if ( DO_PRINT )
+	{
+		LOG.info( "methode testPass0" );
+	}
+	bouw.pass_0( true );
+	LOG.info( "Aantal matstellingen: {}", bouw.getMatStellingen().size() );
+//	for ( BoStelling boStelling : bouw.getMatStellingen() )
+//	{
+//		//LOG.info( boStelling.toString() );
+//	}
+}
 
 @Test
 public void testMarkeer()
@@ -580,6 +600,26 @@ public void testMarkeer()
 	assertThat( gotBoStelling.getResultaat(), is( Gewonnen ) );
 	assertThat( gotBoStelling.getAantalZetten(), is( 6 ) );
 }
+@Test
+public void testIsIllegaal_20260805()
+{
+	getConfig().switchConfig( Config.KoK );
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "b1" )
+		.zk( "a1" )
+		.s3( "d3" )
+		.aanZet( Wit )
+		.build();
+	getBouw().isIllegaal( boStelling );
+	BoStelling boStellingWit = getDbs().get( boStelling );
+	boStelling.setAanZet( Zwart );
+	BoStelling boStellingZwart = getDbs().get( boStelling );
+	assertTrue( boStellingWit.getResultaat() == Illegaal);
+	assertTrue( boStellingZwart.getResultaat() == Illegaal);
+
+	getConfig().switchConfig( Config.PipoKoK );
+}
+
 //@Test
 public void buildDeDatabase()
 {

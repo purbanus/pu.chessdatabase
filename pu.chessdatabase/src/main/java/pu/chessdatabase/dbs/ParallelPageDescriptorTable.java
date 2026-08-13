@@ -1,7 +1,6 @@
 package pu.chessdatabase.dbs;
 
 import static pu.chessdatabase.dbs.Constants.*;
-import static pu.chessdatabase.dbs.Lokatie.*;
 
 import pu.chessdatabase.bo.Config;
 
@@ -16,10 +15,32 @@ ParallelPageDescriptorTable( Config aConfig )
 	super( aConfig );
 	initializePageDescriptorTable();
 }
-@Override
-public PageDescriptor getPageDescriptor( VMStelling aStelling )
+/**
+ * Retourneert de pagedescriptor die bij de VMStelling hoort. In het bijzonder is de WK-positie bepalend:
+ * de pageDescriptorTable is een lineaire List van PageDescriptors met dimensies 0-31, dus de WK moet
+ * onderdeel zijn van een lineaire reeks van 0-31, en dus NIET een reeks volgens de WkMetPionnenIterator.
+ */
+PageDescriptor getPageDescriptor( int aWk )
 {
-	return getPageDescriptorTable()[aStelling.getWk()];
+	return getPageDescriptorTable()[aWk];
+}
+@Override
+public PageDescriptor getLinearPageDescriptor( VMStelling aVmStelling )
+{
+	try
+	{
+		return getPageDescriptor( aVmStelling.getWk() );
+	}
+	catch ( Exception e )
+	{
+		e.printStackTrace();
+		throw e;
+	}
+}
+@Override
+public PageDescriptor getNonLinearPageDescriptor( VMStelling aVmStelling )
+{
+	return getPageDescriptor( getTransformator().vmStellingWkToLinear( aVmStelling.getWk() ) );
 }
 @Override
 public void setPageDescriptor( VMStelling aVmStelling, PageDescriptor aPageDescriptor )
@@ -33,7 +54,7 @@ public void setPageDescriptor( VMStelling aVmStelling, PageDescriptor aPageDescr
 @Override
 public void iterateOverAllPageDescriptors( PageDescriptorFunction aPageDescriptorsFunction )
 {
-	for ( int wk : getConfig().heeftPionnen() ? STUK_VELD_RANGE : WK_VELD_RANGE )
+	for ( int wk : getConfig().heeftPionnen() ? WK_VELD_RANGE_MET_PIONNEN : WK_VELD_RANGE_ZONDER_PIONNEN )
 	{
     	VMStelling vmStelling = VMStelling.builder()
     		.wk( wk )
@@ -41,24 +62,10 @@ public void iterateOverAllPageDescriptors( PageDescriptorFunction aPageDescripto
 		aPageDescriptorsFunction.doPass( vmStelling );
 	}
 }
-long address = 0L;
-int index = 0;
-@Override 
-public void initializePageDescriptorTable()
+@Override
+void createPageDescriptorTable()
 {
-	setPageDescriptorTable( new PageDescriptor[getConfig().heeftPionnen() ? MAX_STUK : MAX_WK] );
-	iterateOverAllPageDescriptors( this::initializePageDescriptor );
-}
-void initializePageDescriptor( VMStelling aVmStelling )
-{
-	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( OpSchijf )
-		.schijfAdres( address )
-		.cacheNummer( index )
-		.build();
-	setPageDescriptor( aVmStelling, pageDescriptor );
-	address += getPageSizeCalculator().getPageSize( getAantalStukken() );
-	index++;
+	setPageDescriptorTable( new PageDescriptor[getConfig().heeftPionnen() ? MAX_WK_MET_PIONNEN : MAX_WK_ZONDER_PIONNEN] );
 }
 
 }

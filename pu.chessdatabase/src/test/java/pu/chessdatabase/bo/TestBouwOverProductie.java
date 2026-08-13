@@ -50,6 +50,7 @@ public void setup()
 @AfterEach
 public void destroy()
 {
+	dbs.setDoAllPositions( false );
 	dbs.close();
 	config.switchConfig( savedConfigString );
 }

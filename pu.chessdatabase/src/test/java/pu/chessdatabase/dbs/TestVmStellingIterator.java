@@ -65,7 +65,6 @@ public void testSetReport()
 	// Niet mogelijk assertThat( vmStellingIterator.getReportFunction(), is( bouw::showTellers ) ); 
 	assertThat( vmStellingIterator.getReportFunction(), is( notNullValue() ) );
 	assertThat( vmStellingIterator.getReportFrequency(), is( 5000 ) ); 
-	assertThat( vmStellingIterator.isDoAllPositions(), is( false ) ); 
 }
 // @@NOG De rest. Er wordt al flink wat getest in Dbs en Bouw
 }

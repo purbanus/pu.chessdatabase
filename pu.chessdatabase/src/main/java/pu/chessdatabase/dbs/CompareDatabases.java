@@ -64,6 +64,7 @@ void compareDeDatabasesSerial( VMStelling aVmStelling )
 void compareDeDatabasesParallel( VMStelling aVmStelling )
 {
 	VMStelling vmStelling = aVmStelling.clone();
+	vmStelling.setWk( vm1.getConfig().getTransformator().vmStellingWkFromLinear( vmStelling.getWk() ) );
 	for ( int zk = 0; zk < Constants.MAX_STUK; zk++ )
 	{
 		vmStelling.setZk( zk );

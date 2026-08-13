@@ -3,7 +3,6 @@ package pu.chessdatabase.dbs;
 import static pu.chessdatabase.bo.Kleur .*;
 import static pu.chessdatabase.dbs.Resultaat.*;
 
-import org.apache.commons.lang3.builder.ToStringExclude;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,12 +10,8 @@ import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Config;
 import pu.chessdatabase.bo.Kleur;
 import pu.chessdatabase.bo.ReportFunction;
-import pu.services.Matrix;
-import pu.services.Range;
-import pu.services.Vector;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Component
 @Data
@@ -37,7 +32,8 @@ public static void iterateOverKleurEnResultaat( IterateOverKleurEnResultaatFunct
 private final VM vm;
 private final VMStellingIterator vmStellingIterator;
 private final Config config;
-
+private boolean checkStellingen = false;
+private int numberOfPuts;
 public Dbs( VM aVm, Config aConfig )
 {
 	super();
@@ -101,7 +97,9 @@ public void put( BoStelling aBoStelling )
 		case Verloren: VMRec = aBoStelling.getAantalZetten() + VM.VERLIES_OFFSET; break;
 	}
 	vm.put( vmStelling, VMRec );
+	numberOfPuts++;
 	vmStellingIterator.addResultaat( aBoStelling );
+	checkStellingen();
 }
 /**
  * ----------- Lezen -----------------
@@ -237,4 +235,60 @@ public void pass( PassType aPassType, PassFunction aPassFunction, String aOpenMo
 	}
 	close();
 }
+public void checkStellingen()
+{
+	if ( ! isCheckStellingen() )
+	{
+		return;
+	}
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "b1" )
+		.zk( "a1" )
+		.s3( "d3" )
+		.aanZet( Wit )
+		.build();
+	BoStelling gotBoStelling = get( boStelling );
+	if ( gotBoStelling.getResultaat() != Illegaal )
+	{
+		System.out.println( "Dbs 1: We hebben d'r een!" );
+	}
+
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "b1" )
+		.zk( "c1" )
+		.s3( "a8" )
+		.aanZet( Zwart )
+		.build();
+	gotBoStelling = get( boStelling );
+	if ( gotBoStelling.getResultaat() != Illegaal )
+	{
+		System.out.println( "Dbs 2: We hebben d'r een!" );
+	}
+
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "g1" )
+		.zk( "f1" )
+		.s3( "h8" )
+		.aanZet( Zwart )
+		.build();
+	gotBoStelling = get( boStelling );
+	if ( gotBoStelling.getResultaat() != Illegaal )
+	{
+		System.out.println( "Dbs 3: We hebben d'r een!" );
+	}
+
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "c1" )
+		.s3( "a8" )
+		.aanZet( Zwart )
+		.build();
+	gotBoStelling = get( boStelling );
+	if ( gotBoStelling.getResultaat() != Illegaal )
+	{
+		System.out.println( "Dbs 4: We hebben d'r een!" );
+	}
+}
+
+
 }

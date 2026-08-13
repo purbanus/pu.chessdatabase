@@ -135,7 +135,7 @@ protected void putRawPageData( PageDescriptor aPageDescriptor )
 	    getDatabase().write( page, 0, getPageSize() );
 	    // @@HIGH moet hier niet vuil=false gedaan worden?
 	}
-	catch ( IOException e )
+	catch ( Exception e )
 	{
 		throw new RuntimeException( e );
 	}
@@ -162,7 +162,15 @@ public byte getData( PageDescriptor aPageDescriptor, VMStelling aVmStelling )
 }
 byte getData( PageDescriptor aPageDescriptor, int aPositionWithinPage )
 {
-    return getPage( aPageDescriptor )[aPositionWithinPage];
+	try
+	{
+		return getPage( aPageDescriptor )[aPositionWithinPage];
+	}
+	catch ( ArrayIndexOutOfBoundsException e )
+	{
+		e.printStackTrace();
+		throw e;
+	}
 }
 @Override
 public void setData( PageDescriptor aPageDescriptor, VMStelling aVmStelling, byte aData )

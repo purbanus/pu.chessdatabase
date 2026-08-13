@@ -22,9 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Bouw
 {
-
-public static final long MEG = 1048576;
 public static final boolean HOU_STELLINGEN_BIJ = false;
+public static final boolean HOU_PROMOSTELLINGEN_BIJ = true;
 public static final boolean BOUW_PARALLEL = false;
 
 private Dbs dbs;
@@ -38,12 +37,11 @@ List<BoStelling> matStellingen = new ArrayList<>();
 List<BoStelling> changes = new ArrayList<>();
 
 int passNumber;
-boolean passNchanges;
+int numberOfChanges;
 
 public Bouw()
 {
 	super();
-	passNchanges = true;
 	passNumber = 0;
 }
 @Autowired
@@ -64,7 +62,7 @@ void reportNewPass( String aPassText, boolean aDoPrint )
 	if ( aDoPrint )
 	{
 		LOG.info( "\n{}\n", aPassText );
-		dbs.setReport( getReportFrequency(), this::showTellers );
+		dbs.setReport( getReportFrequency(), this::showNothing);
 	}
 	else
 	{
@@ -86,16 +84,15 @@ public void showNothing( int aStellingTeller, int [][] aTellingen )
 }
 public void showTellers( int aStellingTeller, int [][] aTellingen )
 {
-	LOG.info( "Tellingen na {} stellingen" );
+	LOG.info( "Tellingen na {} stellingen", aStellingTeller );
 	printAlles( aTellingen );
 }
 
 /**
  * ----------- Tel resultaten ----------------------------
  */
-void tel( BoStelling aBoStelling )
+void doNothing( BoStelling aBoStelling )
 {
-	// Hoeft niks meer te doen; al het tellen gebeurt in VMStellingIterator
 }
 void telAlles()
 {
@@ -108,7 +105,7 @@ void telAlles( boolean aDoPrint)
 		reportNewPass( "Tellen van alle stellingen" );
 	}
 	vmStellingIterator.clearTellingen();
-	dbs.pass( PassType.MarkeerWitEnZwart, this::tel );
+	dbs.pass( PassType.MarkeerWitEnZwart, this::doNothing );
 }
 void telAndPrintAlles( boolean aDoPrint )
 {
@@ -221,6 +218,10 @@ public void schaakjes( BoStelling aBoStellingMetWitAanZet )
  */
 public void isMat( BoStelling aBoStelling )
 {
+	if ( aBoStelling.getResultaat() != Remise )
+	{
+		System.out.println( "Niet-remise in isMat!" );
+	}
 	BoStelling boStelling = aBoStelling.clone();
 	// Er komen alleen remisestellingen binnen
 	if ( boStelling.isSchaak() == true )
@@ -237,15 +238,32 @@ public void isMat( BoStelling aBoStelling )
 			dbs.put( boStelling );
 		}
 	}
+
 }
+// @@NOG Dit is heel tijdelijk!!
 public void promoveerPionnen( BoStelling aBoStelling )
 {
+	if ( aBoStelling.getResultaat() != Remise )
+	{
+		System.out.println( "Niet-remise in promoveerPionnen!" );
+	}
+	if ( gen.isGeometrischIllegaal( aBoStelling ) || gen.isKKSchaak( aBoStelling ) )
+	{
+		System.out.println( "Illegale stelling in promoveerPionnen!" );
+	}
 	BoStelling boStelling = aBoStelling.clone();
 	// Er komen alleen remisestellingen binnen
 	if ( boStelling.isS3Pion() && boStelling.getRij( boStelling.getS3() ) == 7 )
 	{
-		// @HIGH "" Wat nu ??11
+		boStelling.setResultaat( Verloren );
+		boStelling.setAantalZetten( 1 );
+		if ( HOU_PROMOSTELLINGEN_BIJ )
+		{
+			matStellingen.add( boStelling );
+		}
+		dbs.put( boStelling );
 	}
+
 }
 /**
  * ------------ Pass 0: Initialisatie database ---------------
@@ -262,18 +280,30 @@ void pass_0( boolean aDoPrint )
 	
 	passNumber = 0;
 	// Hier geen reportNewPass doen want de Cache is er pas in VM na de create!
-	dbs.create();
+	getDbs().create();
+
+	getDbs().setCheckStellingen( false );
 
 	reportNewPass( "Markeren illegale stellingen", aDoPrint );
-	dbs.pass( PassType.MarkeerWit, this::isIllegaal, "rw" );
+	getDbs().pass( PassType.MarkeerWit, this::isIllegaal, "rw" );
+	checkStellingen();
 
+	getDbs().setCheckStellingen( true );
+	
 	reportNewPass( "Markeren schaakjes", aDoPrint );
-	dbs.pass( PassType.MarkeerWit, this::schaakjes, "rw" );
+	getDbs().pass( PassType.MarkeerWit, this::schaakjes, "rw" );
+	checkStellingen();
 
 //	dbs.setReport( 100, this::showThisPass );
-//	reportNewPass( "Matstellingen" );
-	dbs.pass( PassType.MarkeerWit  , this::isMat, "rw" );
-	dbs.pass( PassType.MarkeerZwart, this::isMat, "rw" );
+	reportNewPass( "Matstellingen met Wit aan zet", aDoPrint );
+	getDbs().pass( PassType.MarkeerWit  , this::isMat, "rw" );
+	checkStellingen();
+	reportNewPass( "Matstellingen met Zwart aan zet", aDoPrint );
+	getDbs().pass( PassType.MarkeerZwart, this::isMat, "rw" );
+	checkStellingen();
+	reportNewPass( "Promoties", aDoPrint );
+	getDbs().pass( PassType.MarkeerZwart, this::promoveerPionnen, "rw" );
+	checkStellingen();
 }
 /**
  * ------- Markeer een stelling gewonnen/verloren -----------
@@ -380,8 +410,8 @@ void markeer( BoStelling aBoStelling )
 		{
 			changes.add( boStellingVan );
 		}
-		dbs.put( boStellingVan );
-		passNchanges = true;
+		getDbs().put( boStellingVan );
+		numberOfChanges++;
 	}
 }
 /**
@@ -391,16 +421,16 @@ void pass_n()
 {
 	if ( BOUW_PARALLEL )
 	{
-		dbs.pass( PassType.MarkeerParallel, this::markeer, "rw" );
+		getDbs().pass( PassType.MarkeerParallel, this::markeer, "rw" );
 	}
 	else
 	{
 	//	dbs.setReport( 100, this::showThisPass );
 	//	reportNewPass( "Wit aan zet" );
-		dbs.pass( PassType.MarkeerWit, this::markeer, "rw" );
+		getDbs().pass( PassType.MarkeerWit, this::markeer, "rw" );
 	
 	//	reportNewPass( "Zwart aan zet" );
-		dbs.pass( PassType.MarkeerZwart, this::markeer, "rw" );
+		getDbs().pass( PassType.MarkeerZwart, this::markeer, "rw" );
 	
 		// @@NOG Dit geeft fouten! Uitzoeken waarom. Bij KDKT geeft dit hogere aantallen zetten
 	//	dbs.pass( PassType.MarkeerWitEnZwart, this::markeer, "rw" );
@@ -414,19 +444,29 @@ public void bouwDatabase()
 	LOG.info( "We bouwen op: {}", getDbs().getDatabaseName() );
 	StopWatch timer = new StopWatch();
 	passNumber = 0;
-	pass_0();
-//	telAlles();
-//	printAllesMetKleur();
+	pass_0( true );
 	LOG.info( "Pass {} duurde {}", passNumber, timer.getLapTimeMs() );
-	while ( passNchanges )
+	telAndPrintAlles( true );
+	checkStellingen();
+	numberOfChanges = Integer.MAX_VALUE;
+	while ( numberOfChanges > 0 )
 	{
-		passNchanges = false;
+		numberOfChanges = 0;
 		pass_n();
 		passNumber++;
-		LOG.info( "Pass {} duurde {}", passNumber, timer.getLapTimeMs() );
+		LOG.info( "Pass {} duurde {}, aantal wijzigingen={}", passNumber, timer.getLapTimeMs(), numberOfChanges );
+		telAndPrintAlles( true );
+		checkStellingen();
 	}
-	LOG.info( "Totaaltijd: {}" + timer.getElapsedMs() );
+	LOG.info( "Totaaltijd: {}", timer.getElapsedMs() );
 	telAndPrintAlles( true );
+}
+private void checkStellingen()
+{
+	LOG.info( "Number of puts: {}", getDbs().getNumberOfPuts() );
+	getDbs().setNumberOfPuts( 0 );
+	telAndPrintAlles( true );
+	getDbs().checkStellingen();
 }
 
 }

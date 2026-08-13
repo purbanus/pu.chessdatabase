@@ -28,14 +28,14 @@ ParallelCache( Config aConfig, RandomAccessFile aDatabase )
 @Override
 int getCacheSize()
 {
-	return getConfig().heeftPionnen() ? MAX_STUK : MAX_WK;
+	return getConfig().heeftPionnen() ? MAX_WK_MET_PIONNEN : MAX_WK_ZONDER_PIONNEN;
 }
 @Override
 void initializeCache()
 {
 	setCacheEntries( new ArrayList<>() );
 	long address = 0L;
-	for ( int wk : getConfig().heeftPionnen() ? STUK_VELD_RANGE : WK_VELD_RANGE )
+	for ( int wk : getConfig().heeftPionnen() ? WK_VELD_RANGE_MET_PIONNEN : WK_VELD_RANGE_ZONDER_PIONNEN )
 	{
 		// @@NOG Kun je deie PD niet uit de PDTable halen?
 		PageDescriptor pageDescriptor = PageDescriptor.builder()

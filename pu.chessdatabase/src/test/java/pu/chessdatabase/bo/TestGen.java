@@ -824,5 +824,21 @@ public void testGetStukInfo()
 	assertThat( gen.getStukInfo( stelling, gen.getStukken().getS4() ).getKleur(), is( Zwart ) );
 	assertThat( gen.getStukInfo( stelling, gen.getStukken().getS4() ).getAfko(), is( "T" ) );
 }
+@Test
+public void testIsIllegaal_20260805()
+{
+	getConfig().switchConfig( Config.KoK );
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "b1" )
+		.zk( "a1" )
+		.s3( "d3" )
+		.aanZet( Wit )
+		.build();
+	assertFalse( getGen().isGeometrischIllegaal( boStelling ) );
+	assertTrue( getGen().isKKSchaak( boStelling ) );
+
+	getConfig().switchConfig( Config.PipoKoK );
+
+}
 
 }

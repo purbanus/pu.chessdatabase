@@ -137,7 +137,7 @@ private void checkIfAllDatabaseEntriesAreZero() throws IOException
 }
 void checkIfDatabaseEntryIsZero( VMStelling aVmStelling )
 {
-	PageDescriptor pageDescriptor = vm.getPageDescriptor( aVmStelling );
+	PageDescriptor pageDescriptor = vm.getLinearPageDescriptor( aVmStelling );
 //  pageDescriptor.setCacheNummer( 1 );
 //  vm.Cache[1].setVuil( true );
 	byte [] page = new byte[vm.getCache().getPageSize()];

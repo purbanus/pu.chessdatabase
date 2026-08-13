@@ -1,5 +1,6 @@
 package pu.chessdatabase.dbs;
 
+import static pu.chessdatabase.dbs.CacheType.*;
 import static pu.chessdatabase.dbs.Constants.*;
 import static pu.chessdatabase.dbs.Lokatie.*;
 
@@ -145,6 +146,7 @@ public long getDatabaseSize()
 public void switchConfig()
 {
 	setDatabaseName( null );
+	// @@HIGH Dit netter oplossen, niet met die getters
 	if ( getDatabaseFile() == null || ! getDatabaseFile().exists() )
 	{
 		create();
@@ -181,25 +183,29 @@ public void setDatabaseName( String aDatabaseName )
 		getCache().setDatabase( null );
 	}
 }
-PageDescriptor getPageDescriptor( VMStelling aStelling )
+PageDescriptor getLinearPageDescriptor( VMStelling aStelling )
 {
-	return getPageDescriptorTable().getPageDescriptor( aStelling );
+	return getPageDescriptorTable().getLinearPageDescriptor( aStelling );
+}
+PageDescriptor getNonLinearPageDescriptor( VMStelling aStelling )
+{
+	return getPageDescriptorTable().getNonLinearPageDescriptor( aStelling );
 }
 public byte [] getPage( VMStelling aVmStelling )
 {
 	aVmStelling.checkStelling();
-	return getCache().getPageFromDatabase( getPageDescriptor( aVmStelling ) );
+	return getCache().getPageFromDatabase( getNonLinearPageDescriptor( aVmStelling ) );
 }
 /**
  *  ------------ Ophalen database record --------------
  */
 public int get( VMStelling aVmStelling )
 {
-	// Dit is o.a. om de pageDescriptor goed te zetten. Gecheckt, ik zie niet wat dit uitmaakt
+	// @@HIGH Dit is o.a. om de pageDescriptor goed te zetten. Gecheckt, ik zie niet wat dit uitmaakt
 	// maar ik kan niet aantonen dat het fout gaat als je het weglaat. Voorlopig laten staan dus
     getPage( aVmStelling );
     
-	PageDescriptor pageDescriptor = getPageDescriptor( aVmStelling );
+	PageDescriptor pageDescriptor = getNonLinearPageDescriptor( aVmStelling );
     byte vmRec = getCache().getData( pageDescriptor, aVmStelling );
     return Byte.toUnsignedInt( vmRec );
 }
@@ -212,7 +218,7 @@ public void put( VMStelling aVmStelling, int aDbsRec )
 	// maar ik kan niet aantonen dat het fout gaat als je het weglaat. Voorlopig laten staan dus
     getPage( aVmStelling );
     
-	PageDescriptor pageDescriptor = getPageDescriptor( aVmStelling );
+	PageDescriptor pageDescriptor = getNonLinearPageDescriptor( aVmStelling );
     byte vmRec = (byte)( aDbsRec & 0xff );
     getCache().setData( pageDescriptor, aVmStelling, vmRec);
 }
@@ -224,7 +230,7 @@ public void freeRecord( VMStelling aStelling )
 	// En na de clear, page en pageDescriptor leegmaken?
 	// - PD niet, die is permanent
 	aStelling.checkStelling();
-	PageDescriptor pageDescriptor = getPageDescriptor( aStelling );
+	PageDescriptor pageDescriptor = getNonLinearPageDescriptor( aStelling );
 	if ( pageDescriptor.getWaar() == InRam )
 	{
 		getCache().pageOut( pageDescriptor ); // Checkt of de page vuil is
@@ -338,8 +344,11 @@ void initializeDatabase()
 }
 void initializeDatabasePage( VMStelling aVmStelling )
 {
-	PageDescriptor pageDescriptor = getPageDescriptor( aVmStelling );
-	pageDescriptor.setCacheNummer( 1 );
+	PageDescriptor pageDescriptor = getLinearPageDescriptor( aVmStelling );
+	if ( getPageSizeCalculator().getCacheType() == Serial )
+	{
+		pageDescriptor.setCacheNummer( 1 );
+	}
 	getCache().setVuil( pageDescriptor, true );
 	getCache().pageOut( pageDescriptor );
 }

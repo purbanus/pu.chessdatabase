@@ -1,29 +1,16 @@
 package pu.chessdatabase.dbs;
 
-import pu.services.Range;
+import pu.chessdatabase.bo.BoStelling;
 
+import lombok.Data;
+
+@Data
 public abstract class AbstractTransformator implements Transformator
 {
 /**==============================================================================================================
-* Konversie WK notatie van VM naar Gen
-*==============================================================================================================*/
-// De WK moet in het eerste oktant zitten, dwz de veldwaarde moet tussen 0 en 9 zitten
-// De CVT_WK transformeert hem dan naar een van de velden
-// a1, b1, c1, d1,   0, 1, 2, 3  
-//     b2, c2, d3,      4, 5, 6
-//         c3, d3,         7, 8
-//             d4,            9
-// @@HIGH Dit klopt niet met pionnen. Wk krijgt dan een meer noirmale traansformatie
-public static final int [] CVT_WK = {
-	0x00,0x01,0x02,0x03,
-		 0x11,0x12,0x13,
-			  0x22,0x23,
-				   0x33
-};
-/**==============================================================================================================
 * Konversie stuk (niet-WK) notatie van VM naar Zgen
 1*==============================================================================================================*/
-public static final int [] CVT_STUK = {
+public static final int [] TRANSFORM_STUK = {
 	0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,
 	0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17,
 	0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27,
@@ -37,11 +24,26 @@ public AbstractTransformator()
 {
 	super();
 }
-
 @Override
 public int vmStellingStukToBoStellingStuk( int aVmStellingStuk )
 {
-	return CVT_STUK[aVmStellingStuk];
+	return TRANSFORM_STUK[aVmStellingStuk];
+}
+
+/**
+ * -------- Stelling van VM-formaat naar Bo-formaat ------
+ */
+@Override
+public BoStelling vmStellingToBoStelling( VMStelling aVmStelling )
+{
+	return BoStelling.builder()
+		.wk( vmStellingWkToBoStellingWk    (   aVmStelling.getWk() ) )
+		.zk( vmStellingStukToBoStellingStuk( aVmStelling.getZk() ) )
+		.s3( vmStellingStukToBoStellingStuk( aVmStelling.getS3() ) )
+		.s4( vmStellingStukToBoStellingStuk( aVmStelling.getS4() ) )
+		.s5( vmStellingStukToBoStellingStuk( aVmStelling.getS5() ) )
+		.aanZet( aVmStelling.getAanZet() )
+		.build();
 }
 
 }

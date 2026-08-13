@@ -40,6 +40,10 @@ public void setup()
 public void destroy()
 {
 	config.switchConfig( savedConfigString );
+
+	// Set cacheType to default
+	getConfig().setPageSizeCalculator( new PageSizeCalculator( getConfig() ) );
+	assertThat( getConfig().getCacheType(), is( Parallel ) );
 }
 PageSizeCalculator getPageSizeCalculator()
 {
@@ -69,7 +73,7 @@ public void testGetSetPageDescriptor()
 		.aanZet( Wit )
 		.build();
 	getPageDescriptorTable().setPageDescriptor( vmStelling, pageDescriptor );
-	PageDescriptor gotPageDescriptor = getPageDescriptorTable().getPageDescriptor( vmStelling );
+	PageDescriptor gotPageDescriptor = getPageDescriptorTable().getLinearPageDescriptor( vmStelling );
 	assertThat( gotPageDescriptor, is( pageDescriptor ) );
 }
 int numberOfPages;
@@ -84,7 +88,7 @@ public void testIterateOverAllPageDescriptors()
 	numberOfPages = 0;
 	getConfig().switchConfig( Config.KLoK );
 	getPageDescriptorTable().iterateOverAllPageDescriptors( this::countPages );
-	assertThat( numberOfPages, is( 64 ) );
+	assertThat( numberOfPages, is( 32 ) );
 }
 public void countPages( VMStelling aVmStelling )
 {
@@ -104,7 +108,7 @@ public void testInitializePageDescriptorTable()
 }
 void testPageDescriptor( VMStelling aVmStelling )
 {
-	PageDescriptor pageDescriptor = getPageDescriptorTable().getPageDescriptor( aVmStelling );
+	PageDescriptor pageDescriptor = getPageDescriptorTable().getLinearPageDescriptor( aVmStelling );
 	assertThat( pageDescriptor.getWaar(), is( OpSchijf ) );
 	assertThat( pageDescriptor.getSchijfAdres(), is( address ) );
 	assertThat( pageDescriptor.getCacheNummer(), is( index ) );
