@@ -57,6 +57,10 @@ VMStellingIterator( @Lazy Dbs aDbs, Config aConfig )
 	dbs = aDbs;
 	config = aConfig;
 }
+public void setDoAllPositions( boolean aDoAllPositions )
+{
+	doAllPositions = aDoAllPositions;
+}
 public Transformator getTransformator()
 {
 	return getConfig().getTransformator();
@@ -82,7 +86,7 @@ void report()
 public void iterateParallel( PassFunction aPassFunction )
 {
 	List<VMIterateAction> actions = new ArrayList<>();
-	for ( int wk : getConfig().heeftPionnen() ? STUK_VELD_RANGE : WK_VELD_RANGE )
+	for ( int wk : getConfig().heeftPionnen() ? WK_MET_PIONNEN_ITERATOR : WK_VELD_RANGE_ZONDER_PIONNEN )
 	{
 		actions.add( new VMIterateAction( this, aPassFunction, wk ) );
 	}
@@ -116,7 +120,7 @@ public void iterateOverWkZkAndKleur( PassFunction aPassFunction )
 {
 	VMStelling vmStelling = new VMStelling();
 	BoStelling boStelling = new BoStelling();
-	for ( int wk : getConfig().heeftPionnen() ? STUK_VELD_RANGE : WK_VELD_RANGE )
+	for ( int wk : getConfig().heeftPionnen() ? WK_MET_PIONNEN_ITERATOR : WK_VELD_RANGE_ZONDER_PIONNEN )
 	{
 		vmStelling.setWk( wk );
 		boStelling.setWk( getTransformator().vmStellingWkToBoStellingWk( wk ) );
@@ -147,7 +151,7 @@ public void iterateOverWkZkOneColour( Kleur aKleur, PassFunction aPassFunction )
 	vmStelling.setAanZet( aKleur );
 	BoStelling boStelling = new BoStelling();
 	boStelling.setAanZet( aKleur );
-	for ( int wk : getConfig().heeftPionnen() ? STUK_VELD_RANGE : WK_VELD_RANGE )
+	for ( int wk : getConfig().heeftPionnen() ? WK_MET_PIONNEN_ITERATOR : WK_VELD_RANGE_ZONDER_PIONNEN )
 	{
 		vmStelling.setWk( wk );
 		boStelling.setWk( getTransformator().vmStellingWkToBoStellingWk( wk ) );
@@ -159,6 +163,44 @@ public void iterateOverWkZkOneColour( Kleur aKleur, PassFunction aPassFunction )
 		}
 	}
 	report();
+}
+private void checkStellingen()
+{
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "b1" )
+		.zk( "a1" )
+		.s3( "d3" )
+		.aanZet( Wit )
+		.build();
+	BoStelling gotBoStelling = getDbs().get( boStelling );
+	if ( gotBoStelling.getResultaat() != Illegaal )
+	{
+		System.out.println( "VMSI 1: We hebben d'r een!" );
+	}
+
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "b1" )
+		.zk( "c1" )
+		.s3( "a8" )
+		.aanZet( Zwart )
+		.build();
+	gotBoStelling = getDbs().get( boStelling );
+	if ( gotBoStelling.getResultaat() != Illegaal )
+	{
+		System.out.println( "VMSI 2: We hebben d'r een!" );
+	}
+
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "c1" )
+		.s3( "a8" )
+		.aanZet( Zwart )
+		.build();
+	gotBoStelling = getDbs().get( boStelling );
+	if ( gotBoStelling.getResultaat() != Illegaal )
+	{
+		System.out.println( "VMSI 3: We hebben d'r een!" );
+	}
 }
 
 /**
@@ -223,7 +265,7 @@ void callForAllPieces( BoStelling aBoStelling, VMStelling aVmStelling, PassFunct
 	}
 	stellingTeller++;
 	
-	if ( stellingTeller % reportFrequency == 0 )
+	if ( reportFrequency != 0 && stellingTeller % reportFrequency == 0 )
 	{
 		report();
 	}
