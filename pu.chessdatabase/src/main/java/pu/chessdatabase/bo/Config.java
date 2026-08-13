@@ -35,7 +35,9 @@ import pu.chessdatabase.bo.configuraties.TestKLoK;
 import pu.chessdatabase.bo.configuraties.TestKLPK;
 import pu.chessdatabase.bo.configuraties.TestKoK;
 import pu.chessdatabase.bo.configuraties.TestKTK;
+import pu.chessdatabase.dbs.AlleenStukkenTransformator;
 import pu.chessdatabase.dbs.CacheType;
+import pu.chessdatabase.dbs.MetPionnenTransformator;
 import pu.chessdatabase.dbs.PageSizeCalculator;
 import pu.chessdatabase.dbs.Transformator;
 import pu.chessdatabase.dbs.VM;
@@ -90,13 +92,13 @@ public static Stukken getStaticStukken()
 private VM vm;
 @EqualsAndHashCode.Exclude
 private PageSizeCalculator pageSizeCalculator;
-private CacheType cacheType;
 @Setter( AccessLevel.NONE ) 
 private Map<String, ConfigImpl> configImplRegistry = null;
 
 @Getter( AccessLevel.PACKAGE ) 
 @Setter( AccessLevel.PACKAGE ) 
 private ConfigImpl configImpl = DEFAULT_CONFIG_IMPL;
+private Transformator transformator = null;
 
 // Als deze ctor bestaat dan moet je die ZAndere ctor annoteren met @Autowired!!
 public Config()
@@ -114,8 +116,6 @@ public Config( @Lazy VM aVm, @Lazy PageSizeCalculator aPageSizeCalculator )
 	super();
 	vm = aVm;
 	pageSizeCalculator = aPageSizeCalculator;
-	//Als je setCacheType() doet krijg je een Spring-fout. Is ook niet zo belangrijk want die lookup-tabel zal al wel null zijn
-	cacheType = aPageSizeCalculator.getCacheType();
 	staticStukList = getStukList();
 	staticStukken = getStukken();
 }
@@ -155,6 +155,7 @@ void switchConfig( ConfigImpl aNewConfig, boolean aSwitchVM )
 {
 	setConfigImpl( aNewConfig );
 	getPageSizeCalculator().setPageSizeLookup( null );
+	transformator = null;
 	staticStukList = getStukList();
 	staticStukken = getStukken();
 	if ( aSwitchVM )
@@ -179,14 +180,17 @@ public void switchConfig( String aConfigString )
 {
 	 switchConfig( aConfigString, true );
 }
-public void setCacheType( CacheType aCacheType )
-{
-	cacheType = aCacheType;
-	getPageSizeCalculator().setCacheType( aCacheType );
-}
 public void switchConfig( ConfigImpl aConfigImpl )
 {
 	 switchConfig( aConfigImpl, true );
+}
+public CacheType getCacheType()
+{
+	return getPageSizeCalculator().getCacheType();
+}
+public void setCacheType( CacheType aCacheType )
+{
+	getPageSizeCalculator().setCacheType( aCacheType );
 }
 public List<Stuk> getStukList()
 {
@@ -226,7 +230,7 @@ public String getConfig()
 }
 public List<String> getAvailableConfigs()
 {
-	return Arrays.asList( new String [] { "KDK", "KTK", "KDKT", "KLPK", "KLLK", "KDKTT" } );
+	return Arrays.asList( new String [] { "KDK", "KoK", "KTK", "KDKT", "KLPK", "KLLK", "KDKTT" } );
 }
 public boolean heeftPionnen()
 {
@@ -238,7 +242,11 @@ public int getAantalPionnen()
 }
 public Transformator getTransformator()
 {
-	return getConfigImpl().getTransformator();
+	if ( transformator == null )
+	{
+		transformator = heeftPionnen() ? new MetPionnenTransformator() : new AlleenStukkenTransformator();
+	}
+	return transformator;
 }
 @Override
 public String toString()
