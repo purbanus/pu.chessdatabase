@@ -1,6 +1,7 @@
 package pu.chessdatabase.bo;
 
 import static pu.chessdatabase.bo.Kleur.*;
+import static pu.chessdatabase.bo.ZetGenDirection.*;
 import static pu.chessdatabase.bo.ZetSoort.*;
 import static pu.chessdatabase.bo.configuraties.StukType.*;
 import static pu.chessdatabase.dbs.Resultaat.*;
@@ -13,6 +14,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import pu.chessdatabase.dbs.Dbs;
+import pu.services.Range;
 
 import lombok.Data;
 
@@ -20,6 +22,7 @@ import lombok.Data;
 @Data
 public class Gen
 {
+private static final int RIJ = 16;
 public static final BitSet BUITENBORD = bitSetOfInt( 0x88 );
 public static final BitSet NUL = bitSetOfInt( 0x00 );
 
@@ -101,6 +104,7 @@ public static int alfaToVeld( String aAlfaVeld )
 }
 private final Dbs dbs;
 private final Config config;
+private ZetGenDirection zetGenDirection;
 
 public Gen( Dbs aDbs, Config aConfig)
 {
@@ -225,31 +229,9 @@ public boolean isKKSchaak( BoStelling aBoStelling )
 	return false;
 }
 /**
-	PROCEDURE SchaakDoorStuk(StukNr: StukNummer): BOOLEAN;
-	VAR x: RichtingNummer;
-	BEGIN
-(*$O-*) (* Overflow check *)
-		WITH StukTabel[StukNr] DO
-			FOR x:=1 TO AtlRicht DO
-				Veld:=Sveld + Richting[x];
-				IF Meer THEN
-					WHILE ((BITSET(Veld) * BuitenBord) = BITSET(0)) AND (Bord[Veld] = Leeg) DO
-						Veld:=Veld + Richting[x];
-					END;
-				END;
-				IF Veld = Kveld THEN
-					RETURN(TRUE);
-				END;
-			END;
-		END;
-		RETURN(FALSE);
-	END SchaakDoorStuk;
-(*$O=*) (* Overflow check *)
- */
-/**
  * -------- Kijk of degene die aan zet is, schaak staat ----------		
+ * N.B. Je hoeft hier niet de kleur van het stuk te checken, dat is in checkSchaakDoorStuk al gebeurd
  */
-
 boolean isSchaakDoorStuk( Stuk aStuk, int aKoningsVeld, int aStukVeld, Bord aBord )
 {
 	for ( int richting : aStuk.getRichtingen() )
@@ -269,36 +251,6 @@ boolean isSchaakDoorStuk( Stuk aStuk, int aKoningsVeld, int aStukVeld, Bord aBor
 	}
 	return false;
 }
-
-/**
-PROCEDURE IsSchaak(S: Dbs.Stelling): BOOLEAN;
-VAR Kveld, Sveld, Veld: WerkVeld;
-
-BEGIN
-	ZetBordOp(S);
-	IF S.AanZet = Wit THEN
-		Kveld:=S.WK;
-	ELSE
-		Kveld:=S.ZK;
-	END;
-	IF (S.s3 # S.WK) AND (S.s3 # S.ZK) AND (StukTabel[3].Kleur # S.AanZet) THEN
-		Sveld:=S.s3;
-		IF SchaakDoorStuk(3) THEN
-			ClrBord(S);
-			RETURN(TRUE);
-		END;
-	END;
-	IF (S.s4 # S.WK) AND (S.s4 # S.ZK) AND (StukTabel[4].Kleur # S.AanZet) THEN
-		Sveld:=S.s4;
-		IF SchaakDoorStuk(4) THEN
-			ClrBord(S);
-			RETURN(TRUE);
-		END;
-	END;
-	ClrBord(S);
-	RETURN(FALSE);
-END IsSchaak;
- */
 /**
  * CheckSchaakDoorStuk checkt drie dingen
  * - Of het stuk niet geslagen is door wit
@@ -306,7 +258,7 @@ END IsSchaak;
  * - Of het stuk niet aan zet is
  * Als dat allemaal waar is wordt isSchaakDoorStuk aangeroepen
 */
-public boolean checkSchaakDoorStuk( BoStelling aStelling, Stuk aStuk, int aKoningsVeld, int aStukVeld, Bord aBord )
+boolean checkSchaakDoorStuk( BoStelling aStelling, Stuk aStuk, int aKoningsVeld, int aStukVeld, Bord aBord )
 {
 	if ( ( aStukVeld != aStelling.getWk() ) && ( aStukVeld != aStelling.getZk() ) && ( aStuk.getKleur() != aStelling.getAanZet() ) )
 	{
@@ -460,54 +412,60 @@ void addZet( final BoStelling aBoStelling, Stuk aStuk, int aNaar, ZetSoort aZets
 		aGegenereerdeZetten.add( gotBoStelling );
 	}
 }
-private List<BoStelling> genereerZettenPerPion( BoStelling aBoStelling, Stuk aStuk, int aKoningsVeld, int aStukVeld, Bord aBord )
+List<BoStelling> genereerZettenPerPion( BoStelling aBoStelling, Stuk aStuk, int aKoningsVeld, int aStukVeld, Bord aBord )
 {
 	List<BoStelling> gegenereerdeZetten = new ArrayList<>();
-
-	// We gaan hier pionnen terugzetten
-	int naar = aStukVeld - 16;
-	if ( aBord.getRij( aStukVeld ) > 1 && aBord.isVeldLeeg( naar ) )
+	if ( getZetGenDirection() == Backward ) 
 	{
-		addZet( aBoStelling, aStuk, naar, Gewoon, aKoningsVeld, aStukVeld, gegenereerdeZetten );
+		// We gaan hier pionnen terugzetten
+		if ( aStuk.getKleur() == Wit )
+		{
+			int increment = -RIJ;
+			Range rijRange = new Range( 2, 7 );
+			int rijVoorTweeVelden = 3;
+			genereerPionZetten( aBoStelling, aStuk, aKoningsVeld, aStukVeld, aBord, gegenereerdeZetten, increment, rijRange, rijVoorTweeVelden );
+		}
+		else
+		{
+			int increment = RIJ;
+			Range rijRange = new Range( 0, 6 );
+			int rijVoorTweeVelden = 4;
+			genereerPionZetten( aBoStelling, aStuk, aKoningsVeld, aStukVeld, aBord, gegenereerdeZetten, increment, rijRange, rijVoorTweeVelden );
+		}
 	}
-	naar = aStukVeld - 32;
-	if ( aBord.getRij( aStukVeld ) == 3 && aBord.isVeldLeeg( naar ) )
+	else
 	{
-		addZet( aBoStelling, aStuk, naar, Gewoon, aKoningsVeld, aStukVeld, gegenereerdeZetten );
+		// We gaan hier pionnen vooruitzetten
+		if ( aStuk.getKleur() == Zwart )
+		{
+			int increment = -RIJ;
+			Range rijRange = new Range( 1, 6 );
+			int rijVoorTweeVelden = 6;
+			genereerPionZetten( aBoStelling, aStuk, aKoningsVeld, aStukVeld, aBord, gegenereerdeZetten, increment, rijRange, rijVoorTweeVelden );
+		}
+		else
+		{
+			int increment = RIJ;
+			Range rijRange = new Range( 1, 6 );
+			int rijVoorTweeVelden = 1;
+			genereerPionZetten( aBoStelling, aStuk, aKoningsVeld, aStukVeld, aBord, gegenereerdeZetten, increment, rijRange, rijVoorTweeVelden );
+		}
 	}
-	
 	return gegenereerdeZetten;
 }
-
-/**
-PROCEDURE GenZperStuk(StukNr: StukNummer);
-
-VAR x: RichtingNummer;
-BEGIN
-(*$O-*) (* Overflow check *)
-	WITH StukTabel[StukNr] DO
-		FOR x:=1 TO AtlRicht DO
-			Veld:=Sveld + Richting[x];
-			IF Meer THEN
-				WHILE ((BITSET(Veld) * BuitenBord) = BITSET(0)) AND (Bord[Veld] = Leeg) DO
-					AddZet(S, StukNr, Veld, Gewoon);
-					Veld:=Veld + Richting[x];
-				END;
-			END;
-			IF (BITSET(Veld) * BuitenBord) = BITSET(0) THEN
-				IF Bord[Veld] = Leeg THEN
-					AddZet(S, StukNr, Veld, Gewoon);
-				ELSE
-					IF StukTabel[Bord[Veld]].Kleur # S.AanZet THEN
-						AddZet(S, StukNr, Veld, SlagZet);
-					END;
-				END;
-			END;
-		END;
-	END;
-END GenZperStuk;
-(*$O=*) (* Overflow check *)
- */
+void genereerPionZetten( BoStelling aBoStelling, Stuk aStuk, int aKoningsVeld, int aStukVeld, Bord aBord, List<BoStelling> gegenereerdeZetten, int increment, Range rijRange, int rijVoorTweeVelden )
+{
+	int naar =  aStukVeld + increment;
+	if ( rijRange.contains( aBord.getRij( aStukVeld ) ) && aBord.isVeldLeeg( naar ) )
+	{
+		addZet( aBoStelling, aStuk, naar, Gewoon, aKoningsVeld, aStukVeld, gegenereerdeZetten );
+	}
+	naar += increment;
+	if ( aBord.getRij( aStukVeld ) == rijVoorTweeVelden && aBord.isVeldLeeg( naar ) )
+	{
+		addZet( aBoStelling, aStuk, naar, Gewoon, aKoningsVeld, aStukVeld, gegenereerdeZetten );
+	}
+}
 List<BoStelling> genereerZettenPerStuk( BoStelling aBoStelling, Stuk aStuk, int aKoningsVeld, int aStukVeld, Bord aBord )
 {
 	if ( aStuk.getStukType() == Pion )
