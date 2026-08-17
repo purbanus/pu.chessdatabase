@@ -1,5 +1,7 @@
 package pu.chessdatabase.bo;
 
+import static pu.chessdatabase.dbs.Constants.*;
+
 import pu.services.Range;
 
 import lombok.Data;
@@ -129,17 +131,20 @@ public String toString()
 	StringBuilder sb = new StringBuilder();
 	for ( int rij = 7; rij >= 0; rij-- )
 	{
-		for ( int kol = 0; kol < 8; kol++ )
+		for ( int kol : KOL_RANGE )
 		{
 			int index = 16 * rij + kol;
 			int veld = bord[index];
 			String veldString;
-			if      ( veld == 0 ) veldString = getStukken().getWk().getStukString();
-			else if ( veld == 1 ) veldString = getStukken().getZk().getStukString();
-			else if ( veld == 2 ) veldString = getStukken().getS3().getStukString();
-			else if ( veld == 3 ) veldString = getStukken().getS4().getStukString();
-			else if ( veld == 4 ) veldString = getStukken().getS5().getStukString();
-			else veldString = ( veld < 16 ? "0":"" ) + Integer.toHexString( veld  );
+			switch ( veld )
+			{
+				case 0: veldString = getStukken().getWk().getStukString(); break;
+				case 1: veldString = getStukken().getZk().getStukString(); break;
+				case 2: veldString = getStukken().getS3().getStukString(); break;
+				case 3: veldString = getStukken().getS4().getStukString(); break;
+				case 4: veldString = getStukken().getS5().getStukString(); break;
+				default: veldString = "..";
+			}
 			sb.append( veldString ).append( " " );
 		}
 		sb.append( "\n" );
