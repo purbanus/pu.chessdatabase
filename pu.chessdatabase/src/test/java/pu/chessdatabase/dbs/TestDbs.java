@@ -96,23 +96,36 @@ public void testResultaatRange()
 	assertThat( RESULTAAT_RANGE.getMaximum(), is( 3 ) );
 }
 @Test
+public void waaromIsDitIllegaal()
+{
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "a2" )
+		.zk( "c2" )
+		.s3( "a1" )
+		.s4( "d2" )
+		.aanZet( Wit )
+		.build();
+	boolean illegaal = gen.isGeometrischIllegaal( boStelling ) || gen.isKKSchaak( boStelling ) ;
+	assertThat( illegaal, is( false ) );
+}
+@Test
 public void testPut()
 {
 //	VMillegaal      = 0x0FF;
 //	VMremise        = 0x000;
 //	VMschaak        = 0x080;
 //	VerliesOffset   = 0x080;
-	BoStelling boStelling = BoStelling.builder()
-		.wk( 0x10 )
-		.zk( 0x12 )
-		.s3( 0x00 )
-		.s4( 0x13 )
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "a2" )
+		.zk( "c2" )
+		.s3( "a1" )
+		.s4( "d2" )
 		.aanZet( Wit )
-		.resultaat( Illegaal )
+		.resultaat( Illegaal ) // Die stelling is helemaal niet illegaal maar vooruit
 		.aantalZetten( 0 )
 		.schaak( false )
 		.build();
-	dbs.put( boStelling );
+	dbs.put( boStelling ); // Deze put maakt de stelling illegaal in de database
 	
 	BoStelling newBoStelling = dbs.get( boStelling );
 	newBoStelling.setSchaak( gen.isSchaak( newBoStelling ) );
@@ -122,11 +135,11 @@ public void testPut()
 	assertThat( newBoStelling.getAantalZetten(), is( 0 ) );
 	assertThat( newBoStelling.isSchaak(), is( false ) );
 	
-	boStelling = BoStelling.builder()
-		.wk( 0x10 )
-		.zk( 0x12 )
-		.s3( 0x00 )
-		.s4( 0x13 )
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "a2" )
+		.zk( "c2" )
+		.s3( "a1" )
+		.s4( "d2" )
 		.aanZet( Wit )
 		.resultaat( Remise )
 		.aantalZetten( 0 )
@@ -139,11 +152,11 @@ public void testPut()
 	assertThat( newBoStelling.getAantalZetten(), is( 0 ) );
 	assertThat( newBoStelling.isSchaak(), is( false ) );
 	
-	boStelling = BoStelling.builder()
-		.wk( 0x10 )
-		.zk( 0x12 )
-		.s3( 0x00 )
-		.s4( 0x13 )
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "a2" )
+		.zk( "c2" )
+		.s3( "a1" )
+		.s4( "d2" )
 		.aanZet( Wit )
 		.resultaat( Gewonnen )
 		.aantalZetten( 13 )
@@ -156,11 +169,11 @@ public void testPut()
 	assertThat( newBoStelling.getAantalZetten(), is( 13 ) );
 	assertThat( newBoStelling.isSchaak(), is( false ) );
 	
-	boStelling = BoStelling.builder()
-		.wk( 0x10 )
-		.zk( 0x12 )
-		.s3( 0x00 )
-		.s4( 0x13 )
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "a2" )
+		.zk( "c2" )
+		.s3( "a1" )
+		.s4( "d2" )
 		.aanZet( Wit )
 		.resultaat( Verloren )
 		.aantalZetten( 27 )
@@ -173,12 +186,11 @@ public void testPut()
 	assertThat( newBoStelling.getAantalZetten(), is( 27 ) );
 	assertThat( newBoStelling.isSchaak(), is( false ) );
 	
-	boStelling = BoStelling.builder()
-		.wk( 0x10 )
-		.zk( 0x12 )
-		.s3( 0x00 )
-		.s4( 0x13 )
-		.aanZet( Wit )
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "a2" )
+		.zk( "c2" )
+		.s3( "a1" )
+		.s4( "d2" )		.aanZet( Wit )
 		.resultaat( Remise )
 		.aantalZetten( 27 )
 		.schaak( true )
@@ -187,9 +199,8 @@ public void testPut()
 	
 	newBoStelling = dbs.get( boStelling );
 	assertThat( newBoStelling.getResultaat(), is( Remise ) );
-	assertThat( newBoStelling.getAantalZetten(), is( 0 ) );
+	assertThat( newBoStelling.getAantalZetten(), is( 0 ) ); // Komt door die Remise dat dit geen 27 is
 	assertThat( newBoStelling.isSchaak(), is( true ) );
-
 }
 @Test
 public void testGet()
@@ -204,11 +215,11 @@ public void testGetDirect()
 @Test
 public void testFreeRecord()
 {
-	BoStelling boStelling = BoStelling.builder()
-		.wk( 0x10 )
-		.zk( 0x12 )
-		.s3( 0x00 )
-		.s4( 0x13 )
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "a2" )
+		.zk( "c2" )
+		.s3( "a1" )
+		.s4( "d2" )
 		.aanZet( Wit )
 		.resultaat( Verloren )
 		.aantalZetten( 27 )

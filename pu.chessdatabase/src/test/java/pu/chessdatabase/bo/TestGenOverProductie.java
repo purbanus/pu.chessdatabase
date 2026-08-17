@@ -84,19 +84,22 @@ public void testGenereerZetten()
 @Test
 public void testIsGeomIllegaal4Stukken()
 {
+	// Twee lopers op dezelfde kleur is verboten
 	config.switchConfig( Config.PipoKLLK );
-	BoStelling boStelling = BoStelling.builder()
-		.wk( 5 )
-		.zk( 6 )
-		.s3( 7 )
-		.s4( 0x10 )
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "f1" )
+		.zk( "g1" )
+		.s3( "h1" )
+		.s4( "a2" )
 		.build();
 	assertThat( gen.isGeometrischIllegaal( boStelling ), is( true ) );
-	boStelling = BoStelling.builder()
-		.wk( 5 )
-		.zk( 6 )
-		.s3( 7 )
-		.s4( 0x11 )
+	
+	// De lopers hebben nu een verschillende kleur
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "f1" )
+		.zk( "g1" )
+		.s3( "h1" )
+		.s4( "b2" )
 		.build();
 	assertThat( gen.isGeometrischIllegaal( boStelling ), is( false ) );
 }

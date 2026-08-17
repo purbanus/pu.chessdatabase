@@ -65,11 +65,11 @@ public void testGetSetPageDescriptor()
 		.cacheNummer( 0x17 )
 		.schijfAdres( 1_000_000 )
 		.build();
-	VMStelling vmStelling = VMStelling.builder()
-		.wk( 0x03 )
-		.zk( 0x29 )
-		.s3( 0x01 )
-		.s4( 0x17 )
+	VMStelling vmStelling = VMStelling.alfaBuilder()
+		.wk( "e1" )
+		.zk( "b7" )
+		.s3( "b1" )
+		.s4( "h3" )
 		.aanZet( Wit )
 		.build();
 	getPageDescriptorTable().setPageDescriptor( vmStelling, pageDescriptor );

@@ -105,82 +105,87 @@ public void testIsGeomIllegaal3Stukken()
 	getConfig().switchConfig( Config.PipoKDK );
 
 	// Gewoon goed
-	BoStelling boStelling = BoStelling.builder()
-		.wk( 5 )
-		.zk( 6 )
-		.s3( 7 )
-//		.s4( 8 )
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "f1" )
+		.zk( "g1" )
+		.s3( "h1" )
+		.aanZet( Wit )
 		.build();
 	assertThat( gen.isGeometrischIllegaal( boStelling ), is( false ) );
 
 	// De koningen op hetzelfde veld
-	boStelling = BoStelling.builder()
-		.wk( 5 )
-		.zk( 5 )
-		.s3( 7 )
-//		.s4( 8 )
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "f1" )
+		.zk( "f1" )
+		.s3( "h1" )
+		.aanZet( Wit )
 		.build();
+	assertThat( gen.isGeometrischIllegaal( boStelling ), is( true ) );
 	
 	// Gewoon goed
-	boStelling = BoStelling.builder()
-		.wk( 5 )
-		.zk( 6 )
-		.s3( 5 )
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "f1" )
+		.zk( "g1" )
+		.s3( "f1" )
+		.aanZet( Wit )
 		.build();
 	assertThat( gen.isGeometrischIllegaal( boStelling ), is( false ) );
 
 	// Stuk onder koning van verkeerde kleur
-	boStelling = BoStelling.builder()
-		.wk( 5 )
-		.zk( 6 )
-		.s3( 6 )
+	boStelling =BoStelling.alfaBuilder()
+		.wk( "f1" )
+		.zk( "g1" )
+		.s3( "g1" )
 		.build();
 	assertThat( gen.isGeometrischIllegaal( boStelling ), is( true ) );
-	
 }
 @Test
 public void testIsGeomIllegaal4Stukken()
 {
 	// Twee stukken op hetzelfde veld
-	BoStelling boStelling = BoStelling.builder()
-		.wk( 5 )
-		.zk( 6 )
-		.s3( 7 )
-		.s4( 7 )
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "f1" )
+		.zk( "g1" )
+		.s3( "h1" )
+		.s4( "h1" )
 		.build();
 	assertThat( gen.isGeometrischIllegaal( boStelling ), is( true ) );
 
 	// Stuk onder koning van verkeerde kleur
-	boStelling = BoStelling.builder()
-		.wk( 5 )
-		.zk( 6 )
-		.s3( 7 )
-		.s4( 5 )
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "f1" )
+		.zk( "g1" )
+		.s3( "h1" )
+		.s4( "f1" )
 		.build();
 	assertThat( gen.isGeometrischIllegaal( boStelling ), is( true ) );
 	
 	// Stuk onder koning van verkeerde kleur
-	boStelling = BoStelling.builder()
-		.wk( 5 )
-		.zk( 6 )
-		.s3( 6 )
-		.s4( 8 )
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "f1" )
+		.zk( "g1" )
+		.s3( "g1" )
+		.s4( "h1" )
 		.build();
 	assertThat( gen.isGeometrischIllegaal( boStelling ), is( true ) );
 	
 	config.switchConfig( Config.PipoKLLK );
-	boStelling = BoStelling.builder()
-		.wk( 5 )
-		.zk( 6 )
-		.s3( 7 )
-		.s4( 0x10 )
+	
+	// Twee lopers van dezelfde kleur
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "f1" )
+		.zk( "g1" )
+		.s3( "h1" )
+		.s4( "a2" )
 		.build();
 	assertThat( gen.isGeometrischIllegaal( boStelling ), is( true ) );
-	boStelling = BoStelling.builder()
-		.wk( 5 )
-		.zk( 6 )
-		.s3( 7 )
-		.s4( 0x11 )
+	
+	// Twee lopers van verschillende kleur
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "f1" )
+		.zk( "g1" )
+		.s3( "h1" )
+		.s4( "b2" )
 		.build();
 	assertThat( gen.isGeometrischIllegaal( boStelling ), is( false ) );
 }
@@ -209,80 +214,90 @@ public void testBug2026_06_18()
 public void testIsKKSchaak()
 {
 	//Zie Gen.java voor een (paar) coordinaten, na Notatie
-	BoStelling stelling = BoStelling.builder()
-		.wk( 0x11 )
-		.zk( 0x27 )
+	BoStelling stelling = BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "h3" )
 		.build();
 	assertThat( gen.isKKSchaak( stelling ), is( false ) );
-	stelling = BoStelling.builder()
-		.wk( 0x11 )
-		.zk( 0x00 )
+	stelling = BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "a1" )
 		.build();
 	assertThat( gen.isKKSchaak( stelling ), is( true ) );
-	stelling = BoStelling.builder()
-		.wk( 0x11 )
-		.zk( 0x10 )
+	stelling = BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "a2" )
 		.build();
 	assertThat( gen.isKKSchaak( stelling ), is( true ) );
-	stelling = BoStelling.builder()
-		.wk( 0x11 )
-		.zk( 0x21 )
+	stelling =BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "b3" )
 		.build();
 	assertThat( gen.isKKSchaak( stelling ), is( true ) );
 }
-
 @Test
 public void testIsSchaakDoorStuk()
 {
-	BoStelling boStelling = BoStelling.builder()
-		.wk( 0x11 )
-		.zk( 0x27 )
-		.s3( 0x76 )
-		.s4( 0x33 )
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "h3" )
+		.s3( "g8" )
+		.s4( "d4" )
 		.aanZet( Zwart )
 		.build();
 	Bord bord = new Bord( getConfig().getStukken(), boStelling );
 	assertThat( gen.isSchaakDoorStuk( gen.getStukken().getS4(), 0x11, 0x33, bord ), is( false ) );
 
 	// T links
-	boStelling = BoStelling.builder()
-		.wk( 0x11 )
-		.zk( 0x27 )
-		.s3( 0x76 )
-		.s4( 0x10 )
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "h3" )
+		.s3( "g8" )
+		.s4( "a2" )
 		.aanZet( Zwart )
 		.build();
 	bord = new Bord( getConfig().getStukken(), boStelling );
 	assertThat( gen.isSchaakDoorStuk( gen.getStukken().getS4(), 0x11, 0x10, bord ), is( true ) );
 
+	// T links
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "h3" )
+		.s3( "g8" )
+		.s4( "a2" )
+		.aanZet( Wit )
+		.build();
+	bord = new Bord( getConfig().getStukken(), boStelling );
+	assertThat( gen.isSchaakDoorStuk( gen.getStukken().getS4(), 0x11, 0x10, bord ), is( true ) );
+
 	// T uiterst rechts
-	boStelling = BoStelling.builder()
-		.wk( 0x11 )
-		.zk( 0x27 )
-		.s3( 0x76 )
-		.s4( 0x17 )
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "h3" )
+		.s3( "g8" )
+		.s4( "h2" )
 		.aanZet( Zwart )
 		.build();
 	bord = new Bord( getConfig().getStukken(), boStelling );
 	assertThat( gen.isSchaakDoorStuk( gen.getStukken().getS4(), 0x11, 0x17, bord ), is( true ) );
 
 	// T nog steeds uiterst rechts, maar D ertussen
-	boStelling = BoStelling.builder()
-		.wk( 0x11 )
-		.zk( 0x27 )
-		.s3( 0x15 )
-		.s4( 0x17 )
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "h3" )
+		.s3( "f2" )
+		.s4( "h2" )
 		.aanZet( Zwart )
 		.build();
 	bord = new Bord( getConfig().getStukken(), boStelling );
 	assertThat( gen.isSchaakDoorStuk( gen.getStukken().getS4(), 0x11, 0x17, bord ), is( false ) );
 
 	// Check of Z schaak staat
-	boStelling = BoStelling.builder()
-		.wk( 0x11 )
-		.zk( 0x27 )
-		.s3( 0x20 )
-		.s4( 0x77 )
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "h3" )
+		.s3( "a3" )
+		.s4( "h8" )
 		.aanZet( Wit )
 		.build();
 	bord = new Bord( getConfig().getStukken(), boStelling );
@@ -292,44 +307,55 @@ public void testIsSchaakDoorStuk()
 public void testCheckSchaakDoorStuk()
 {
 	// Check aStukVeld == aStelling.getWK(), d.w.z. het witte stuk is geslagen
-	BoStelling boStelling = BoStelling.builder()
-		.wk( 0x11 )
-		.zk( 0x27 )
-		.s3( 0x11 )
-		.s4( 0x33 )
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "h3" )
+		.s3( "b2" )
+		.s4( "d4" )
 		.aanZet( Zwart )
 		.build();
 	Bord bord = new Bord( getConfig().getStukken(), boStelling );
 	assertThat( gen.checkSchaakDoorStuk( boStelling, gen.getStukken().getS3(), 0x11, 0x11, bord ), is( false ) );
 
 	// Check aStukVeld == aStelling.getZK(), d.w.z. het zwarte stuk is geslagen
-	boStelling = BoStelling.builder()
-		.wk( 0x11 )
-		.zk( 0x27 )
-		.s3( 0x76 )
-		.s4( 0x27 )
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "h3" )
+		.s3( "g8" )
+		.s4( "h3" )
 		.aanZet( Zwart )
 		.build();
 	bord = new Bord( getConfig().getStukken(), boStelling );
 	assertThat( gen.checkSchaakDoorStuk( boStelling, gen.getStukken().getS4(), 0x27, 0x27, bord ), is( false ) );
 
 	// Check dat het stuk aan zet is
-	boStelling = BoStelling.builder()
-		.wk( 0x11 )
-		.zk( 0x27 )
-		.s3( 0x76 )
-		.s4( 0x33 )
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "h3" )
+		.s3( "g8" )
+		.s4( "d4" )
 		.aanZet( Zwart )
 		.build();
 	bord = new Bord( getConfig().getStukken(), boStelling );
 	assertThat( gen.checkSchaakDoorStuk( boStelling, gen.getStukken().getS4(), 0x11, 0x33, bord ), is( false ) );
 
 	// T links
-	boStelling = BoStelling.builder()
-		.wk( 0x11 )
-		.zk( 0x27 )
-		.s3( 0x76 )
-		.s4( 0x10 )
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "h3" )
+		.s3( "g8" )
+		.s4( "a2" )
+		.aanZet( Zwart )
+		.build();
+	bord = new Bord( getConfig().getStukken(), boStelling );
+	assertThat( gen.checkSchaakDoorStuk( boStelling, gen.getStukken().getS4(), 0x11, 0x10, bord ), is( false ) );
+
+	// T links
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "h3" )
+		.s3( "g8" )
+		.s4( "a2" )
 		.aanZet( Wit )
 		.build();
 	bord = new Bord( getConfig().getStukken(), boStelling );
@@ -509,18 +535,18 @@ public void testAddZet()
 }
 
 @Test
-public void testGenZetPerStuk()
+public void testGenereerZettenPerStuk()
 {
 	// @@NOG NOG varianten met 3 en 5 stukken
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 
 	BoStelling boStelling;
 	
-	boStelling = BoStelling.builder()
-		.wk( 0x11 )
-		.zk( 0x27 )
-		.s3( 0x76 )
-		.s4( 0x33 )
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "h3" )
+		.s3( "g8" )
+		.s4( "d4" )
 		.aanZet( Zwart )
 		.build();
 	Bord bord = new Bord( getConfig().getStukken(), boStelling );
@@ -556,11 +582,11 @@ public void testGenZetPerStuk()
 	assertThat( gegenereerdeZetten.get( 13 ).getS4(), is( 0x03 ) );
 	assertThat( gegenereerdeZetten.get( 13 ).getAanZet(), is( Wit ) );
 	
-	boStelling = BoStelling.builder()
-		.wk( 0x11 )
-		.zk( 0x27 )
-		.s3( 0x76 )
-		.s4( 0x77 )
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "h3" )
+		.s3( "g8" )
+		.s4( "h8" )
 		.aanZet( Zwart )
 		.build();
 	bord = new Bord( getConfig().getStukken(), boStelling );
@@ -573,11 +599,11 @@ public void testGenZetPerStuk()
 	assertThat( gegenereerdeZetten.get(  3 ).getS4(), is( 0x47 ) );
 	assertThat( gegenereerdeZetten.get(  4 ).getS4(), is( 0x37 ) );
 	
-	boStelling = BoStelling.builder()
-		.wk( 0x02 )
-		.zk( 0x00 )
-		.s3( 0x06 )
-		.s4( 0x04 )
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "c1" )
+		.zk( "a1" )
+		.s3( "g1" )
+		.s4( "e1" )
 		.aanZet( Wit)
 		.schaak( true )
 		.resultaat( Resultaat.Remise )
@@ -591,16 +617,17 @@ public void testGenZetPerStuk()
 public void testGenereerZetten()
 {
 	// @@NOG NOG varianten met 3 en 5 stukken
+	dbs.setDatabaseName( DATABASE_NAME_PIPO4 );
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 
 	BoStelling boStelling;
 	List<BoStelling> gegenereerdeZetten;
 	
-	boStelling = BoStelling.builder()
-		.wk( 0x11 )
-		.zk( 0x27 )
-		.s3( 0x76 )
-		.s4( 0x33 )
+	boStelling =  BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "h3" )
+		.s3( "g8" )
+		.s4( "d4" )
 		.aanZet( Zwart )
 		.build();
 	gegenereerdeZetten = gen.genereerZetten( boStelling );
@@ -650,12 +677,12 @@ public void testCompareResultaten()
 public void testStellingComparator()
 {
 	// Resultaten ongelijk
-	BoStelling links = BoStelling.builder()
+	BoStelling links = BoStelling.alfaBuilder()
 		.aanZet( Wit )
 		.resultaat( Gewonnen )
 		.aantalZetten( 11 )
 		.build();
-	BoStelling rechts = BoStelling.builder()
+	BoStelling rechts = BoStelling.alfaBuilder()
 		.aanZet( Wit )
 		.resultaat( Verloren )
 		.aantalZetten( 9 )
@@ -667,12 +694,12 @@ public void testStellingComparator()
 	assertThat( gen.stellingComparator.compare( links, rechts ), is( lessThan( 0 ) ) );
 
 	// Aantal zetten ongelijk, links groter dan rechts
-	links = BoStelling.builder()
+	links = BoStelling.alfaBuilder()
 		.aanZet( Wit )
 		.resultaat( Gewonnen )
 		.aantalZetten( 11 )
 		.build();
-	rechts = BoStelling.builder()
+	rechts = BoStelling.alfaBuilder()
 		.aanZet( Wit )
 		.resultaat( Gewonnen )
 		.aantalZetten( 9 )
@@ -684,12 +711,12 @@ public void testStellingComparator()
 	assertThat( gen.stellingComparator.compare( links, rechts ), is( greaterThan( 0 ) ) );
 	
 	// Aantal zetten ongelijk, links < rechts
-	links = BoStelling.builder()
+	links = BoStelling.alfaBuilder()
 		.aanZet( Wit )
 		.resultaat( Gewonnen )
 		.aantalZetten( 9 )
 		.build();
-	rechts = BoStelling.builder()
+	rechts = BoStelling.alfaBuilder()
 		.aanZet( Wit )
 		.resultaat( Gewonnen )
 		.aantalZetten( 11 )
@@ -701,12 +728,12 @@ public void testStellingComparator()
 	assertThat( gen.stellingComparator.compare( links, rechts ), is( lessThan( 0 ) ) );
 
 	// Aantal zetten ongelijk, links groter dan rechts
-	links = BoStelling.builder()
+	links = BoStelling.alfaBuilder()
 		.aanZet( Wit )
 		.resultaat( Verloren )
 		.aantalZetten( 11 )
 		.build();
-	rechts = BoStelling.builder()
+	rechts = BoStelling.alfaBuilder()
 		.aanZet( Wit )
 		.resultaat( Verloren )
 		.aantalZetten( 9 )
@@ -718,22 +745,22 @@ public void testStellingComparator()
 	assertThat( gen.stellingComparator.compare( links, rechts ), is( lessThan( 0 ) ) );
 }
 @Test
-public void testGenZetSort()
+public void testGenereerZettenGesorteerd()
 {
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 
-	BoStelling stelling;
+	BoStelling boStelling;
 	List<BoStelling> gegenereerdeZetten;
 	
 	// Zwart aan zet
-	stelling = BoStelling.builder()
-		.wk( 0x11 )
-		.zk( 0x27 )
-		.s3( 0x76 )
-		.s4( 0x33 )
+	boStelling =  BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "h3" )
+		.s3( "g8" )
+		.s4( "d4" )
 		.aanZet( Zwart )
 		.build();
-	gegenereerdeZetten = gen.genereerZetten( stelling );
+	gegenereerdeZetten = gen.genereerZetten( boStelling );
 	assertThat( gegenereerdeZetten.size(), is( 19 ) );
 
 	// Om een beetje verschil te krijgen
@@ -772,14 +799,14 @@ public void testGenZetSort()
 	assertThat( gegenereerdeZetten.get( 18 ).getS4(), is( 0x36 ) );
 
 	// Wit aan zet
-	stelling = BoStelling.builder()
-		.wk( 0x11 )
-		.zk( 0x27 )
-		.s3( 0x76 )
-		.s4( 0x33 )
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "h3" )
+		.s3( "g8" )
+		.s4( "d4" )
 		.aanZet( Wit )
 		.build();
-	gegenereerdeZetten = gen.genereerZetten( stelling );
+	gegenereerdeZetten = gen.genereerZetten( boStelling );
 	assertThat( gegenereerdeZetten.size(), is( 29 ) );
 
 	// Om een beetje verschil te krijgen
@@ -823,11 +850,11 @@ public void testIsPat()
 @Test
 public void testGetStukInfo()
 {
-	BoStelling stelling = BoStelling.builder()
-		.wk( 0x11 )
-		.zk( 0x27 )
-		.s3( 0x76 )
-		.s4( 0x33 )
+	BoStelling stelling = BoStelling.alfaBuilder()
+		.wk( "b2" )
+		.zk( "h3" )
+		.s3( "g8" )
+		.s4( "d4" )
 		.aanZet( Zwart )
 		.build();
 	assertThat( gen.getStukInfo( stelling, gen.getStukken().getWk() ).getVeld(), is( 0x11 ) );
