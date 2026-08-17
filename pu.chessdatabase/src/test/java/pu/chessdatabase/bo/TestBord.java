@@ -8,6 +8,7 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static pu.chessdatabase.bo.Bord.*;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +22,18 @@ public class TestBord
 {
 @Autowired private Config config;
 Bord bord;
-
+String savedConfigString;
 @BeforeEach
 public void setup()
 {
+	savedConfigString = getConfig().getConfig();
+	getConfig().switchConfig( Config.KLPK );
 	bord = new Bord( getConfig().getStukken() );
+}
+@AfterEach
+public void destroy()
+{
+	getConfig().switchConfig( savedConfigString );
 }
 @Test
 public void testMaakBordLeeg()
@@ -117,4 +125,31 @@ public void testGetRij()
 	assertThat( getBord().getRij( 0x70 ), is( 7 ) );
 	assertThat( getBord().getRij( 0x77 ), is( 7 ) );
 }
+private static final String TO_STRING = """
+.. .. .. .. .. .. .. ..\s
+.. .. .. .. .. .. .. ..\s
+.. .. .. .. .. .. .. ..\s
+.. .. .. .. .. .. .. ..\s
+.. .. .. .. .. .. .. ..\s
+.. .. .. .. .. .. .. ..\s
+WP .. .. .. .. .. .. ..\s
+.. .. .. .. .. WK ZK WL\s
+    """;
+
+@Test
+public void testToString()
+{
+	assertThat( getConfig().getConfig(), is( "KLPK" ) );
+	BoStelling stelling = BoStelling.alfaBuilder()
+		.wk( "f1" )
+		.zk( "g1" )
+		.s3( "h1" )
+		.s4( "a2" )
+		.s5( "b2" )
+		.build();
+	bord.zetBordOp( stelling );
+	String actualToString = bord.toString();
+	assertThat( actualToString, is( TO_STRING ) );
+}
+
 }

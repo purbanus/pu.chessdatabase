@@ -260,7 +260,7 @@ public String toString()
 		.append( " S3=" ).append( Gen.veldToAlfa( s3 ) )
 		.append( " S4=" ).append( Gen.veldToAlfa( s4 ) )
 		.append( " S5=" ).append( Gen.veldToAlfa( s5 ) )
-		.append( " AanZet=" ).append( aanZet.getAfko() )
+		.append( " AanZet=" ).append( aanZet == null ? "null" : aanZet.getAfko() )
 		.append( " Resultaat=" ).append( resultaat )
 		.append( " AantalZetten=" ).append( aantalZetten )
 		.append( " Schaak=" ).append( schaak ).append( "\n" );

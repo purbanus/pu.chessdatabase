@@ -427,27 +427,26 @@ public void testSpiegelEnRoteer()
 	assertThat( vmStelling, is( newVmStelling ) );
 
 	// Oude stijl
-	boStelling = BoStelling.builder()
-		.wk( 0x10 )
-		.zk( 0x12 )
-		.s3( 0x00 )
-		.s4( 0x13 )
-		.s5( 0x10 )
+	boStelling = BoStelling.alfaBuilder()
+		.wk( "a2" )
+		.zk( "c2" )
+		.s3( "a1" )
+		.s4( "d2" )
+		.s5( "a2" )
 		.aanZet( Wit )
 		.build();
 	// De WK zit in oktant 8. Dit krijgt een spiegeling in de diagonaal a1-h8 
 	assertThat( getTransformator().getOktant( boStelling ), is( 8 ) );
 	vmStelling = getTransformator().spiegelEnRoteer( boStelling );
-	newVmStelling = VMStelling.builder()
-		.wk( 0x01 )
-		.zk( 0x11 )
-		.s3( 0x00 )
-		.s4( 0x19 )
-		.s5( 0x01 )
+	newVmStelling = VMStelling.alfaBuilder()
+		.wk( "b1" )
+		.zk( "b3" )
+		.s3( "a1" )
+		.s4( "b4" )
+		.s5( "b1" )
 		.aanZet( Wit )
 		.build();
 	assertThat( vmStelling, is( newVmStelling ) );
-	
 }
 @Test
 public void testSpiegelEnRoteerOktant5()

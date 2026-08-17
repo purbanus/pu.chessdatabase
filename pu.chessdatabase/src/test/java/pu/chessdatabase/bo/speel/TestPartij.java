@@ -75,11 +75,11 @@ public void testVeldToHexGetal()
 @Test
 public void testIsLegaleStelling()
 {
-	BoStelling boStelling = BoStelling.builder()
-		.wk( 0 )
-		.zk( 0 )
-		.s3( 0 )
-		.s4( 0 )
+	BoStelling boStelling = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "a1" )
+		.s3( "a1" )
+		.s4( "a1" )
 		.aanZet( Wit )
 		.build();
 	assertThat( partij.isLegaleStelling( boStelling ), is( false ) );

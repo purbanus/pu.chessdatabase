@@ -295,11 +295,11 @@ public void testGetPageFromDatabase()
 		.cacheNummer( cacheNumber )
 		.schijfAdres( pageNumber * getCache().getPageSize() )
 		.build();
-	VMStelling vmStelling = VMStelling.builder()
-		.wk( 0x04 )
-		.zk( 0x31 )
-		.s3( 0x00 )
-		.s4( 0x07 )
+	VMStelling vmStelling = VMStelling.alfaBuilder()
+		.wk( "e1" )
+		.zk( "b7" )
+		.s3( "a1" )
+		.s4( "a1" )
 		.aanZet( Wit )
 		.build();
 	vm.getPageDescriptorTable().setPageDescriptor( vmStelling, pageDescriptor );
@@ -343,11 +343,12 @@ public void testGetPageNotDirtyAndInRam()
 		.cacheNummer( cacheNumber )
 		.schijfAdres( pageNumber * getCache().getPageSize() )
 		.build();
-	VMStelling vmStelling = VMStelling.builder()
-		.wk( 0x04 )
-		.zk( 0x31 )
-		.s3( 0x00 )
-		.s4( 0x07 )
+	VMStelling vmStelling = VMStelling.alfaBuilder()
+		.wk( "e1" )
+		.zk( "b7" )
+		.s3( "a1" )
+		.s4( "h1" )
+		.s5( "a1" )
 		.aanZet( Wit )
 		.build();
 	vm.getPageDescriptorTable().setPageDescriptor( vmStelling, pageDescriptor );
@@ -452,12 +453,12 @@ public void testPageOut()
 public void testGetPositionWithinPage()
 {
 	// @@HIGH Dit nog geschikt maken voor pionnen
-	VMStelling vmStelling = VMStelling.builder()
-		.wk( 0x04 )
-		.zk( 0x31 )
-		.s3( 0x00 )
-		.s4( 0x07 )
-		.s5( 0x09 )
+	VMStelling vmStelling = VMStelling.alfaBuilder()
+		.wk( "e1" )
+		.zk( "b7" )
+		.s3( "a1" )
+		.s4( "h1" )
+		.s5( "b2" )
 		.aanZet( Wit )
 		.build();
 	// Hier niet de lokale cache gebruiken maar die uit VM, want die is geconfigSwithed
@@ -473,12 +474,12 @@ public void testGetAllPositionsWithinPage3Stukken()
 {
 	// @@HIGH Dit nog geschikt maken voor pionnen
 	getConfig().switchConfig( Config.PipoKDK );
-	VMStelling vmStelling = VMStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x00 )
-		.s3( 0x00 )
-		.s4( 0x00 )
-		.s5( 0x00 )
+	VMStelling vmStelling = VMStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "a1" )
+		.s3( "a1" )
+		.s4( "a1" )
+		.s5( "a1" )
 		.aanZet( Wit )
 		.build();
 	int pos = 0;
@@ -494,12 +495,12 @@ public void testGetAllPositionsWithinPage4Stukken()
 {
 	// @@HIGH Dit nog geschikt maken voor pionnen
 	getConfig().switchConfig( Config.PipoKDKT );
-	VMStelling vmStelling = VMStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x00 )
-		.s3( 0x00 )
-		.s4( 0x00 )
-		.s5( 0x00 )
+	VMStelling vmStelling = VMStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "a1" )
+		.s3( "a1" )
+		.s4( "a1" )
+		.s5( "a1" )
 		.aanZet( Wit )
 		.build();
 	int pos = 0;
@@ -520,12 +521,12 @@ public void testGetAllPositionsWithinPage5Stukken()
 	// @@HIGH Dit nog geschikt maken voor pionnen
 	StopWatch timer = new StopWatch();
 	getConfig().switchConfig( Config.PipoKDKTT );
-	VMStelling vmStelling = VMStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x00 )
-		.s3( 0x00 )
-		.s4( 0x00 )
-		.s5( 0x00 )
+	VMStelling vmStelling = VMStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "a1" )
+		.s3( "a1" )
+		.s4( "a1" )
+		.s5( "a1" )
 		.aanZet( Wit )
 		.build();
 	int pos = 0;
@@ -661,11 +662,11 @@ public void testFlushWithSomePagesPresentButNoneVuil()
 @Test
 public void testFlushWithSomePagesPresentAndVuil()
 {
-	VMStelling vmStelling = VMStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x00 )
-		.s3( 0x01 )
-		.s4( 0x17 )
+	VMStelling vmStelling = VMStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "a1" )
+		.s3( "b1" )
+		.s4( "h3" )
 		.aanZet( Wit )
 		.build();
 

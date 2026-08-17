@@ -244,11 +244,11 @@ public void testGetPageFromDatabase()
 		.cacheNummer( cacheNumber )
 		.schijfAdres( pageNumber * getCache().getPageSize() )
 		.build();
-	VMStelling vmStelling = VMStelling.builder()
-		.wk( 0x04 )
-		.zk( 0x31 )
-		.s3( 0x00 )
-		.s4( 0x07 )
+	VMStelling vmStelling = VMStelling.alfaBuilder()
+		.wk( "e1" )
+		.zk( "b7" )
+		.s3( "a1" )
+		.s4( "h1" )
 		.aanZet( Wit )
 		.build();
 	vm.getPageDescriptorTable().setPageDescriptor( vmStelling, pageDescriptor );
@@ -291,11 +291,11 @@ public void testGetPageNotDirtyAndInRam()
 		.cacheNummer( cacheNumber )
 		.schijfAdres( pageNumber * getCache().getPageSize() )
 		.build();
-	VMStelling vmStelling = VMStelling.builder()
-		.wk( 0x04 )
-		.zk( 0x31 )
-		.s3( 0x00 )
-		.s4( 0x07 )
+	VMStelling vmStelling = VMStelling.alfaBuilder()
+		.wk( "e1" )
+		.zk( "b7" )
+		.s3( "a1" )
+		.s4( "h1" )
 		.aanZet( Wit )
 		.build();
 	vm.getPageDescriptorTable().setPageDescriptor( vmStelling, pageDescriptor );
@@ -419,12 +419,12 @@ public void testGetPositionWithinPage()
 public void testGetAllPositionsWithinPage3StukkeZonderPionnenn()
 {
 	getConfig().switchConfig( Config.PipoKDK );
-	VMStelling vmStelling = VMStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x00 )
-		.s3( 0x00 )
-		.s4( 0x00 )
-		.s5( 0x00 )
+	VMStelling vmStelling = VMStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "a1" )
+		.s3( "a1" )
+		.s4( "a1" )
+		.s5( "a1" )
 		.aanZet( Wit )
 		.build();
 	int pos = 0;
@@ -447,12 +447,12 @@ public void testGetAllPositionsWithinPage3StukkeZonderPionnenn()
 public void testGetAllPositionsWithinPage3StukkeMetPionnenn()
 {
 	getConfig().switchConfig( Config.PipoKoK );
-	VMStelling vmStelling = VMStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x00 )
-		.s3( 0x00 )
-		.s4( 0x00 )
-		.s5( 0x00 )
+	VMStelling vmStelling = VMStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "a1" )
+		.s3( "a1" )
+		.s4( "a1" )
+		.s5( "a1" )
 		.aanZet( Wit )
 		.build();
 	int pos = 0;
@@ -475,12 +475,12 @@ public void testGetAllPositionsWithinPage3StukkeMetPionnenn()
 public void testGetAllPositionsWithinPage4Stukken()
 {
 	getConfig().switchConfig( Config.PipoKDKT );
-	VMStelling vmStelling = VMStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x00 )
-		.s3( 0x00 )
-		.s4( 0x00 )
-		.s5( 0x00 )
+	VMStelling vmStelling = VMStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "a1" )
+		.s3( "a1" )
+		.s4( "a1" )
+		.s5( "a1" )
 		.aanZet( Wit )
 		.build();
 	int pos = 0;
@@ -508,12 +508,12 @@ public void testGetAllPositionsWithinPage5Stukken()
 {
 	StopWatch timer = new StopWatch();
 	getConfig().switchConfig( Config.PipoKDKTT );
-	VMStelling vmStelling = VMStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x00 )
-		.s3( 0x00 )
-		.s4( 0x00 )
-		.s5( 0x00 )
+	VMStelling vmStelling = VMStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "a1" )
+		.s3( "a1" )
+		.s4( "a1" )
+		.s5( "a1" )
 		.aanZet( Wit )
 		.build();
 	int pos = 0;
@@ -703,11 +703,11 @@ public void testFlushWithSomePagesPresentAndVuil()
 
 	// Lees de eerste twee paginas en check of die allemaal 1 zijn
 	// N.B. Bij de parallelCache wordt steeds de cacheEntry 0 uitgelezen, zowel voor Wit als voor Zwart.
-	VMStelling vmStelling = VMStelling.builder()
-		.wk( 0x00 )
-		.zk( 0x00 )
-		.s3( 0x01 )
-		.s4( 0x17 )
+	VMStelling vmStelling = VMStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "a1" )
+		.s3( "b1" )
+		.s4( "h3" )
 		.aanZet( Wit )
 		.build();
 	PageDescriptor newPageDescriptor = vm.getLinearPageDescriptor( vmStelling );

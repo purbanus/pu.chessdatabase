@@ -138,7 +138,7 @@ Map<String, String> createStukVelden()
 		}
 		default:
 		{
-			throw new RuntimeException( "Ongeldige configuratie in newGame()" );
+			throw new RuntimeException( String.format( "Ongeldige configuratie in newGame(): %s", config.getConfig() ) );
 		}
 	}
 	return stukVelden;

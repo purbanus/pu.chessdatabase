@@ -8,6 +8,7 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static pu.chessdatabase.bo.Kleur.*;
+import static pu.chessdatabase.bo.ZetGenDirection.*;
 import static pu.chessdatabase.dbs.Constants.*;
 import static pu.chessdatabase.dbs.PassType.*;
 import static pu.chessdatabase.dbs.Resultaat.*;
@@ -50,9 +51,10 @@ String savedConfigString;
 @BeforeEach
 public void setup()
 {
-	savedConfigString = config.getConfig();
-	config.switchConfig( Config.PipoKDKT, false ); // false want de database bestaat nog niet dus VM kan m niet openen
-	dbs.create();
+	savedConfigString = getConfig().getConfig();
+	getConfig().switchConfig( Config.PipoKDKT, false ); // false want de database bestaat nog niet dus VM kan m niet openen
+	getGen().setZetGenDirection( Backward );
+	getDbs().create();
 }
 @AfterEach
 public void destroy()
@@ -599,6 +601,36 @@ public void testMarkeer()
 	assertThat( gotBoStelling.isSchaak(), is( false ) );
 	assertThat( gotBoStelling.getResultaat(), is( Gewonnen ) );
 	assertThat( gotBoStelling.getAantalZetten(), is( 6 ) );
+}
+@Test
+public void testMarkeerMetPionnen()
+{
+	config.switchConfig( Config.PipoKoK );
+	if ( DO_PRINT )
+	{
+		LOG.info( "methode testMarkeerMetPionnen" );
+	}
+	bouw.pass_0( true );
+	dbs.open( "rw" );
+	BoStelling boStellingVan;
+	BoStelling gotBoStelling;
+	
+	boStellingVan = BoStelling.alfaBuilder()
+		.wk( "a1" )
+		.zk( "c2" )
+		.s3( "a8" )
+		.aanZet( Wit )
+		.schaak( false )
+		.resultaat( Remise )
+		.aantalZetten( 0 )
+		.build();
+	bouw.markeer( boStellingVan );
+	gotBoStelling = dbs.get( boStellingVan );
+	gotBoStelling.setSchaak( gen.isSchaak( gotBoStelling ) );
+	assertThat( gotBoStelling.isSchaak(), is( false ) );
+	assertThat( gotBoStelling.getResultaat(), is( Gewonnen ) );
+	assertThat( gotBoStelling.getAantalZetten(), is( 2 ) );
+	
 }
 @Test
 public void testIsIllegaal_20260805()
