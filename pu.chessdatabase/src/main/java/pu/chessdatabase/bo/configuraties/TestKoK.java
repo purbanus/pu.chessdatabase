@@ -25,7 +25,7 @@ public TestKoK()
 @Override
 public String getName()
 {
-	return "TESTKoK";
+	return "TestKoK";
 }
 
 }
