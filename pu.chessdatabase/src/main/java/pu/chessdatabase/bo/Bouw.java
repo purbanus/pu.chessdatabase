@@ -1,6 +1,7 @@
 package pu.chessdatabase.bo;
 
 import static pu.chessdatabase.bo.Kleur.*;
+import static pu.chessdatabase.bo.ZetGenDirection.*;
 import static pu.chessdatabase.dbs.Resultaat.*;
 
 import java.util.ArrayList;
@@ -61,7 +62,8 @@ void reportNewPass( String aPassText, boolean aDoPrint )
 {
 	if ( aDoPrint )
 	{
-		LOG.info( "\n{}\n", aPassText );
+		LOG.info( "" );
+		LOG.info( "{}", aPassText );
 		dbs.setReport( getReportFrequency(), this::showNothing);
 	}
 	else
@@ -443,10 +445,10 @@ public void bouwDatabase()
 {
 	LOG.info( "We bouwen op: {}", getDbs().getDatabaseName() );
 	StopWatch timer = new StopWatch();
+	getGen().setZetGenDirection( Backward );
 	passNumber = 0;
 	pass_0( true );
 	LOG.info( "Pass {} duurde {}", passNumber, timer.getLapTimeMs() );
-	telAndPrintAlles( true );
 	checkStellingen();
 	numberOfChanges = Integer.MAX_VALUE;
 	while ( numberOfChanges > 0 )
@@ -454,16 +456,14 @@ public void bouwDatabase()
 		numberOfChanges = 0;
 		pass_n();
 		passNumber++;
-		LOG.info( "Pass {} duurde {}, aantal wijzigingen={}", passNumber, timer.getLapTimeMs(), numberOfChanges );
-		telAndPrintAlles( true );
+		LOG.info( "" );
+		LOG.info( "Pass {} duurde {}, aantal wijzigingen={}, aantal puts={}", passNumber, timer.getLapTimeMs(), numberOfChanges, getDbs().getNumberOfPuts() );
 		checkStellingen();
 	}
 	LOG.info( "Totaaltijd: {}", timer.getElapsedMs() );
-	telAndPrintAlles( true );
 }
 private void checkStellingen()
 {
-	LOG.info( "Number of puts: {}", getDbs().getNumberOfPuts() );
 	getDbs().setNumberOfPuts( 0 );
 	telAndPrintAlles( true );
 	getDbs().checkStellingen();
