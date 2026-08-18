@@ -53,7 +53,7 @@ public void setup()
 {
 	savedConfigString = getConfig().getConfig();
 	getConfig().switchConfig( Config.PipoKDKT, false ); // false want de database bestaat nog niet dus VM kan m niet openen
-	getGen().setZetGenDirection( Backward );
+	getGen().setZetGenDirection( Forward );
 	getDbs().create();
 }
 @AfterEach
@@ -522,6 +522,7 @@ public void testMarkeer()
 	assertThat( gotBoStelling.getResultaat(), is( Gewonnen ) );
 	assertThat( gotBoStelling.getAantalZetten(), is( 2 ) );
 	
+	// In deze stelling is Wit aan zet en is gedwongen om Ka1 te spelenm, waarmee de vorige stelling bereikt is
 	boStellingVan = BoStelling.alfaBuilder()
 		.wk( "a2" )
 		.zk( "c2" )
@@ -594,7 +595,7 @@ public void testMarkeer()
 	
 	gegenereerdeZetten.get(  7 ).setResultaat( Gewonnen );
 	gegenereerdeZetten.get(  7 ).setAantalZetten( 3 );
-	dbs.put( gegenereerdeZetten.get( 3 ) );
+	dbs.put( gegenereerdeZetten.get( 7 ) );
 	
 	bouw.markeer( boStellingVan );
 	gotBoStelling = dbs.get( boStellingVan );
@@ -618,7 +619,7 @@ public void testMarkeerMetPionnen()
 	boStellingVan = BoStelling.alfaBuilder()
 		.wk( "a1" )
 		.zk( "c2" )
-		.s3( "a8" )
+		.s3( "a7" )
 		.aanZet( Wit )
 		.schaak( false )
 		.resultaat( Remise )

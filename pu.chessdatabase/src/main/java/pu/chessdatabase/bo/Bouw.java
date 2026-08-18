@@ -445,7 +445,7 @@ public void bouwDatabase()
 {
 	LOG.info( "We bouwen op: {}", getDbs().getDatabaseName() );
 	StopWatch timer = new StopWatch();
-	getGen().setZetGenDirection( Backward );
+	getGen().setZetGenDirection( Forward );
 	passNumber = 0;
 	pass_0( true );
 	LOG.info( "Pass {} duurde {}", passNumber, timer.getLapTimeMs() );
