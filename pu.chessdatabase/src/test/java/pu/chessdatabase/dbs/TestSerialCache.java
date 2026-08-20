@@ -35,14 +35,14 @@ public class TestSerialCache
 private MockCache cache;
 private TestHelper testHelper;
 
-private String savedConfigString;
+String savedConfigString;
 @BeforeEach
 public void setup()
 {
 	savedConfigString = config.getConfig();
 	getConfig().setCacheType( Serial );
 	getConfig().switchConfig( Config.PipoKDKT );
-	getVm().open( "rw" );
+	getVm().create();
 	cache = new MockCache( vm.getCache() );
 	testHelper = new TestHelper( getConfig() );
 }
@@ -270,7 +270,7 @@ public void testGetPage()
 	byte value = (byte)0x60;
 
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( OpSchijf )
+		.waar( InRam )
 		.cacheNummer( cacheNumber )
 		.schijfAdres( pageNumber * getCache().getPageSize() )
 		.build();
@@ -304,7 +304,7 @@ public void testGetPageFromDatabase()
 		.build();
 	vm.getPageDescriptorTable().setPageDescriptor( vmStelling, pageDescriptor );
 
-	byte [] page = getCache().getPageFromDatabase( pageDescriptor );
+	byte [] page = getCache().getPage( pageDescriptor );
 	assertThat( getTestHelper().isAll( page, value ), is( true ) );
 	// De pageDescriptor is veranderd, hij wijst nu naar cachenummer 0
 	assertThat( pageDescriptor.getCacheNummer(), is( 0 ) );
@@ -318,7 +318,7 @@ public void testGetSetPage()
 	byte value = (byte)0x70;
 
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( OpSchijf )
+		.waar( InRam )
 		.cacheNummer( cacheNumber )
 		.schijfAdres( pageNumber * getCache().getPageSize() )
 		.build();
@@ -353,7 +353,7 @@ public void testGetPageNotDirtyAndInRam()
 		.build();
 	vm.getPageDescriptorTable().setPageDescriptor( vmStelling, pageDescriptor );
 
-	byte [] page = getCache().getPageFromDatabase( pageDescriptor );
+	byte [] page = getCache().getPage( pageDescriptor );
 	assertThat( getTestHelper().isAll( page, value ), is( true ) );
 	// De pageDescriptor is NIET veranderd
 	assertThat( pageDescriptor.getCacheNummer(), is( cacheNumber ) );
@@ -552,13 +552,12 @@ public void testGetAllPositionsWithinPage5Stukken()
 }
 
 @Test
-public void testGetSetData()
+public void testGetPut()
 {
 	long pageNumber = 9L;
 	int cacheNumber = 20;
 	byte value = (byte)0x25;
 	byte newValue = (byte)0x77;
-	int positionWithinPage = 10;
 
 	getTestHelper().writePageWithAll( getCache(), pageNumber, cacheNumber, value );
 	
@@ -576,9 +575,6 @@ public void testGetSetData()
 		.build();
 	getCache().setCacheEntry( pageDescriptor, cacheEntry );
 	
-	getCache().setData( pageDescriptor, positionWithinPage, newValue );
-	assertThat( getCache().getData( pageDescriptor, positionWithinPage ), is( newValue ) );
-	
 	VMStelling vmStelling = VMStelling.alfaBuilder()
 		.wk( "a1" )
 		.zk( "h8" )
@@ -587,38 +583,8 @@ public void testGetSetData()
 		.s5( "h8" )
 		.aanZet( Wit )
 		.build();
-	getCache().setData( pageDescriptor, vmStelling, newValue );
-	assertThat( getCache().getData( pageDescriptor, vmStelling ), is( newValue ) );
-}
-@Test
-
-public void testGetDataWithNoGetPage()
-{
-	long pageNumber = 9L;
-	int cacheNumber = 21;
-	byte value = (byte)0x25;
-	byte newValue = (byte)0x00;
-	int positionWithinPage = 10;
-
-	getTestHelper().writePageWithAll( getCache(), pageNumber, cacheNumber, value );
-	
-	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( InRam )
-		.cacheNummer( cacheNumber )
-		.schijfAdres( pageNumber * getCache().getPageSize() )
-		.build();
-	// @@NOG Maar hier gebeurt toch wel een getPage????
-	byte [] page = getCache().getCacheEntries().get( cacheNumber ).getPage();
-	CacheEntry cacheEntry = CacheEntry.builder()
-		.page( page )
-		.pageDescriptor( pageDescriptor )
-		.vuil( false )
-		.generatie( 1 )
-		.build();
-	getCache().setCacheEntry( pageDescriptor, cacheEntry );
-	
-	getCache().setData( pageDescriptor, positionWithinPage, newValue );
-	assertThat( getCache().getData( pageDescriptor, positionWithinPage ), is( newValue ) );
+	getCache().put( pageDescriptor, vmStelling, newValue );
+	assertThat( getCache().get( pageDescriptor, vmStelling ), is( (int)newValue ) );
 }
 @Test
 public void testFlushWithNothingChanged()
@@ -670,13 +636,16 @@ public void testFlushWithSomePagesPresentAndVuil()
 		.aanZet( Wit )
 		.build();
 
-	byte [] page = getTestHelper().createPageWithAllOnes();
+	byte [] pageWithAllOnes = getTestHelper().createPageWithAllOnes();
+	byte [] pageWithAllTwos = getTestHelper().createPageWithAll( (byte)2 );
+	
 	PageDescriptor pageDescriptor = vm.getLinearPageDescriptor( vmStelling );
 	pageDescriptor.setCacheNummer( 0 );
+	pageDescriptor.setWaar( InRam );
 	CacheEntry cacheEntry = CacheEntry.builder()
 		.generatie( 2156 )
 		.pageDescriptor( pageDescriptor )
-		.page( page )
+		.page( pageWithAllOnes )
 		.vuil( true )
 		.build();
 	getCache().setCacheEntry( pageDescriptor, cacheEntry );
@@ -684,10 +653,11 @@ public void testFlushWithSomePagesPresentAndVuil()
 	vmStelling.setAanZet( Zwart );
 	pageDescriptor = vm.getLinearPageDescriptor( vmStelling );
 	pageDescriptor.setCacheNummer( 1 );
+	pageDescriptor.setWaar( InRam );
 	cacheEntry = CacheEntry.builder()
 		.generatie( 9500 )
 		.pageDescriptor( pageDescriptor )
-		.page( page )
+		.page( pageWithAllTwos )
 		.vuil( true )
 		.build();
 	getCache().setCacheEntry( pageDescriptor, cacheEntry );
@@ -697,12 +667,15 @@ public void testFlushWithSomePagesPresentAndVuil()
 	// Lees de eerste twee paginas en check of die allemaal 1 zijn
 	vmStelling.setAanZet( Wit );
 	PageDescriptor newPageDescriptor = vm.getLinearPageDescriptor( vmStelling );
+	newPageDescriptor.setWaar( OpSchijf );
 	byte [] newPage = getCache().getPage( newPageDescriptor );
 	assertThat( getTestHelper().isAllOne( newPage ), is( true ) );
 	
 	vmStelling.setAanZet( Zwart );
+	newPageDescriptor = vm.getLinearPageDescriptor( vmStelling );
+	newPageDescriptor.setWaar( OpSchijf );
 	newPage = getCache().getPage( newPageDescriptor );
-	assertThat( getTestHelper().isAllOne( newPage ), is( true ) );
+	assertThat( getTestHelper().isAll( newPage, (byte)2 ), is( true ) );
 }
 
 }
