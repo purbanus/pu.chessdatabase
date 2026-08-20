@@ -62,25 +62,70 @@ public long getDatabaseSize()
 	return getPageSizeCalculator().getDatabaseSize( getAantalStukken() );
 }
 @Override
-public byte [] getPage( PageDescriptor aPageDescriptor )
-{
-//	if ( aPageDescriptor.getCacheNummer() >= getCacheSize() )
-//	{
-//		System.out.println( "Got him! Hij is " + aPageDescriptor.getCacheNummer() );
-//	}
-	CacheEntry cacheEntry = getCacheEntries().get( aPageDescriptor.getCacheNummer() );
-	return cacheEntry.getPage();
-}
-@Override
-public byte [ ] getPageFromDatabase( PageDescriptor aPageDescriptor )
+public void ensurePageIsInRam( PageDescriptor aPageDescriptor )
 {
 	if ( aPageDescriptor.getWaar() == OpSchijf )
 	{
 		pageIn( aPageDescriptor );
 	}
-	return getPage( aPageDescriptor );
 }
-//@@NOG private maken want wordt alleen in tests gebruikt. Helaas ook in TestVM, dus nog ff niet
+protected void getRawPageData( PageDescriptor aPageDescriptor )
+{
+    try
+	{
+		getDatabase().seek( aPageDescriptor.getSchijfAdres() );
+		int pageSize = getPageSize();
+		int aantal = getDatabase().read( getPageBytes( aPageDescriptor ), 0, pageSize );
+		if ( aantal == -1 )
+		{
+			throw new RuntimeException( String.format( "Ernstig: VM.getPage heeft -1 records gelezen. Dat betekent vermoedelijk dat de database leeg is, of in ieder geval te klein" ) );
+		}
+		if ( aantal != pageSize )
+		{
+			throw new RuntimeException( String.format( "Ernstig: VM.getPage heeft %d records gelezen. Dat zouden er %d moeten zijn", aantal, pageSize ) );
+		}
+	}
+	catch ( IOException e )
+	{
+		throw new RuntimeException( e );
+	}
+}
+/**
+ * ------------ Pagina schrijven naar de schijf ------
+ */
+@Override
+public void pageOut( PageDescriptor aPageDescriptor )
+{
+	if ( aPageDescriptor != null && isVuil( aPageDescriptor ) )
+	{
+		putRawPageData( aPageDescriptor );
+	}
+}
+protected void putRawPageData( PageDescriptor aPageDescriptor )
+{
+	try
+	{
+		getDatabase().seek( aPageDescriptor.getSchijfAdres() );
+		byte [] page = getPageBytes( aPageDescriptor );
+	    getDatabase().write( page, 0, getPageSize() );
+		setVuil( aPageDescriptor, false );
+	}
+	catch ( Exception e )
+	{
+		throw new RuntimeException( e );
+	}
+}
+byte [] getPageBytes( PageDescriptor aPageDescriptor )
+{
+	CacheEntry cacheEntry = getCacheEntries().get( aPageDescriptor.getCacheNummer() );
+	return cacheEntry.getPage();
+}
+@Override
+public byte [] getPage( PageDescriptor aPageDescriptor )
+{
+	ensurePageIsInRam( aPageDescriptor );
+	return getPageBytes( aPageDescriptor );
+}
 @SuppressWarnings( "unused" )
 private void setPage( PageDescriptor aPageDescriptor, byte [] aPage )
 {
@@ -95,92 +140,44 @@ public void setVuil( PageDescriptor aPageDescriptor, boolean aVuil )
 {
 	getCacheEntries().get( aPageDescriptor.getCacheNummer() ).setVuil( aVuil );
 }
-protected void getRawPageData( PageDescriptor aPageDescriptor )
+private CacheEntry getCacheEntryByNumber( int aCacheNummer )
 {
-    try
-	{
-		getDatabase().seek( aPageDescriptor.getSchijfAdres() );
-		int pageSize = getPageSize();
-		int aantal = getDatabase().read( getPage( aPageDescriptor ), 0, pageSize );
-		if ( aantal == -1 )
-		{
-			throw new RuntimeException( String.format( "Ernstig: VM.GetPage heeft -1 records gelezen. Dat betekent vermoedelijk dat de database leeg is, of in ieder geval te klein" ) );
-		}
-		if ( aantal != pageSize )
-		{
-			throw new RuntimeException( String.format( "Ernstig: VM.GetPage heeft %d records gelezen. Dat zouden er %dmoeten zijn", aantal, pageSize ) );
-		}
-	}
-	catch ( IOException e )
-	{
-		throw new RuntimeException( e );
-	}
+	return getCacheEntries().get( aCacheNummer );
 }
 @Override
 public CacheEntry getCacheEntry( PageDescriptor aPageDescriptor )
 {
-	return getCacheEntries().get( aPageDescriptor.getCacheNummer() );
+	return getCacheEntryByNumber( aPageDescriptor.getCacheNummer() );
 }
 @Override
 public void setCacheEntry( PageDescriptor aPageDescriptor, CacheEntry aCacheEntry )
 {
 	getCacheEntries().set( aPageDescriptor.getCacheNummer(), aCacheEntry );
 }
-protected void putRawPageData( PageDescriptor aPageDescriptor )
-{
-	try
-	{
-		getDatabase().seek( aPageDescriptor.getSchijfAdres() );
-		byte [] page = getPage( aPageDescriptor );
-	    getDatabase().write( page, 0, getPageSize() );
-	    // @@HIGH moet hier niet vuil=false gedaan worden?
-	}
-	catch ( Exception e )
-	{
-		throw new RuntimeException( e );
-	}
-}
 /**
- *------------ Pagina schrijven naar de schijf ------
+ *  ------- Haal positie op uit de database ---------
  */
 @Override
-public void pageOut( PageDescriptor aPageDescriptor )
+public int get( PageDescriptor aPageDescriptor, VMStelling aVmStelling )
 {
-    if ( aPageDescriptor != null && isVuil( aPageDescriptor ) )
-    {
-        putRawPageData( aPageDescriptor );
-        setVuil( aPageDescriptor, false );
-    }
+	aVmStelling.checkStelling();
+	ensurePageIsInRam( aPageDescriptor );
+    
+	byte vmRec = getPage( aPageDescriptor )[getPositionWithinPage( aVmStelling )];
+    return Byte.toUnsignedInt( vmRec );
 }
 /**
- *  ------- Haal pagina op uit de cache ---------
+ * --------- Wegschrijven poaitie naar database -----------
  */
 @Override
-public byte getData( PageDescriptor aPageDescriptor, VMStelling aVmStelling )
+public void put( PageDescriptor aPageDescriptor, VMStelling aVmStelling, int aDbsRec )
 {
-    return getData( aPageDescriptor, getPositionWithinPage( aVmStelling ) );
-}
-byte getData( PageDescriptor aPageDescriptor, int aPositionWithinPage )
-{
-	try
-	{
-		return getPage( aPageDescriptor )[aPositionWithinPage];
-	}
-	catch ( ArrayIndexOutOfBoundsException e )
-	{
-		e.printStackTrace();
-		throw e;
-	}
-}
-@Override
-public void setData( PageDescriptor aPageDescriptor, VMStelling aVmStelling, byte aData )
-{
-    setData( aPageDescriptor, getPositionWithinPage( aVmStelling ), aData );
-}
-void setData( PageDescriptor aPageDescriptor, int aPositionWithinPage, byte aData )
-{
+	aVmStelling.checkStelling();
+	ensurePageIsInRam( aPageDescriptor );
+    
+    byte vmRec = (byte)( aDbsRec & 0xff );
 	// @@HIGH Zou het niet beter zijn om hier CacheEntry te gebruiken, voor de performance?
-    getPage( aPageDescriptor )[aPositionWithinPage] = aData;
+    getPage( aPageDescriptor )[getPositionWithinPage( aVmStelling )] = vmRec;
 	setVuil( aPageDescriptor, true );
 }
 @Override
