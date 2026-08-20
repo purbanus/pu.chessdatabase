@@ -6,10 +6,8 @@ package pu.chessdatabase.dbs;
 //===================================================================================================================== 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static pu.chessdatabase.bo.Kleur.*;
 import static pu.chessdatabase.dbs.Constants.*;
-import static pu.chessdatabase.dbs.MetPionnenTransformator.*;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Config;
 import pu.chessdatabase.bo.Kleur;
-import pu.services.Vector;
 
 import lombok.Data;
 

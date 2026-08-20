@@ -23,7 +23,6 @@ import pu.chessdatabase.dbs.Dbs;
 import pu.chessdatabase.dbs.PageSizeCalculator;
 import pu.chessdatabase.dbs.Resultaat;
 import pu.chessdatabase.dbs.VM;
-import pu.chessdatabase.dbs.VMStelling;
 
 import lombok.Data;
 

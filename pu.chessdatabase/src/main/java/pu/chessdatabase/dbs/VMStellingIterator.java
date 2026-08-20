@@ -164,6 +164,7 @@ public void iterateOverWkZkOneColour( Kleur aKleur, PassFunction aPassFunction )
 	}
 	report();
 }
+@SuppressWarnings( "unused" )
 private void checkStellingen()
 {
 	BoStelling boStelling = BoStelling.alfaBuilder()

@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.BoStelling;
-import pu.chessdatabase.bo.BoStelling.AlfaBuilder;
 import pu.chessdatabase.bo.Bouw;
 import pu.chessdatabase.bo.Config;
 import pu.chessdatabase.bo.Gen;

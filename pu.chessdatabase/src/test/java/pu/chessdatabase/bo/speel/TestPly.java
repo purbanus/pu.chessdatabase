@@ -16,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Config;
-import pu.chessdatabase.bo.configuraties.KLPK;
 
 import lombok.Data;
 

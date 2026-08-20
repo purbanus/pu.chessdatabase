@@ -7,9 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pu.chessdatabase.bo.Stukken;
-import pu.chessdatabase.dbs.AlleenStukkenTransformator;
-import pu.chessdatabase.dbs.MetPionnenTransformator;
-import pu.chessdatabase.dbs.Transformator;
 
 import lombok.AccessLevel;
 import lombok.Data;

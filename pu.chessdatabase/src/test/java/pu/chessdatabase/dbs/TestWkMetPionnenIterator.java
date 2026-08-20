@@ -1,19 +1,8 @@
 package pu.chessdatabase.dbs;
 
-//====================================================================================================================
-//BELANGRIJK
-//In Eclipse kan hij de volgende twee imports niet vinden. Deze moet je dus met de hand toevoegen
-//===================================================================================================================== 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
-
 import static pu.chessdatabase.dbs.Constants.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.assertj.core.api.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

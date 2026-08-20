@@ -3,11 +3,8 @@ package pu.chessdatabase.dbs;
 import static pu.chessdatabase.bo.configuraties.StukType.*;
 import static pu.chessdatabase.dbs.Constants.*;
 
-import org.springframework.boot.context.config.ConfigData;
-
 import pu.chessdatabase.bo.BoStelling;
 import pu.chessdatabase.bo.Config;
-import pu.chessdatabase.bo.Gen;
 //import pu.chessdatabase.bo.Gen;
 import pu.chessdatabase.bo.Kleur;
 
