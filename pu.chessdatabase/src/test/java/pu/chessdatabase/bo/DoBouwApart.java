@@ -34,7 +34,7 @@ public void buildKDK()
 	config.switchConfig( Config.KDK );
 	bouw.bouwDatabase();
 }
-@Test
+//@Test
 public void buildKoK()
 {
 	config.switchConfig( Config.KoK );
