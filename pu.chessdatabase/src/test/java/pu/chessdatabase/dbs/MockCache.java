@@ -31,32 +31,11 @@ private void initializeMethods()
 	for ( Method method : methods )
 	{
 		String methodName = method.getName();
-		if ( method.getName().equals( "setData" ) )
-		{
-			if ( contains( method.getParameterTypes(), "int" ) )
-			{
-				methodName = "setDataWithInt";
-			}
-			else
-			{
-				methodName = "setDataWithVmStelling";
-			}
-		}
-		if ( method.getName().equals( "getData" ) )
-		{
-			if ( contains( method.getParameterTypes(), "int" ) )
-			{
-				methodName = "getDataWithInt";
-			}
-			else
-			{
-				methodName = "getDataWithVmStelling";
-			}
-		}
 		methodLookup.put( methodName, method );
 		method.setAccessible( true );
 	}
 }
+@SuppressWarnings( "unused" )
 private boolean contains( Class<?> [] aParameters, String aClassName )
 {
 	for ( Class<?> claxx : aParameters )
@@ -152,6 +131,10 @@ public void setVuil( PageDescriptor aPageDescriptor, boolean aVuil )
 {
 	callMethod( "setVuil", aPageDescriptor, aVuil );
 }
+CacheEntry getCacheEntryByNumber( int aCacheNummer )
+{
+	return (CacheEntry) callMethod( "getCacheEntryByNumber", aCacheNummer );
+}
 @Override
 public CacheEntry getCacheEntry( PageDescriptor aPageDescriptor )
 {
@@ -180,9 +163,9 @@ void pageIn( PageDescriptor aPageDescriptor )
 	callMethod( "pageIn", aPageDescriptor );
 }
 @Override
-public byte []  getPageFromDatabase( PageDescriptor aPageDescriptor )
+public void ensurePageIsInRam( PageDescriptor aPageDescriptor )
 {
-	return (byte []) callMethod( "getPageFromDatabase", aPageDescriptor );
+	callMethod( "ensurePageIsInRam", aPageDescriptor );
 }
 @Override
 public int getPositionWithinPage( VMStelling aVmStelling )
@@ -190,22 +173,14 @@ public int getPositionWithinPage( VMStelling aVmStelling )
 	return (int) callMethod( "getPositionWithinPage", aVmStelling );
 }
 @Override
-public byte getData( PageDescriptor aPageDescriptor, VMStelling aVmStelling )
+public int get( PageDescriptor aPageDescriptor, VMStelling aVmStelling )
 {
-	return (byte) callMethod( "getDataWithVmStelling", aPageDescriptor, aVmStelling );
-}
-byte getData( PageDescriptor aPageDescriptor, int aPositionWithPage )
-{
-	return (byte) callMethod( "getDataWithInt", aPageDescriptor, aPositionWithPage );
+	return (int) callMethod( "get", aPageDescriptor, aVmStelling );
 }
 @Override
-public void setData( PageDescriptor aPageDescriptor, VMStelling aVmStelling, byte aData )
+public void put( PageDescriptor aPageDescriptor, VMStelling aVmStelling, int aDbsRec )
 {
-	callMethod( "setDataWithVmStelling", aPageDescriptor, aVmStelling, aData );
-}
-void setData( PageDescriptor aPageDescriptor, int aPositionWithinPage, byte aData )
-{
-	callMethod( "setDataWithInt", aPageDescriptor, aPositionWithinPage, aData );
+	callMethod( "put", aPageDescriptor, aVmStelling, aDbsRec );
 }
 @Override
 public void flush()
