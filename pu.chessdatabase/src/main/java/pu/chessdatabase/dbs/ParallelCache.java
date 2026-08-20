@@ -87,6 +87,7 @@ void pageIn( PageDescriptor aPageDescriptor )
 		getRawPageData( aPageDescriptor );
 
 		//-------- Update cache ----------------------
+		// @@HIGH Dit is allemaal niiet nodig
 		CacheEntry cacheEntry = getCacheEntry( aPageDescriptor );
 	    cacheEntry.setPageDescriptor( aPageDescriptor );
 	    cacheEntry.setVuil( false );
