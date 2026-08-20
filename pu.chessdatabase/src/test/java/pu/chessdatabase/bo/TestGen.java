@@ -41,7 +41,7 @@ public void setup()
 {
 	savedConfigString = config.getConfig();
 	getConfig().switchConfig( Config.PipoKDKT );
-	getGen().setZetGenDirection( Backward );
+	getGen().setZetGenDirection( Forward );
 	getDbs().create();
 }
 @AfterEach

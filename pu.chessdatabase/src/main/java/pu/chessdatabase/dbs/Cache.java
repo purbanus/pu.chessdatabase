@@ -12,12 +12,12 @@ public abstract RandomAccessFile getDatabase();
 public abstract void setDatabase( RandomAccessFile aRandomAccessFile );
 public abstract int getPageSize();
 public abstract long getDatabaseSize();
+public abstract void ensurePageIsInRam( PageDescriptor aPageDescriptor );
 public abstract byte [] getPage( PageDescriptor aPageDescriptor );
-public abstract byte [] getPageFromDatabase( PageDescriptor aPageDescriptor );
+public abstract int get( PageDescriptor aPageDescriptor, VMStelling aVmStelling );
+public abstract void put( PageDescriptor aPageDescriptor, VMStelling aVmStelling, int aDbsRec );
 public abstract int getPositionWithinPage( VMStelling aVmStelling );
 public abstract void setVuil( PageDescriptor aPageDescriptor, boolean aVuil );
-public abstract byte getData( PageDescriptor aPageDescriptor, VMStelling aVmStelling );
-public abstract void setData( PageDescriptor aPageDescriptor, VMStelling aVmStelling, byte aData );
 public abstract void pageOut( PageDescriptor aPageDescriptor );
 public abstract CacheEntry getCacheEntry( PageDescriptor aPageDescriptor );
 // Alleen om te testen!!
