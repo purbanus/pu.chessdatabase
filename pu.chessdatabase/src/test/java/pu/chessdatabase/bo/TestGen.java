@@ -7,9 +7,7 @@ package pu.chessdatabase.bo;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
-
 import static pu.chessdatabase.bo.Kleur.*;
-import static pu.chessdatabase.bo.ZetGenDirection.*;
 import static pu.chessdatabase.bo.ZetSoort.*;
 import static pu.chessdatabase.dbs.Constants.*;
 import static pu.chessdatabase.dbs.Resultaat.*;
@@ -41,7 +39,6 @@ public void setup()
 {
 	savedConfigString = config.getConfig();
 	getConfig().switchConfig( Config.PipoKDKT );
-	getGen().setZetGenDirection( Forward );
 	getDbs().create();
 }
 @AfterEach
@@ -503,8 +500,6 @@ public void testGenereerZettenPerPion()
 	getConfig().switchConfig( Config.PipoKoKo );
 	dbs.create(); // Doet ook Open, dus initialiseert de tabellen
 
-	gen.setZetGenDirection( Forward );
-
 	BoStelling boStelling = BoStelling.alfaBuilder()
 		.wk( "a1" )
 		.zk( "h3" )
@@ -527,32 +522,6 @@ public void testGenereerZettenPerPion()
 	assertThat( gegenereerdeZetten.get( 0 ).getS4Alfa(), is( "h6" ) );
 	assertThat( gegenereerdeZetten.get( 1 ).getS4Alfa(), is( "h5" ) );
 
-	gen.setZetGenDirection( Backward );
-	
-	boStelling = BoStelling.alfaBuilder()
-		.wk( "a1" )
-		.zk( "h3" )
-		.s3( "a4" )
-		.s4( "h5" )
-		.aanZet( Wit )
-		.build();
-	bord = new Bord( getConfig().getStukken(), boStelling );
-
-	gegenereerdeZetten = gen.genereerZettenPerPion( boStelling, gen.getStukken().getS3(), boStelling.getWk(), boStelling.getS3(), bord );
-	assertThat( gegenereerdeZetten.size(), is( 2 ) );
-	assertThat( gegenereerdeZetten.get( 0 ).getS3Alfa(), is( "a3" ) );
-	assertThat( gegenereerdeZetten.get( 1 ).getS3Alfa(), is( "a2" ) );
-	
-	boStelling.setAanZet( Zwart );
-	bord = new Bord( getConfig().getStukken(), boStelling );
-
-	gegenereerdeZetten = gen.genereerZettenPerPion( boStelling, gen.getStukken().getS4(), boStelling.getZk(), boStelling.getS4(), bord );
-	assertThat( gegenereerdeZetten.size(), is( 2 ) );
-	assertThat( gegenereerdeZetten.get( 0 ).getS4Alfa(), is( "h6" ) );
-	assertThat( gegenereerdeZetten.get( 1 ).getS4Alfa(), is( "h7" ) );
-
-	gen.setZetGenDirection( Forward );
-
 	boStelling = BoStelling.alfaBuilder()
 		.wk( "a1" )
 		.zk( "h3" )
@@ -571,29 +540,6 @@ public void testGenereerZettenPerPion()
 	gegenereerdeZetten = gen.genereerZettenPerPion( boStelling, gen.getStukken().getS4(), boStelling.getZk(), boStelling.getS4(), bord );
 	assertThat( gegenereerdeZetten.size(), is( 1 ) );
 	assertThat( gegenereerdeZetten.get( 0 ).getS4Alfa(), is( "h1" ) );
-
-	gen.setZetGenDirection( Backward );
-	
-	boStelling = BoStelling.alfaBuilder()
-		.wk( "a1" )
-		.zk( "h3" )
-		.s3( "a8" )
-		.s4( "h1" )
-		.aanZet( Wit )
-		.build();
-	bord = new Bord( getConfig().getStukken(), boStelling );
-
-	gegenereerdeZetten = gen.genereerZettenPerPion( boStelling, gen.getStukken().getS3(), boStelling.getWk(), boStelling.getS3(), bord );
-	assertThat( gegenereerdeZetten.size(), is( 1 ) );
-	assertThat( gegenereerdeZetten.get( 0 ).getS3Alfa(), is( "a7" ) );
-	
-	boStelling.setAanZet( Zwart );
-	bord = new Bord( getConfig().getStukken(), boStelling );
-
-	gegenereerdeZetten = gen.genereerZettenPerPion( boStelling, gen.getStukken().getS4(), boStelling.getZk(), boStelling.getS4(), bord );
-	assertThat( gegenereerdeZetten.size(), is( 1 ) );
-	assertThat( gegenereerdeZetten.get( 0 ).getS4Alfa(), is( "h2" ) );
-
 }
 @Test
 public void testGenereerZettenPerStuk()

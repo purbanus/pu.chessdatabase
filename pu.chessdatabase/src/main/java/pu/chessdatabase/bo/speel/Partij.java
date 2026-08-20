@@ -1,7 +1,6 @@
 package pu.chessdatabase.bo.speel;
 
 import static pu.chessdatabase.bo.Kleur.*;
-import static pu.chessdatabase.bo.ZetGenDirection.*;
 import static pu.chessdatabase.bo.speel.Einde.*;
 import static pu.chessdatabase.dbs.Resultaat.*;
 
@@ -548,7 +547,6 @@ Resultaat getGegenereerdeZetResultaat( Resultaat aResultaat )
 public List<GegenereerdeZetDocument> getGegenereerdeZetten()
 {
 	BoStelling boStellingVan = getStand();
-	getGen().setZetGenDirection( Forward );
 	List<BoStelling> gegenereerdeZetten = getGen().genereerZettenGesorteerd( boStellingVan );
 	List<GegenereerdeZetDocument> zetten = new ArrayList<>();
 	int zetNummer = 1;

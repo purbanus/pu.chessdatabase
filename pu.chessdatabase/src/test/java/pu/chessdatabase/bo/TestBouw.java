@@ -8,7 +8,6 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static pu.chessdatabase.bo.Kleur.*;
-import static pu.chessdatabase.bo.ZetGenDirection.*;
 import static pu.chessdatabase.dbs.Constants.*;
 import static pu.chessdatabase.dbs.PassType.*;
 import static pu.chessdatabase.dbs.Resultaat.*;
@@ -53,7 +52,6 @@ public void setup()
 {
 	savedConfigString = getConfig().getConfig();
 	getConfig().switchConfig( Config.PipoKDKT, false ); // false want de database bestaat nog niet dus VM kan m niet openen
-	getGen().setZetGenDirection( Forward );
 	getDbs().create();
 }
 @AfterEach
@@ -366,17 +364,11 @@ public void testPassSchaakjes()
 }
 void checkTellingen()
 {
-	int [][] tellingen = vmStellingIterator.getTellingen();
-	//getBouw().printAlles( tellingen);
 	bouw.telAlles( DO_PRINT );
 	
 	// @@NOG Als je alle tests runt, gaat deze fout, maar als je alleen TestBouw runt gaattie goed !!??
 	// Expected: is [[<1337361>, <0>, <1284079>, <0>], [<1048551>, <0>, <1572889>, <0>]]
     // but:     was [[<1163970>, <0>, <1457470>, <0>], [<875160>, <0>, <1746280>, <0>]]
-
-	//getBouw().printAlles( getVmStellingIterator().getTellingen() );
-	//assertThat( vmStellingIterator.getTellingen(), is( tellingen ) );
-	
 }
 @Test
 public void testIsMat()

@@ -1,7 +1,6 @@
 package pu.chessdatabase.bo;
 
 import static pu.chessdatabase.bo.Kleur.*;
-import static pu.chessdatabase.bo.ZetGenDirection.*;
 import static pu.chessdatabase.dbs.Resultaat.*;
 
 import java.util.ArrayList;
@@ -445,7 +444,6 @@ public void bouwDatabase()
 {
 	LOG.info( "We bouwen op: {}", getDbs().getDatabaseName() );
 	StopWatch timer = new StopWatch();
-	getGen().setZetGenDirection( Forward );
 	passNumber = 0;
 	pass_0( true );
 	LOG.info( "Pass {} duurde {}", passNumber, timer.getLapTimeMs() );

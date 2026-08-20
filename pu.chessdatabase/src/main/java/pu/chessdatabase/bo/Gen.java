@@ -1,7 +1,6 @@
 package pu.chessdatabase.bo;
 
 import static pu.chessdatabase.bo.Kleur.*;
-import static pu.chessdatabase.bo.ZetGenDirection.*;
 import static pu.chessdatabase.bo.ZetSoort.*;
 import static pu.chessdatabase.bo.configuraties.StukType.*;
 import static pu.chessdatabase.dbs.Resultaat.*;
@@ -104,7 +103,6 @@ public static int alfaToVeld( String aAlfaVeld )
 }
 private final Dbs dbs;
 private final Config config;
-private ZetGenDirection zetGenDirection;
 
 public Gen( Dbs aDbs, Config aConfig)
 {
@@ -415,26 +413,26 @@ void addZet( final BoStelling aBoStelling, Stuk aStuk, int aNaar, ZetSoort aZets
 List<BoStelling> genereerZettenPerPion( BoStelling aBoStelling, Stuk aStuk, int aKoningsVeld, int aStukVeld, Bord aBord )
 {
 	List<BoStelling> gegenereerdeZetten = new ArrayList<>();
-	if ( getZetGenDirection() == Backward ) 
-	{
-		// We gaan hier pionnen terugzetten
-		if ( aStuk.getKleur() == Wit )
-		{
-			int increment = -RIJ;
-			Range rijRange = new Range( 2, 7 );
-			int rijVoorTweeVelden = 3;
-			genereerPionZetten( aBoStelling, aStuk, aKoningsVeld, aStukVeld, aBord, gegenereerdeZetten, increment, rijRange, rijVoorTweeVelden );
-		}
-		else
-		{
-			int increment = RIJ;
-			Range rijRange = new Range( 0, 6 );
-			int rijVoorTweeVelden = 4;
-			genereerPionZetten( aBoStelling, aStuk, aKoningsVeld, aStukVeld, aBord, gegenereerdeZetten, increment, rijRange, rijVoorTweeVelden );
-		}
-	}
-	else
-	{
+//	if ( getZetGenDirection() == Backward ) 
+//	{
+//		// We gaan hier pionnen terugzetten
+//		if ( aStuk.getKleur() == Wit )
+//		{
+//			int increment = -RIJ;
+//			Range rijRange = new Range( 2, 7 );
+//			int rijVoorTweeVelden = 3;
+//			genereerPionZetten( aBoStelling, aStuk, aKoningsVeld, aStukVeld, aBord, gegenereerdeZetten, increment, rijRange, rijVoorTweeVelden );
+//		}
+//		else
+//		{
+//			int increment = RIJ;
+//			Range rijRange = new Range( 0, 6 );
+//			int rijVoorTweeVelden = 4;
+//			genereerPionZetten( aBoStelling, aStuk, aKoningsVeld, aStukVeld, aBord, gegenereerdeZetten, increment, rijRange, rijVoorTweeVelden );
+//		}
+//	}
+//	else
+//	{
 		// We gaan hier pionnen vooruitzetten
 		if ( aStuk.getKleur() == Zwart )
 		{
@@ -450,7 +448,7 @@ List<BoStelling> genereerZettenPerPion( BoStelling aBoStelling, Stuk aStuk, int 
 			int rijVoorTweeVelden = 1;
 			genereerPionZetten( aBoStelling, aStuk, aKoningsVeld, aStukVeld, aBord, gegenereerdeZetten, increment, rijRange, rijVoorTweeVelden );
 		}
-	}
+//	}
 	return gegenereerdeZetten;
 }
 void genereerPionZetten( BoStelling aBoStelling, Stuk aStuk, int aKoningsVeld, int aStukVeld, Bord aBord, List<BoStelling> gegenereerdeZetten, int increment, Range rijRange, int rijVoorTweeVelden )
