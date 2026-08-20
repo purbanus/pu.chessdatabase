@@ -30,6 +30,10 @@ import lombok.Data;
 @Data
 public class TestParallelCache
 {
+/**
+ * @@HIGH Bij veel methodes wordt er een PD en/of een CacheEntry gemaakt. Je kunt veel beter de
+ * bestaande PD/CE ophalen en die enigszins aanpassen. Zie testGetSePage voor een voorbeeld.t 
+ */
 @Autowired private VM vm;
 @Autowired private Config config;
 private MockCache cache;
@@ -41,7 +45,7 @@ public void setup()
 	savedConfigString = config.getConfig();
 	getConfig().setCacheType( Parallel );
 	getConfig().switchConfig( Config.PipoKDKT );
-	getVm().open( "rw" );
+	getVm().create();
 	cache = new MockCache( vm.getCache() );
 	testHelper = new TestHelper( getConfig() );
 }
@@ -219,7 +223,7 @@ public void testGetPage()
 	byte value = (byte)0x60;
 
 	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( OpSchijf )
+		.waar( InRam )
 		.cacheNummer( cacheNumber )
 		.schijfAdres( pageNumber * getCache().getPageSize() )
 		.build();
@@ -253,7 +257,7 @@ public void testGetPageFromDatabase()
 		.build();
 	vm.getPageDescriptorTable().setPageDescriptor( vmStelling, pageDescriptor );
 
-	byte [] page = getCache().getPageFromDatabase( pageDescriptor );
+	byte [] page = getCache().getPage( pageDescriptor );
 	assertThat( getTestHelper().isAll( page, value ), is( true ) );
 	assertThat( pageDescriptor.getCacheNummer(), is( 9 ) );
 	assertThat( getCache().isVuil( pageDescriptor ), is( false ) );
@@ -261,17 +265,15 @@ public void testGetPageFromDatabase()
 @Test
 public void testGetSetPage()
 {
-	long pageNumber = 3L;
 	int cacheNumber = 3;
 	byte value = (byte)0x70;
 
-	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( OpSchijf )
-		.cacheNummer( cacheNumber )
-		.schijfAdres( pageNumber * getCache().getPageSize() )
-		.build();
 	byte [] page = getTestHelper().createPageWithAll( value );
+
+	CacheEntry cacheEntry = getCache().getCacheEntryByNumber( cacheNumber );
+	PageDescriptor pageDescriptor = cacheEntry.getPageDescriptor();
 	getCache().setPage( pageDescriptor, page );
+	pageDescriptor.setWaar( InRam );
 	
 	byte [] gotPage = getCache().getPage( pageDescriptor );
 	assertThat( getTestHelper().isAll( gotPage, value ), is( true ) );
@@ -285,22 +287,12 @@ public void testGetPageNotDirtyAndInRam()
 	byte value = (byte)0x2f;
 
 	getTestHelper().writePageWithAll( getCache(), pageNumber, cacheNumber, value );
-	
-	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( InRam )
-		.cacheNummer( cacheNumber )
-		.schijfAdres( pageNumber * getCache().getPageSize() )
-		.build();
-	VMStelling vmStelling = VMStelling.alfaBuilder()
-		.wk( "e1" )
-		.zk( "b7" )
-		.s3( "a1" )
-		.s4( "h1" )
-		.aanZet( Wit )
-		.build();
-	vm.getPageDescriptorTable().setPageDescriptor( vmStelling, pageDescriptor );
 
-	byte [] page = getCache().getPageFromDatabase( pageDescriptor );
+	CacheEntry cacheEntry = getCache().getCacheEntryByNumber( cacheNumber );
+	PageDescriptor pageDescriptor = cacheEntry.getPageDescriptor();
+	pageDescriptor.setWaar( InRam );
+
+	byte [] page = getCache().getPage( pageDescriptor );
 	assertThat( getTestHelper().isAll( page, value ), is( true ) );
 	// De pageDescriptor is NIET veranderd
 	assertThat( pageDescriptor.getCacheNummer(), is( cacheNumber ) );
@@ -546,13 +538,12 @@ public void testGetAllPositionsWithinPage5Stukken()
 	System.out.printf( "Parallel: testGetAllPositionsWithinPage5Stukken duurde %s\n", timer.getElapsedMs() );
 }
 @Test
-public void testGetSetData()
+public void testGetPut()
 {
 	long pageNumber = 9L;
 	int cacheNumber = 9;
 	byte value = (byte)0x25;    //  37 dec
-	byte newValue = (byte)0x77; // 119 dec
-	int positionWithinPage = 10;
+	int newValue = 0x77; // 119 dec
 
 	getTestHelper().writePageWithAll( getCache(), pageNumber, cacheNumber, value );
 	
@@ -570,9 +561,6 @@ public void testGetSetData()
 		.build();
 	getCache().setCacheEntry( pageDescriptor, cacheEntry );
 	
-	getCache().setData( pageDescriptor, positionWithinPage, newValue );
-	assertThat( getCache().getData( pageDescriptor, positionWithinPage ), is( newValue ) );
-	
 	VMStelling vmStelling = VMStelling.alfaBuilder()
 		.wk( "a1" )
 		.zk( "h8" )
@@ -581,8 +569,8 @@ public void testGetSetData()
 		.s5( "h8" )
 		.aanZet( Wit )
 		.build();
-	getCache().setData( pageDescriptor, vmStelling, newValue );
-	assertThat( getCache().getData( pageDescriptor, vmStelling ), is( newValue ) );
+	getCache().put( pageDescriptor, vmStelling, newValue );
+	assertThat( getCache().get( pageDescriptor, vmStelling ), is( newValue ) );
 }
 @Test
 public void testBug20260708()
@@ -596,36 +584,6 @@ public void testBug20260708()
 		.aanZet( Wit )
 		.build();
 	assertThat( getCache().getPositionWithinPage( vmStelling ), is( 516278 ) );
-}
-@Test
-public void testGetDataWithNoGetPage()
-{
-	long pageNumber = 7L;
-	int cacheNumber = 7;
-	byte value = (byte)0x25;
-	byte newValue = (byte)0x00;
-	int positionWithinPage = 10;
-
-	getTestHelper().writePageWithAll( getCache(), pageNumber, cacheNumber, value );
-	
-	PageDescriptor pageDescriptor = PageDescriptor.builder()
-		.waar( InRam )
-		.cacheNummer( cacheNumber )
-		.schijfAdres( pageNumber * getCache().getPageSize() )
-		.build();
-	// @@NOG Maar hier gebeurt toch wel een getPage????
-	byte [] page = getCache().getCacheEntries().get( cacheNumber ).getPage();
-	CacheEntry cacheEntry = CacheEntry.builder()
-		.page( page )
-		.pageDescriptor( pageDescriptor )
-		.vuil( false )
-		.generatie( 1 )
-		.build();
-	getCache().setCacheEntry( pageDescriptor, cacheEntry );
-	
-	getCache().setData( pageDescriptor, positionWithinPage, newValue );
-	assertThat( getCache().getData( pageDescriptor, positionWithinPage ), is( newValue ) );
-	
 }
 @Test
 public void testFlushWithNothingChanged()
