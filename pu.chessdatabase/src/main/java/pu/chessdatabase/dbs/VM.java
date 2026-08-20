@@ -193,34 +193,23 @@ PageDescriptor getNonLinearPageDescriptor( VMStelling aStelling )
 }
 public byte [] getPage( VMStelling aVmStelling )
 {
-	aVmStelling.checkStelling();
-	return getCache().getPageFromDatabase( getNonLinearPageDescriptor( aVmStelling ) );
+	PageDescriptor pageDescriptor = getNonLinearPageDescriptor( aVmStelling );
+	return getCache().getPage( pageDescriptor );
 }
 /**
- *  ------------ Ophalen database record --------------
+ *  ------- Haal positie op uit de database ---------
  */
 public int get( VMStelling aVmStelling )
 {
-	// @@HIGH Dit is o.a. om de pageDescriptor goed te zetten. Gecheckt, ik zie niet wat dit uitmaakt
-	// maar ik kan niet aantonen dat het fout gaat als je het weglaat. Voorlopig laten staan dus
-    getPage( aVmStelling );
-    
 	PageDescriptor pageDescriptor = getNonLinearPageDescriptor( aVmStelling );
-    byte vmRec = getCache().getData( pageDescriptor, aVmStelling );
-    return Byte.toUnsignedInt( vmRec );
+	return getCache().get( pageDescriptor, aVmStelling );
 }
 /**
- * --------- Wegschrijven database record -----------
- */
+ * --------- Wegschrijven poaitie naar database ----------- */
 public void put( VMStelling aVmStelling, int aDbsRec )
 {
-	// Dit is o.a. om de pageDescriptor goed te zetten. Gecheckt, ik zie niet wat dit uitmaakt
-	// maar ik kan niet aantonen dat het fout gaat als je het weglaat. Voorlopig laten staan dus
-    getPage( aVmStelling );
-    
 	PageDescriptor pageDescriptor = getNonLinearPageDescriptor( aVmStelling );
-    byte vmRec = (byte)( aDbsRec & 0xff );
-    getCache().setData( pageDescriptor, aVmStelling, vmRec);
+	getCache().put( pageDescriptor, aVmStelling, aDbsRec );
 }
 /**
  *  -------- Cache entry vrijmaken --------------------
