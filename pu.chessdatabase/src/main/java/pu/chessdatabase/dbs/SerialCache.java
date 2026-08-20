@@ -106,7 +106,7 @@ void pageIn( PageDescriptor aPageDescriptor )
     
     //-------- Update oude page descriptor -------
     PageDescriptor oudePageDescriptor = cacheEntry.getPageDescriptor();
-    if ( oudePageDescriptor != null )
+    if ( oudePageDescriptor != null && ! ( oudePageDescriptor.equals( aPageDescriptor ) ) )
     {
         pageOut( oudePageDescriptor );
         oudePageDescriptor.setWaar( OpSchijf );
